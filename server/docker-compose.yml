@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  dev-db:
+    image: postgres:latest
+    ports:
+      - $DATABASE_PORT:5432
+    environment:
+      POSTGRES_USER: $DATABASE_USER # change with configuration value
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD # change with configuration value
+      POSTGRES_DB: $DATABASE_NAME
+    networks:
+      - transcendence
+networks:
+  transcendence:
