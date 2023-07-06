@@ -7,8 +7,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('intra/signin')
-  signinUser(@Body() IntraSigninDto: IntraSigninDto): string {
-    let { code, state } = IntraSigninDto;
+  signinUser(@Body() intraSigninDto: IntraSigninDto): string {
+    let { code, state } = intraSigninDto;
     return this.authService.signinUser(code, state);
   }
 }
