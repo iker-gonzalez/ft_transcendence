@@ -1,13 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
   signinUser(code: string, state: string) {
-    if (state !== process.env.INTRA_STATE) {
+    if (state !== this.configService.get<string>('INTRA_STATE')) {
       throw new BadRequestException('State value does not match');
     }
 
