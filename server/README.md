@@ -35,6 +35,9 @@ $ npm install
 ## Running the app
 
 ```bash
+# Spin up DB
+docker compose up dev-db -d
+
 # development
 $ npm run start
 
