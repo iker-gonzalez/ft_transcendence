@@ -3,6 +3,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom } from 'rxjs';
 import { IntraTokenParams } from './interfaces/intra-token-params.interface';
+import { IntraUserDataDto } from 'src/auth/dto/intra-user-data.dto';
 
 @Injectable()
 export class IntraService {
@@ -35,5 +36,31 @@ export class IntraService {
 
     let { access_token: token } = data;
     return token;
+  }
+
+  async getIntraUserInfo(token: string): Promise<IntraUserDataDto> {
+    const { data } = await firstValueFrom(
+      this.httpService
+        .get('https://api.intra.42.fr/v2/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .pipe(
+          catchError((error) => {
+            const errorMessage = error.response.data.error_description;
+            throw new BadRequestException(errorMessage);
+          }),
+        ),
+    );
+
+    // Extract intra id
+    const userData = new IntraUserDataDto();
+    userData['intraId'] = data.id;
+    userData['username'] = data.login;
+    userData['email'] = data.email;
+    userData['avatar'] = data.image.link;
+
+    return userData;
   }
 }
