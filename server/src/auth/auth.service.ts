@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IntraService } from 'src/intra/intra.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { IntraUserDataDto } from './dto/intra-user-data.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,12 +22,15 @@ export class AuthService {
     // Get Intra User Token
     const token: string = await this.intraService.getIntraUserToken(code);
 
-    // Fetch user from database
+    // Fetch user data from Intra API
+    const userData: IntraUserDataDto = await this.intraService.getIntraUserInfo(
+      token,
+    );
 
     // If user already exists, return it
 
     // Create it
 
-    return token;
+    return userData;
   }
 }
