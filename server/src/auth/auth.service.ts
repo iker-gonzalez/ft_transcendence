@@ -35,11 +35,17 @@ export class AuthService {
 
     // If user already exists, return it
     if (user) {
+      const { intraId, username, email, avatar } = user;
+
       const response: SigninResponseDto = {
         created: 0,
-        data: user,
+        data: {
+          intraId,
+          username,
+          email,
+          avatar,
+        },
       };
-
       return response;
     }
 
@@ -48,9 +54,10 @@ export class AuthService {
       data: userData,
     });
 
+    const { intraId, username, email, avatar } = newUser;
     const response: SigninResponseDto = {
       created: 1,
-      data: newUser,
+      data: { intraId, username, email, avatar },
     };
     return response;
   }
