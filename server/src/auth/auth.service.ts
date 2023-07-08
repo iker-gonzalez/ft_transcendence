@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { IntraService } from 'src/intra/intra.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IntraUserDataDto } from './dto/intra-user-data.dto';
+import { User } from '@prisma/client';
+import { SigninResponseDto } from './dto/signin-response';
 
 @Injectable()
 export class AuthService {
@@ -27,10 +29,29 @@ export class AuthService {
       token,
     );
 
+    const user: User = await this.prisma.user.findUnique({
+      where: { intraId: userData.intraId },
+    });
+
     // If user already exists, return it
+    if (user) {
+      const response: SigninResponseDto = {
+        created: 0,
+        data: user,
+      };
 
-    // Create it
+      return response;
+    }
 
-    return userData;
+    // Otherwise, create a new user
+    const newUser: User = await this.prisma.user.create({
+      data: userData,
+    });
+
+    const response: SigninResponseDto = {
+      created: 1,
+      data: newUser,
+    };
+    return response;
   }
 }
