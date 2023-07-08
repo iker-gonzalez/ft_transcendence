@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsString, IsUrl } from 'class-validator';
+import { IsBoolean, IsEmail, IsNumber, IsString, IsUrl } from 'class-validator';
 
 export class IntraUserDataDto {
   @IsNumber()
