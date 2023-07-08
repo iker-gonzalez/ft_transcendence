@@ -17,7 +17,6 @@ model User {
 
   intraId  Int    @unique
   username String @unique @db.VarChar(12)
-  password String @db.VarChar(40)
   avatar   String
   email    String @unique
 }
