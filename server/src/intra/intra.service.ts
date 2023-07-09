@@ -3,7 +3,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom } from 'rxjs';
 import { IntraTokenParams } from './interfaces/intra-token-params.interface';
-import { IntraUserDataDto } from 'src/auth/dto/intra-user-data.dto';
+import { IntraUserDataDto } from '../auth/dto/intra-user-data.dto';
 
 @Injectable()
 export class IntraService {
