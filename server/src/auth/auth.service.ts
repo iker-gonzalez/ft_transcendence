@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IntraService } from 'src/intra/intra.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { IntraService } from '../intra/intra.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { IntraUserDataDto } from './dto/intra-user-data.dto';
 import { User } from '@prisma/client';
 import { SigninResponseDto } from './dto/signin-response';
