@@ -5,8 +5,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { JwtGuard } from 'src/auth/guard/jwt.guard';
-import { GetUser } from 'src/auth/decorator/get-user.decorator';
+import { JwtGuard } from '../auth/guard/jwt.guard';
+import { GetUser } from '../auth/decorator/get-user.decorator';
 import { User } from '@prisma/client';
 import { MeDto } from './dto/me.dto';
 
@@ -18,7 +18,7 @@ export class UserController {
     summary: 'Retrieve user data from database',
   })
   @ApiOkResponse({
-    description: 'Returns curretn user data from database.',
+    description: 'Returns current user data from database.',
     type: MeDto,
   })
   @ApiUnauthorizedResponse({
