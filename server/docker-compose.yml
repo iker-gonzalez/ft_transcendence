@@ -5,9 +5,19 @@ services:
     ports:
       - $DATABASE_PORT:5432
     environment:
-      POSTGRES_USER: $DATABASE_USER # change with configuration value
-      POSTGRES_PASSWORD: $DATABASE_PASSWORD # change with configuration value
+      POSTGRES_USER: $DATABASE_USER
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD
       POSTGRES_DB: $DATABASE_NAME
+    networks:
+      - transcendence
+  test-db:
+    image: postgres:latest
+    ports:
+      - $DATABASE_PORT_TEST:5432
+    environment:
+      POSTGRES_USER: $DATABASE_USER_TEST
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD_TEST
+      POSTGRES_DB: $DATABASE_NAME_TEST
     networks:
       - transcendence
 networks:
