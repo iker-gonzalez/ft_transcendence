@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Matches } from 'class-validator';
-import { configModuleOptions } from 'config/app.config';
+import { configModuleOptions } from '../../../config/app.config';
 
 const configService = new ConfigService(configModuleOptions);
 
