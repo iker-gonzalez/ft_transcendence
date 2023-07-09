@@ -5,16 +5,29 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { IntraUserDataDto } from './dto/intra-user-data.dto';
 import { User } from '@prisma/client';
 import { SigninResponseDto } from './dto/signin-response';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
     private readonly intraService: IntraService,
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
   ) {}
 
-  async signinUser(code: string, state: string) {
+  signToken(userId: string): Promise<string> {
+    const payload = {
+      sub: userId,
+    };
+
+    return this.jwtService.signAsync(payload, {
+      expiresIn: '30m',
+      secret: this.configService.get('JWT_SECRET'),
+    });
+  }
+
+  async signinUser(code: string, state: string): Promise<SigninResponseDto> {
     // Check if state value matches
     // Othwerwise, it means that the request is not coming from our app
     if (state !== this.configService.get<string>('INTRA_STATE')) {
@@ -35,10 +48,11 @@ export class AuthService {
 
     // If user already exists, return it
     if (user) {
-      const { intraId, username, email, avatar } = user;
+      const { id, intraId, username, email, avatar } = user;
 
       const response: SigninResponseDto = {
         created: 0,
+        access_token: await this.signToken(id),
         data: {
           intraId,
           username,
@@ -54,9 +68,10 @@ export class AuthService {
       data: userData,
     });
 
-    const { intraId, username, email, avatar } = newUser;
+    const { id, intraId, username, email, avatar } = newUser;
     const response: SigninResponseDto = {
       created: 1,
+      access_token: await this.signToken(id),
       data: { intraId, username, email, avatar },
     };
     return response;
