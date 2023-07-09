@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   HttpCode,
+  HttpStatus,
   Post,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -33,7 +34,7 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: 'State value does not match or provided code is invalid.',
   })
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   signinUser(
     @Body() intraSigninDto: IntraSigninDto,
   ): Promise<SigninResponseDto> {
