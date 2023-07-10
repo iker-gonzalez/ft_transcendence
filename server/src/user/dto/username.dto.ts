@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MaxLength, MinLength } from 'class-validator';
+import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class UsernameDto {
   @ApiProperty({
-    description: 'Username from 42 Intra API',
-    example: 'jdoe',
+    description: swaggerConstants.dto.intraUserSignin.username.description,
+    example: swaggerConstants.dto.intraUserSignin.username.example,
   })
   @IsString()
   @MinLength(5)

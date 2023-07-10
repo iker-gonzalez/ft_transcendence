@@ -1,32 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNumber, IsString, IsUrl } from 'class-validator';
+import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class IntraUserDataDto {
   @ApiProperty({
-    description: 'User ID from 42 Intra API',
-    example: 12345,
+    description: swaggerConstants.dto.intraUserSignin.intraId.description,
+    example: swaggerConstants.dto.intraUserSignin.intraId.example,
   })
   @IsNumber()
   intraId: number;
 
   @ApiProperty({
-    description: 'Username from 42 Intra API',
-    example: 'jdoe',
+    description: swaggerConstants.dto.intraUserSignin.username.description,
+    example: swaggerConstants.dto.intraUserSignin.username.example,
   })
   @IsString()
   username: string;
 
   @ApiProperty({
-    description: 'Email from 42 Intra API',
-    example: 'jdoe@student.42urdiliz.com',
+    description: swaggerConstants.dto.intraUserSignin.email.description,
+    example: swaggerConstants.dto.intraUserSignin.email.example,
   })
   @IsString()
   @IsEmail()
   email: string;
 
   @ApiProperty({
-    description: 'Avatar URL from 42 Intra API',
-    example: 'https://cdn.intra.42.fr/users/jdoe.jpg',
+    description: swaggerConstants.dto.intraUserSignin.avatar.description,
+    example: swaggerConstants.dto.intraUserSignin.avatar.example,
   })
   @IsString()
   @IsUrl()
