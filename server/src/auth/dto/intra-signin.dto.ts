@@ -2,20 +2,21 @@ import { ConfigService } from '@nestjs/config';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Matches } from 'class-validator';
 import { configModuleOptions } from '../../../config/app.config';
+import { swaggerConstants } from '../../../config/swagger.constants';
 
 const configService = new ConfigService(configModuleOptions);
 
 export class IntraSigninDto {
   @ApiProperty({
-    description: 'Code provided by 42 Intra API',
-    example: '2347e735860cd289bcefb543fe19238d25ed32255b02d566104c2c8d6a150689',
+    description: swaggerConstants.dto.intraSignin.code.description,
+    example: swaggerConstants.dto.intraSignin.code.example,
   })
   @IsString()
   code: string;
 
   @ApiProperty({
-    description: 'State value required by 42 Intra API to prevent CSRF',
-    example: 'aC1b4gdseU1ka4VFhYLJqFSEWu1ZFk9A',
+    description: swaggerConstants.dto.intraSignin.state.description,
+    example: swaggerConstants.dto.intraSignin.state.example,
   })
   @IsString()
   @Matches(new RegExp(configService.get<string>('INTRA_STATE')), {

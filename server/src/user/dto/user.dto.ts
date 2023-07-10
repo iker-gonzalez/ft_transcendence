@@ -1,46 +1,47 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class UserDto implements User {
   @ApiProperty({
-    description: 'User ID',
-    example: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+    description: swaggerConstants.dto.userDto.id.description,
+    example: swaggerConstants.dto.userDto.id.example,
   })
   id: string;
 
   @ApiProperty({
-    description: 'Profile creation date',
-    example: new Date(Date.now() - 86400000),
+    description: swaggerConstants.dto.userDto.createdAt.description,
+    example: swaggerConstants.dto.userDto.createdAt.example,
   })
   createdAt: Date;
 
   @ApiProperty({
-    description: 'Profile last update date',
-    example: new Date(),
+    description: swaggerConstants.dto.userDto.updatedAt.description,
+    example: swaggerConstants.dto.userDto.updatedAt.example,
   })
   updatedAt: Date;
 
   @ApiProperty({
-    description: 'User ID from 42 Intra API',
-    example: 12345,
+    description: swaggerConstants.dto.intraUserSignin.intraId.description,
+    example: swaggerConstants.dto.intraUserSignin.intraId.example,
   })
   intraId: number;
 
   @ApiProperty({
-    description: 'Username from 42 Intra API',
-    example: 'jdoe',
+    description: swaggerConstants.dto.intraUserSignin.username.description,
+    example: swaggerConstants.dto.intraUserSignin.username.example,
   })
   username: string;
 
   @ApiProperty({
-    description: 'Avatar URL from 42 Intra API',
-    example: 'https://cdn.intra.42.fr/users/jdoe.jpg',
+    description: swaggerConstants.dto.intraUserSignin.avatar.description,
+    example: swaggerConstants.dto.intraUserSignin.avatar.example,
   })
   avatar: string;
 
   @ApiProperty({
-    description: 'Email from 42 Intra API',
-    example: 'doe@student.42urdiliz.com',
+    description: swaggerConstants.dto.intraUserSignin.email.description,
+    example: swaggerConstants.dto.intraUserSignin.email.example,
   })
   email: string;
 }

@@ -1,25 +1,25 @@
 import { IsJWT, IsNumber } from 'class-validator';
 import { IntraUserDataDto } from './intra-user-data.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class SigninResponseDto {
   @ApiProperty({
-    description: 'Number of created resources',
-    example: 1,
+    description: swaggerConstants.dto.signinResponse.created.description,
+    example: swaggerConstants.dto.signinResponse.created.example,
   })
   @IsNumber()
   created: number;
 
   @ApiProperty({
-    description: 'JWT token',
-    example:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYzAyNGVmMi1mYjc5LTQwMGMtOGY5Ny1jZTBlNDlkN2RjNjgiLCJpYXQiOjE2ODg5MDkwMDEsImV4cCI6MTY4ODkxMDgwMX0.roOejlEwk0TtsSr_jId9wcIW5oRve_sX67HnGU74RWs',
+    description: swaggerConstants.dto.signinResponse.access_token.description,
+    example: swaggerConstants.dto.signinResponse.access_token.example,
   })
   @IsJWT()
   access_token: string;
 
   @ApiProperty({
-    description: 'User data from database',
+    description: swaggerConstants.dto.signinResponse.data.description,
   })
   data: IntraUserDataDto;
 }

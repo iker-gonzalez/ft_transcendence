@@ -13,6 +13,7 @@ import { MeDto } from './dto/me.dto';
 import { UsernameDto } from './dto/username.dto';
 import { UserService } from './user.service';
 import { UpdateNameDto } from './dto/update-name.dto';
+import { swaggerConstants } from '../../config/swagger.constants';
 
 @ApiTags('Users')
 @UseGuards(JwtGuard)
@@ -21,14 +22,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOperation({
-    summary: 'Retrieve user data from database',
+    summary: swaggerConstants.users.me.summary,
   })
   @ApiOkResponse({
-    description: 'Returns current user data from database.',
+    description: swaggerConstants.users.me.ok.description,
     type: MeDto,
   })
   @ApiUnauthorizedResponse({
-    description: 'JWT token is invalid or expired.',
+    description: swaggerConstants.users.me.unauthorized.description,
   })
   @Get('me')
   getme(@GetUser() user: User): MeDto {
@@ -36,18 +37,17 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: 'Update username',
+    summary: swaggerConstants.users.username.summary,
   })
   @ApiOkResponse({
-    description: 'Returns updated user data.',
+    description: swaggerConstants.users.username.ok.description,
     type: UpdateNameDto,
   })
   @ApiUnauthorizedResponse({
-    description: 'JWT token is invalid or expired.',
+    description: swaggerConstants.users.username.unauthorized.description,
   })
   @ApiBadRequestResponse({
-    description:
-      'Username is not valid or provided id does not match current user.',
+    description: swaggerConstants.users.username.bad.description,
   })
   @Patch(':id/username')
   updateUsername(
