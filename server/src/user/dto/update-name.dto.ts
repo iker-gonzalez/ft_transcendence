@@ -1,15 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserDto } from './user.dto';
+import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class UpdateNameDto {
   @ApiProperty({
-    description: 'Number of resources updated',
-    example: 1,
+    description: swaggerConstants.dto.updateName.updated.description,
+    example: swaggerConstants.dto.updateName.updated.example,
   })
   updated: number;
 
   @ApiProperty({
-    description: 'Updated user data',
+    description: swaggerConstants.dto.signinResponse.data.description,
   })
   data: UserDto;
 }

@@ -15,6 +15,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { swaggerConstants } from '../../config/swagger.constants';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -23,16 +24,14 @@ export class AuthController {
 
   @Post('intra/signin')
   @ApiOperation({
-    summary:
-      'Sign in user through 42 Intra API. Receives a 42 Intra code as input. Retrieves user data from 42 Intra API and creates a new user in the database if needed.',
+    summary: swaggerConstants.auth.signin.summary,
   })
   @ApiOkResponse({
-    description:
-      'Returns user data from database. Either existing or new user.',
+    description: swaggerConstants.auth.signin.ok.description,
     type: SigninResponseDto,
   })
   @ApiBadRequestResponse({
-    description: 'State value does not match or provided code is invalid.',
+    description: swaggerConstants.auth.signin.bad.description,
   })
   @HttpCode(HttpStatus.OK)
   signinUser(
