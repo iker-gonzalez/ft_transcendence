@@ -4,6 +4,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { IntraService } from '../src/intra/intra.service';
 import * as pactum from 'pactum';
+import { createUser } from './test.utils';
 
 describe('App e2e', () => {
   const port = 3333;
@@ -43,8 +44,11 @@ describe('App e2e', () => {
     pactum.request.setBaseUrl(baseUrl);
   });
 
-  afterEach(async () => {
+  beforeEach(async () => {
     await prisma.cleanDb();
+  });
+
+  afterEach(async () => {
     jest.resetAllMocks();
   });
 
@@ -134,31 +138,12 @@ describe('App e2e', () => {
     describe('me', () => {
       it("should return current user's data", async () => {
         // Create user first
-        jest
-          .spyOn(intraService, 'getIntraUserToken')
-          .mockImplementation(async (code: string): Promise<string> => {
-            return Promise.resolve(intraUserToken);
-          });
-        jest
-          .spyOn(intraService, 'getIntraUserInfo')
-          .mockImplementation(async (token: string): Promise<any> => {
-            return Promise.resolve(userData);
-          });
-
-        const reqBody = {
-          code: intraUserToken,
-          state: process.env.INTRA_STATE,
-        };
-
-        await pactum
-          .spec()
-          .post('/auth/intra/signin')
-          .withBody(reqBody)
-          .stores('userAt', 'access_token');
-
-        const user = await prisma.user.findUnique({
-          where: { intraId: userData.intraId },
-        });
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
 
         await pactum
           .spec()
@@ -186,6 +171,161 @@ describe('App e2e', () => {
               'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
           })
           .expectStatus(401);
+      });
+    });
+
+    describe('update username', () => {
+      it('should update username', async () => {
+        const newUsername = 'new-username';
+
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/${user.id}/username`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            username: 'new-username',
+          })
+          .expectStatus(200)
+          .expectJsonLike({
+            updated: 1,
+            data: {
+              ...userData,
+              username: newUsername,
+            },
+          });
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.username).toBe(newUsername);
+      });
+
+      it('should return 400 if username is below 5 characters', async () => {
+        const newUsername = 'abcd';
+
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/${user.id}/username`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            username: newUsername,
+          })
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.username).toBe(user.username);
+      });
+
+      it('should return 400 if username is below over 12 characters', async () => {
+        const newUsername = 'new-long-username';
+
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/${user.id}/username`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            username: newUsername,
+          })
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.username).toBe(user.username);
+      });
+
+      it('should return 400 if provided id does not match current user', async () => {
+        const newUsername = 'new-username';
+
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/ac6f32be-a676-4e3b-a987-8bc2c1d3d010/username`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            username: newUsername,
+          })
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.username).toBe(user.username);
+      });
+
+      it('should return 401 with invalid token', async () => {
+        const newUsername = 'new-username';
+
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/${user.id}/username`)
+          .withHeaders({
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+          })
+          .withBody({
+            username: newUsername,
+          })
+          .expectStatus(401);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.username).toBe(user.username);
       });
     });
   });
