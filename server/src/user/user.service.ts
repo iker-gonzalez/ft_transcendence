@@ -3,17 +3,13 @@ import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateNameDto } from './dto/update-name.dto';
 import { MulterFileDto } from './dto/multer-file.dto';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { createWriteStream } from 'fs';
 import * as path from 'path';
 import * as fs from 'fs';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly cloudinaryService: CloudinaryService,
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async updateUsername(user: User, username: string): Promise<UpdateNameDto> {
     const userData = await this.prisma.user.findUnique({
