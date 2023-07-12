@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 import toStream = require('buffer-to-stream');
-import { cloudinaryConstants } from 'config/cloudinary.constants';
+import { cloudinaryConstants } from '../../config/cloudinary.constants';
 
 @Injectable()
 export class CloudinaryService {
