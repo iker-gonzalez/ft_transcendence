@@ -6,6 +6,7 @@ import { configModuleOptions } from '../config/app.config';
 import { IntraService } from './intra/intra.service';
 import { IntraModule } from './intra/intra.module';
 import { UserModule } from './user/user.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     IntraModule,
     UserModule,
+    CloudinaryModule,
   ],
   providers: [IntraService],
 })
