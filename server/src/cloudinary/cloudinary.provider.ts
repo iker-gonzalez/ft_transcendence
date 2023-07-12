@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { cloudinaryConstants } from 'config/cloudinary.constants';
+import { cloudinaryConstants } from '../../config/cloudinary.constants';
 
 export const CloudinaryProvider = {
   provide: cloudinaryConstants.provideName,
