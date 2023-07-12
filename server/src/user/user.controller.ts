@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiOkResponse,
@@ -14,6 +23,9 @@ import { UsernameDto } from './dto/username.dto';
 import { UserService } from './user.service';
 import { UpdateNameDto } from './dto/update-name.dto';
 import { swaggerConstants } from '../../config/swagger.constants';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MulterFileDto } from './dto/multer-file.dto';
+import { UserDto } from './dto/user.dto';
 
 @ApiTags('Users')
 @UseGuards(JwtGuard)
@@ -56,5 +68,24 @@ export class UserController {
     @Body() body: UsernameDto,
   ): Promise<UpdateNameDto> {
     return this.userService.updateUsername(user, id, body.username);
+  }
+
+  @ApiOperation({
+    summary: 'Update avatar.',
+  })
+  @ApiOkResponse({
+    description: swaggerConstants.users.username.ok.description,
+    type: UserDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: swaggerConstants.users.username.unauthorized.description,
+  })
+  @Patch('/avatar')
+  @UseInterceptors(FileInterceptor('avatar'))
+  updateAvatar(
+    @GetUser() user: User,
+    @UploadedFile() file: MulterFileDto,
+  ): Promise<UpdateNameDto> {
+    return this.userService.updateAvatar(user, file);
   }
 }

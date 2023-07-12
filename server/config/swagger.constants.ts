@@ -103,5 +103,11 @@ export const swaggerConstants = {
         example: new Date(),
       },
     },
+    avatarDto: {
+      avatar: {
+        description: 'File uploaded by user.',
+        example: 'avatar.jpg',
+      },
+    },
   },
 };
