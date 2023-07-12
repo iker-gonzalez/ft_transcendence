@@ -12,18 +12,10 @@ export class UserService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async updateUsername(
-    user: User,
-    id: string,
-    username: string,
-  ): Promise<UpdateNameDto> {
-    if (user.id !== id) {
-      throw new BadRequestException();
-    }
-
+  async updateUsername(user: User, username: string): Promise<UpdateNameDto> {
     const userData = await this.prisma.user.findUnique({
       where: {
-        id,
+        id: user.id,
       },
     });
 
@@ -33,7 +25,7 @@ export class UserService {
 
     const newUserData = await this.prisma.user.update({
       where: {
-        id,
+        id: user.id,
       },
       data: {
         username,
