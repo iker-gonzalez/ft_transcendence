@@ -371,6 +371,137 @@ describe('App e2e', () => {
           new RegExp(`^.*${user.username}.png$`),
         );
       });
+
+      it('should return 400 if no file is uploaded', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        const FormData = require('form-data-lite');
+        const form = new FormData();
+        form.append('avatar', fs.readFileSync('test/assets/file.txt'), {
+          filename: 'file.txt',
+        });
+
+        await pactum
+          .spec()
+          .patch(`/users/avatar`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.avatar).toBe(userData.avatar);
+      });
+
+      it('should return 400 if file is not image', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        const FormData = require('form-data-lite');
+        const form = new FormData();
+        form.append('avatar', fs.readFileSync('test/assets/file.txt'), {
+          filename: 'file.txt',
+        });
+
+        await pactum
+          .spec()
+          .patch(`/users/avatar`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withMultiPartFormData(form)
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.avatar).toBe(userData.avatar);
+      });
+
+      it('should return 400 if file is too little', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        const FormData = require('form-data-lite');
+        const form = new FormData();
+        form.append(
+          'avatar',
+          fs.readFileSync('test/assets/file_example_small.png'),
+          {
+            filename: 'file_example_small.png',
+          },
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/avatar`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withMultiPartFormData(form)
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.avatar).toBe(userData.avatar);
+      });
+
+      it('should return 400 if file is too big', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        const FormData = require('form-data-lite');
+        const form = new FormData();
+        form.append(
+          'avatar',
+          fs.readFileSync('test/assets/file_example_big.png'),
+          {
+            filename: 'file_example_big.png',
+          },
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/avatar`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withMultiPartFormData(form)
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.avatar).toBe(userData.avatar);
+      });
     });
   });
 });

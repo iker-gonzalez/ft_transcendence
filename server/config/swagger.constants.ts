@@ -35,6 +35,19 @@ export const swaggerConstants = {
           'Username is not valid or provided id does not match current user.',
       },
     },
+    avatar: {
+      summary: 'Update avatar.',
+      ok: {
+        description: 'Returns updated user data.',
+      },
+      unauthorized: {
+        description: 'JWT token is invalid or expired.',
+      },
+      bad: {
+        description:
+          'File is not valid, e.g. not provided, not image, too small or too big.',
+      },
+    },
   },
   dto: {
     intraSignin: {
