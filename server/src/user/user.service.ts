@@ -3,7 +3,7 @@ import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateNameDto } from './dto/update-name.dto';
 import { MulterFileDto } from './dto/multer-file.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
@@ -59,9 +59,9 @@ export class UserService {
       },
     });
     const isImage = mimetype.startsWith('image/');
-    const isSizeValid = size >= 50000 && size <= 5000000;
+    const isSizeValid = size >= 50_000 && size <= 2_500_000;
 
-    if (!userData || !isImage || !isSizeValid) {
+    if (!isImage || !isSizeValid) {
       throw new BadRequestException();
     }
 

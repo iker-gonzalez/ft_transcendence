@@ -6,6 +6,7 @@ import { IntraUserDataDto } from './dto/intra-user-data.dto';
 import { User } from '@prisma/client';
 import { SigninResponseDto } from './dto/signin-response';
 import { JwtService } from '@nestjs/jwt';
+import { jwtConfig } from '../../config/jwt.config';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +23,7 @@ export class AuthService {
     };
 
     return this.jwtService.signAsync(payload, {
-      expiresIn: '30m',
+      expiresIn: jwtConfig.expiration,
       secret: this.configService.get('JWT_SECRET'),
     });
   }
