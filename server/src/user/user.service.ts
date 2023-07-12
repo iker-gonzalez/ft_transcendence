@@ -1,17 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { UpdateNameDto } from './dto/update-name.dto';
 import { MulterFileDto } from './dto/multer-file.dto';
 import { createWriteStream } from 'fs';
 import * as path from 'path';
 import * as fs from 'fs';
+import { PatchUserDto } from './dto/patch-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async updateUsername(user: User, username: string): Promise<UpdateNameDto> {
+  async updateUsername(user: User, username: string): Promise<PatchUserDto> {
     const userData = await this.prisma.user.findUnique({
       where: {
         id: user.id,
@@ -37,7 +37,7 @@ export class UserService {
     };
   }
 
-  async updateAvatar(user: User, file: MulterFileDto): Promise<UpdateNameDto> {
+  async updateAvatar(user: User, file: MulterFileDto): Promise<PatchUserDto> {
     if (!file) {
       throw new BadRequestException();
     }

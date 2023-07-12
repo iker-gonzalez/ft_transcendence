@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserDto } from './user.dto';
 import { swaggerConstants } from '../../../config/swagger.constants';
 
-export class UpdateNameDto {
+export class PatchUserDto {
   @ApiProperty({
     description: swaggerConstants.dto.updateName.updated.description,
     example: swaggerConstants.dto.updateName.updated.example,
