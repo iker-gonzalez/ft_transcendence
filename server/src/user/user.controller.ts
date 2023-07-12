@@ -71,14 +71,17 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: 'Update avatar.',
+    summary: swaggerConstants.users.avatar.summary,
   })
   @ApiOkResponse({
-    description: swaggerConstants.users.username.ok.description,
+    description: swaggerConstants.users.avatar.ok.description,
     type: UserDto,
   })
   @ApiUnauthorizedResponse({
-    description: swaggerConstants.users.username.unauthorized.description,
+    description: swaggerConstants.users.avatar.unauthorized.description,
+  })
+  @ApiBadRequestResponse({
+    description: swaggerConstants.users.avatar.bad.description,
   })
   @Patch('/avatar')
   @UseInterceptors(FileInterceptor('avatar'))
