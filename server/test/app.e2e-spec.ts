@@ -6,7 +6,6 @@ import { IntraService } from '../src/intra/intra.service';
 import * as pactum from 'pactum';
 import { createUser } from './test.utils';
 import * as fs from 'fs';
-import { cwd } from 'process';
 
 describe('App e2e', () => {
   const port = 3333;
@@ -22,6 +21,8 @@ describe('App e2e', () => {
     email: 'test@student.42urduliz.com',
     avatar: 'https://cdn.intra.42.fr/users/test.jpg',
   };
+
+  const testAvatarPath = `public/uploads/avatars/${userData.username}.png`;
 
   const intraUserToken =
     'de08a5e57571452221f95fc44d0073d2a383178d7d893d99c29ad955103b3981';
@@ -52,6 +53,8 @@ describe('App e2e', () => {
 
   afterEach(async () => {
     jest.resetAllMocks();
+
+    if (fs.existsSync(testAvatarPath)) fs.unlinkSync(testAvatarPath);
   });
 
   afterAll(async () => {
@@ -341,6 +344,9 @@ describe('App e2e', () => {
         expect(updatedUser.avatar).toMatch(
           new RegExp(`^.*${user.username}.png$`),
         );
+
+        const filesExists = fs.existsSync(testAvatarPath);
+        expect(filesExists).toBe(true);
       });
 
       it('should return 400 if no file is uploaded', async () => {
@@ -371,6 +377,8 @@ describe('App e2e', () => {
         });
 
         expect(updatedUser.avatar).toBe(userData.avatar);
+        const filesExists = fs.existsSync(testAvatarPath);
+        expect(filesExists).toBe(false);
       });
 
       it('should return 400 if file is not image', async () => {
@@ -402,6 +410,8 @@ describe('App e2e', () => {
         });
 
         expect(updatedUser.avatar).toBe(userData.avatar);
+        const filesExists = fs.existsSync(testAvatarPath);
+        expect(filesExists).toBe(false);
       });
 
       it('should return 400 if file is too little', async () => {
@@ -437,6 +447,8 @@ describe('App e2e', () => {
         });
 
         expect(updatedUser.avatar).toBe(userData.avatar);
+        const filesExists = fs.existsSync(testAvatarPath);
+        expect(filesExists).toBe(false);
       });
 
       it('should return 400 if file is too big', async () => {
@@ -472,6 +484,8 @@ describe('App e2e', () => {
         });
 
         expect(updatedUser.avatar).toBe(userData.avatar);
+        const filesExists = fs.existsSync(testAvatarPath);
+        expect(filesExists).toBe(false);
       });
     });
   });

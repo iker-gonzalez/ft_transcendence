@@ -4,6 +4,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UpdateNameDto } from './dto/update-name.dto';
 import { MulterFileDto } from './dto/multer-file.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { createWriteStream } from 'fs';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class UserService {
@@ -57,12 +60,24 @@ export class UserService {
       throw new BadRequestException();
     }
 
-    const uploadPromise = this.cloudinaryService.uploadImage(
-      file,
-      user.username,
-    );
+    const avatarsFolderPath = path.join('uploads', 'avatars');
+    const avatarsFolderPublicPath = path.join('public', avatarsFolderPath);
+    const newAvatarName =
+      user.username + '.' + file.originalname.split('.').pop();
 
-    const { secure_url: avatarUrl }: any = await uploadPromise;
+    if (!fs.existsSync(avatarsFolderPublicPath)) {
+      fs.mkdirSync(avatarsFolderPublicPath);
+    }
+    const ws = createWriteStream(
+      path.join(avatarsFolderPublicPath, newAvatarName),
+    );
+    ws.write(file.buffer);
+
+    const avatarUrl = path.join(
+      `http://localhost:3000`,
+      avatarsFolderPath,
+      newAvatarName,
+    );
 
     const newUserData = await this.prisma.user.update({
       where: {
