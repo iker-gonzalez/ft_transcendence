@@ -21,11 +21,10 @@ import { User } from '@prisma/client';
 import { MeDto } from './dto/me.dto';
 import { UsernameDto } from './dto/username.dto';
 import { UserService } from './user.service';
-import { UpdateNameDto } from './dto/update-name.dto';
+import { PatchUserDto } from './dto/patch-user.dto';
 import { swaggerConstants } from '../../config/swagger.constants';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterFileDto } from './dto/multer-file.dto';
-import { UserDto } from './dto/user.dto';
 
 @ApiTags('Users')
 @UseGuards(JwtGuard)
@@ -53,7 +52,7 @@ export class UserController {
   })
   @ApiOkResponse({
     description: swaggerConstants.users.username.ok.description,
-    type: UpdateNameDto,
+    type: PatchUserDto,
   })
   @ApiUnauthorizedResponse({
     description: swaggerConstants.users.username.unauthorized.description,
@@ -65,7 +64,7 @@ export class UserController {
   updateUsername(
     @GetUser() user: User,
     @Body() body: UsernameDto,
-  ): Promise<UpdateNameDto> {
+  ): Promise<PatchUserDto> {
     return this.userService.updateUsername(user, body.username);
   }
 
@@ -74,7 +73,7 @@ export class UserController {
   })
   @ApiOkResponse({
     description: swaggerConstants.users.avatar.ok.description,
-    type: UserDto,
+    type: PatchUserDto,
   })
   @ApiUnauthorizedResponse({
     description: swaggerConstants.users.avatar.unauthorized.description,
@@ -87,7 +86,7 @@ export class UserController {
   updateAvatar(
     @GetUser() user: User,
     @UploadedFile() file: MulterFileDto,
-  ): Promise<UpdateNameDto> {
+  ): Promise<PatchUserDto> {
     return this.userService.updateAvatar(user, file);
   }
 }
