@@ -5,6 +5,8 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { IntraService } from '../src/intra/intra.service';
 import * as pactum from 'pactum';
 import { createUser } from './test.utils';
+import * as fs from 'fs';
+import { cwd } from 'process';
 
 describe('App e2e', () => {
   const port = 3333;
@@ -326,6 +328,48 @@ describe('App e2e', () => {
         });
 
         expect(updatedUser.username).toBe(user.username);
+      });
+    });
+
+    describe('update avatar', () => {
+      it('should update username', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        const FormData = require('form-data-lite');
+        const form = new FormData();
+        form.append('avatar', fs.readFileSync('test/assets/file_example.png'), {
+          filename: 'avatar.png',
+        });
+
+        await pactum
+          .spec()
+          .patch(`/users/avatar`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withMultiPartFormData(form)
+          .expectStatus(200)
+          .expectJsonLike({
+            updated: 1,
+            data: {
+              ...userData,
+              avatar: new RegExp(`^.*${user.username}.png$`),
+            },
+          });
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.avatar).toMatch(
+          new RegExp(`^.*${user.username}.png$`),
+        );
       });
     });
   });
