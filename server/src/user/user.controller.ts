@@ -61,13 +61,12 @@ export class UserController {
   @ApiBadRequestResponse({
     description: swaggerConstants.users.username.bad.description,
   })
-  @Patch(':id/username')
+  @Patch('/username')
   updateUsername(
     @GetUser() user: User,
-    @Param('id') id: string,
     @Body() body: UsernameDto,
   ): Promise<UpdateNameDto> {
-    return this.userService.updateUsername(user, id, body.username);
+    return this.userService.updateUsername(user, body.username);
   }
 
   @ApiOperation({
