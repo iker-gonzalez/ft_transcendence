@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+# Do not ignore this in production
+server/public/uploads/avatars/*
