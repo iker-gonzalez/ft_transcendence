@@ -1,3 +1,3 @@
 cd server
-npm i
+npm i --loglevel verbose
 npm run start:dev
