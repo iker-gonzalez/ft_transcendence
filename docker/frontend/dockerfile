@@ -1,6 +1,7 @@
 FROM node:latest
 
-COPY ./front ./front
+RUN mkdir front
+
 COPY ./docker/frontend/test_script_front.sh ./
 
 CMD ["sh", "test_script_front.sh"]
