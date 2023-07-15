@@ -9,6 +9,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  app.enableCors();
+
   const config: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
     .setTitle(swaggerConfig.title)
     .setDescription(swaggerConfig.description)
