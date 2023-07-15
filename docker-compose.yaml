@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+
+  backend:
+    build: 
+      context: ./
+      dockerfile: ./docker/backend/dockerfile
+    container_name: backend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports: 
+      - 3000:3000
+    networks:
+      - transcendence_network
+
+   
+  frontend:
+    build: 
+      context: ./
+      dockerfile: ./docker/frontend/dockerfile
+    container_name: frontend
+    ports: 
+      - 4200:4200
+    networks:
+      - transcendence_network
+    
+networks:
+  transcendence_network:
