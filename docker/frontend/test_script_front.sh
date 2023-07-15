@@ -1,3 +1,3 @@
 cd front
-npm i
+npm i --loglevel verbose
 npm run start

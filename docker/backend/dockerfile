@@ -2,6 +2,7 @@ FROM node:latest
 
 RUN curl -fsSL https://get.docker.com | sh
 
-COPY . .
+COPY ./docker/backend/test_script_back.sh ./
+COPY ./server ./server
 
-CMD ["bash", "./docker/backend/test_script_back.sh"]
+CMD ["sh", "test_script_back.sh"]
