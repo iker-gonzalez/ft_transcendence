@@ -1,0 +1,7 @@
+FROM node:latest
+
+RUN curl -fsSL https://get.docker.com | sh
+
+COPY . .
+
+CMD ["bash", "./docker/backend/test_script_back.sh"]
