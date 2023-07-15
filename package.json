@@ -8,7 +8,6 @@
   },
   "scripts": {
     "clean": "docker rm backend  -f -v && docker rm frontend -f -v",
-    "prestart": "npm run clean",
     "start": "docker compose -f docker-compose.yaml up -d --build"
   },
   "author": "",

@@ -9,6 +9,7 @@ services:
     container_name: backend
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./server:/server
     ports: 
       - 3000:3000
     networks:
@@ -20,10 +21,11 @@ services:
       context: ./
       dockerfile: ./docker/frontend/dockerfile
     container_name: frontend
+    volumes:
+      - ./front:/front
     ports: 
       - 4200:4200
     networks:
       - transcendence_network
-    
 networks:
   transcendence_network:
