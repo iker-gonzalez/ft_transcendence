@@ -1,7 +1,6 @@
 FROM node:latest
 
-RUN curl -fsSL https://get.docker.com | sh
+COPY ./front ./front
+COPY ./docker/frontend/test_script_front.sh ./
 
-COPY . .
-
-CMD ["bash", "./docker/frontend/test_script_front.sh"]
+CMD ["sh", "test_script_front.sh"]
