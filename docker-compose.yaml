@@ -3,29 +3,54 @@ version: "3.8"
 services:
 
   backend:
-    build: 
+    build:
       context: ./
       dockerfile: ./docker/backend/dockerfile
     container_name: backend
+    depends_on:
+      - dev-db
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./server:/server
-    ports: 
+    ports:
       - 3000:3000
     networks:
-      - transcendence_network
+      - backend_network
 
-   
   frontend:
-    build: 
+    build:
       context: ./
       dockerfile: ./docker/frontend/dockerfile
     container_name: frontend
     volumes:
       - ./front:/front
-    ports: 
+    ports:
       - 4200:4200
     networks:
-      - transcendence_network
+      - frontend_network
+
+  dev-db:
+    image: postgres:latest
+    container_name: dev-db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: $DATABASE_USER
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD
+      POSTGRES_DB: $DATABASE_NAME
+    networks:
+      - backend_network
+  # test-db:
+  #   image: postgres:latest
+  #   ports:
+  #     - 5434:5432
+  #   environment:
+  #     POSTGRES_USER: $DATABASE_USER_TEST
+  #     POSTGRES_PASSWORD: $DATABASE_PASSWORD_TEST
+  #     POSTGRES_DB: $DATABASE_NAME_TEST
+  #   networks:
+  #     - transcendence_network
+
 networks:
-  transcendence_network:
+  frontend_network:
+  backend_network:
