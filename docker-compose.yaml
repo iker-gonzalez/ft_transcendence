@@ -9,6 +9,8 @@ services:
     container_name: backend
     depends_on:
       - dev-db
+    environment:
+      DATABASE_URL: "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@dev-db:${DATABASE_PORT}/${DATABASE_NAME}?schema=public"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./server:/server
