@@ -7,8 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "clean": "docker rm backend  -f -v && docker rm frontend -f -v && docker rm dev-db -f",
-    "stop": "docker stop backend && docker stop frontend && docker stop dev-db",
+    "clean": "docker rm backend  -f -v && docker rm frontend -f -v && docker rm dev-db -f && docker rm prisma-studio -f",
+    "stop": "docker stop backend && docker stop frontend && docker stop dev-db && docker stop prisma-studio",
     "prestart": "npm run stop || true",
     "start": "docker compose -f docker-compose.yaml up -d --build"
   },

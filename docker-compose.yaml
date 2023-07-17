@@ -9,6 +9,8 @@ services:
     container_name: backend
     depends_on:
       - dev-db
+    environment:
+      DATABASE_URL: "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@dev-db:${DATABASE_PORT}/${DATABASE_NAME}?schema=public"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./server:/server
@@ -34,6 +36,8 @@ services:
     container_name: dev-db
     ports:
       - 5432:5432
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: $DATABASE_USER
       POSTGRES_PASSWORD: $DATABASE_PASSWORD
@@ -50,6 +54,23 @@ services:
   #     POSTGRES_DB: $DATABASE_NAME_TEST
   #   networks:
   #     - transcendence_network
+
+  prisma-studio:
+    build:
+      context: ./
+      dockerfile: ./docker/prisma-studio/dockerfile
+    container_name: prisma-studio
+    depends_on:
+      - backend
+    environment:
+      DATABASE_URL: "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@dev-db:${DATABASE_PORT}/${DATABASE_NAME}?schema=public"
+    volumes:
+      - ./server:/server
+    ports:
+      - 5555:5555
+    networks:
+      - backend_network
+    restart: always
 
 networks:
   frontend_network:

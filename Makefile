@@ -6,11 +6,13 @@ clean:
 	docker rm backend  -f -v
 	docker rm frontend -f -v
 	docker rm dev-db -f
+	docker rm prisma-studio -f
 
 stop:
 	docker stop backend || true
 	docker stop frontend || true
 	docker stop dev-db || true
+	docker stop prisma-studio || true
 
 up: stop
 	docker compose -f $(SRCS) up -d --build
