@@ -1,0 +1,6 @@
+FROM node:latest
+
+COPY ./docker/prisma-studio/run.sh ./
+COPY ./db-data/ /var/lib/postgresql/data
+
+CMD ["sh", "run.sh"]
