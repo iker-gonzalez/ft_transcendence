@@ -1,8 +1,5 @@
 FROM node:latest
 
-RUN curl -fsSL https://get.docker.com | sh \
-    && mkdir server
+COPY ./docker/backend/run.sh ./
 
-COPY ./docker/backend/test_script_back.sh ./
-
-CMD ["sh", "test_script_back.sh"]
+CMD ["sh", "run.sh"]
