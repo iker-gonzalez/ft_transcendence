@@ -10,14 +10,28 @@ services:
     depends_on:
       - dev-db
     environment:
-      DATABASE_URL: "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@dev-db:${DATABASE_PORT}/${DATABASE_NAME}?schema=public"
+      DATABASE_URL: "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@dev-db:5432/${DATABASE_NAME}?schema=public"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - ./server:/server
     ports:
       - 3000:3000
     networks:
       - backend_network
+
+  backend-e2e:
+    build:
+      context: ./
+      dockerfile: ./docker/backend-e2e/dockerfile
+    container_name: backend-e2e
+    depends_on:
+      - test-db
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://${DATABASE_USER_TEST}:${DATABASE_PASSWORD_TEST}@test-db:5436/${DATABASE_NAME_TEST}?schema=public"
+    volumes:
+      - ./server:/server
+    networks:
+      - backend_test_network
 
   frontend:
     build:
@@ -47,13 +61,14 @@ services:
     image: postgres:latest
     container_name: test-db
     ports:
-      - 5434:5432
+      - 5436:5436
     environment:
       POSTGRES_USER: $DATABASE_USER_TEST
       POSTGRES_PASSWORD: $DATABASE_PASSWORD_TEST
       POSTGRES_DB: $DATABASE_NAME_TEST
+      PGPORT: 5436
     networks:
-      - backend_network
+      - backend_test_network
 
   prisma-studio:
     build:
@@ -75,3 +90,4 @@ services:
 networks:
   frontend_network:
   backend_network:
+  backend_test_network:
