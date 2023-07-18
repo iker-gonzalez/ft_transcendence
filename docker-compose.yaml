@@ -36,24 +36,24 @@ services:
     container_name: dev-db
     ports:
       - 5432:5432
-    volumes:
-      - ./db-data/:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: $DATABASE_USER
       POSTGRES_PASSWORD: $DATABASE_PASSWORD
       POSTGRES_DB: $DATABASE_NAME
     networks:
       - backend_network
-  # test-db:
-  #   image: postgres:latest
-  #   ports:
-  #     - 5434:5432
-  #   environment:
-  #     POSTGRES_USER: $DATABASE_USER_TEST
-  #     POSTGRES_PASSWORD: $DATABASE_PASSWORD_TEST
-  #     POSTGRES_DB: $DATABASE_NAME_TEST
-  #   networks:
-  #     - transcendence_network
+
+  test-db:
+    image: postgres:latest
+    container_name: test-db
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: $DATABASE_USER_TEST
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD_TEST
+      POSTGRES_DB: $DATABASE_NAME_TEST
+    networks:
+      - backend_network
 
   prisma-studio:
     build:
