@@ -1,0 +1,5 @@
+FROM node:latest
+
+COPY ./docker/backend-e2e/run.sh ./
+
+CMD ["sh", "run.sh"]
