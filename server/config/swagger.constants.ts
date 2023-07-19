@@ -60,6 +60,10 @@ export const swaggerConstants = {
         description: 'State value required by 42 Intra API to prevent CSRF',
         example: 'aC1b4gdseU1ka4VFhYLJqFSEWu1ZFk9A',
       },
+      otpCode: {
+        description: 'OTP code provided by Authenticator',
+        example: '123456',
+      },
     },
     intraUserSignin: {
       intraId: {
