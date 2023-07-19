@@ -15,6 +15,13 @@ export class IntraSigninDto {
   code: string;
 
   @ApiProperty({
+    description: swaggerConstants.dto.intraSignin.otpCode.description,
+    example: swaggerConstants.dto.intraSignin.otpCode.example,
+  })
+  @IsString()
+  otp_code?: string;
+
+  @ApiProperty({
     description: swaggerConstants.dto.intraSignin.state.description,
     example: swaggerConstants.dto.intraSignin.state.example,
   })
