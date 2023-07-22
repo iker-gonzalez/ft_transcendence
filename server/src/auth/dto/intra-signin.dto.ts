@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Matches } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString, Matches } from 'class-validator';
 import { configModuleOptions } from '../../../config/app.config';
 import { swaggerConstants } from '../../../config/swagger.constants';
 
@@ -14,11 +14,12 @@ export class IntraSigninDto {
   @IsString()
   code: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: swaggerConstants.dto.intraSignin.otpCode.description,
     example: swaggerConstants.dto.intraSignin.otpCode.example,
   })
   @IsString()
+  @IsOptional()
   otp_code?: string;
 
   @ApiProperty({
