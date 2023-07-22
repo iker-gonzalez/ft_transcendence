@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IntraService } from '../intra/intra.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -7,6 +11,7 @@ import { User } from '@prisma/client';
 import { SigninResponseDto } from './dto/signin-response';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConfig } from '../../config/jwt.config';
+import { TwoFactorAuthService } from '../two-factor-auth/two-factor-auth.service';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +20,7 @@ export class AuthService {
     private readonly intraService: IntraService,
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly twoFactorAuthService: TwoFactorAuthService,
   ) {}
 
   signToken(userId: string): Promise<string> {
@@ -28,7 +34,11 @@ export class AuthService {
     });
   }
 
-  async signinUser(code: string, state: string): Promise<SigninResponseDto> {
+  async signinUser(
+    code: string,
+    state: string,
+    otp_code?: string,
+  ): Promise<SigninResponseDto> {
     // Check if state value matches
     // Othwerwise, it means that the request is not coming from our app
     if (state !== this.configService.get<string>('INTRA_STATE')) {
@@ -50,6 +60,20 @@ export class AuthService {
     // If user already exists, return it
     if (user) {
       const { id, intraId, username, email, avatar } = user;
+
+      if (user.isTwoFactorAuthEnabled) {
+        const isOtpCodeValid =
+          this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
+            otp_code,
+            user,
+          );
+
+        if (!isOtpCodeValid) {
+          throw new UnauthorizedException(
+            'Invalid two-factor authentication code',
+          );
+        }
+      }
 
       const response: SigninResponseDto = {
         created: 0,
