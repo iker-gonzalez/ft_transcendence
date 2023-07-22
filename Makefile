@@ -20,3 +20,6 @@ stop:
 
 up: stop
 	docker compose -f $(SRCS) up -d --build
+
+up-build: stop
+	docker-compose up --build
