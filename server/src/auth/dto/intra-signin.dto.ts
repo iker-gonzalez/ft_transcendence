@@ -20,7 +20,7 @@ export class IntraSigninDto {
   })
   @IsString()
   @IsOptional()
-  otp_code?: string;
+  otp?: string;
 
   @ApiProperty({
     description: swaggerConstants.dto.intraSignin.state.description,

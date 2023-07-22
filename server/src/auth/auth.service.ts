@@ -37,7 +37,7 @@ export class AuthService {
   async signinUser(
     code: string,
     state: string,
-    otp_code?: string,
+    otp?: string,
   ): Promise<SigninResponseDto> {
     // Check if state value matches
     // Othwerwise, it means that the request is not coming from our app
@@ -64,7 +64,7 @@ export class AuthService {
       if (user.isTwoFactorAuthEnabled) {
         const isOtpCodeValid =
           this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
-            otp_code,
+            otp,
             user,
           );
 
