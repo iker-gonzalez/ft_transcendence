@@ -6,6 +6,7 @@ import { IntraService } from '../src/intra/intra.service';
 import * as pactum from 'pactum';
 import { createUser } from './test.utils';
 import * as fs from 'fs';
+import { TwoFactorAuthService } from '../src/two-factor-auth/two-factor-auth.service';
 
 describe('App e2e', () => {
   const port = 3333;
@@ -14,6 +15,7 @@ describe('App e2e', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let intraService: IntraService;
+  let twoFactorAuthService: TwoFactorAuthService;
 
   const userData = {
     intraId: 88103,
@@ -43,6 +45,7 @@ describe('App e2e', () => {
 
     prisma = app.get(PrismaService);
     intraService = app.get(IntraService);
+    twoFactorAuthService = app.get(TwoFactorAuthService);
 
     pactum.request.setBaseUrl(baseUrl);
   });
@@ -63,7 +66,7 @@ describe('App e2e', () => {
 
   describe('Auth', () => {
     describe('signin', () => {
-      it('should sign in user', async () => {
+      it('should sign up user', async () => {
         jest
           .spyOn(intraService, 'getIntraUserToken')
           .mockImplementation(async (code: string): Promise<string> => {
@@ -96,6 +99,84 @@ describe('App e2e', () => {
           where: { intraId: userData.intraId },
         });
         expect(user).not.toBeNull();
+      });
+
+      it('should sign in user', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        jest
+          .spyOn(intraService, 'getIntraUserToken')
+          .mockImplementation(async (): Promise<string> => {
+            return Promise.resolve(intraUserToken);
+          });
+
+        jest
+          .spyOn(intraService, 'getIntraUserInfo')
+          .mockImplementation(async (): Promise<any> => {
+            return Promise.resolve(userData);
+          });
+
+        const reqBody = {
+          code: intraUserToken,
+          state: process.env.INTRA_STATE,
+        };
+
+        await pactum
+          .spec()
+          .post('/auth/intra/signin')
+          .withBody(reqBody)
+          .expectStatus(200)
+          .expectJsonLike({
+            created: 0,
+            access_token: /.*/,
+            data: userData,
+          });
+      });
+
+      it('should sign in user with OTP', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            isTwoFactorAuthEnabled: true,
+          },
+        });
+
+        jest
+          .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
+          .mockImplementation((): boolean => {
+            return true;
+          });
+
+        const reqBody = {
+          code: intraUserToken,
+          state: process.env.INTRA_STATE,
+          otp: '123456',
+        };
+
+        await pactum
+          .spec()
+          .post('/auth/intra/signin')
+          .withBody(reqBody)
+          .expectStatus(200)
+          .expectJsonLike({
+            created: 0,
+            access_token: /.*/,
+            data: userData,
+          });
       });
 
       it('should return 400 if state is not valid', async () => {
@@ -136,6 +217,79 @@ describe('App e2e', () => {
         const user = await prisma.user.findMany({});
         expect(user).toHaveLength(0);
       });
+
+      it('should return 401 if OTP is not valid', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            isTwoFactorAuthEnabled: true,
+          },
+        });
+
+        jest
+          .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
+          .mockImplementation((): boolean => {
+            return false;
+          });
+
+        const reqBody = {
+          code: intraUserToken,
+          state: process.env.INTRA_STATE,
+          otp: '123456',
+        };
+
+        await pactum
+          .spec()
+          .post('/auth/intra/signin')
+          .withBody(reqBody)
+          .expectStatus(401);
+      });
+    });
+  });
+
+  describe('2FA', () => {
+    it('it should activate 2FA', async () => {
+      // Create user first
+      const user = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData,
+      );
+
+      jest
+        .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
+        .mockImplementation((): boolean => {
+          return true;
+        });
+
+      const reqBody = {
+        otp: '123456',
+      };
+
+      await pactum
+        .spec()
+        .post('/2fa/activate')
+        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+        .withBody(reqBody)
+        .expectStatus(200)
+        .expectJson({
+          updated: 1,
+        });
+
+      const updatedUser = await prisma.user.findUnique({
+        where: { id: user.id },
+      });
+
+      expect(updatedUser.isTwoFactorAuthEnabled).toBe(true);
     });
   });
 
