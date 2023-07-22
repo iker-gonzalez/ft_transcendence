@@ -7,6 +7,7 @@ import * as pactum from 'pactum';
 import { createUser } from './test.utils';
 import * as fs from 'fs';
 import { TwoFactorAuthService } from '../src/two-factor-auth/two-factor-auth.service';
+import { testUserData } from '../config/app.constants';
 
 describe('App e2e', () => {
   const port = 3333;
@@ -251,6 +252,88 @@ describe('App e2e', () => {
           .post('/auth/intra/signin')
           .withBody(reqBody)
           .expectStatus(401);
+      });
+    });
+
+    describe('test user', () => {
+      const currentTestUserData = testUserData;
+      const testUserCode = process.env.FAKE_USER_CODE;
+
+      it('should sign up test user', async () => {
+        const reqBody = {
+          code: testUserCode,
+          state: process.env.INTRA_STATE,
+        };
+
+        await pactum
+          .spec()
+          .post('/auth/intra/signin')
+          .withBody(reqBody)
+          .expectStatus(200)
+          .expectJsonLike({
+            created: 1,
+            access_token: /.*/,
+            data: currentTestUserData,
+          });
+
+        const user = await prisma.user.findUnique({
+          where: { intraId: currentTestUserData.intraId },
+        });
+        expect(user).not.toBeNull();
+      });
+
+      it('should sign in user', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          testUserData,
+        );
+
+        const reqBody = {
+          code: testUserCode,
+          state: process.env.INTRA_STATE,
+        };
+
+        await pactum
+          .spec()
+          .post('/auth/intra/signin')
+          .withBody(reqBody)
+          .expectStatus(200)
+          .expectJsonLike({
+            created: 0,
+            access_token: /.*/,
+            data: currentTestUserData,
+          });
+      });
+
+      it('should sign in user with OTP', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          testUserData,
+        );
+
+        const reqBody = {
+          code: testUserCode,
+          state: process.env.INTRA_STATE,
+          otp: '999999',
+        };
+
+
+        await pactum
+          .spec()
+          .post('/auth/intra/signin')
+          .withBody(reqBody)
+          .expectStatus(200)
+          .expectJsonLike({
+            created: 0,
+            access_token: /.*/,
+            data: currentTestUserData,
+          });
       });
     });
   });
