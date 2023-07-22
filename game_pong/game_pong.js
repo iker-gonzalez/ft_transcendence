@@ -117,6 +117,22 @@ function getMousePos(event)
     }
 }
 
+canvas.addEventListener("touchmove", getTouchPos);
+
+function getTouchPos(event) 
+{
+    let rect = canvas.getBoundingClientRect();
+    user1.y = event.clientY - rect.top - user1.height / 2;
+    if (user1.y < thickness + ball.radius * slit) 
+    {
+        user1.y = thickness + ball.radius * slit;
+    }
+    else if (user1.y > canvas.height - thickness - user1.height - ball.radius * slit) 
+    {
+        user1.y = canvas.height - thickness - user1.height - ball.radius * slit;
+    }
+}
+
 function resetBall() 
 {
     ball.reset = true;
