@@ -5,18 +5,18 @@ let userSpeedInput = 10;
 
 let thickness = 10;
 let slit = 3;
-let match_points = 500;
+let match_points = 5;
 let match_finish = false;
 
 let hit = new Audio();
 let wall = new Audio();
 let userScore = new Audio();
-let comScore = new Audio();
+let botScore = new Audio();
 
 hit.src = 'sounds/hit.wav';
 wall.src = 'sounds/punch.wav';
-comScore.src = 'sounds/goal.wav';
 userScore.src = 'sounds/strike.wav';
+botScore.src = 'sounds/goal.wav';
 
 const ball = 
 {
@@ -32,7 +32,7 @@ const ball =
 
 const user1 = 
 {
-    x: 10, 
+    x: 30, 
     y: (canvas_game.height / 2) - (100 / 2),
     width: 10,
     height: 100,
@@ -42,7 +42,7 @@ const user1 =
 
 const user2 =
 {
-    x: canvas_game.width - 20,
+    x: canvas_game.width - 40,
     y: (canvas_game.height / 2) - (100 / 2),
     width: 10,
     height: 100,
@@ -52,7 +52,7 @@ const user2 =
 
 const bot = 
 {
-    x: canvas_game.width - 20, 
+    x: canvas_game.width - 40, 
     y: (canvas_game.height / 2) - (100 / 2),
     width: 10,
     height: 100,
@@ -130,12 +130,11 @@ function getMousePos(event)
     }
 }
 
-canvas_game.addEventListener('touchmove', getTouchPos);
+canvas_game.addEventListener('touchmove', getTouchPos, true);
 
 function getTouchPos(event) 
 {
-    let rect = canvas_sidebar.getBoundingClientRect();
-    user1.y = event.clientY - rect.top - user1.height / 2;
+    user1.y = event.clientY - user1.height / 2;
     if (user1.y < thickness + ball.radius * slit) 
     {
         user1.y = thickness + ball.radius * slit;
