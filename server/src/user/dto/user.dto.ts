@@ -22,6 +22,19 @@ export class UserDto implements User {
   updatedAt: Date;
 
   @ApiProperty({
+    description: swaggerConstants.dto.userDto.twoFactorAuthSecret.description,
+    example: swaggerConstants.dto.userDto.twoFactorAuthSecret.example,
+  })
+  twoFactorAuthSecret: string;
+
+  @ApiProperty({
+    description:
+      swaggerConstants.dto.userDto.isTwoFactorAuthEnabled.description,
+    example: swaggerConstants.dto.userDto.isTwoFactorAuthEnabled.example,
+  })
+  isTwoFactorAuthEnabled: boolean;
+
+  @ApiProperty({
     description: swaggerConstants.dto.intraUserSignin.intraId.description,
     example: swaggerConstants.dto.intraUserSignin.intraId.example,
   })

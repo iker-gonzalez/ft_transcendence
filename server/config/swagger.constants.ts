@@ -10,11 +10,37 @@ export const swaggerConstants = {
       bad: {
         description: 'State value does not match or provided code is invalid.',
       },
+      unauthorized: {
+        description: 'OTP code is invalid.',
+      },
+    },
+  },
+  twofa: {
+    generate: {
+      summary: 'Generate QR code for 2FA. It can be used to add authenticator.',
+      ok: {
+        description: 'Returns QR code to add authenticator.',
+      },
+      unauthorized: {
+        description: 'JWT token is invalid or expired.',
+      },
+    },
+    activate: {
+      summary: 'Activate 2FA on user profile. Receives OTP code as input.',
+      ok: {
+        description: 'Returns updated user data.',
+      },
+      unauthorized: {
+        description: 'JWT token is invalid or expired or OTP code is invalid.',
+      },
+      bad: {
+        description: 'OTP code is invalid.',
+      },
     },
   },
   users: {
     me: {
-      summary: 'Retrieve user data from database.',
+      summary: 'Retrieve current user data from database.',
       ok: {
         description: 'Returns user data from database.',
       },
@@ -36,7 +62,8 @@ export const swaggerConstants = {
       },
     },
     avatar: {
-      summary: 'Update avatar.',
+      summary:
+        'Update avatar. Receives file as input. Avatar is then stored in the server storage and its URL is stored in the database.',
       ok: {
         description: 'Returns updated user data.',
       },
@@ -83,6 +110,18 @@ export const swaggerConstants = {
         example: 'https://cdn.intra.42.fr/users/jdoe.jpg',
       },
     },
+    activateOtp: {
+      otpCode: {
+        description: 'OTP code provided by Authenticator',
+        example: '123456',
+      },
+    },
+    activateOtpResponse: {
+      updated: {
+        description: 'Number of updated resources',
+        example: 1,
+      },
+    },
     signinResponse: {
       created: {
         description: 'Number of created resources',
@@ -95,6 +134,17 @@ export const swaggerConstants = {
       },
       data: {
         description: 'User data from database',
+      },
+    },
+    twoFactorSecret: {
+      secret: {
+        description: 'Secret key for 2FA',
+        example: 'JBSWY3DPEHPK3PXP',
+      },
+      otpauthUrl: {
+        description: 'URL to add authenticator',
+        example:
+          'otpauth://totp/2FA%20Example:jdoe%40student.42urduliz.com?secret=JBSWY3DPEHPK3PXP&issuer=2FA%20Example',
       },
     },
     updateName: {
@@ -118,6 +168,14 @@ export const swaggerConstants = {
       updatedAt: {
         description: 'Profile last update date',
         example: new Date(),
+      },
+      twoFactorAuthSecret: {
+        description: 'User 2FA secret',
+        example: 'JBSWY3DPEHPK3PXP',
+      },
+      isTwoFactorAuthEnabled: {
+        description: 'User 2FA enabled',
+        example: true,
       },
     },
     avatarDto: {

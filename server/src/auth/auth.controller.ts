@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { IntraSigninDto } from './dto/intra-signin.dto';
 import { SigninResponseDto } from './dto/signin-response';
@@ -14,6 +7,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { swaggerConstants } from '../../config/swagger.constants';
 
@@ -33,11 +27,14 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: swaggerConstants.auth.signin.bad.description,
   })
+  @ApiUnauthorizedResponse({
+    description: swaggerConstants.auth.signin.unauthorized.description,
+  })
   @HttpCode(HttpStatus.OK)
   signinUser(
     @Body() intraSigninDto: IntraSigninDto,
   ): Promise<SigninResponseDto> {
-    let { code, state } = intraSigninDto;
-    return this.authService.signinUser(code, state);
+    let { code, state, otp_code } = intraSigninDto;
+    return this.authService.signinUser(code, state, otp_code);
   }
 }
