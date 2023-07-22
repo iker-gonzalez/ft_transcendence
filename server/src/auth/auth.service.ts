@@ -12,6 +12,7 @@ import { SigninResponseDto } from './dto/signin-response';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConfig } from '../../config/jwt.config';
 import { TwoFactorAuthService } from '../two-factor-auth/two-factor-auth.service';
+import { testUserData } from '../../config/app.constants';
 
 @Injectable()
 export class AuthService {
@@ -22,17 +23,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly twoFactorAuthService: TwoFactorAuthService,
   ) {}
-
-  signToken(userId: string): Promise<string> {
-    const payload = {
-      sub: userId,
-    };
-
-    return this.jwtService.signAsync(payload, {
-      expiresIn: jwtConfig.expiration,
-      secret: this.configService.get('JWT_SECRET'),
-    });
-  }
 
   async signinUser(
     code: string,
@@ -45,13 +35,17 @@ export class AuthService {
       throw new BadRequestException('State value does not match');
     }
 
-    // Get Intra User Token
-    const token: string = await this.intraService.getIntraUserToken(code);
+    let userData: IntraUserDataDto;
 
-    // Fetch user data from Intra API
-    const userData: IntraUserDataDto = await this.intraService.getIntraUserInfo(
-      token,
-    );
+    if (this._isTestUser(code)) {
+      userData = testUserData;
+    } else {
+      // Get Intra User Token
+      const token: string = await this.intraService.getIntraUserToken(code);
+
+      // Fetch user data from Intra API
+      userData = await this.intraService.getIntraUserInfo(token);
+    }
 
     const user: User = await this.prisma.user.findUnique({
       where: { intraId: userData.intraId },
@@ -61,7 +55,7 @@ export class AuthService {
     if (user) {
       const { id, intraId, username, email, avatar } = user;
 
-      if (user.isTwoFactorAuthEnabled) {
+      if (user.isTwoFactorAuthEnabled && !this._isTestUser(code)) {
         const isOtpCodeValid =
           this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
             otp,
@@ -77,7 +71,7 @@ export class AuthService {
 
       const response: SigninResponseDto = {
         created: 0,
-        access_token: await this.signToken(id),
+        access_token: await this._signToken(id),
         data: {
           intraId,
           username,
@@ -96,9 +90,24 @@ export class AuthService {
     const { id, intraId, username, email, avatar } = newUser;
     const response: SigninResponseDto = {
       created: 1,
-      access_token: await this.signToken(id),
+      access_token: await this._signToken(id),
       data: { intraId, username, email, avatar },
     };
     return response;
+  }
+
+  _signToken(userId: string): Promise<string> {
+    const payload = {
+      sub: userId,
+    };
+
+    return this.jwtService.signAsync(payload, {
+      expiresIn: jwtConfig.expiration,
+      secret: this.configService.get('JWT_SECRET'),
+    });
+  }
+
+  _isTestUser(code: string): boolean {
+    return code === this.configService.get<string>('FAKE_USER_CODE');
   }
 }
