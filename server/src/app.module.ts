@@ -7,6 +7,7 @@ import { IntraService } from './intra/intra.service';
 import { IntraModule } from './intra/intra.module';
 import { UserModule } from './user/user.module';
 import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
     IntraModule,
     UserModule,
     TwoFactorAuthModule,
+    GameModule,
   ],
   providers: [IntraService],
 })

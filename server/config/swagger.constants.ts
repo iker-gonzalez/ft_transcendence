@@ -76,6 +76,19 @@ export const swaggerConstants = {
       },
     },
   },
+  game: {
+    sessions: {
+      new: {
+        summary: 'Create  new game session.',
+        created: {
+          description: 'Returns newly created game session.',
+        },
+        bad: {
+          description: 'Number of players is not valid.',
+        },
+      },
+    },
+  },
   dto: {
     intraSignin: {
       code: {
@@ -182,6 +195,37 @@ export const swaggerConstants = {
       avatar: {
         description: 'File uploaded by user.',
         example: 'avatar.jpg',
+      },
+    },
+    newSessionResponseDto: {
+      created: {
+        description: 'Number of created sessions',
+        example: 1,
+      },
+      data: {
+        description: 'Session data',
+      },
+    },
+    newSessionDto: {
+      players: {
+        description: 'Number of players.',
+        example: 2,
+      },
+    },
+    newPlayerDto: {
+      id: {
+        description: 'Player ID',
+        example: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+      },
+    },
+    sessionResponseDto: {
+      id: {
+        description: 'Session ID',
+        example: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+      },
+      players: {
+        description: 'Number of players.',
+        example: 2,
       },
     },
   },
