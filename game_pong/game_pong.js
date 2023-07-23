@@ -1,11 +1,11 @@
-const canvas = document.getElementById('game');
+const canvas = document.getElementById('gamePong');
 const ctx = canvas.getContext('2d');
 
 let userSpeedInput = 10;
 
 let thickness = 10;
 let slit = 3;
-let match_points = 5;
+let match_points = 500;
 let match_finish = false;
 
 let hit = new Audio();
