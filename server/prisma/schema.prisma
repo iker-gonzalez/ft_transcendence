@@ -23,3 +23,20 @@ model User {
   avatar   String
   email    String @unique
 }
+
+model GameSession {
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  players GameSessionPlayer[]
+}
+
+model GameSessionPlayer {
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  GameSession   GameSession? @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+  gameSessionId String?
+}
