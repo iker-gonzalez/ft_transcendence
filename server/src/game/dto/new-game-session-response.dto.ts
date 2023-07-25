@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsUUID, Max, Min } from 'class-validator';
 import { swaggerConstants } from '../../../config/swagger.constants';
-import { GameBall } from '@prisma/client';
+import { GameBall, GamePlayer } from '@prisma/client';
 
 export class GameSessionDto {
   @ApiProperty({
@@ -16,6 +16,12 @@ export class GameSessionDto {
     example: swaggerConstants.dto.sessionResponseDto.ball.example,
   })
   ball: GameBall;
+
+  @ApiProperty({
+    description: swaggerConstants.dto.sessionResponseDto.players.description,
+    example: swaggerConstants.dto.sessionResponseDto.players.example,
+  })
+  players: GamePlayer[];
 }
 
 export class NewGameSessionResponseDto {

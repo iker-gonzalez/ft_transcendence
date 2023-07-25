@@ -9,4 +9,18 @@ export class NewGameSessionBodyDto {
   })
   @IsString()
   ball: string;
+
+  @ApiProperty({
+    description: swaggerConstants.dto.newSessionDto.player1.description,
+    example: swaggerConstants.dto.newSessionDto.player1.example,
+  })
+  @IsString()
+  player1: string;
+
+  @ApiProperty({
+    description: swaggerConstants.dto.newSessionDto.player2.description,
+    example: swaggerConstants.dto.newSessionDto.player2.example,
+  })
+  @IsString()
+  player2: string;
 }

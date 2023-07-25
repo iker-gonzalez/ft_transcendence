@@ -29,23 +29,12 @@ model GameSession {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  players GameSessionPlayer[]
   ball    GameBall?
-}
-
-model GameSessionPlayer {
-  id        String   @id @unique @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  GameSession   GameSession? @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
-  gameSessionId String?
+  players GamePlayer[]
 }
 
 model GameBall {
-  id        String   @id @unique @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id String @id @unique @default(uuid())
 
   x         Int           @default(0)
   y         Int           @default(0)
@@ -58,6 +47,21 @@ model GameBall {
 
   GameSession   GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
   gameSessionId String      @unique
+}
+
+model GamePlayer {
+  id    String @id @unique @default(uuid())
+  index Int    @default(0)
+
+  x      Int           @default(0)
+  y      Int           @default(0)
+  width  Int           @default(0)
+  height Int           @default(0)
+  score  Int           @default(0)
+  color  GameBallColor @default(WHITE)
+
+  GameSession   GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+  gameSessionId String
 }
 
 enum GameBallColor {
