@@ -8,7 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { swaggerConstants } from '../../config/swagger.constants';
 import { NewGameSessionResponseDto } from './dto/new-game-session-response.dto';
-import { GameBall } from '@prisma/client';
+import { GameBall, GamePlayer } from '@prisma/client';
 import { NewGameSessionBodyDto } from './dto/new-game-session-body.dto';
 
 @ApiTags('Game')
@@ -31,12 +31,17 @@ export class GameController {
     @Body() newGameSessionDto: NewGameSessionBodyDto,
   ): Promise<NewGameSessionResponseDto> {
     let ball: GameBall;
+    let player1: GamePlayer;
+    let player2: GamePlayer;
+
     try {
       ball = JSON.parse(newGameSessionDto.ball);
+      player1 = JSON.parse(newGameSessionDto.player1);
+      player2 = JSON.parse(newGameSessionDto.player2);
     } catch (e) {
-      throw new BadRequestException('Invalid ball data');
+      throw new BadRequestException('Invalid data');
     }
 
-    return this.gameService.createNewSession(ball);
+    return this.gameService.createNewSession(ball, player1, player2);
   }
 }
