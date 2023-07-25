@@ -1,16 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, Max, Min } from 'class-validator';
 import { swaggerConstants } from '../../../config/swagger.constants';
-import { Type } from 'class-transformer';
+import { IsString } from 'class-validator';
 
 export class NewGameSessionBodyDto {
   @ApiProperty({
-    description: swaggerConstants.dto.newSessionDto.players.description,
-    example: swaggerConstants.dto.newSessionDto.players.example,
+    description: swaggerConstants.dto.newSessionDto.ball.description,
+    example: swaggerConstants.dto.newSessionDto.ball.example,
   })
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(2)
-  players: number;
+  @IsString()
+  ball: string;
 }

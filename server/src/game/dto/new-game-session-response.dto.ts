@@ -1,6 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsUUID, Max, Min } from 'class-validator';
 import { swaggerConstants } from '../../../config/swagger.constants';
+import { GameBall } from '@prisma/client';
+
+export class GameSessionDto {
+  @ApiProperty({
+    description: swaggerConstants.dto.sessionResponseDto.id.description,
+    example: swaggerConstants.dto.sessionResponseDto.id.example,
+  })
+  @IsUUID()
+  id: string;
+
+  @ApiProperty({
+    description: swaggerConstants.dto.sessionResponseDto.ball.description,
+    example: swaggerConstants.dto.sessionResponseDto.ball.example,
+  })
+  ball: GameBall;
+}
 
 export class NewGameSessionResponseDto {
   @ApiProperty({
@@ -16,22 +32,4 @@ export class NewGameSessionResponseDto {
     description: swaggerConstants.dto.newSessionResponseDto.data.description,
   })
   data: GameSessionDto;
-}
-
-export class GameSessionDto {
-  @ApiProperty({
-    description: swaggerConstants.dto.sessionResponseDto.id.description,
-    example: swaggerConstants.dto.sessionResponseDto.id.example,
-  })
-  @IsUUID()
-  id: string;
-
-  @ApiProperty({
-    description: swaggerConstants.dto.sessionResponseDto.players.description,
-    example: swaggerConstants.dto.sessionResponseDto.players.example,
-  })
-  @IsInt()
-  @Min(0)
-  @Max(2)
-  players: number;
 }
