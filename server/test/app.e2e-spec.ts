@@ -730,83 +730,39 @@ describe('App e2e', () => {
     const uuidRegex =
       /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
     describe('sessions', () => {
-      it('should create a new session with 1 player', async () => {
+      it('should create a new session with a ball', async () => {
+        const ball = {
+          x: 10 / 2,
+          y: 10 / 2,
+          radius: 10,
+          velocityX: 5,
+          velocityY: 5,
+          speed: 20,
+          color: 'WHITE',
+          reset: false,
+        };
+
         await pactum
           .spec()
           .post('/game/sessions/new')
           .withBody({
-            players: 1,
+            ball: JSON.stringify(ball),
           })
           .expectStatus(201)
           .expectJsonLike({
             created: 1,
             data: {
               id: uuidRegex,
-              players: 1,
+              ball: {
+                createdAt: /.*/,
+                updatedAt: /.*/,
+                ...ball,
+              },
             },
           });
 
         const sessions = await prisma.gameSession.findMany({});
         expect(sessions).toHaveLength(1);
-      });
-
-      it('should create a new session with 2 players', async () => {
-        await pactum
-          .spec()
-          .post('/game/sessions/new')
-          .withBody({
-            players: 2,
-          })
-          .expectStatus(201)
-          .expectJsonLike({
-            created: 1,
-            data: {
-              id: uuidRegex,
-              players: 2,
-            },
-          });
-
-        const sessions = await prisma.gameSession.findMany({});
-        expect(sessions).toHaveLength(1);
-      });
-
-      it('should return 400 if number of player is 0', async () => {
-        await pactum
-          .spec()
-          .post('/game/sessions/new')
-          .withBody({
-            players: 0,
-          })
-          .expectStatus(400);
-
-        const sessions = await prisma.gameSession.findMany({});
-        expect(sessions).toHaveLength(0);
-      });
-
-      it('should return 400 if number of player is above 2', async () => {
-        await pactum
-          .spec()
-          .post('/game/sessions/new')
-          .withBody({
-            players: 3,
-          })
-          .expectStatus(400);
-
-        const sessions = await prisma.gameSession.findMany({});
-        expect(sessions).toHaveLength(0);
-      });
-
-      it('should return 400 if number of player is not int', async () => {
-        await pactum
-          .spec()
-          .post('/game/sessions/new')
-          .withBody({
-            players: 1.5,
-          })
-          .expectStatus(400);
-
-        const sessions = await prisma.gameSession.findMany({});
-        expect(sessions).toHaveLength(0);
       });
     });
   });
