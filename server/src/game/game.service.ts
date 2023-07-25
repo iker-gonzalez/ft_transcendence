@@ -1,24 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NewGameSessionResponseDto } from './dto/new-game-session-response.dto';
+import { GameBall } from '@prisma/client';
 
 @Injectable()
 export class GameService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createNewSession(
-    numOfPlayers: number,
-  ): Promise<NewGameSessionResponseDto> {
+  async createNewSession(ball: GameBall): Promise<NewGameSessionResponseDto> {
     const session = await this.prisma.gameSession.create({
       data: {
-        players: {
-          createMany: {
-            data: Array(numOfPlayers).fill({}),
-          },
+        ball: {
+          create: ball,
         },
       },
       include: {
-        players: true,
+        ball: true,
       },
     });
 
@@ -26,7 +23,7 @@ export class GameService {
       created: 1,
       data: {
         id: session.id,
-        players: session.players.length,
+        ball: session.ball,
       },
     };
   }

@@ -84,7 +84,7 @@ export const swaggerConstants = {
           description: 'Returns newly created game session.',
         },
         bad: {
-          description: 'Number of players is not valid.',
+          description: 'Ball data is not valid.',
         },
       },
     },
@@ -207,9 +207,10 @@ export const swaggerConstants = {
       },
     },
     newSessionDto: {
-      players: {
-        description: 'Number of players.',
-        example: 2,
+      ball: {
+        description: 'Stringified ball data',
+        example:
+          '{"x":5,"y":5,"radius":10,"velocityX":5,"velocityY":5,"speed":20,"color":"WHITE","reset":false}',
       },
     },
     newPlayerDto: {
@@ -226,6 +227,23 @@ export const swaggerConstants = {
       players: {
         description: 'Number of players.',
         example: 2,
+      },
+      ball: {
+        description: 'Ball data',
+        example: {
+          id: 'f71f637b-3dc8-4b83-9da5-c851dad90321',
+          createdAt: '2023-07-25T05:21:18.503Z',
+          updatedAt: '2023-07-25T05:21:18.503Z',
+          x: 5,
+          y: 5,
+          radius: 10,
+          velocityX: 5,
+          velocityY: 5,
+          speed: 20,
+          color: 'WHITE',
+          reset: false,
+          gameSessionId: 'c4da907a-b7b5-4f78-9a59-6a1a0f636dfe',
+        },
       },
     },
   },
