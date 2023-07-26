@@ -729,40 +729,74 @@ describe('App e2e', () => {
   describe('Game', () => {
     const uuidRegex =
       /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
+
+    const ball = {
+      x: 10 / 2,
+      y: 10 / 2,
+      radius: 10,
+      velocityX: 5,
+      velocityY: 5,
+      speed: 20,
+      color: 'WHITE',
+      reset: false,
+    };
+
+    const player1 = {
+      x: 30,
+      y: 100,
+      width: 10,
+      height: 100,
+      score: 0,
+      color: 'WHITE',
+    };
+
+    const player2 = {
+      x: 120,
+      y: 10,
+      width: 10,
+      height: 100,
+      score: 200,
+      color: 'WHITE',
+    };
+
     describe('sessions', () => {
-      it('should create a new session with a ball', async () => {
-        const ball = {
-          x: 10 / 2,
-          y: 10 / 2,
-          radius: 10,
-          velocityX: 5,
-          velocityY: 5,
-          speed: 20,
-          color: 'WHITE',
-          reset: false,
-        };
-
-        await pactum
-          .spec()
-          .post('/game/sessions/new')
-          .withBody({
-            ball: JSON.stringify(ball),
-          })
-          .expectStatus(201)
-          .expectJsonLike({
-            created: 1,
-            data: {
-              id: uuidRegex,
-              ball: {
-                createdAt: /.*/,
-                updatedAt: /.*/,
-                ...ball,
+      describe('new', () => {
+        it('should create a new session', async () => {
+          await pactum
+            .spec()
+            .post('/game/sessions/new')
+            .withBody({
+              ball: JSON.stringify(ball),
+              player1: JSON.stringify(player1),
+              player2: JSON.stringify(player2),
+            })
+            .expectStatus(201)
+            .expectJsonLike({
+              created: 1,
+              data: {
+                id: uuidRegex,
+                ball,
+                players: [player1, player2],
               },
-            },
-          });
+            });
 
-        const sessions = await prisma.gameSession.findMany({});
-        expect(sessions).toHaveLength(1);
+          const sessions = await prisma.gameSession.findMany({});
+          expect(sessions).toHaveLength(1);
+
+          const players = await prisma.gamePlayer.findMany({});
+          expect(players).toHaveLength(2);
+        });
+
+        it('should return 400 if second player is not provided', async () => {
+          await pactum
+            .spec()
+            .post('/game/sessions/new')
+            .withBody({
+              ball: JSON.stringify(ball),
+              player1: JSON.stringify(player1),
+            })
+            .expectStatus(400);
+        });
       });
     });
   });
