@@ -1,8 +1,19 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { GameService } from './game.service';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -10,6 +21,7 @@ import { swaggerConstants } from '../../config/swagger.constants';
 import { NewGameSessionResponseDto } from './dto/new-game-session-response.dto';
 import { GameBall, GamePlayer } from '@prisma/client';
 import { NewGameSessionBodyDto } from './dto/new-game-session-body.dto';
+import { FoundGameSessionDto } from './dto/found-game-session.dto';
 
 @ApiTags('Game')
 @Controller('game/sessions')
@@ -43,5 +55,23 @@ export class GameController {
     }
 
     return this.gameService.createNewSession(ball, player1, player2);
+  }
+
+  @Get(':sessionId')
+  @ApiOperation({
+    summary: swaggerConstants.game.sessions.session.summary,
+  })
+  @ApiOkResponse({
+    description: swaggerConstants.game.sessions.session.ok.description,
+    type: FoundGameSessionDto,
+  })
+  @ApiNotFoundResponse({
+    description: swaggerConstants.game.sessions.session.notFound.description,
+  })
+  @HttpCode(HttpStatus.OK)
+  getSession(
+    @Param('sessionId') sessionId: string,
+  ): Promise<FoundGameSessionDto> {
+    return this.gameService.getSession(sessionId);
   }
 }
