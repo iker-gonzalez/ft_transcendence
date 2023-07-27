@@ -79,12 +79,21 @@ export const swaggerConstants = {
   game: {
     sessions: {
       new: {
-        summary: 'Create  new game session.',
+        summary: 'Create new game session.',
         created: {
           description: 'Returns newly created game session.',
         },
         bad: {
           description: 'Data is not valid.',
+        },
+      },
+      session: {
+        summary: 'Retrieve an existing game session.',
+        ok: {
+          description: 'Returns game session.',
+        },
+        notFound: {
+          description: 'Game session not found.',
         },
       },
     },
@@ -221,6 +230,15 @@ export const swaggerConstants = {
         description: 'Player 2 data',
         example:
           '{"x":560,"y":100,"width":10,"height":100,"score":0,"color":"WHITE"}',
+      },
+    },
+    foundSessionDto: {
+      found: {
+        description: 'Number of found sessions',
+        example: 1,
+      },
+      data: {
+        description: 'Session data',
       },
     },
     newPlayerDto: {
