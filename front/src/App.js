@@ -7,15 +7,16 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Welcome to <code>ft_transcendence</code>project made by<br />
+          @ikgonzal<br /> @ngasco<br />@zcanales<br />@dwergig
         </p>
         <a
           className="App-link"
-          href="https://reactjs.org"
+          href="https://github.com/iker-gonzalez/ft_transcendence"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Go to source code
         </a>
       </header>
     </div>
