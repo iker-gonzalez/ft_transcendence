@@ -4,10 +4,11 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { IntraService } from '../src/intra/intra.service';
 import * as pactum from 'pactum';
-import { createUser } from './test.utils';
+import { createGameSession, createUser } from './test.utils';
 import * as fs from 'fs';
 import { TwoFactorAuthService } from '../src/two-factor-auth/two-factor-auth.service';
 import { testUserData } from '../config/app.constants';
+import { GameSession } from '@prisma/client';
 
 describe('App e2e', () => {
   const port = 3333;
@@ -748,6 +749,7 @@ describe('App e2e', () => {
       height: 100,
       score: 0,
       color: 'WHITE',
+      index: 0,
     };
 
     const player2 = {
@@ -757,6 +759,7 @@ describe('App e2e', () => {
       height: 100,
       score: 200,
       color: 'WHITE',
+      index: 1,
     };
 
     describe('sessions', () => {
@@ -796,6 +799,37 @@ describe('App e2e', () => {
               player1: JSON.stringify(player1),
             })
             .expectStatus(400);
+        });
+      });
+
+      describe('get', () => {
+        it('should return an existing session', async () => {
+          const session = await createGameSession(
+            prisma,
+            ball,
+            player1,
+            player2,
+          );
+
+          await pactum
+            .spec()
+            .get(`/game/sessions/${session.id}`)
+            .expectStatus(200)
+            .expectJsonLike({
+              found: 1,
+              data: {
+                id: uuidRegex,
+                ball,
+                players: [player1, player2],
+              },
+            });
+        });
+
+        it("should return 400 if session doesn't exist", async () => {
+          await pactum
+            .spec()
+            .get(`/game/sessions/${Math.random()}`)
+            .expectStatus(404);
         });
       });
     });
