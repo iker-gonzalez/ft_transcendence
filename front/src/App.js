@@ -8,7 +8,7 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Welcome to <code>ft_transcendence</code>project made by<br />
-          @ikgonzal<br /> @ngasco<br />@zcanales<br />@dwergig
+          @ikgonzal<br /> @ngasco<br />@zcanales<br />@dgerwig
         </p>
         <a
           className="App-link"
