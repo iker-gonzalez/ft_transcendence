@@ -783,11 +783,17 @@ describe('App e2e', () => {
               },
             });
 
-          const sessions = await prisma.gameSession.findMany({});
+          const sessions = await prisma.gameSession.findMany({
+            include: {
+              ball: true,
+              players: true,
+            },
+          });
           expect(sessions).toHaveLength(1);
 
-          const players = await prisma.gamePlayer.findMany({});
-          expect(players).toHaveLength(2);
+          const createdSession = sessions[0];
+          expect(createdSession.ball).toMatchObject(ball);
+          expect(createdSession.players).toHaveLength(2);
         });
 
         it('should return 400 if second player is not provided', async () => {
@@ -797,6 +803,18 @@ describe('App e2e', () => {
             .withBody({
               ball: JSON.stringify(ball),
               player1: JSON.stringify(player1),
+            })
+            .expectStatus(400);
+        });
+
+        it('should return 400 if session data is not valid JSON', async () => {
+          await pactum
+            .spec()
+            .post('/game/sessions/new')
+            .withBody({
+              ball: ball,
+              player1: player1,
+              player2: player2,
             })
             .expectStatus(400);
         });
@@ -825,11 +843,110 @@ describe('App e2e', () => {
             });
         });
 
-        it("should return 400 if session doesn't exist", async () => {
+        it("should return 404 if session doesn't exist", async () => {
           await pactum
             .spec()
             .get(`/game/sessions/${Math.random()}`)
             .expectStatus(404);
+        });
+      });
+
+      describe('put', () => {
+        const newBall = {
+          ...ball,
+          radius: 66,
+        };
+
+        const newPlayer1 = {
+          ...player1,
+          width: 42,
+        };
+
+        const newPlayer2 = {
+          ...player2,
+          width: 7,
+        };
+
+        it('should update an existing session', async () => {
+          const session = await createGameSession(
+            prisma,
+            ball,
+            player1,
+            player2,
+          );
+
+          await pactum
+            .spec()
+            .put(`/game/sessions/${session.id}`)
+            .withBody({
+              ball: JSON.stringify(newBall),
+              player1: JSON.stringify(newPlayer1),
+              player2: JSON.stringify(newPlayer2),
+            })
+            .expectStatus(200)
+            .expectJsonLike({
+              updated: 1,
+              data: {
+                id: uuidRegex,
+                ball,
+                players: [player1, player2],
+              },
+            });
+
+          const sessionData = await prisma.gameSession.findUnique({
+            where: { id: session.id },
+            include: {
+              ball: true,
+              players: true,
+            },
+          });
+
+          expect(sessionData.ball).toMatchObject(newBall);
+          expect(sessionData.players[0]).toMatchObject(newPlayer1);
+          expect(sessionData.players[1]).toMatchObject(newPlayer2);
+        });
+
+        it("should return 404 if session doesn't exist", async () => {
+          await pactum
+            .spec()
+            .put(`/game/sessions/${Math.random()}`)
+            .withBody({
+              ball: JSON.stringify(ball),
+              player1: JSON.stringify(player1),
+              player2: JSON.stringify(player2),
+            })
+            .expectStatus(404);
+        });
+
+        it('should return 400 if session data is not valid JSON', async () => {
+          const session = await createGameSession(
+            prisma,
+            ball,
+            player1,
+            player2,
+          );
+
+          await pactum
+            .spec()
+            .put(`/game/sessions/${session.id}`)
+            .withBody({
+              ball: newBall,
+              player1: newPlayer1,
+              player2: newPlayer2,
+            })
+            .expectStatus(400);
+
+          const sessionData = await prisma.gameSession.findUnique({
+            where: { id: session.id },
+            include: {
+              ball: true,
+              players: true,
+            },
+          });
+
+          expect(sessionData.ball).toMatchObject(session.ball);
+          expect(sessionData.players[0]).toMatchObject(session.players[0]);
+          expect(sessionData.players[1]).toMatchObject(session.players[1]);
         });
       });
     });

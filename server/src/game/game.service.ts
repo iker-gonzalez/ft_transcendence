@@ -1,8 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NewGameSessionResponseDto } from './dto/new-game-session-response.dto';
-import { GameBall, GamePlayer } from '@prisma/client';
+import { GameBall, GamePlayer, GameSession } from '@prisma/client';
 import { FoundGameSessionDto } from './dto/found-game-session.dto';
+import { NewGameSessionBodyDto } from './dto/new-game-session-body.dto';
+import { UpdateGameSessionResponseDto } from './dto/update-game-session-response.dto';
 
 @Injectable()
 export class GameService {
@@ -78,6 +84,61 @@ export class GameService {
 
     return {
       found: 1,
+      data: session,
+    };
+  }
+
+  async putSession(
+    sessionId: string,
+    gameSession: NewGameSessionBodyDto,
+  ): Promise<UpdateGameSessionResponseDto> {
+    let ball: GameBall;
+    let player1: GamePlayer;
+    let player2: GamePlayer;
+
+    try {
+      ball = JSON.parse(gameSession.ball);
+      player1 = JSON.parse(gameSession.player1);
+      player2 = JSON.parse(gameSession.player2);
+    } catch (e) {
+      throw new BadRequestException('Invalid data');
+    }
+
+    const session = await this.prisma.gameSession.findUnique({
+      where: {
+        id: sessionId,
+      },
+      include: {
+        ball: true,
+        players: true,
+      },
+    });
+
+    if (!session) throw new NotFoundException('Session not found');
+
+    await this.prisma.gameBall.update({
+      where: {
+        id: session.ball.id,
+      },
+      data: ball,
+    });
+
+    await this.prisma.gamePlayer.update({
+      where: {
+        id: session.players[0].id,
+      },
+      data: player1,
+    });
+
+    await this.prisma.gamePlayer.update({
+      where: {
+        id: session.players[1].id,
+      },
+      data: player2,
+    });
+
+    return {
+      updated: 1,
       data: session,
     };
   }
