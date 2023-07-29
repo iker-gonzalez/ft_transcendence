@@ -96,6 +96,18 @@ export const swaggerConstants = {
           description: 'Game session not found.',
         },
       },
+      update: {
+        summary: 'Update an existing game session.',
+        ok: {
+          description: 'Returns updated game session.',
+        },
+        notFound: {
+          description: 'Game session not found.',
+        },
+        bad: {
+          description: 'Data is not valid.',
+        },
+      },
     },
   },
   dto: {
@@ -209,6 +221,15 @@ export const swaggerConstants = {
     newSessionResponseDto: {
       created: {
         description: 'Number of created sessions',
+        example: 1,
+      },
+      data: {
+        description: 'Session data',
+      },
+    },
+    updatedSessionResponseDto: {
+      updated: {
+        description: 'Number of updated sessions',
         example: 1,
       },
       data: {
