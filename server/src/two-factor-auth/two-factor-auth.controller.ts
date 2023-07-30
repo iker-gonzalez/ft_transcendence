@@ -26,10 +26,7 @@ import { ActivateOtpResponseDto } from './dto/activate-otp-response.dto';
 @ApiTags('2FA')
 @Controller('2fa')
 export class TwoFactorAuthController {
-  constructor(
-    private readonly twoFactorAuthService: TwoFactorAuthService,
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly twoFactorAuthService: TwoFactorAuthService) {}
 
   @Post('generate')
   @ApiOperation({
