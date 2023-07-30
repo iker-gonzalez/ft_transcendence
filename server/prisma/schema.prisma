@@ -22,6 +22,17 @@ model User {
   username String @unique @db.VarChar(12)
   avatar   String
   email    String @unique
+
+  friends Friend[]
+}
+
+model Friend {
+  intraId Int @unique
+
+  User   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  avatar String
 }
 
 model GameSession {
