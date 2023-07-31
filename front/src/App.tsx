@@ -1,3 +1,4 @@
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -7,16 +8,15 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Welcome to <code>ft_transcendence</code>project made by<br />
-          @ikgonzal<br /> @ngasco<br />@zcanales<br />@dwergig
+          Edit <code>src/App.tsx</code> and save to reload.
         </p>
         <a
           className="App-link"
-          href="https://github.com/iker-gonzalez/ft_transcendence"
+          href="https://reactjs.org"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Go to source code
+          Learn React
         </a>
       </header>
     </div>
