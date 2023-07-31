@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import { GameService } from './game.service';
 import {
@@ -22,6 +23,7 @@ import { NewGameSessionResponseDto } from './dto/new-game-session-response.dto';
 import { GameBall, GamePlayer } from '@prisma/client';
 import { NewGameSessionBodyDto } from './dto/new-game-session-body.dto';
 import { FoundGameSessionDto } from './dto/found-game-session.dto';
+import { UpdateGameSessionResponseDto } from './dto/update-game-session-response.dto';
 
 @ApiTags('Game')
 @Controller('game/sessions')
@@ -73,5 +75,26 @@ export class GameController {
     @Param('sessionId') sessionId: string,
   ): Promise<FoundGameSessionDto> {
     return this.gameService.getSession(sessionId);
+  }
+
+  @Put(':sessionId')
+  @ApiOperation({
+    summary: swaggerConstants.game.sessions.update.summary,
+  })
+  @ApiOkResponse({
+    description: swaggerConstants.game.sessions.update.ok.description,
+    type: FoundGameSessionDto,
+  })
+  @ApiNotFoundResponse({
+    description: swaggerConstants.game.sessions.update.notFound.description,
+  })
+  @ApiBadRequestResponse({
+    description: swaggerConstants.game.sessions.update.bad.description,
+  })
+  putSession(
+    @Param('sessionId') sessionId: string,
+    @Body() gameSession: NewGameSessionBodyDto,
+  ): Promise<UpdateGameSessionResponseDto> {
+    return this.gameService.putSession(sessionId, gameSession);
   }
 }

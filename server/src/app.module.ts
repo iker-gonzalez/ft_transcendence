@@ -8,6 +8,7 @@ import { IntraModule } from './intra/intra.module';
 import { UserModule } from './user/user.module';
 import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
 import { GameModule } from './game/game.module';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { GameModule } from './game/game.module';
     UserModule,
     TwoFactorAuthModule,
     GameModule,
+    FriendsModule,
   ],
   providers: [IntraService],
 })
