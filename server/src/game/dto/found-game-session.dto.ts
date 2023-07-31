@@ -1,7 +1,7 @@
 import { IsInt, Max, Min } from 'class-validator';
 import { GameSessionDto } from './game-session.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { swaggerConstants } from 'config/swagger.constants';
+import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class FoundGameSessionDto {
   @ApiProperty({

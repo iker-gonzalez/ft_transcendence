@@ -8,7 +8,6 @@ import { createGameSession, createUser } from './test.utils';
 import * as fs from 'fs';
 import { TwoFactorAuthService } from '../src/two-factor-auth/two-factor-auth.service';
 import { testUserData } from '../config/app.constants';
-import { GameSession } from '@prisma/client';
 
 describe('App e2e', () => {
   const port = 3333;
@@ -24,6 +23,20 @@ describe('App e2e', () => {
     username: 'ntest',
     email: 'test@student.42urduliz.com',
     avatar: 'https://cdn.intra.42.fr/users/test.jpg',
+  };
+
+  const userData2 = {
+    intraId: 88104,
+    username: 'ntest2',
+    email: 'test2@student.42urduliz.com',
+    avatar: 'https://cdn.intra.42.fr/users/test2.jpg',
+  };
+
+  const userData3 = {
+    intraId: 88105,
+    username: 'ntest3',
+    email: 'test3@student.42urduliz.com',
+    avatar: 'https://cdn.intra.42.fr/users/test3.jpg',
   };
 
   const testAvatarPath = `public/uploads/avatars/${userData.username}.png`;
@@ -258,7 +271,7 @@ describe('App e2e', () => {
 
     describe('test user', () => {
       const currentTestUserData = testUserData;
-      const testUserCode = process.env.FAKE_USER_CODE;
+      const testUserCode = process.env.FAKE_USER_1_CODE;
 
       it('should sign up test user', async () => {
         const reqBody = {
@@ -727,6 +740,236 @@ describe('App e2e', () => {
     });
   });
 
+  describe('Friends', () => {
+    test('it should add another user as friend', async () => {
+      // Create user that will be added as friend
+      const user2 = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData2,
+      );
+
+      // Create user first
+      // Must be done after user2 is created for correct bearer token
+      const user1 = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData,
+      );
+
+      await pactum
+        .spec()
+        .post(`/friends/add/${user2.intraId}`)
+        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+        .expectStatus(200)
+        .expectJsonLike({
+          created: 1,
+          data: {
+            id: user1.id,
+            intraId: user1.intraId,
+            friends: [{ intraId: user2.intraId, avatar: user2.avatar }],
+          },
+        });
+
+      const { friends: updatedUserFriends } = await prisma.user.findUnique({
+        where: { id: user1.id },
+        include: {
+          friends: true,
+        },
+      });
+
+      expect(updatedUserFriends).toHaveLength(1);
+    });
+
+    test('it should add a friend when user has already one', async () => {
+      // Create user that will be added as friend
+      const user2 = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData2,
+      );
+
+      // Create user that will be added as friend
+      const user3 = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData3,
+      );
+
+      // Create user first
+      // Must be done after user2 is created for correct bearer token
+      const user1 = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData,
+      );
+
+      // Add user2 as friend of user1
+      await prisma.user.update({
+        where: { id: user1.id },
+        data: {
+          friends: {
+            create: [{ intraId: user2.intraId, avatar: user2.avatar }],
+          },
+        },
+      });
+
+      await pactum
+        .spec()
+        .post(`/friends/add/${user3.intraId}`)
+        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+        .expectStatus(200)
+        .expectJsonLike({
+          created: 1,
+          data: {
+            id: user1.id,
+            intraId: user1.intraId,
+            friends: [
+              { intraId: user2.intraId, avatar: user2.avatar },
+              { intraId: user3.intraId, avatar: user3.avatar },
+            ],
+          },
+        });
+
+      const { friends: updatedUserFriends } = await prisma.user.findUnique({
+        where: { id: user1.id },
+        include: {
+          friends: true,
+        },
+      });
+
+      expect(updatedUserFriends).toHaveLength(2);
+    });
+
+    test('it should return 400 if friend is not found', async () => {
+      // Create user first
+      const user1 = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData,
+      );
+
+      await pactum
+        .spec()
+        .post(`/friends/add/123456`)
+        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+        .expectStatus(400);
+
+      const { friends: updatedUserFriends } = await prisma.user.findUnique({
+        where: { id: user1.id },
+        include: {
+          friends: true,
+        },
+      });
+
+      expect(updatedUserFriends).toHaveLength(0);
+    });
+
+    test('it should return 400 if friend is user themselves', async () => {
+      // Create user first
+      const user1 = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData,
+      );
+
+      await pactum
+        .spec()
+        .post(`/friends/add/${user1.intraId}`)
+        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+        .expectStatus(400);
+
+      const { friends: updatedUserFriends } = await prisma.user.findUnique({
+        where: { id: user1.id },
+        include: {
+          friends: true,
+        },
+      });
+
+      expect(updatedUserFriends).toHaveLength(0);
+    });
+
+    test('it should return 409 if friend was already added', async () => {
+      // Create user that will be added as friend
+      const user2 = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData2,
+      );
+
+      // Create user first
+      // Must be done after user2 is created for correct bearer token
+      const user1 = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData,
+      );
+
+      // Add user2 as friend of user1
+      await prisma.user.update({
+        where: { id: user1.id },
+        data: {
+          friends: {
+            create: [{ intraId: user2.intraId, avatar: user2.avatar }],
+          },
+        },
+      });
+
+      await pactum
+        .spec()
+        .post(`/friends/add/${user2}`)
+        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+        .expectStatus(400);
+
+      const { friends: updatedUserFriends } = await prisma.user.findUnique({
+        where: { id: user1.id },
+        include: {
+          friends: true,
+        },
+      });
+
+      expect(updatedUserFriends).toHaveLength(1);
+    });
+
+    test('it should return 400 if friend id is not a valid number', async () => {
+      // Create user first
+      const user1 = await createUser(
+        prisma,
+        intraService,
+        intraUserToken,
+        userData,
+      );
+
+      await pactum
+        .spec()
+        .post(`/friends/add/${NaN}`)
+        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+        .expectStatus(400);
+
+      const { friends: updatedUserFriends } = await prisma.user.findUnique({
+        where: { id: user1.id },
+        include: {
+          friends: true,
+        },
+      });
+
+      expect(updatedUserFriends).toHaveLength(0);
+    });
+
+    test('it should return 401 if user is not authenticated', async () => {
+      await pactum.spec().post(`/friends/add/123456`).expectStatus(401);
+    });
+  });
+
   describe('Game', () => {
     const uuidRegex =
       /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
@@ -783,11 +1026,17 @@ describe('App e2e', () => {
               },
             });
 
-          const sessions = await prisma.gameSession.findMany({});
+          const sessions = await prisma.gameSession.findMany({
+            include: {
+              ball: true,
+              players: true,
+            },
+          });
           expect(sessions).toHaveLength(1);
 
-          const players = await prisma.gamePlayer.findMany({});
-          expect(players).toHaveLength(2);
+          const createdSession = sessions[0];
+          expect(createdSession.ball).toMatchObject(ball);
+          expect(createdSession.players).toHaveLength(2);
         });
 
         it('should return 400 if second player is not provided', async () => {
@@ -797,6 +1046,18 @@ describe('App e2e', () => {
             .withBody({
               ball: JSON.stringify(ball),
               player1: JSON.stringify(player1),
+            })
+            .expectStatus(400);
+        });
+
+        it('should return 400 if session data is not valid JSON', async () => {
+          await pactum
+            .spec()
+            .post('/game/sessions/new')
+            .withBody({
+              ball: ball,
+              player1: player1,
+              player2: player2,
             })
             .expectStatus(400);
         });
@@ -825,11 +1086,110 @@ describe('App e2e', () => {
             });
         });
 
-        it("should return 400 if session doesn't exist", async () => {
+        it("should return 404 if session doesn't exist", async () => {
           await pactum
             .spec()
             .get(`/game/sessions/${Math.random()}`)
             .expectStatus(404);
+        });
+      });
+
+      describe('put', () => {
+        const newBall = {
+          ...ball,
+          radius: 66,
+        };
+
+        const newPlayer1 = {
+          ...player1,
+          width: 42,
+        };
+
+        const newPlayer2 = {
+          ...player2,
+          width: 7,
+        };
+
+        it('should update an existing session', async () => {
+          const session = await createGameSession(
+            prisma,
+            ball,
+            player1,
+            player2,
+          );
+
+          await pactum
+            .spec()
+            .put(`/game/sessions/${session.id}`)
+            .withBody({
+              ball: JSON.stringify(newBall),
+              player1: JSON.stringify(newPlayer1),
+              player2: JSON.stringify(newPlayer2),
+            })
+            .expectStatus(200)
+            .expectJsonLike({
+              updated: 1,
+              data: {
+                id: uuidRegex,
+                ball,
+                players: [player1, player2],
+              },
+            });
+
+          const sessionData = await prisma.gameSession.findUnique({
+            where: { id: session.id },
+            include: {
+              ball: true,
+              players: true,
+            },
+          });
+
+          expect(sessionData.ball).toMatchObject(newBall);
+          expect(sessionData.players[0]).toMatchObject(newPlayer1);
+          expect(sessionData.players[1]).toMatchObject(newPlayer2);
+        });
+
+        it("should return 404 if session doesn't exist", async () => {
+          await pactum
+            .spec()
+            .put(`/game/sessions/${Math.random()}`)
+            .withBody({
+              ball: JSON.stringify(ball),
+              player1: JSON.stringify(player1),
+              player2: JSON.stringify(player2),
+            })
+            .expectStatus(404);
+        });
+
+        it('should return 400 if session data is not valid JSON', async () => {
+          const session = await createGameSession(
+            prisma,
+            ball,
+            player1,
+            player2,
+          );
+
+          await pactum
+            .spec()
+            .put(`/game/sessions/${session.id}`)
+            .withBody({
+              ball: newBall,
+              player1: newPlayer1,
+              player2: newPlayer2,
+            })
+            .expectStatus(400);
+
+          const sessionData = await prisma.gameSession.findUnique({
+            where: { id: session.id },
+            include: {
+              ball: true,
+              players: true,
+            },
+          });
+
+          expect(sessionData.ball).toMatchObject(session.ball);
+          expect(sessionData.players[0]).toMatchObject(session.players[0]);
+          expect(sessionData.players[1]).toMatchObject(session.players[1]);
         });
       });
     });

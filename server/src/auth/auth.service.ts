@@ -12,7 +12,7 @@ import { SigninResponseDto } from './dto/signin-response';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConfig } from '../../config/jwt.config';
 import { TwoFactorAuthService } from '../two-factor-auth/two-factor-auth.service';
-import { testUserData } from '../../config/app.constants';
+import { testUser2Data, testUserData } from '../../config/app.constants';
 
 @Injectable()
 export class AuthService {
@@ -37,8 +37,10 @@ export class AuthService {
 
     let userData: IntraUserDataDto;
 
-    if (this._isTestUser(code)) {
+    if (code === this.configService.get<string>('FAKE_USER_1_CODE')) {
       userData = testUserData;
+    } else if (code === this.configService.get<string>('FAKE_USER_2_CODE')) {
+      userData = testUser2Data;
     } else {
       // Get Intra User Token
       const token: string = await this.intraService.getIntraUserToken(code);
@@ -108,6 +110,9 @@ export class AuthService {
   }
 
   _isTestUser(code: string): boolean {
-    return code === this.configService.get<string>('FAKE_USER_CODE');
+    return (
+      code === this.configService.get<string>('FAKE_USER_1_CODE') ||
+      code === this.configService.get<string>('FAKE_USER_2_CODE')
+    );
   }
 }
