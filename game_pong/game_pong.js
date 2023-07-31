@@ -244,7 +244,7 @@ canvas.addEventListener("mousemove", getMousePos);
 canvas.addEventListener("touchmove", getTouchPos);
 
 (async () => {
-  let res = await initializeSessionInDb(ballData);
+  let res = await initializeSessionInDb(ballData, user1, user2);
 
   ball = res.data.ball;
 

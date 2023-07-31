@@ -3,11 +3,15 @@ import { net } from "./game_pong.constants.js";
 const canvas = document.getElementById("gamePong");
 const ctx = canvas.getContext("2d");
 
-export async function initializeSessionInDb(ball) {
+export async function initializeSessionInDb(ball, user1, user2) {
   try {
     let response = await fetch("http://localhost:3000/game/sessions/new", {
       method: "POST",
-      body: JSON.stringify({ ball: JSON.stringify(ball) }),
+      body: JSON.stringify({
+        ball: JSON.stringify(ball),
+        player1: JSON.stringify(user1),
+        player2: JSON.stringify(user2),
+      }),
       headers: { "Content-type": "application/json; charset=UTF-8" },
     });
 
