@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { GetFriendsResponseDto } from './dto/get-friends-response.dto';
 
 @Injectable()
 export class FriendsService {
@@ -91,35 +92,30 @@ export class FriendsService {
     };
   }
 
-  //   async getFriends(intraId: number, user: User): Promise<any> {
-  //     let userWithFriends;
-  //     if (!intraId) {
-  //       userWithFriends = await this.prisma.user.findUnique({
-  //         where: {
-  //           id: user.id,
-  //         },
-  //         include: {
-  //           friends: true,
-  //         },
-  //       });
-  //     } else {
-  //       userWithFriends = await this.prisma.user.findUnique({
-  //         where: {
-  //           intraId: intraId,
-  //         },
-  //         include: {
-  //           friends: true,
-  //         },
-  //       });
-  //     }
+  async getFriends(
+    intraId: number,
+    user: User,
+  ): Promise<GetFriendsResponseDto> {
+    const userWithFriends = await this.prisma.user.findUnique({
+      where: {
+        intraId: intraId ? intraId : user.intraId,
+      },
+      include: {
+        friends: true,
+      },
+    });
 
-  //     return {
-  //       found: userWithFriends.friends.length,
-  //       data: {
-  //         id: userWithFriends.id,
-  //         intraId: userWithFriends.intraId,
-  //         friends: userWithFriends.friends,
-  //       },
-  //     };
-  //   }
+    if (!userWithFriends) {
+      throw new BadRequestException('User not found');
+    }
+
+    return {
+      found: userWithFriends.friends.length,
+      data: {
+        id: userWithFriends.id,
+        intraId: userWithFriends.intraId,
+        friends: userWithFriends.friends,
+      },
+    };
+  }
 }

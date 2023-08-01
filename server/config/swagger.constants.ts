@@ -92,6 +92,19 @@ export const swaggerConstants = {
         description: 'Friend already added.',
       },
     },
+    get: {
+      summary:
+        'If friendId is provided, returns friend data. Otherwise, returns current user friends list.',
+      ok: {
+        description: 'Returns user friends list.',
+      },
+      unauthorized: {
+        description: 'JWT token is invalid or expired.',
+      },
+      notFound: {
+        description: 'Specified user was not found.',
+      },
+    },
   },
   game: {
     sessions: {
@@ -200,6 +213,31 @@ export const swaggerConstants = {
           friends: [
             {
               intraId: 12346,
+              avatar: 'https://cdn.intra.42.fr/users/jdoe.jpg',
+              userId: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+            },
+          ],
+        },
+      },
+    },
+    getFriendsResponse: {
+      found: {
+        description: 'Number of found friends',
+        example: 2,
+      },
+      data: {
+        description: 'User data with friends',
+        example: {
+          id: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+          intraId: 12345,
+          friends: [
+            {
+              intraId: 12346,
+              avatar: 'https://cdn.intra.42.fr/users/jdoe.jpg',
+              userId: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+            },
+            {
+              intraId: 12347,
               avatar: 'https://cdn.intra.42.fr/users/jdoe.jpg',
               userId: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
             },

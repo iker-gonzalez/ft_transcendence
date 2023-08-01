@@ -4,7 +4,11 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { IntraService } from '../src/intra/intra.service';
 import * as pactum from 'pactum';
-import { createGameSession, createUser } from './test.utils';
+import {
+  createGameSession,
+  createUser,
+  createUserWithFriends,
+} from './test.utils';
 import * as fs from 'fs';
 import { TwoFactorAuthService } from '../src/two-factor-auth/two-factor-auth.service';
 import { testUserData } from '../config/app.constants';
@@ -741,232 +745,305 @@ describe('App e2e', () => {
   });
 
   describe('Friends', () => {
-    test('it should add another user as friend', async () => {
-      // Create user that will be added as friend
-      const user2 = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData2,
-      );
+    describe('new', () => {
+      test('it should add another user as friend', async () => {
+        // Create user that will be added as friend
+        const user2 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData2,
+        );
 
-      // Create user first
-      // Must be done after user2 is created for correct bearer token
-      const user1 = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData,
-      );
+        // Create user first
+        // Must be done after user2 is created for correct bearer token
+        const user1 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
 
-      await pactum
-        .spec()
-        .post(`/friends/add/${user2.intraId}`)
-        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
-        .expectStatus(200)
-        .expectJsonLike({
-          created: 1,
-          data: {
-            id: user1.id,
-            intraId: user1.intraId,
-            friends: [{ intraId: user2.intraId, avatar: user2.avatar }],
+        await pactum
+          .spec()
+          .post(`/friends/add/${user2.intraId}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(200)
+          .expectJsonLike({
+            created: 1,
+            data: {
+              id: user1.id,
+              intraId: user1.intraId,
+              friends: [{ intraId: user2.intraId, avatar: user2.avatar }],
+            },
+          });
+
+        const { friends: updatedUserFriends } = await prisma.user.findUnique({
+          where: { id: user1.id },
+          include: {
+            friends: true,
           },
         });
 
-      const { friends: updatedUserFriends } = await prisma.user.findUnique({
-        where: { id: user1.id },
-        include: {
-          friends: true,
-        },
+        expect(updatedUserFriends).toHaveLength(1);
       });
 
-      expect(updatedUserFriends).toHaveLength(1);
-    });
+      test('it should add a friend when user has already one', async () => {
+        // Create user that will be added as friend
+        const user2 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData2,
+        );
 
-    test('it should add a friend when user has already one', async () => {
-      // Create user that will be added as friend
-      const user2 = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData2,
-      );
+        // Create user that will be added as friend
+        const user3 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData3,
+        );
 
-      // Create user that will be added as friend
-      const user3 = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData3,
-      );
+        // Create user first
+        // Must be done after user2 is created for correct bearer token
+        const user1 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
 
-      // Create user first
-      // Must be done after user2 is created for correct bearer token
-      const user1 = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData,
-      );
-
-      // Add user2 as friend of user1
-      await prisma.user.update({
-        where: { id: user1.id },
-        data: {
-          friends: {
-            create: [{ intraId: user2.intraId, avatar: user2.avatar }],
-          },
-        },
-      });
-
-      await pactum
-        .spec()
-        .post(`/friends/add/${user3.intraId}`)
-        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
-        .expectStatus(200)
-        .expectJsonLike({
-          created: 1,
+        // Add user2 as friend of user1
+        await prisma.user.update({
+          where: { id: user1.id },
           data: {
-            id: user1.id,
-            intraId: user1.intraId,
-            friends: [
-              { intraId: user2.intraId, avatar: user2.avatar },
-              { intraId: user3.intraId, avatar: user3.avatar },
-            ],
+            friends: {
+              create: [{ intraId: user2.intraId, avatar: user2.avatar }],
+            },
           },
         });
 
-      const { friends: updatedUserFriends } = await prisma.user.findUnique({
-        where: { id: user1.id },
-        include: {
-          friends: true,
-        },
-      });
+        await pactum
+          .spec()
+          .post(`/friends/add/${user3.intraId}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(200)
+          .expectJsonLike({
+            created: 1,
+            data: {
+              id: user1.id,
+              intraId: user1.intraId,
+              friends: [
+                { intraId: user2.intraId, avatar: user2.avatar },
+                { intraId: user3.intraId, avatar: user3.avatar },
+              ],
+            },
+          });
 
-      expect(updatedUserFriends).toHaveLength(2);
-    });
-
-    test('it should return 400 if friend is not found', async () => {
-      // Create user first
-      const user1 = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData,
-      );
-
-      await pactum
-        .spec()
-        .post(`/friends/add/123456`)
-        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
-        .expectStatus(400);
-
-      const { friends: updatedUserFriends } = await prisma.user.findUnique({
-        where: { id: user1.id },
-        include: {
-          friends: true,
-        },
-      });
-
-      expect(updatedUserFriends).toHaveLength(0);
-    });
-
-    test('it should return 400 if friend is user themselves', async () => {
-      // Create user first
-      const user1 = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData,
-      );
-
-      await pactum
-        .spec()
-        .post(`/friends/add/${user1.intraId}`)
-        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
-        .expectStatus(400);
-
-      const { friends: updatedUserFriends } = await prisma.user.findUnique({
-        where: { id: user1.id },
-        include: {
-          friends: true,
-        },
-      });
-
-      expect(updatedUserFriends).toHaveLength(0);
-    });
-
-    test('it should return 409 if friend was already added', async () => {
-      // Create user that will be added as friend
-      const user2 = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData2,
-      );
-
-      // Create user first
-      // Must be done after user2 is created for correct bearer token
-      const user1 = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData,
-      );
-
-      // Add user2 as friend of user1
-      await prisma.user.update({
-        where: { id: user1.id },
-        data: {
-          friends: {
-            create: [{ intraId: user2.intraId, avatar: user2.avatar }],
+        const { friends: updatedUserFriends } = await prisma.user.findUnique({
+          where: { id: user1.id },
+          include: {
+            friends: true,
           },
-        },
+        });
+
+        expect(updatedUserFriends).toHaveLength(2);
       });
 
-      await pactum
-        .spec()
-        .post(`/friends/add/${user2}`)
-        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
-        .expectStatus(400);
+      test('it should return 400 if friend is not found', async () => {
+        // Create user first
+        const user1 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
 
-      const { friends: updatedUserFriends } = await prisma.user.findUnique({
-        where: { id: user1.id },
-        include: {
-          friends: true,
-        },
+        await pactum
+          .spec()
+          .post(`/friends/add/123456`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(400);
+
+        const { friends: updatedUserFriends } = await prisma.user.findUnique({
+          where: { id: user1.id },
+          include: {
+            friends: true,
+          },
+        });
+
+        expect(updatedUserFriends).toHaveLength(0);
       });
 
-      expect(updatedUserFriends).toHaveLength(1);
+      test('it should return 400 if friend is user themselves', async () => {
+        // Create user first
+        const user1 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await pactum
+          .spec()
+          .post(`/friends/add/${user1.intraId}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(400);
+
+        const { friends: updatedUserFriends } = await prisma.user.findUnique({
+          where: { id: user1.id },
+          include: {
+            friends: true,
+          },
+        });
+
+        expect(updatedUserFriends).toHaveLength(0);
+      });
+
+      test('it should return 409 if friend was already added', async () => {
+        // Create user that will be added as friend
+        const user2 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData2,
+        );
+
+        // Create user first
+        // Must be done after user2 is created for correct bearer token
+        const user1 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        // Add user2 as friend of user1
+        await prisma.user.update({
+          where: { id: user1.id },
+          data: {
+            friends: {
+              create: [{ intraId: user2.intraId, avatar: user2.avatar }],
+            },
+          },
+        });
+
+        await pactum
+          .spec()
+          .post(`/friends/add/${user2}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(400);
+
+        const { friends: updatedUserFriends } = await prisma.user.findUnique({
+          where: { id: user1.id },
+          include: {
+            friends: true,
+          },
+        });
+
+        expect(updatedUserFriends).toHaveLength(1);
+      });
+
+      test('it should return 400 if friend id is not a valid number', async () => {
+        // Create user first
+        const user1 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await pactum
+          .spec()
+          .post(`/friends/add/${NaN}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(400);
+
+        const { friends: updatedUserFriends } = await prisma.user.findUnique({
+          where: { id: user1.id },
+          include: {
+            friends: true,
+          },
+        });
+
+        expect(updatedUserFriends).toHaveLength(0);
+      });
+
+      test('it should return 401 if user is not authenticated', async () => {
+        await pactum.spec().post(`/friends/add/123456`).expectStatus(401);
+      });
     });
 
-    test('it should return 400 if friend id is not a valid number', async () => {
-      // Create user first
-      const user1 = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData,
-      );
+    describe('get', () => {
+      test('it should return friends of specified user', async () => {
+        const user = await createUserWithFriends(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+          [userData2, userData3],
+        );
 
-      await pactum
-        .spec()
-        .post(`/friends/add/${NaN}`)
-        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
-        .expectStatus(400);
-
-      const { friends: updatedUserFriends } = await prisma.user.findUnique({
-        where: { id: user1.id },
-        include: {
-          friends: true,
-        },
+        await pactum
+          .spec()
+          .get(`/friends/${user.intraId}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(200)
+          .expectJsonLike({
+            found: 2,
+            data: {
+              id: user.id,
+              intraId: user.intraId,
+              friends: [
+                { intraId: userData2.intraId, avatar: userData2.avatar },
+                { intraId: userData3.intraId, avatar: userData3.avatar },
+              ],
+            },
+          });
       });
 
-      expect(updatedUserFriends).toHaveLength(0);
-    });
+      test('it should return friends of current user', async () => {
+        const user = await createUserWithFriends(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+          [userData2, userData3],
+        );
 
-    test('it should return 401 if user is not authenticated', async () => {
-      await pactum.spec().post(`/friends/add/123456`).expectStatus(401);
+        await pactum
+          .spec()
+          .get('/friends/')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(200)
+          .expectJsonLike({
+            found: 2,
+            data: {
+              id: user.id,
+              intraId: user.intraId,
+              friends: [
+                { intraId: userData2.intraId, avatar: userData2.avatar },
+                { intraId: userData3.intraId, avatar: userData3.avatar },
+              ],
+            },
+          });
+      });
+
+      test('it should return 400 if specified user does not exist', async () => {
+        // Create user first
+        await createUser(prisma, intraService, intraUserToken, userData);
+
+        await pactum
+          .spec()
+          .get(`/friends/${NaN}}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(400);
+      });
+
+      test('it should return 401 if user is not authenticated', async () => {
+        await pactum.spec().get('/friends/').expectStatus(401);
+      });
     });
   });
 
