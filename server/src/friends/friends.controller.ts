@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -10,6 +11,7 @@ import {
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -21,13 +23,14 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { FriendsService } from './friends.service';
 import { swaggerConstants } from '../../config/swagger.constants';
 import { AddFriendResponseDto } from './dto/add-friend-response.dto';
+import { GetFriendsResponseDto } from './dto/get-friends-response.dto';
 
 @ApiTags('Friends')
 @Controller('friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
-  @Post('add/:friendId')
+  @Post(':friendId')
   @ApiOperation({
     summary: swaggerConstants.friends.add.summary,
   })
@@ -56,24 +59,28 @@ export class FriendsController {
     return this.friendsService.addFriend(Number(friendIntraId), user);
   }
 
-  //   @Get(':friendId?')
-  //   @ApiOperation({
-  //     summary: swaggerConstants.friends.add.summary,
-  //   })
-  //   @ApiOkResponse({
-  //     description: swaggerConstants.friends.add.ok.description,
-  //   })
-  //   @ApiBadRequestResponse({
-  //     description: swaggerConstants.friends.add.bad.description,
-  //   })
-  //   @ApiUnauthorizedResponse({
-  //     description: swaggerConstants.friends.add.unauthorized.description,
-  //   })
-  //   @UseGuards(JwtGuard)
-  //   async getFriends(
-  //     @GetUser() user: User,
-  //     @Param('friendId') friendIntraId: number,
-  //   ): Promise<any> {
-  //     return this.friendsService.getFriends(Number(friendIntraId), user);
-  //   }
+  @Get(':friendId?')
+  @ApiOperation({
+    summary: swaggerConstants.friends.get.summary,
+  })
+  @ApiOkResponse({
+    description: swaggerConstants.friends.get.ok.description,
+    type: GetFriendsResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description: swaggerConstants.friends.get.notFound.description,
+  })
+  @ApiUnauthorizedResponse({
+    description: swaggerConstants.friends.get.unauthorized.description,
+  })
+  @UseGuards(JwtGuard)
+  async getFriends(
+    @GetUser() user: User,
+    @Param('friendId') friendIntraId: number,
+  ): Promise<GetFriendsResponseDto> {
+    if (friendIntraId && isNaN(friendIntraId))
+      throw new BadRequestException('User ID not valid');
+
+    return this.friendsService.getFriends(Number(friendIntraId), user);
+  }
 }
