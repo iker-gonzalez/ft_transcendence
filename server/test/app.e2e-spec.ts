@@ -766,7 +766,7 @@ describe('App e2e', () => {
 
         await pactum
           .spec()
-          .post(`/friends/add/${user2.intraId}`)
+          .post(`/friends/${user2.intraId}`)
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
           .expectStatus(200)
           .expectJsonLike({
@@ -826,7 +826,7 @@ describe('App e2e', () => {
 
         await pactum
           .spec()
-          .post(`/friends/add/${user3.intraId}`)
+          .post(`/friends/${user3.intraId}`)
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
           .expectStatus(200)
           .expectJsonLike({
@@ -862,7 +862,7 @@ describe('App e2e', () => {
 
         await pactum
           .spec()
-          .post(`/friends/add/123456`)
+          .post(`/friends/123456`)
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
           .expectStatus(400);
 
@@ -887,7 +887,7 @@ describe('App e2e', () => {
 
         await pactum
           .spec()
-          .post(`/friends/add/${user1.intraId}`)
+          .post(`/friends/${user1.intraId}`)
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
           .expectStatus(400);
 
@@ -931,7 +931,7 @@ describe('App e2e', () => {
 
         await pactum
           .spec()
-          .post(`/friends/add/${user2}`)
+          .post(`/friends/${user2}`)
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
           .expectStatus(400);
 
@@ -956,7 +956,7 @@ describe('App e2e', () => {
 
         await pactum
           .spec()
-          .post(`/friends/add/${NaN}`)
+          .post(`/friends/${NaN}`)
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
           .expectStatus(400);
 
@@ -971,7 +971,7 @@ describe('App e2e', () => {
       });
 
       test('it should return 401 if user is not authenticated', async () => {
-        await pactum.spec().post(`/friends/add/123456`).expectStatus(401);
+        await pactum.spec().post(`/friends/123456`).expectStatus(401);
       });
     });
 

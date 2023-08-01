@@ -30,7 +30,7 @@ import { GetFriendsResponseDto } from './dto/get-friends-response.dto';
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
-  @Post('add/:friendId')
+  @Post(':friendId')
   @ApiOperation({
     summary: swaggerConstants.friends.add.summary,
   })
