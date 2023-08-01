@@ -82,7 +82,7 @@ export async function createUserWithFriends(
   for (const friend of friendsData) {
     await pactum
       .spec()
-      .post(`/friends/add/${friend.intraId}`)
+      .post(`/friends/${friend.intraId}`)
       .withHeaders({ Authorization: 'Bearer $S{userAt}' });
   }
 
