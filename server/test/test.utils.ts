@@ -63,3 +63,28 @@ export async function createGameSession(
 
   return session;
 }
+
+export async function createUserWithFriends(
+  prisma: PrismaService,
+  intraService: IntraService,
+  intraUserToken: string,
+  userData: IntraUserDataDto,
+  friendsData: any[],
+): Promise<User> {
+  // Create users to be added as friends
+  for (const friendData of friendsData) {
+    await createUser(prisma, intraService, intraUserToken, friendData);
+  }
+
+  // Create user first
+  const user = await createUser(prisma, intraService, intraUserToken, userData);
+
+  for (const friend of friendsData) {
+    await pactum
+      .spec()
+      .post(`/friends/add/${friend.intraId}`)
+      .withHeaders({ Authorization: 'Bearer $S{userAt}' });
+  }
+
+  return user;
+}
