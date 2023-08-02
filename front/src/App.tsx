@@ -1,17 +1,15 @@
 import React from 'react';
+import MyFirstComponent from "./components/MyFisrtComponent";
+import SecondComponent from "./components/SecondComponent";
 
 function App() {
     const onClickButton = () => alert("Button clicked");
-    const contentStyle = {
-      color: "#00babc",
-      fontSize: "20px",
-    };
     return (
     <>
      <h1>Hello World!</h1>
-        <p style={{ color: "#00babc", fontSize: "20px" }}>42Tokyo : Japan</p>
-        <p style={contentStyle}>42Tokyo : Japan</p>
+    <MyFirstComponent />
      <button onClick={onClickButton}>Click here</button>
+    <SecondComponent />
    </>
     );   
 }
