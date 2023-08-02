@@ -7,7 +7,8 @@ function MyFirstComponent() {
       };
       return (
         <>
-          <p style={contentStyle}>42Tokyo : Japan</p>
+          <p style={contentStyle}>42Urduliz : Spain</p>
+          <p>Let's go @ngasco, @dwergig, @zcanales, @ikgonzal</p>
         </>
       );
 }
