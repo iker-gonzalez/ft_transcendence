@@ -15,6 +15,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -62,6 +63,11 @@ export class FriendsController {
   }
 
   @Get(':friendId?')
+  @ApiParam({
+    name: 'friendId',
+    required: false,
+    description: swaggerConstants.friends.param.friendId.description,
+  })
   @ApiOperation({
     summary: swaggerConstants.friends.get.summary,
   })
