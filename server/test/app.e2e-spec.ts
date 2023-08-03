@@ -1045,6 +1045,100 @@ describe('App e2e', () => {
         await pactum.spec().get('/friends/').expectStatus(401);
       });
     });
+
+    describe('delete', () => {
+      test('it should delete a friend', async () => {
+        const user = await createUserWithFriends(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+          [userData2, userData3],
+        );
+
+        await pactum
+          .spec()
+          .delete(`/friends/${userData2.intraId}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(200)
+          .expectJsonLike({
+            deleted: 1,
+            data: {
+              id: user.id,
+              intraId: user.intraId,
+              friends: [
+                { intraId: userData3.intraId, avatar: userData3.avatar },
+              ],
+            },
+          });
+
+        const { friends: remainingFriends } = await prisma.user.findUnique({
+          where: { id: user.id },
+          include: {
+            friends: true,
+          },
+        });
+
+        expect(remainingFriends.length).toEqual(1);
+      });
+
+      test('it should return 400 if friendId is not valid', async () => {
+        const user = await createUserWithFriends(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+          [userData2, userData3],
+        );
+
+        await pactum
+          .spec()
+          .delete(`/friends/${NaN}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(400);
+
+        const { friends: remainingFriends } = await prisma.user.findUnique({
+          where: { id: user.id },
+          include: {
+            friends: true,
+          },
+        });
+
+        expect(remainingFriends.length).toEqual(2);
+      });
+
+      test('it should return 400 if friendId is not found', async () => {
+        const user = await createUserWithFriends(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+          [userData2],
+        );
+
+        await pactum
+          .spec()
+          .delete(`/friends/${userData3.intraId}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(400);
+
+        const { friends: remainingFriends } = await prisma.user.findUnique({
+          where: { id: user.id },
+          include: {
+            friends: true,
+          },
+        });
+
+        expect(remainingFriends.length).toEqual(1);
+      });
+
+      test('it should return 401 if user is not authenticated', async () => {
+        await pactum
+          .spec()
+          .delete(`/friends/${userData.intraId}`)
+          .expectStatus(401);
+      });
+    });
   });
 
   describe('Game', () => {

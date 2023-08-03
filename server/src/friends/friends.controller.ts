@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -24,6 +25,7 @@ import { FriendsService } from './friends.service';
 import { swaggerConstants } from '../../config/swagger.constants';
 import { AddFriendResponseDto } from './dto/add-friend-response.dto';
 import { GetFriendsResponseDto } from './dto/get-friends-response.dto';
+import { DeleteFriendResponseDto } from './dto/delete-friend-response.dto';
 
 @ApiTags('Friends')
 @Controller('friends')
@@ -82,5 +84,31 @@ export class FriendsController {
       throw new BadRequestException('User ID not valid');
 
     return this.friendsService.getFriends(Number(friendIntraId), user);
+  }
+
+  @Delete(':friendId')
+  @ApiOperation({
+    summary: swaggerConstants.friends.delete.summary,
+  })
+  @ApiOkResponse({
+    description: swaggerConstants.friends.delete.ok.description,
+    type: DeleteFriendResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: swaggerConstants.friends.delete.bad.description,
+  })
+  @ApiUnauthorizedResponse({
+    description: swaggerConstants.friends.delete.unauthorized.description,
+  })
+  @UseGuards(JwtGuard)
+  async deleteFriend(
+    @GetUser() user: User,
+    @Param('friendId') friendId: number,
+  ): Promise<any> {
+    if (isNaN(friendId)) {
+      throw new BadRequestException('User ID not valid');
+    }
+
+    return this.friendsService.deleteFriend(Number(friendId), user);
   }
 }
