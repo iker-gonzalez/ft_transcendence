@@ -118,4 +118,61 @@ export class FriendsService {
       },
     };
   }
+
+  async deleteFriend(friendIntraId: number, user: User): Promise<any> {
+    const userData = await this.prisma.user.findUnique({
+      where: {
+        id: user.id,
+      },
+      include: {
+        friends: true,
+      },
+    });
+
+    const isValidFriend = userData.friends.some(
+      (friend) => friend.intraId === friendIntraId,
+    );
+
+    if (!isValidFriend) {
+      throw new BadRequestException('Friend not found');
+    }
+
+    const updatedFriends = userData.friends.filter(
+      (friend) => friend.intraId !== friendIntraId,
+    );
+
+    // To avoid errors with prisma, we need to delete the userId field
+    updatedFriends.forEach((friend) => {
+      delete friend.userId;
+    });
+
+    await this.prisma.friend.deleteMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    const updatedUser = await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        friends: {
+          create: updatedFriends,
+        },
+      },
+      include: {
+        friends: true,
+      },
+    });
+
+    return {
+      deleted: 1,
+      data: {
+        id: updatedUser.id,
+        intraId: updatedUser.intraId,
+        friends: updatedUser.friends,
+      },
+    };
+  }
 }
