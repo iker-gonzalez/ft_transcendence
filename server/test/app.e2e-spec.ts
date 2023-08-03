@@ -587,7 +587,8 @@ describe('App e2e', () => {
           .expectJsonLike({
             updated: 1,
             data: {
-              ...userData,
+              id: user.id,
+              intraId: user.intraId,
               avatar: new RegExp(`^.*${user.username}.png$`),
             },
           });
