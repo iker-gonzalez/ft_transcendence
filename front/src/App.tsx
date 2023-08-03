@@ -1,15 +1,13 @@
 import React from 'react';
-import MyFirstComponent from "./components/MyFisrtComponent";
-import SecondComponent from "./components/SecondComponent";
+import SignIn from "./components/SignIn";
 
 function App() {
-    const onClickButton = () => alert("Button clicked");
+    //const onClickButton = () => alert("Button clicked");
     return (
     <>
-     <h1>Hello World!</h1>
-    <MyFirstComponent />
-     <button onClick={onClickButton}>Click here</button>
-    <SecondComponent />
+     <h1>42 Pong Game</h1>
+     <h2>Sign In</h2>
+    <SignIn />
    </>
     );   
 }
