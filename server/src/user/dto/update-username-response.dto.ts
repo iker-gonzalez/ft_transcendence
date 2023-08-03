@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserDto } from './user.dto';
 import { swaggerConstants } from '../../../config/swagger.constants';
 
-export class PatchUserDto {
+export class UpdateUsernameResponseDto {
   @ApiProperty({
     description: swaggerConstants.dto.updateName.updated.description,
     example: swaggerConstants.dto.updateName.updated.example,
@@ -10,7 +9,8 @@ export class PatchUserDto {
   updated: number;
 
   @ApiProperty({
-    description: swaggerConstants.dto.signinResponse.data.description,
+    description: swaggerConstants.dto.updateName.data.description,
+    example: swaggerConstants.dto.updateName.data.example,
   })
-  data: UserDto;
+  data: any;
 }

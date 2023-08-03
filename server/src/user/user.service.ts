@@ -5,13 +5,17 @@ import { MulterFileDto } from './dto/multer-file.dto';
 import { createWriteStream } from 'fs';
 import * as path from 'path';
 import * as fs from 'fs';
-import { PatchUserDto } from './dto/patch-user.dto';
+import { UpdateUsernameResponseDto } from './dto/update-username-response.dto';
+import { UpdateAvatarResponseDto } from './dto/update-avatar-response.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async updateUsername(user: User, username: string): Promise<PatchUserDto> {
+  async updateUsername(
+    user: User,
+    username: string,
+  ): Promise<UpdateUsernameResponseDto> {
     const userData = await this.prisma.user.findUnique({
       where: {
         id: user.id,
@@ -33,11 +37,18 @@ export class UserService {
 
     return {
       updated: 1,
-      data: newUserData,
+      data: {
+        id: newUserData.id,
+        intraId: newUserData.intraId,
+        username: newUserData.username,
+      },
     };
   }
 
-  async updateAvatar(user: User, file: MulterFileDto): Promise<PatchUserDto> {
+  async updateAvatar(
+    user: User,
+    file: MulterFileDto,
+  ): Promise<UpdateAvatarResponseDto> {
     if (!file) {
       throw new BadRequestException();
     }
@@ -84,6 +95,10 @@ export class UserService {
       },
     });
 
-    return { updated: 1, data: newUserData };
+    return { updated: 1, data: {
+      id: user.id,
+      intraId: user.intraId,
+      avatar: newUserData.avatar,
+    } };
   }
 }
