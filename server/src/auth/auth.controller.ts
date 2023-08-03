@@ -4,6 +4,7 @@ import { IntraSigninDto } from './dto/intra-signin.dto';
 import { SigninResponseDto } from './dto/signin-response';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -29,6 +30,10 @@ export class AuthController {
   })
   @ApiUnauthorizedResponse({
     description: swaggerConstants.auth.signin.unauthorized.description,
+  })
+  @ApiBody({
+    type: IntraSigninDto,
+    description: swaggerConstants.auth.signin.body.description,
   })
   @HttpCode(HttpStatus.OK)
   signinUser(

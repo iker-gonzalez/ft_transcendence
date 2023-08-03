@@ -13,6 +13,9 @@ export const swaggerConstants = {
       unauthorized: {
         description: 'OTP code is invalid.',
       },
+      body: {
+        description: 'OTP must be provided only if 2FA is enabled.',
+      },
     },
   },
   twofa: {
@@ -74,6 +77,9 @@ export const swaggerConstants = {
         description:
           'File is not valid, e.g. not provided, not image, too small or too big.',
       },
+      body: {
+        description: 'Provide binary file to be uploaded as avatar.',
+      },
     },
   },
   friends: {
@@ -94,7 +100,7 @@ export const swaggerConstants = {
     },
     get: {
       summary:
-        'If friendId is provided, returns friend data. Otherwise, returns current user friends list.',
+        'Returns friends of specified user. Otherwise, returns friends list of current user.',
       ok: {
         description: 'Returns user friends list.',
       },
@@ -115,6 +121,11 @@ export const swaggerConstants = {
       },
       bad: {
         description: 'Invalid friend id or friend not found.',
+      },
+    },
+    param: {
+      friendId: {
+        description: 'If friendId is not provided, returns all friends',
       },
     },
   },
