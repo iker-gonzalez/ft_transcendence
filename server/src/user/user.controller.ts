@@ -21,7 +21,6 @@ import { User } from '@prisma/client';
 import { MeDto } from './dto/me.dto';
 import { UsernameDto } from './dto/username.dto';
 import { UserService } from './user.service';
-import { PatchUserDto } from './dto/patch-user.dto';
 import { swaggerConstants } from '../../config/swagger.constants';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterFileDto } from './dto/multer-file.dto';
@@ -75,7 +74,7 @@ export class UserController {
   })
   @ApiOkResponse({
     description: swaggerConstants.users.avatar.ok.description,
-    type: PatchUserDto,
+    type: UpdateAvatarResponseDto,
   })
   @ApiUnauthorizedResponse({
     description: swaggerConstants.users.avatar.unauthorized.description,
