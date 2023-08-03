@@ -305,7 +305,26 @@ export const swaggerConstants = {
         example: 1,
       },
       data: {
-        description: 'Updated user data',
+        description: 'Updated username',
+        example: {
+          id: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+          intraId: 12345,
+          username: 'jdoe',
+        },
+      },
+    },
+    updateAvatar: {
+      updated: {
+        description: 'Number of updated resources',
+        example: 1,
+      },
+      data: {
+        description: 'Updated avatar',
+        example: {
+          id: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+          intraId: 12345,
+          avatar: 'http://localhost:3000/uploads/avatars/jdoe.jpg',
+        },
       },
     },
     userDto: {
