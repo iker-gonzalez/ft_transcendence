@@ -305,7 +305,12 @@ export const swaggerConstants = {
         example: 1,
       },
       data: {
-        description: 'Updated user data',
+        description: 'Updated username',
+        example: {
+          id: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+          intraId: 12345,
+          username: 'jdoe',
+        },
       },
     },
     userDto: {
