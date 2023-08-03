@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -79,6 +80,18 @@ export class UserController {
   })
   @ApiBadRequestResponse({
     description: swaggerConstants.users.avatar.bad.description,
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        avatar: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+    description: swaggerConstants.users.avatar.body.description,
   })
   @Patch('/avatar')
   @UseInterceptors(FileInterceptor('avatar'))
