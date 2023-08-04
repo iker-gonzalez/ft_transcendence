@@ -2,14 +2,17 @@ import React from 'react';
 import SignIn from "./components/SignIn";
 
 function App() {
-    //const onClickButton = () => alert("Button clicked");
+    const handleSignIn = (username: string, password: string) => {
+        // Handle the sign-in logic here, such as sending the credentials to a server for authentication.
+        
+      };    
+      
     return (
-    <>
-        <h1>42 Pong Game!!!!</h1>
-        <h2>Sign In</h2>
-        <SignIn />
-    </>
-    );   
-}
+        <div>
+          <h1>Sign In</h1>
+          <SignIn onSignIn={handleSignIn} />
+        </div>
+      );
+    };
 
 export default App;

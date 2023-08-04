@@ -1,26 +1,43 @@
 import React, { useState } from 'react';
 
-function Signin() {
-
-    return (
-        <>
-            <form>
-                <div>
-                    <label htmlFor="username"><b>Username</b></label>
-                    <input type="text" placeholder="Enter Username" name="username" required />
-
-                    <label htmlFor="password"><b>Password</b></label>
-                    <input type="password" placeholder="Enter Password" name="password" />
-
-                    <button type="submit">Login</button>
-                    <label>
-                        <input type="checkbox" name="remember" />
-                        <span>Remember me the password</span>
-                    </label>
-                </div>
-            </form>
-        </>
-    );
+interface SignInProps {
+  onSignIn: (username: string, password: string) => void;
 }
 
-export default Signin;
+function SignIn({ onSignIn }: SignInProps) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    onSignIn(username, password);
+    setUsername('');
+    setPassword('');
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="username">Username:</label>
+        <input
+          type="text"
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <div>
+        <label htmlFor="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <button type="submit">Sign In</button>
+    </form>
+  );
+}
+
+export default SignIn;
