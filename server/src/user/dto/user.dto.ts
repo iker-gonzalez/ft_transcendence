@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '@prisma/client';
 import { swaggerConstants } from '../../../config/swagger.constants';
 
-export class UserDto implements User {
+export class UserDto {
   @ApiProperty({
     description: swaggerConstants.dto.userDto.id.description,
     example: swaggerConstants.dto.userDto.id.example,
@@ -20,12 +19,6 @@ export class UserDto implements User {
     example: swaggerConstants.dto.userDto.updatedAt.example,
   })
   updatedAt: Date;
-
-  @ApiProperty({
-    description: swaggerConstants.dto.userDto.twoFactorAuthSecret.description,
-    example: swaggerConstants.dto.userDto.twoFactorAuthSecret.example,
-  })
-  twoFactorAuthSecret: string;
 
   @ApiProperty({
     description:
