@@ -340,10 +340,6 @@ export const swaggerConstants = {
         description: 'Profile last update date',
         example: new Date(),
       },
-      twoFactorAuthSecret: {
-        description: 'User 2FA secret',
-        example: 'JBSWY3DPEHPK3PXP',
-      },
       isTwoFactorAuthEnabled: {
         description: 'User 2FA enabled',
         example: true,

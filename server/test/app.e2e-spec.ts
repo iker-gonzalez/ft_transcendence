@@ -404,6 +404,9 @@ describe('App e2e', () => {
           userData,
         );
 
+        // 2FA secret is not shared with client
+        delete user.twoFactorAuthSecret;
+
         await pactum
           .spec()
           .get('/users/me')
