@@ -45,6 +45,8 @@ export class UserController {
   })
   @Get('me')
   getme(@GetUser() user: User): MeDto {
+    // Do not share secret with client
+    delete user.twoFactorAuthSecret;
     return { data: user };
   }
 
