@@ -123,11 +123,6 @@ export const swaggerConstants = {
         description: 'Invalid friend id or friend not found.',
       },
     },
-    param: {
-      friendId: {
-        description: 'If friendId is not provided, returns all friends',
-      },
-    },
   },
   game: {
     sessions: {
@@ -288,6 +283,18 @@ export const swaggerConstants = {
         },
       },
     },
+    friendsParams: {
+      friendId: {
+        description: 'Intra ID of friend',
+        example: 12346,
+      },
+    },
+    getFriendsParams: {
+      friendId: {
+        description: 'Intra ID of user to retrieve friends from. Optional.',
+        example: 12346,
+      },
+    },
     twoFactorSecret: {
       secret: {
         description: 'Secret key for 2FA',
@@ -339,10 +346,6 @@ export const swaggerConstants = {
       updatedAt: {
         description: 'Profile last update date',
         example: new Date(),
-      },
-      twoFactorAuthSecret: {
-        description: 'User 2FA secret',
-        example: 'JBSWY3DPEHPK3PXP',
       },
       isTwoFactorAuthEnabled: {
         description: 'User 2FA enabled',
