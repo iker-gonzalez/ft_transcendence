@@ -404,6 +404,9 @@ describe('App e2e', () => {
           userData,
         );
 
+        // 2FA secret is not shared with client
+        delete user.twoFactorAuthSecret;
+
         await pactum
           .spec()
           .get('/users/me')
@@ -947,7 +950,7 @@ describe('App e2e', () => {
         expect(updatedUserFriends).toHaveLength(1);
       });
 
-      test('it should return 400 if friend id is not a valid number', async () => {
+      test('it should return 400 if friendId is not a valid number', async () => {
         // Create user first
         const user1 = await createUser(
           prisma,
@@ -1033,8 +1036,29 @@ describe('App e2e', () => {
       });
 
       test('it should return 400 if specified user does not exist', async () => {
-        // Create user first
-        await createUser(prisma, intraService, intraUserToken, userData);
+        const user = await createUserWithFriends(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+          [userData2],
+        );
+
+        await pactum
+          .spec()
+          .get(`/friends/${userData3.intraId}}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(400);
+      });
+
+      test('it should return 400 if user ID is not valid', async () => {
+        const user = await createUserWithFriends(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+          [userData2],
+        );
 
         await pactum
           .spec()
