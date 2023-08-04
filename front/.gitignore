@@ -23,5 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # exclude build js files:
-/front/*.js
-/front/**/*.js
+*.js
+/src/*.js
