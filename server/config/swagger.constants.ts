@@ -123,11 +123,6 @@ export const swaggerConstants = {
         description: 'Invalid friend id or friend not found.',
       },
     },
-    param: {
-      friendId: {
-        description: 'If friendId is not provided, returns all friends',
-      },
-    },
   },
   game: {
     sessions: {
@@ -286,6 +281,18 @@ export const swaggerConstants = {
             },
           ],
         },
+      },
+    },
+    friendsParams: {
+      friendId: {
+        description: 'Intra ID of friend',
+        example: 12346,
+      },
+    },
+    getFriendsParams: {
+      friendId: {
+        description: 'Intra ID of user to retrieve friends from. Optional.',
+        example: 12346,
       },
     },
     twoFactorSecret: {

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Controller,
   Delete,
   Get,
@@ -27,6 +26,8 @@ import { swaggerConstants } from '../../config/swagger.constants';
 import { AddFriendResponseDto } from './dto/add-friend-response.dto';
 import { GetFriendsResponseDto } from './dto/get-friends-response.dto';
 import { DeleteFriendResponseDto } from './dto/delete-friend-response.dto';
+import { GetFriendsParamsDto } from './dto/get-friends-params.dto';
+import { FriendsParamsDto } from './dto/friends-params.dto';
 
 @ApiTags('Friends')
 @Controller('friends')
@@ -54,19 +55,15 @@ export class FriendsController {
   @UseGuards(JwtGuard)
   async addFriend(
     @GetUser() user: User,
-    @Param('friendId') friendIntraId: number,
+    @Param() params: FriendsParamsDto,
   ): Promise<any> {
-    if (isNaN(friendIntraId))
-      throw new BadRequestException('You must provide a friend id');
-
-    return this.friendsService.addFriend(Number(friendIntraId), user);
+    return this.friendsService.addFriend(Number(params.friendId), user);
   }
 
   @Get(':friendId?')
   @ApiParam({
     name: 'friendId',
     required: false,
-    description: swaggerConstants.friends.param.friendId.description,
   })
   @ApiOperation({
     summary: swaggerConstants.friends.get.summary,
@@ -84,12 +81,9 @@ export class FriendsController {
   @UseGuards(JwtGuard)
   async getFriends(
     @GetUser() user: User,
-    @Param('friendId') friendIntraId: number,
+    @Param() params: GetFriendsParamsDto,
   ): Promise<GetFriendsResponseDto> {
-    if (friendIntraId && isNaN(friendIntraId))
-      throw new BadRequestException('User ID not valid');
-
-    return this.friendsService.getFriends(Number(friendIntraId), user);
+    return this.friendsService.getFriends(params.friendId, user);
   }
 
   @Delete(':friendId')
@@ -109,12 +103,8 @@ export class FriendsController {
   @UseGuards(JwtGuard)
   async deleteFriend(
     @GetUser() user: User,
-    @Param('friendId') friendId: number,
+    @Param() params: FriendsParamsDto,
   ): Promise<any> {
-    if (isNaN(friendId)) {
-      throw new BadRequestException('User ID not valid');
-    }
-
-    return this.friendsService.deleteFriend(Number(friendId), user);
+    return this.friendsService.deleteFriend(Number(params.friendId), user);
   }
 }
