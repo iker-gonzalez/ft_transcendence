@@ -14,7 +14,8 @@ function Signin() {
 
                     <button type="submit">Login</button>
                     <label>
-                        <input type="checkbox" name="remember">Remember me the password</input>
+                        <input type="checkbox" name="remember" />
+                        <span>Remember me the password</span>
                     </label>
                 </div>
             </form>
