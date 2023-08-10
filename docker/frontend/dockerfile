@@ -1,10 +1,5 @@
 FROM node:latest
 
-# Install tsc
-RUN npm install -g typescript
+COPY ./docker/frontend/run.sh ./
 
-RUN mkdir front
-
-COPY ./docker/frontend/test_script_front.sh ./
-
-CMD ["sh", "test_script_front.sh"]
+CMD ["sh", "run.sh"]
