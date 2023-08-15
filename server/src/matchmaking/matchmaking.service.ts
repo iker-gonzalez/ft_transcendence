@@ -3,6 +3,7 @@ import { NewQueuedUserDto } from './dto/new-queued-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { Server } from 'socket.io';
+import { NewQueuedUserResponseDto } from './dto/new-queued-user-response.dto';
 
 @Injectable()
 export class MatchmakingService {
@@ -97,10 +98,12 @@ export class MatchmakingService {
       }
 
       for (let user of session.players) {
-        server.emit(`newSession/${user.intraId}`, {
+        const newSessionPayload: NewQueuedUserResponseDto = {
           success: true,
           data: session,
-        });
+        };
+
+        server.emit(`newSession/${user.intraId}`, newSessionPayload);
       }
     }
   }

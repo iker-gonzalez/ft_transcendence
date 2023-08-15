@@ -2,15 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-import { swaggerConfig } from 'config/swagger.config';
+import { swaggerAsyncConfig, swaggerConfig } from 'config/swagger.config';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { AsyncApiDocumentBuilder, AsyncApiModule } from 'nestjs-asyncapi';
+import { swaggerAsyncConstants } from 'config/swagger-async.constants';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors();
 
+  // Documentation for REST API
   const config: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
     .setTitle(swaggerConfig.title)
     .setDescription(swaggerConfig.description)
@@ -21,6 +24,24 @@ async function bootstrap() {
     app,
     SwaggerModule.createDocument(app, config),
   );
+
+  // Documentation for sockets
+  const asyncapiDocument = await AsyncApiModule.createDocument(
+    app,
+    new AsyncApiDocumentBuilder()
+      .setTitle(swaggerAsyncConfig.title)
+      .setDescription(swaggerAsyncConfig.description)
+      .setVersion(swaggerAsyncConfig.version)
+      .setDefaultContentType('application/json')
+      .addSecurity('user-password', { type: 'userPassword' })
+      .addServer(swaggerAsyncConstants.matchmaking.slug, {
+        url: 'ws://localhost:3000',
+        protocol: 'socket.io',
+        description: swaggerAsyncConstants.matchmaking.description,
+      })
+      .build(),
+  );
+  await AsyncApiModule.setup(swaggerAsyncConfig.slug, app, asyncapiDocument);
 
   app.useGlobalPipes(
     new ValidationPipe({
