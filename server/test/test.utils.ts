@@ -3,6 +3,8 @@ import { IntraUserDataDto } from 'src/auth/dto/intra-user-data.dto';
 import { IntraService } from 'src/intra/intra.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as pactum from 'pactum';
+import { Socket, io } from 'socket.io-client';
+import { INestApplication } from '@nestjs/common';
 
 export async function createUser(
   prisma: PrismaService,
@@ -87,4 +89,18 @@ export async function createUserWithFriends(
   }
 
   return user;
+}
+
+export function createSocketClient(app: INestApplication): Socket {
+  const { port } = app.getHttpServer().address();
+
+  return io(`http://0.0.0.0:${port}/matchmaking`, {
+    transports: ['websocket'],
+  });
+}
+
+export function disconnectSockets(sockets: Socket[]): void {
+  for (const socket of sockets) {
+    if (socket.connected) socket.disconnect();
+  }
 }

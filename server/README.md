@@ -38,7 +38,10 @@ $ npm run start:dev
 
 ## API documentation
 
-Once you run the app, visit http://localhost:3000/api
+Once you run the app, to read the documentation, visit:
+
+- http://localhost:3000/api for the REST endpoints
+- http://localhost:3000/socket-api for the socket endpoints
 
 ## Test
 

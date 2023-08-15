@@ -26,6 +26,25 @@ model User {
   friends Friend[]
 }
 
+model UserGameSession {
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+
+  players UserIntraData[]
+}
+
+model UserIntraData {
+  id String @id @unique @default(uuid())
+
+  intraId  Int
+  username String
+  avatar   String
+  email    String
+
+  UserGameSession   UserGameSession? @relation(fields: [userGameSessionId], references: [id])
+  userGameSessionId String?
+}
+
 model Friend {
   intraId Int @unique
 
