@@ -1,7 +1,16 @@
-export const swaggerConfig = {
+const commonConfig = {
   title: 'Transcendence API',
-  description:
-    'The API of the BE app required to power the Transcendence 42 project.',
   version: '1.0',
+};
+
+export const swaggerConfig = {
+  ...commonConfig,
+  description: 'Description of the REST endpoint of Transcendence project API.',
   slug: 'api',
+};
+
+export const swaggerAsyncConfig = {
+  ...commonConfig,
+  description: 'Description of the sockets of Transcendence project Async API.',
+  slug: 'socket-api',
 };
