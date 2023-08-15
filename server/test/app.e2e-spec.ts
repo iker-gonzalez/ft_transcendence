@@ -5,13 +5,18 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { IntraService } from '../src/intra/intra.service';
 import * as pactum from 'pactum';
 import {
+  createSocketClient,
   createGameSession,
   createUser,
   createUserWithFriends,
+  disconnectSockets,
 } from './test.utils';
 import * as fs from 'fs';
 import { TwoFactorAuthService } from '../src/two-factor-auth/two-factor-auth.service';
 import { testUserData } from '../config/app.constants';
+import { User } from '@prisma/client';
+import { IntraUserDataDto } from 'src/auth/dto/intra-user-data.dto';
+import { Socket } from 'socket.io-client';
 
 describe('App e2e', () => {
   const port = 3333;
@@ -47,6 +52,9 @@ describe('App e2e', () => {
 
   const intraUserToken =
     'de08a5e57571452221f95fc44d0073d2a383178d7d893d99c29ad955103b3981';
+
+  const uuidRegex =
+    /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -1168,9 +1176,6 @@ describe('App e2e', () => {
   });
 
   describe('Game', () => {
-    const uuidRegex =
-      /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
-
     const ball = {
       x: 10 / 2,
       y: 10 / 2,
@@ -1388,6 +1393,298 @@ describe('App e2e', () => {
           expect(sessionData.players[0]).toMatchObject(session.players[0]);
           expect(sessionData.players[1]).toMatchObject(session.players[1]);
         });
+      });
+    });
+  });
+
+  describe('Sockets', () => {
+    let user1: User, user2: User, user3: User;
+
+    describe('matchmaking', () => {
+      beforeEach(async () => {
+        user1 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        user2 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData2,
+        );
+
+        user3 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData3,
+        );
+      });
+
+      it('should emit userJoined event on newUser', (done) => {
+        expect.assertions(2);
+
+        createUser(prisma, intraService, intraUserToken, userData).then(
+          (user: User) => {
+            const socket = createSocketClient(app);
+
+            socket.on('connect', async () => {
+              socket.emit('newUser', JSON.stringify({ intraId: user.intraId }));
+            });
+
+            socket.on(`userJoined/${user.intraId}`, (data) => {
+              expect(data).toStrictEqual({
+                queued: true,
+              });
+
+              socket.disconnect();
+
+              prisma.userGameSession.findMany().then((userGameSessions) => {
+                expect(userGameSessions).toHaveLength(0);
+                done();
+              });
+            });
+          },
+        );
+      });
+
+      it('should create 1 game session when 2 users are queued', (done) => {
+        expect.assertions(9);
+
+        Promise.allSettled([
+          createUser(prisma, intraService, intraUserToken, userData),
+          createUser(prisma, intraService, intraUserToken, userData2),
+        ]).then((users) => {
+          const allUsers: IntraUserDataDto[] = users
+            .filter((result) => result.status === 'fulfilled')
+            .map((result: any) => result.value);
+
+          const allSockets: Socket[] = [
+            createSocketClient(app),
+            createSocketClient(app),
+          ];
+
+          allSockets.forEach((socket, i) => {
+            // Connecting users
+            socket.on('connect', async () => {
+              socket.emit(
+                'newUser',
+                JSON.stringify({ intraId: allUsers[i].intraId }),
+              );
+            });
+
+            // Users joined
+            socket.on(`userJoined/${allUsers[i].intraId}`, (data) => {
+              expect(data).toStrictEqual({
+                queued: true,
+              });
+            });
+
+            // New session created for both users
+            socket.on(`newSession/${allUsers[i].intraId}`, async (data) => {
+              const sessionData = data.data;
+
+              expect(sessionData.players).toHaveLength(2);
+              expect(sessionData.players[0]).toHaveProperty(
+                'intraId',
+                userData.intraId,
+              );
+              expect(sessionData.players[1]).toHaveProperty(
+                'intraId',
+                userData2.intraId,
+              );
+
+              if (allUsers[i].intraId === userData2.intraId) {
+                disconnectSockets(allSockets);
+
+                prisma.userGameSession.findMany().then((userGameSessions) => {
+                  expect(userGameSessions).toHaveLength(1);
+                  done();
+                });
+              }
+            });
+          });
+        });
+      });
+
+      it('should remove user from queue when they disconnect', (done) => {
+        expect.assertions(10);
+
+        // Create and disconnect first user
+        new Promise((resolve) => {
+          createUser(prisma, intraService, intraUserToken, userData).then(
+            (user) => {
+              const socket = createSocketClient(app);
+
+              socket.on('connect', async () => {
+                socket.emit(
+                  'newUser',
+                  JSON.stringify({ intraId: user.intraId }),
+                );
+              });
+
+              socket.on(`userJoined/${user.intraId}`, (data) => {
+                expect(data).toStrictEqual({
+                  queued: true,
+                });
+
+                socket.disconnect();
+                resolve(undefined);
+              });
+            },
+          );
+        }).then(() => {
+          Promise.allSettled([
+            createUser(prisma, intraService, intraUserToken, userData2),
+            createUser(prisma, intraService, intraUserToken, userData3),
+          ]).then((users) => {
+            const allUsers: IntraUserDataDto[] = users
+              .filter((result) => result.status === 'fulfilled')
+              .map((result: any) => result.value);
+
+            const allSockets = [
+              createSocketClient(app),
+              createSocketClient(app),
+            ];
+
+            allSockets.forEach((socket, i) => {
+              const user = allUsers[i];
+
+              socket.on('connect', async () => {
+                socket.emit(
+                  'newUser',
+                  JSON.stringify({ intraId: user.intraId }),
+                );
+              });
+
+              socket.on(`userJoined/${user.intraId}`, (data) => {
+                expect(data).toStrictEqual({
+                  queued: true,
+                });
+              });
+
+              socket.on(`newSession/${user.intraId}`, async (data) => {
+                const sessionData = data.data;
+
+                expect(sessionData.players).toHaveLength(2);
+                expect(sessionData.players[0]).toHaveProperty(
+                  'intraId',
+                  userData2.intraId,
+                );
+                expect(sessionData.players[1]).toHaveProperty(
+                  'intraId',
+                  userData3.intraId,
+                );
+
+                if (user.intraId === user3.intraId) {
+                  disconnectSockets(allSockets);
+
+                  prisma.userGameSession.findMany().then((userGameSessions) => {
+                    expect(userGameSessions).toHaveLength(1);
+                    done();
+                  });
+                }
+              });
+            });
+          });
+        });
+      });
+
+      it('should emit error if intraId is not valid number', (done) => {
+        expect.assertions(2);
+
+        const invalidIntraId = 'invalid';
+        const socket = createSocketClient(app);
+
+        socket.on('connect', async () => {
+          socket.emit('newUser', JSON.stringify({ intraId: invalidIntraId }));
+        });
+
+        socket.on(`userJoined/${invalidIntraId}`, (data) => {
+          expect(data).toStrictEqual({
+            queued: false,
+            message: 'Invalid intraId',
+          });
+
+          socket.disconnect();
+
+          prisma.userGameSession.findMany().then((userGameSessions) => {
+            expect(userGameSessions).toHaveLength(0);
+            done();
+          });
+        });
+      });
+
+      it('should emit error if user is not found', (done) => {
+        expect.assertions(2);
+
+        const unsignedUserIntraId = 6666;
+        const socket = createSocketClient(app);
+
+        socket.on('connect', async () => {
+          socket.emit(
+            'newUser',
+            JSON.stringify({ intraId: unsignedUserIntraId }),
+          );
+        });
+
+        socket.on(`userJoined/${unsignedUserIntraId}`, (data) => {
+          expect(data).toStrictEqual({
+            queued: false,
+            message: 'User not found',
+          });
+
+          socket.disconnect();
+
+          prisma.userGameSession.findMany().then((userGameSessions) => {
+            expect(userGameSessions).toHaveLength(0);
+            done();
+          });
+        });
+      });
+
+      it('should emit error if user is already queued', (done) => {
+        expect.assertions(3);
+
+        createUser(prisma, intraService, intraUserToken, userData).then(
+          (user) => {
+            let isUserQueued = false;
+            const socket = createSocketClient(app);
+
+            socket.on('connect', async () => {
+              socket.emit('newUser', JSON.stringify({ intraId: user.intraId }));
+            });
+
+            socket.on(`userJoined/${user.intraId}`, (data) => {
+              if (!isUserQueued) {
+                expect(data).toStrictEqual({
+                  queued: true,
+                });
+
+                isUserQueued = true;
+                socket.emit(
+                  'newUser',
+                  JSON.stringify({ intraId: user.intraId }),
+                );
+              } else {
+                expect(data).toStrictEqual({
+                  queued: true,
+                  message: 'Already queued',
+                });
+
+                socket.disconnect();
+
+                prisma.userGameSession.findMany().then((userGameSessions) => {
+                  expect(userGameSessions).toHaveLength(0);
+                  done();
+                });
+              }
+            });
+          },
+        );
       });
     });
   });
