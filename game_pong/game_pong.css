@@ -15,14 +15,6 @@ body
 canvas
 {
     border: 1px dotted darkgray;
-    width: 80%; 
-}
-
-@media screen and (min-width: 100px) and (min-height: 100px)
-{
-    #gamePong
-    {
-        width: 80%;
-        height: 80%;
-    }
+    max-width: 90%;
+    max-height: 90%;    
 }
