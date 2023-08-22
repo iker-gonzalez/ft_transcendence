@@ -65,18 +65,24 @@ const fps = 50;
       ballData.y + ballData.radius + thickness > canvas.height
     ) {
       ballData.velocityY = -ballData.velocityY;
-      sounds.wall.play();
+      sounds.wall.play().catch(function (error) {
+        console.log("Chrome cannot play sound without user interaction first");
+      });
     }
 
     if (ballData.x + ballData.radius < 0 && !ballData.reset) {
       bot.score++;
-      sounds.botScore.play();
+      sounds.botScore.play().catch(function (error) {
+        console.log("Chrome cannot play sound without user interaction first");
+      });
       let { newBallData, newUserData } = resetBall(ballData, user1);
       ballData = newBallData;
       user1 = newUserData;
     } else if (ballData.x - ballData.radius > canvas.width && !ballData.reset) {
       user1.score++;
-      sounds.userScore.play();
+      sounds.userScore.play().catch(function (error) {
+        console.log("Chrome cannot play sound without user interaction first");
+      });
       let { newBallData, newUserData } = resetBall(ballData, user1);
       ballData = newBallData;
       user1 = newUserData;
@@ -85,7 +91,9 @@ const fps = 50;
     let player = ballData.x + ballData.radius < canvas.width / 2 ? user1 : bot;
 
     if (checkCollision(ballData, player)) {
-      sounds.hit.play();
+      sounds.hit.play().catch(function (error) {
+        console.log("Chrome cannot play sound without user interaction first");
+      });
       let collidePoint = ballData.y - (player.y + player.height / 2);
       collidePoint = collidePoint / (player.height / 2);
 
@@ -232,7 +240,6 @@ const fps = 50;
         // DOWN ARROW key
         user1.y += userSpeedInput * 5;
       }
-
       if (event.keyCode === 27) {
         // ESCAPE key
         alert("🚦 PAUSE");
