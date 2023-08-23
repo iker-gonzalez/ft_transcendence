@@ -245,29 +245,23 @@ const fps = 50;
         alert("🚦 PAUSE");
       }
     });
+
     canvas.addEventListener("mousemove", function (event) {
       let rect = canvas.getBoundingClientRect();
       user1.y = event.clientY - rect.top - user1.height / 2;
       if (user1.y < thickness + ballData.radius * slit) {
         user1.y = thickness + ballData.radius * slit;
-      } else if (
-        user1.y >
-        canvas.height - thickness - user1.height - ballData.radius * slit
-      ) {
-        user1.y =
-          canvas.height - thickness - user1.height - ballData.radius * slit;
+      } else if (user1.y > (canvas.height - thickness - user1.height - ballData.radius * slit)) {
+        user1.y = canvas.height - thickness - user1.height - ballData.radius * slit;
       }
     });
-    canvas.addEventListener("touchmove", function (event) {
+
+    canvas.addEventListener("touchstart", function (event) {
       user1.y = event.clientY - user1.height / 2;
       if (user1.y < thickness + ballData.radius * slit) {
         user1.y = thickness + ballData.radius * slit;
-      } else if (
-        user1.y >
-        canvas.height - thickness - user1.height - ballData.radius * slit
-      ) {
-        user1.y =
-          canvas.height - thickness - user1.height - ballData.radius * slit;
+      } else if (user1.y > (canvas.height - thickness - user1.height - ballData.radius * slit)) {
+        user1.y = canvas.height - thickness - user1.height - ballData.radius * slit;
       }
     });
 
