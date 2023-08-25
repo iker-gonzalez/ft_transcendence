@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserGameSession } from '@prisma/client';
 import { IsBoolean, IsObject } from 'class-validator';
-import { swaggerAsyncConstants } from 'config/swagger-async.constants';
+import { swaggerAsyncConstants } from '../../../config/swagger-async.constants';
 
 export class NewQueuedUserResponseDto {
   @ApiProperty({

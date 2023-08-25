@@ -10,7 +10,7 @@ import { Socket } from 'socket.io-client';
 import { AsyncApiPub, AsyncApiSub } from 'nestjs-asyncapi';
 import { NewQueuedUserDto } from './dto/new-queued-user.dto';
 import { NewQueuedUserResponseDto } from './dto/new-queued-user-response.dto';
-import { swaggerAsyncConstants } from 'config/swagger-async.constants';
+import { swaggerAsyncConstants } from '../../config/swagger-async.constants';
 
 @WebSocketGateway({
   namespace: 'matchmaking',
