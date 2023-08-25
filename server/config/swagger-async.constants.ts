@@ -5,13 +5,13 @@ export const swaggerAsyncConstants = {
       'Users hit this endpoint to be added to the matchmaking queue. As soon as 2 users are in the queue, they are matched together and a game session is created.',
     endpoints: {
       newUser: {
-        channel: 'matchmaking/newUser',
+        channel: 'matchmaking:newUser',
         description: 'Users send this message to join the matchmaking queue',
       },
       newUserIntraId: {
-        channel: 'matchmaking/newUser/{intraId}',
+        channel: 'matchmaking:newUser/{intraId}',
         description:
-          'Users receive this message when they are matched to a game session',
+          "Users receive this message when they are matched to a game session. In case the intraId is not valid, the user doesn't exist or there was an error creating the session, an error payload is returned by the socket.",
       },
     },
   },

@@ -1,7 +1,7 @@
 import { IsDefined, IsInt, IsNumber, IsPositive } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { swaggerAsyncConstants } from 'config/swagger-async.constants';
+import { swaggerAsyncConstants } from '../../../config/swagger-async.constants';
 
 export class NewQueuedUserDto {
   @ApiProperty({
