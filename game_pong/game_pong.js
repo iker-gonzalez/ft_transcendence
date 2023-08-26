@@ -22,21 +22,42 @@ const fps = 50;
 (async () => {
   const canvas = document.getElementById("gamePong");
 
-  function game(ballData, user1, bot, match_finish, match_points, sounds) {
+  function game(
+    isPlayer1,
+    ballData,
+    user1,
+    bot,
+    match_finish,
+    match_points,
+    sounds
+  ) {
     if (!match_finish) {
       setTimeout(() => {
         requestAnimationFrame(function () {
-          game(ballData, user1, bot, match_finish, match_points, sounds);
+          game(
+            isPlayer1,
+            ballData,
+            user1,
+            bot,
+            match_finish,
+            match_points,
+            sounds
+          );
         });
       }, 1000 / fps);
 
-      match(ballData, user1, bot, sounds);
+      if (isPlayer1 === true) {
+        matchUser1(ballData, user1, bot, sounds);
+      } else {
+        matchUser2(ballData, user1, bot, sounds);
+      }
 
       render(ballData, user1, bot, match_finish, match_points);
     }
   }
 
-  function match(ballData, user1, bot, sounds) {
+  function matchUser1(ballData, user1, bot, sounds) {
+    console.log("Match User1");
     ballData.x += ballData.velocityX;
     ballData.y += ballData.velocityY;
 
@@ -49,6 +70,54 @@ const fps = 50;
       user1.y =
         canvas.height - thickness - user1.height - ballData.radius * slit;
     }
+
+    if (
+      ballData.y - ballData.radius - thickness < 0 ||
+      ballData.y + ballData.radius + thickness > canvas.height
+    ) {
+      ballData.velocityY = -ballData.velocityY;
+      sounds.wall.play().catch(function (error) {
+        // console.log("Chrome cannot play sound without user interaction first");
+      });
+    }
+
+    if (ballData.x + ballData.radius < 0 && !ballData.reset) {
+      let { newBallData, newUserData } = resetBall(ballData, user1);
+      ballData = newBallData;
+      user1 = newUserData;
+    } else if (ballData.x - ballData.radius > canvas.width && !ballData.reset) {
+      user1.score++;
+      sounds.userScore.play().catch(function (error) {
+        // console.log("Chrome cannot play sound without user interaction first");
+      });
+      let { newBallData, newUserData } = resetBall(ballData, user1);
+      ballData = newBallData;
+      user1 = newUserData;
+    }
+
+    let player = ballData.x + ballData.radius < canvas.width / 2 ? user1 : bot;
+
+    if (checkCollision(ballData, player)) {
+      sounds.hit.play().catch(function (error) {
+        // console.log("Chrome cannot play sound without user interaction first");
+      });
+      let collidePoint = ballData.y - (player.y + player.height / 2);
+      collidePoint = collidePoint / (player.height / 2);
+
+      let angleRad = (Math.PI / 4) * collidePoint;
+
+      let direction = ballData.x + ballData.radius < canvas.width / 2 ? 1 : -1;
+      ballData.velocityX = direction * ballData.speed * Math.cos(angleRad);
+      ballData.velocityY = ballData.speed * Math.sin(angleRad);
+
+      ballData.speed += 0.1;
+      user1.height -= 2;
+    }
+  }
+
+  function matchUser2(ballData, user1, bot, sounds) {
+    ballData.x += ballData.velocityX;
+    ballData.y += ballData.velocityY;
 
     bot.y += (ballData.y - (bot.y + bot.height / 2)) * 0.1;
     if (bot.y < thickness + ballData.radius * slit) {
@@ -65,9 +134,6 @@ const fps = 50;
       ballData.y + ballData.radius + thickness > canvas.height
     ) {
       ballData.velocityY = -ballData.velocityY;
-      sounds.wall.play().catch(function (error) {
-        // console.log("Chrome cannot play sound without user interaction first");
-      });
     }
 
     if (ballData.x + ballData.radius < 0 && !ballData.reset) {
@@ -75,17 +141,11 @@ const fps = 50;
       sounds.botScore.play().catch(function (error) {
         // console.log("Chrome cannot play sound without user interaction first");
       });
-      let { newBallData, newUserData } = resetBall(ballData, user1);
+      let { newBallData } = resetBall(ballData, user1);
       ballData = newBallData;
-      user1 = newUserData;
     } else if (ballData.x - ballData.radius > canvas.width && !ballData.reset) {
-      user1.score++;
-      sounds.userScore.play().catch(function (error) {
-        // console.log("Chrome cannot play sound without user interaction first");
-      });
-      let { newBallData, newUserData } = resetBall(ballData, user1);
+      let { newBallData } = resetBall(ballData, user1);
       ballData = newBallData;
-      user1 = newUserData;
     }
 
     let player = ballData.x + ballData.radius < canvas.width / 2 ? user1 : bot;
@@ -251,8 +311,12 @@ const fps = 50;
       user1.y = event.clientY - rect.top - user1.height / 2;
       if (user1.y < thickness + ballData.radius * slit) {
         user1.y = thickness + ballData.radius * slit;
-      } else if (user1.y > (canvas.height - thickness - user1.height - ballData.radius * slit)) {
-        user1.y = canvas.height - thickness - user1.height - ballData.radius * slit;
+      } else if (
+        user1.y >
+        canvas.height - thickness - user1.height - ballData.radius * slit
+      ) {
+        user1.y =
+          canvas.height - thickness - user1.height - ballData.radius * slit;
       }
     });
 
@@ -260,15 +324,21 @@ const fps = 50;
       user1.y = event.clientY - user1.height / 2;
       if (user1.y < thickness + ballData.radius * slit) {
         user1.y = thickness + ballData.radius * slit;
-      } else if (user1.y > (canvas.height - thickness - user1.height - ballData.radius * slit)) {
-        user1.y = canvas.height - thickness - user1.height - ballData.radius * slit;
+      } else if (
+        user1.y >
+        canvas.height - thickness - user1.height - ballData.radius * slit
+      ) {
+        user1.y =
+          canvas.height - thickness - user1.height - ballData.radius * slit;
       }
     });
 
-    let res = await initializeSessionInDb(ballData, user1, user2);
+    const gamePlayerData = JSON.parse(sessionStorage.getItem("gamePlayerData"));
 
-    const ball = res.data.ball;
+    const isPlayer1 = Boolean(gamePlayerData?.isPlayer1);
 
-    game(ball, user1, bot, match_finish, match_points, sounds);
+    console.log("Session Storage :", isPlayer1);
+
+    game(isPlayer1, ballData, user1, bot, match_finish, match_points, sounds);
   })();
 })();
