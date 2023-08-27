@@ -26,9 +26,26 @@ export class GameDataService {
   }
 
   async onPlayerReady(server: Server, data: string): Promise<void> {
-    const { isUser1 } = JSON.parse(data);
+    const { isUser1, gameDataId } = JSON.parse(data);
 
-    server.emit(`opponentReady/user${isUser1 ? '1' : '2'}`);
+    const gameData = await this.prisma.gameDataSet.findUnique({
+      where: { gameDataId: gameDataId.toString() },
+    });
+
+    if (!gameData) {
+      return;
+    }
+
+    await this.prisma.gameDataSet.update({
+      where: { gameDataId: gameDataId.toString() },
+      data: isUser1 ? { user1Ready: true } : { user2Ready: true },
+    });
+
+    if ((isUser1 && gameData.user2Ready) || (!isUser1 && gameData.user1Ready)) {
+      server.emit('allOpponentsReady');
+    } else {
+      server.emit('awaitingOpponent');
+    }
   }
 
   async uploadGameData(server: Server, data: string): Promise<void> {
