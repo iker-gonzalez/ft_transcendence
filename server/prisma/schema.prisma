@@ -97,3 +97,9 @@ model GamePlayer {
 enum GameBallColor {
   WHITE
 }
+
+model GameDataSet {
+  id         String @id @unique @default(uuid())
+  gameDataId String @unique
+  gameData   String
+}
