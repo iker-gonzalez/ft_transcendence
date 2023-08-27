@@ -4,7 +4,6 @@ import {
   slit,
   thickness,
   user1,
-  user2,
   userSpeedInput,
 } from "./game_pong.constants.js";
 import {
@@ -13,16 +12,16 @@ import {
   drawDashedLine,
   drawRect,
   drawText,
-  initializeSessionInDb,
   initializeSounds,
 } from "./game_pong.functions.js";
 
-const fps = 50;
+const fps = 60;
 
 (async () => {
   const canvas = document.getElementById("gamePong");
 
   function game(
+    socket,
     isPlayer1,
     ballData,
     user1,
@@ -35,6 +34,7 @@ const fps = 50;
       setTimeout(() => {
         requestAnimationFrame(function () {
           game(
+            socket,
             isPlayer1,
             ballData,
             user1,
@@ -47,16 +47,41 @@ const fps = 50;
       }, 1000 / fps);
 
       if (isPlayer1 === true) {
-        matchUser1(ballData, user1, bot, sounds);
-      } else {
-        matchUser2(ballData, user1, bot, sounds);
-      }
+        socket.on("download/user2", async (data) => {
+          const downloadedData = JSON.parse(data);
+          bot = downloadedData.user2;
+        });
 
+        matchUser1(ballData, user1, sounds);
+
+        socket.emit(
+          "upload",
+          JSON.stringify({
+            isUser1: true,
+            gameDataId: 1111,
+            ball: ballData,
+            user1,
+          })
+        );
+      } else {
+        socket.on("download/user1", async (data) => {
+          const downloadedData = JSON.parse(data);
+          ballData = downloadedData.ball;
+          user1 = downloadedData.user1;
+        });
+
+        matchUser2(ballData, user1, bot, sounds);
+
+        socket.emit(
+          "upload",
+          JSON.stringify({ isUser1: false, gameDataId: 1111, user2: bot })
+        );
+      }
       render(ballData, user1, bot, match_finish, match_points);
     }
   }
 
-  function matchUser1(ballData, user1, bot, sounds) {
+  function matchUser1(ballData, user1, sounds) {
     console.log("Match User1");
     ballData.x += ballData.velocityX;
     ballData.y += ballData.velocityY;
@@ -164,7 +189,6 @@ const fps = 50;
       ballData.velocityY = ballData.speed * Math.sin(angleRad);
 
       ballData.speed += 0.1;
-      user1.height -= 2;
     }
   }
 
@@ -337,8 +361,59 @@ const fps = 50;
 
     const isPlayer1 = Boolean(gamePlayerData?.isPlayer1);
 
-    console.log("Session Storage :", isPlayer1);
+    // Connect to socket
+    let socket = io("http://localhost:3000/game-data", {
+      transports: ["websocket"],
+    });
 
-    game(isPlayer1, ballData, user1, bot, match_finish, match_points, sounds);
+    socket.on("connect_error", (error) => {
+      alert(
+        "There was an error connecting to the server. Deleting game session"
+      );
+      socket.emit("deleteGameSet", JSON.stringify({ gameDataId: 1111 }));
+    });
+
+    socket.on("disconnect", () => {
+      console.log("socket disconnected");
+    });
+
+    socket.on("connect", async () => {
+      socket.emit(
+        "startGame",
+        JSON.stringify({
+          gameDataId: 1111,
+          ball: ballData,
+          user1,
+          user2: bot,
+        })
+      );
+
+      if (confirm("Are you ready to play?")) {
+        socket.emit("ready", JSON.stringify({ isUser1: isPlayer1 }));
+        drawText(
+          `Hi, ${
+            isPlayer1 ? "Player 1" : "Player 2"
+          }! We're waiting for your opponent to be ready...`,
+          canvas.width / 2 - 300,
+          canvas.height / 2,
+          "25px Arial",
+          "left",
+          "grey"
+        );
+      }
+    });
+
+    socket.on(`opponentReady/user${isPlayer1 ? "2" : "1"}`, () => {
+      game(
+        socket,
+        isPlayer1,
+        ballData,
+        user1,
+        bot,
+        match_finish,
+        match_points,
+        sounds
+      );
+    });
   })();
 })();
