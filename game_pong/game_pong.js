@@ -316,6 +316,10 @@ const fps = 60;
       botScore,
     };
 
+    window.onbeforeunload = function (e) {
+      return "Force dialog to show when reloading";
+    };
+
     document.addEventListener("keydown", function (event) {
       if (event.keyCode === 38) {
         // UP ARROW key
@@ -375,21 +379,28 @@ const fps = 60;
 
     socket.on("disconnect", () => {
       console.log("socket disconnected");
+      alert("Socket connection was disconnected");
+      socket.emit("deleteGameSet", JSON.stringify({ gameDataId: 1111 }));
     });
 
     socket.on("connect", async () => {
-      socket.emit(
-        "startGame",
-        JSON.stringify({
-          gameDataId: 1111,
-          ball: ballData,
-          user1,
-          user2: bot,
-        })
-      );
+      if (isPlayer1) {
+        socket.emit(
+          "startGame",
+          JSON.stringify({
+            gameDataId: 1111,
+            ball: ballData,
+            user1,
+            user2: bot,
+          })
+        );
+      }
 
       if (confirm("Are you ready to play?")) {
-        socket.emit("ready", JSON.stringify({ isUser1: isPlayer1 }));
+        socket.emit(
+          "ready",
+          JSON.stringify({ gameDataId: 1111, isUser1: isPlayer1 })
+        );
         drawText(
           `Hi, ${
             isPlayer1 ? "Player 1" : "Player 2"
@@ -403,7 +414,7 @@ const fps = 60;
       }
     });
 
-    socket.on(`opponentReady/user${isPlayer1 ? "2" : "1"}`, () => {
+    socket.on("allOpponentsReady", () => {
       game(
         socket,
         isPlayer1,
