@@ -1719,40 +1719,60 @@ describe('App e2e', () => {
         },
       };
       describe('ready', () => {
-        it('should emit opponentReady/user1 when user1 is ready', (done) => {
+        it('should not emit allOpponentsReady when only user1 is ready', (done) => {
           expect.assertions(0);
 
           const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
 
           socket.on('connect', () => {
-            socket.emit('ready', JSON.stringify({ isUser1: true }));
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
-          socket.on('opponentReady/user2', () => {
-            done.fail(new Error('opponentReady/user2 should not be emitted'));
+          socket.on('gameDataCreated', () => {
+            socket.emit(
+              'ready',
+              JSON.stringify({
+                gameDataId: dataSetInitial.gameDataId,
+                isUser1: true,
+              }),
+            );
           });
 
-          socket.on('opponentReady/user1', () => {
+          socket.on('allOpponentsReady', () => {
+            done.fail(new Error('allOpponentsReady should not be emitted'));
+          });
+
+          socket.on('awaitingOpponent', () => {
             socket.disconnect();
 
             done();
           });
         });
 
-        it('should emit opponentReady/user2 when user2 is ready', (done) => {
+        it('should not emit allOpponentsReady when only user2 is ready', (done) => {
           expect.assertions(0);
 
           const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
 
           socket.on('connect', () => {
-            socket.emit('ready', JSON.stringify({ isUser1: false }));
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
-          socket.on('opponentReady/user1', () => {
-            done.fail(new Error('opponentReady/user1 should not be emitted'));
+          socket.on('gameDataCreated', () => {
+            socket.emit(
+              'ready',
+              JSON.stringify({
+                gameDataId: dataSetInitial.gameDataId,
+                isUser1: false,
+              }),
+            );
           });
 
-          socket.on('opponentReady/user2', () => {
+          socket.on('allOpponentsReady', () => {
+            done.fail(new Error('allOpponentsReady should not be emitted'));
+          });
+
+          socket.on('awaitingOpponent', () => {
             socket.disconnect();
 
             done();
@@ -1787,7 +1807,7 @@ describe('App e2e', () => {
         });
 
         describe('when gameDataSet has already been created', () => {
-          it('should not create GameDataSet and emit gameDataCreated when startGame is triggered', (done) => {
+          it('should delete GameDataSet, create another one and emit gameDataCreated when startGame is triggered', (done) => {
             expect.assertions(3);
 
             const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
@@ -1934,24 +1954,24 @@ describe('App e2e', () => {
           socket.on('connect', () => {
             prisma.gameDataSet.findMany().then((gameDataSets) => {
               expect(gameDataSets).toHaveLength(0);
-
-              socket.emit('startGame', JSON.stringify(dataSetInitial));
             });
+
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
           socket.on('gameDataCreated', () => {
             prisma.gameDataSet.findMany().then((gameDataSets) => {
               expect(gameDataSets).toHaveLength(1);
-
-              // Uploading updated data
-              socket.emit(
-                'upload',
-                JSON.stringify({
-                  ...updatedDataSetBothUser,
-                  isUser1: false,
-                }),
-              );
             });
+
+            // Uploading updated data
+            socket.emit(
+              'upload',
+              JSON.stringify({
+                ...updatedDataSetBothUser,
+                isUser1: false,
+              }),
+            );
           });
 
           socket.on('download/user2', () => {
