@@ -88,6 +88,7 @@ describe('App e2e', () => {
   });
 
   afterAll(async () => {
+    await prisma.$disconnect();
     await app.close();
   });
 
@@ -1401,6 +1402,8 @@ describe('App e2e', () => {
     let user1: User, user2: User, user3: User;
 
     describe('matchmaking', () => {
+      const MATCHMAKING_ENDPOINT = 'matchmaking';
+
       beforeEach(async () => {
         user1 = await createUser(
           prisma,
@@ -1429,7 +1432,7 @@ describe('App e2e', () => {
 
         createUser(prisma, intraService, intraUserToken, userData).then(
           (user: User) => {
-            const socket = createSocketClient(app);
+            const socket = createSocketClient(app, MATCHMAKING_ENDPOINT);
 
             socket.on('connect', async () => {
               socket.emit('newUser', JSON.stringify({ intraId: user.intraId }));
@@ -1463,8 +1466,8 @@ describe('App e2e', () => {
             .map((result: any) => result.value);
 
           const allSockets: Socket[] = [
-            createSocketClient(app),
-            createSocketClient(app),
+            createSocketClient(app, MATCHMAKING_ENDPOINT),
+            createSocketClient(app, MATCHMAKING_ENDPOINT),
           ];
 
           allSockets.forEach((socket, i) => {
@@ -1517,7 +1520,7 @@ describe('App e2e', () => {
         new Promise((resolve) => {
           createUser(prisma, intraService, intraUserToken, userData).then(
             (user) => {
-              const socket = createSocketClient(app);
+              const socket = createSocketClient(app, MATCHMAKING_ENDPOINT);
 
               socket.on('connect', async () => {
                 socket.emit(
@@ -1546,8 +1549,8 @@ describe('App e2e', () => {
               .map((result: any) => result.value);
 
             const allSockets = [
-              createSocketClient(app),
-              createSocketClient(app),
+              createSocketClient(app, MATCHMAKING_ENDPOINT),
+              createSocketClient(app, MATCHMAKING_ENDPOINT),
             ];
 
             allSockets.forEach((socket, i) => {
@@ -1597,7 +1600,7 @@ describe('App e2e', () => {
         expect.assertions(2);
 
         const invalidIntraId = 'invalid';
-        const socket = createSocketClient(app);
+        const socket = createSocketClient(app, MATCHMAKING_ENDPOINT);
 
         socket.on('connect', async () => {
           socket.emit('newUser', JSON.stringify({ intraId: invalidIntraId }));
@@ -1622,7 +1625,7 @@ describe('App e2e', () => {
         expect.assertions(2);
 
         const unsignedUserIntraId = 6666;
-        const socket = createSocketClient(app);
+        const socket = createSocketClient(app, MATCHMAKING_ENDPOINT);
 
         socket.on('connect', async () => {
           socket.emit(
@@ -1652,7 +1655,7 @@ describe('App e2e', () => {
         createUser(prisma, intraService, intraUserToken, userData).then(
           (user) => {
             let isUserQueued = false;
-            const socket = createSocketClient(app);
+            const socket = createSocketClient(app, MATCHMAKING_ENDPOINT);
 
             socket.on('connect', async () => {
               socket.emit('newUser', JSON.stringify({ intraId: user.intraId }));
@@ -1685,6 +1688,285 @@ describe('App e2e', () => {
             });
           },
         );
+      });
+    });
+
+    describe('game data', () => {
+      const GAME_DATA_ENDPOINT = 'game-data';
+
+      const dataSetUser1 = {
+        gameDataId: 1111,
+        ball: {},
+        user1: {},
+      };
+
+      const dataSetUser2 = {
+        gameDataId: 1111,
+        user2: {},
+      };
+
+      const dataSetInitial = {
+        gameDataId: 1111,
+        ball: {},
+        user1: {},
+        user2: {},
+      };
+
+      const updatedDataSetBothUser = {
+        ...dataSetUser1,
+        ball: {
+          updated: true,
+        },
+      };
+      describe('ready', () => {
+        it('should emit opponentReady/user1 when user1 is ready', (done) => {
+          expect.assertions(0);
+
+          const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+          socket.on('connect', () => {
+            socket.emit('ready', JSON.stringify({ isUser1: true }));
+          });
+
+          socket.on('opponentReady/user2', () => {
+            done.fail(new Error('opponentReady/user2 should not be emitted'));
+          });
+
+          socket.on('opponentReady/user1', () => {
+            socket.disconnect();
+
+            done();
+          });
+        });
+
+        it('should emit opponentReady/user2 when user2 is ready', (done) => {
+          expect.assertions(0);
+
+          const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+          socket.on('connect', () => {
+            socket.emit('ready', JSON.stringify({ isUser1: false }));
+          });
+
+          socket.on('opponentReady/user1', () => {
+            done.fail(new Error('opponentReady/user1 should not be emitted'));
+          });
+
+          socket.on('opponentReady/user2', () => {
+            socket.disconnect();
+
+            done();
+          });
+        });
+      });
+
+      describe('startGame', () => {
+        describe('when gameDataSet has not been created yet', () => {
+          it('should create gameDataSet and emit gameDataCreated when startGame is triggered', (done) => {
+            expect.assertions(2);
+
+            const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+            socket.on('connect', () => {
+              prisma.gameDataSet.findMany().then((gameDataSets) => {
+                expect(gameDataSets).toHaveLength(0);
+              });
+
+              socket.emit('startGame', JSON.stringify(dataSetInitial));
+            });
+
+            socket.on('gameDataCreated', () => {
+              socket.disconnect();
+
+              prisma.gameDataSet.findMany().then((gameDataSets) => {
+                expect(gameDataSets).toHaveLength(1);
+                done();
+              });
+            });
+          });
+        });
+
+        describe('when gameDataSet has already been created', () => {
+          it('should not create GameDataSet and emit gameDataCreated when startGame is triggered', (done) => {
+            expect.assertions(3);
+
+            const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+            socket.on('connect', () => {
+              prisma.gameDataSet.findMany().then((gameDataSets) => {
+                expect(gameDataSets).toHaveLength(0);
+              });
+
+              socket.emit('startGame', JSON.stringify(dataSetInitial));
+            });
+
+            let isFirstTimeTriggered = true;
+            socket.on('gameDataCreated', () => {
+              if (isFirstTimeTriggered) {
+                isFirstTimeTriggered = false;
+
+                prisma.gameDataSet.findMany().then((gameDataSets) => {
+                  expect(gameDataSets).toHaveLength(1);
+                });
+
+                socket.emit('startGame', JSON.stringify(dataSetInitial));
+              } else {
+                socket.disconnect();
+
+                prisma.gameDataSet.findMany().then((gameDataSets) => {
+                  expect(gameDataSets).toHaveLength(1);
+                  done();
+                });
+              }
+            });
+          });
+        });
+      });
+
+      describe('deleteGameSet', () => {
+        describe('when gameDataSet does not exist', () => {
+          it('should emit gameSetDeleted without throwing an error', (done) => {
+            expect.assertions(2);
+
+            const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+            socket.on('connect', () => {
+              prisma.gameDataSet.findMany().then((gameDataSets) => {
+                expect(gameDataSets).toHaveLength(0);
+              });
+
+              socket.emit(
+                'deleteGameSet',
+                JSON.stringify({ gameDataId: 1111 }),
+              );
+            });
+
+            socket.on('gameSetDeleted', () => {
+              prisma.gameDataSet.findMany().then((gameDataSets) => {
+                expect(gameDataSets).toHaveLength(0);
+                done();
+              });
+            });
+          });
+        });
+
+        describe('when gameDataSet exists', () => {
+          it('should emit gameSetDeleted and delete the set', (done) => {
+            expect.assertions(4);
+
+            const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+            socket.on('connect', () => {
+              prisma.gameDataSet.findMany().then((gameDataSets) => {
+                expect(gameDataSets).toHaveLength(0);
+              });
+
+              socket.emit('startGame', JSON.stringify(dataSetInitial));
+            });
+
+            socket.on('gameDataCreated', () => {
+              prisma.gameDataSet.findMany().then((gameDataSets) => {
+                expect(gameDataSets).toHaveLength(1);
+
+                socket.emit(
+                  'deleteGameSet',
+                  JSON.stringify({ gameDataId: dataSetInitial.gameDataId }),
+                );
+              });
+            });
+
+            socket.on('gameSetDeleted', () => {
+              prisma.gameDataSet.findMany().then((gameDataSets) => {
+                expect(gameDataSets).toHaveLength(0);
+                done();
+              });
+            });
+          });
+        });
+      });
+
+      describe('upload', () => {
+        test('should upload data from user1 and emit download event to user2', (done) => {
+          const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+          // Initialize data set first
+          socket.on('connect', () => {
+            prisma.gameDataSet.findMany().then((gameDataSets) => {
+              expect(gameDataSets).toHaveLength(0);
+            });
+
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
+          });
+
+          socket.on('gameDataCreated', () => {
+            prisma.gameDataSet.findMany().then((gameDataSets) => {
+              expect(gameDataSets).toHaveLength(1);
+            });
+
+            // Uploading updated data
+            socket.emit(
+              'upload',
+              JSON.stringify({
+                ...updatedDataSetBothUser,
+                isUser1: true,
+              }),
+            );
+          });
+
+          socket.on('download/user1', () => {
+            done.fail(new Error('download/user1 should not be emitted'));
+          });
+
+          socket.on('download/user2', (data) => {
+            expect(data).toStrictEqual(
+              JSON.stringify({ ...dataSetInitial, ...updatedDataSetBothUser }),
+            );
+
+            socket.disconnect();
+            done();
+          });
+        });
+
+        test('should upload data from user2 and emit download event to user1', (done) => {
+          const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+          // Initialize data set first
+          socket.on('connect', () => {
+            prisma.gameDataSet.findMany().then((gameDataSets) => {
+              expect(gameDataSets).toHaveLength(0);
+
+              socket.emit('startGame', JSON.stringify(dataSetInitial));
+            });
+          });
+
+          socket.on('gameDataCreated', () => {
+            prisma.gameDataSet.findMany().then((gameDataSets) => {
+              expect(gameDataSets).toHaveLength(1);
+
+              // Uploading updated data
+              socket.emit(
+                'upload',
+                JSON.stringify({
+                  ...updatedDataSetBothUser,
+                  isUser1: false,
+                }),
+              );
+            });
+          });
+
+          socket.on('download/user2', () => {
+            done.fail(new Error('download/user1 should not be emitted'));
+          });
+
+          socket.on('download/user1', (data) => {
+            expect(data).toStrictEqual(
+              JSON.stringify({ ...dataSetInitial, ...updatedDataSetBothUser }),
+            );
+
+            socket.disconnect();
+            done();
+          });
+        });
       });
     });
   });

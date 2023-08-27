@@ -91,10 +91,10 @@ export async function createUserWithFriends(
   return user;
 }
 
-export function createSocketClient(app: INestApplication): Socket {
+export function createSocketClient(app: INestApplication, endpoint): Socket {
   const { port } = app.getHttpServer().address();
 
-  return io(`http://0.0.0.0:${port}/matchmaking`, {
+  return io(`http://0.0.0.0:${port}/${endpoint}`, {
     transports: ['websocket'],
   });
 }
