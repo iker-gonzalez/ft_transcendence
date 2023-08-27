@@ -101,5 +101,8 @@ enum GameBallColor {
 model GameDataSet {
   id         String @id @unique @default(uuid())
   gameDataId String @unique
+
   gameData   String
+  user1Ready Boolean @default(false)
+  user2Ready Boolean @default(false)
 }
