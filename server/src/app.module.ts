@@ -10,6 +10,7 @@ import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
 import { GameModule } from './game/game.module';
 import { FriendsModule } from './friends/friends.module';
 import { MatchmakingModule } from './matchmaking/matchmaking.module';
+import { GameDataModule } from './game-data/game-data.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MatchmakingModule } from './matchmaking/matchmaking.module';
     GameModule,
     FriendsModule,
     MatchmakingModule,
+    GameDataModule,
   ],
   providers: [IntraService],
 })
