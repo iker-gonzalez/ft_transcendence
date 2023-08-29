@@ -276,7 +276,7 @@ const fps = 60;
     }
 
     drawText(
-      "Ball Speed: " + ballData.speed,
+      "Ball Speed: " + ballData.speed.toFixed(2),
       (canvas.width / 10) * 7,
       (canvas.height / 20) * 17,
       "15px Arial",
