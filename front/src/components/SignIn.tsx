@@ -29,27 +29,7 @@ function SignIn({ onSignIn }: SignInProps) {
       <h1 style={{fontFamily:'Arial Black', fontSize: '36px', color: 'white'}}>Pong Game</h1>
       <img src="/assets/school_42.jpeg" alt='42 logo' style={{width: '150px', marginBottom: '12px'}} />
       <form onSubmit={handleSubmit}>
-        <div style={{width: '150px', marginBottom: '20px'}}>
-          <label htmlFor="username"></label>
-          <input
-            type="text"
-            placeholder='username'
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div style={{width: '150px', marginBottom: '20px'}}>
-          <label htmlFor="password"></label>
-          <input
-            type="password"
-            placeholder='password'
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button style={{width: '175px'}} type="submit">Sign In</button>
+        <button style={{width: '175px'}} type="submit">Sign In with 42</button>
       </form>
     </div>
   );
