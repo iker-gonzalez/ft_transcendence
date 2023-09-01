@@ -21,7 +21,9 @@ function SignIn({ onSignIn }: SignInProps) {
     formData.append('state', 'oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A');
     formData.append('code', '111111');
 
-    const url = 'https://localhost:3000/auth/intra/signin';
+    // Change to your corresponding BE endpoint:
+    const url = 'https://localhost:3000/auth/intra/signin'; //BE endpoint for Diego, Nico, Zaloa
+    //const url = 'https://symmetrical-carnival-wj7r59qxprg2grj-3000.app.github.dev' //BE endpoint for Iker
 
     try {
       const response = await fetch(url, {
