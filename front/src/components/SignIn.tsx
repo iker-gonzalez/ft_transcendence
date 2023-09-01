@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 
+interface SignInProps {
+  onSignIn: (username: string, password: string) => void;
+}
+
 const formStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
@@ -7,7 +11,7 @@ const formStyle: React.CSSProperties = {
   alignItems: 'center',
 };
 
-function SignIn() {
+function SignIn({ onSignIn }: SignInProps) {
   const [message, setMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
