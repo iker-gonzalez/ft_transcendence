@@ -17,7 +17,7 @@ function SignIn() {
     formData.append('state', 'oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A');
     formData.append('code', '111111');
 
-    const url = 'https://symmetrical-carnival-wj7r59qxprg2grj-3000.app.github.dev/auth/intra/signin';
+    const url = 'https://localhost:3000/auth/intra/signin';
 
     try {
       const response = await fetch(url, {
