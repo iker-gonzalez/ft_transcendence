@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {getBaseUrl} from '../utils/utils';
 
 interface SignInProps {
   onSignIn: (username: string, password: string) => void;
@@ -16,11 +17,9 @@ function SignIn({ onSignIn }: SignInProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
       const response = await fetch(
-        //`http://localhost:${process.env.REACT_APP_API_PORT}/auth/intra/signin`
-        `https://symmetrical-carnival-wj7r59qxprg2grj-3000.app.github.dev/auth/intra/signin`, //needed to work in Codespaces
+        `${getBaseUrl()}/auth/intra/signin`,
         {
           method: "POST",
           headers: {
