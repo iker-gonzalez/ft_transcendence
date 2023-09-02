@@ -19,7 +19,8 @@ function SignIn({ onSignIn }: SignInProps) {
 
     try {
       const response = await fetch(
-        `http://localhost:${process.env.REACT_APP_API_PORT}/auth/intra/signin`,
+        //`http://localhost:${process.env.REACT_APP_API_PORT}/auth/intra/signin`
+        `https://symmetrical-carnival-wj7r59qxprg2grj-3000.app.github.dev/auth/intra/signin`, //needed to work in Codespaces
         {
           method: "POST",
           headers: {
