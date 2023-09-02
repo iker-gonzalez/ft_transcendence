@@ -11,15 +11,15 @@ services:
     environment:
       API_PORT: 3000
       DATABASE_URL: "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@dev-db:5432/${DATABASE_NAME}?schema=public"
-      FAKE_USER_1_CODE: "111111"
-      FAKE_USER_2_CODE: "123456"
-      INTRA_AUTH_GRANT_TYPE: "authorization_code"
-      INTRA_AUTH_REDIRECT_URI: "https://www.google.com" # Change this to real value
-      INTRA_CLIENT_ID: "u-s4t2ud-cc750dc5c0bc0ba5bec13986a83c775caf2816c3b0daa291d858b24f7a9a636e" # to be updated
-      INTRA_CLIENT_SECRET: "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"
-      INTRA_STATE: "oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A"
-      JWT_SECRET: "7f8ac4cf9ba6c177b03b643f2ebdf912"
-      TWO_FACTOR_AUTHENTICATION_APP_NAME: "Transcendence"
+      FAKE_USER_1_CODE: $FAKE_USER_1_CODE
+      FAKE_USER_2_CODE: $FAKE_USER_2_CODE
+      INTRA_AUTH_GRANT_TYPE: $INTRA_AUTH_GRANT_TYPE
+      INTRA_AUTH_REDIRECT_URI: $INTRA_AUTH_REDIRECT_URI
+      INTRA_CLIENT_ID: $INTRA_CLIENT_ID
+      INTRA_CLIENT_SECRET: $INTRA_CLIENT_SECRET
+      INTRA_STATE: $INTRA_STATE
+      JWT_SECRET: $JWT_SECRET
+      TWO_FACTOR_AUTHENTICATION_APP_NAME: $TWO_FACTOR_AUTHENTICATION_APP_NAME
     volumes:
       - ./server:/server
     ports:
@@ -37,9 +37,9 @@ services:
     restart: always
     environment:
       DATABASE_URL: "postgresql://${DATABASE_USER_TEST}:${DATABASE_PASSWORD_TEST}@test-db:5436/${DATABASE_NAME_TEST}?schema=public"
-      INTRA_STATE: "oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A"
-      FAKE_USER_1_CODE: "111111"
-      JWT_SECRET: "7f8ac4cf9ba6c177b03b643f2ebdf912"
+      INTRA_STATE: $INTRA_STATE
+      FAKE_USER_1_CODE: $FAKE_USER_1_CODE
+      JWT_SECRET: $JWT_SECRET
     volumes:
       - ./server:/server
     networks:
