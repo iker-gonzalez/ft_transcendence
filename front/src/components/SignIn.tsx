@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import {getBaseUrl} from '../utils/utils';
+import { useNavigate } from 'react-router-dom';
 
-interface SignInProps {
-  onSignIn: (username: string, password: string) => void;
-}
 
 const formStyle: React.CSSProperties = {
   display: 'flex',
@@ -12,8 +10,9 @@ const formStyle: React.CSSProperties = {
   alignItems: 'center',
 };
 
-function SignIn({ onSignIn }: SignInProps) {
+function SignIn() {
   const [message, setMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,7 +33,7 @@ function SignIn({ onSignIn }: SignInProps) {
       );
 
       if (response.ok) {
-        setMessage('Login successful');
+        navigate("/set-profile");
       } else {
         const errorData = await response.json().catch(() => ({})); // Handle potential non-JSON responses
         const errorMessage = errorData.message || 'An error occurred on the server.';
