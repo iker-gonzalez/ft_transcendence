@@ -5,6 +5,7 @@ import {
   thickness,
   user1,
   userSpeedInput,
+  fakeGameId,
 } from "./game_pong.constants.js";
 import {
   checkCollision,
@@ -47,7 +48,7 @@ const fps = 60;
       }, 1000 / fps);
 
       if (isPlayer1 === true) {
-        socket.on("download/user2", async (data) => {
+        socket.on(`download/user2/${fakeGameId}`, async (data) => {
           const downloadedData = JSON.parse(data);
           bot = downloadedData.user2;
         });
@@ -58,13 +59,13 @@ const fps = 60;
           "upload",
           JSON.stringify({
             isUser1: true,
-            gameDataId: 1111,
+            gameDataId: fakeGameId,
             ball: ballData,
             user1,
           })
         );
       } else {
-        socket.on("download/user1", async (data) => {
+        socket.on(`download/user1/${fakeGameId}`, async (data) => {
           const downloadedData = JSON.parse(data);
           ballData = downloadedData.ball;
           user1 = downloadedData.user1;
@@ -74,7 +75,7 @@ const fps = 60;
 
         socket.emit(
           "upload",
-          JSON.stringify({ isUser1: false, gameDataId: 1111, user2: bot })
+          JSON.stringify({ isUser1: false, gameDataId: fakeGameId, user2: bot })
         );
       }
       render(ballData, user1, bot, match_finish, match_points);
@@ -374,13 +375,13 @@ const fps = 60;
       alert(
         "There was an error connecting to the server. Deleting game session"
       );
-      socket.emit("deleteGameSet", JSON.stringify({ gameDataId: 1111 }));
+      socket.emit("deleteGameSet", JSON.stringify({ gameDataId: fakeGameId }));
     });
 
     socket.on("disconnect", () => {
       console.log("socket disconnected");
       alert("Socket connection was disconnected");
-      socket.emit("deleteGameSet", JSON.stringify({ gameDataId: 1111 }));
+      socket.emit("deleteGameSet", JSON.stringify({ gameDataId: fakeGameId }));
     });
 
     socket.on("connect", async () => {
@@ -388,7 +389,7 @@ const fps = 60;
         socket.emit(
           "startGame",
           JSON.stringify({
-            gameDataId: 1111,
+            gameDataId: fakeGameId,
             ball: ballData,
             user1,
             user2: bot,
@@ -399,7 +400,7 @@ const fps = 60;
       if (confirm("Are you ready to play?")) {
         socket.emit(
           "ready",
-          JSON.stringify({ gameDataId: 1111, isUser1: isPlayer1 })
+          JSON.stringify({ gameDataId: fakeGameId, isUser1: isPlayer1 })
         );
         drawText(
           `Hi, ${
@@ -414,7 +415,7 @@ const fps = 60;
       }
     });
 
-    socket.on("allOpponentsReady", () => {
+    socket.on(`allOpponentsReady/${fakeGameId}`, () => {
       game(
         socket,
         isPlayer1,

@@ -1,5 +1,7 @@
 const canvas = document.getElementById("gamePong");
 
+export const fakeGameId = 1111;
+
 export const thickness = 10;
 export const slit = 3;
 export const userSpeedInput = 10;
