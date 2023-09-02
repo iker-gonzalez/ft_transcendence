@@ -16,20 +16,22 @@ function SignIn({ onSignIn }: SignInProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // TODO change 3000 with env variable
+
     try {
-      const response = await fetch(`http://localhost:3000/auth/intra/signin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add authentication headers if needed
-        },
-        body: JSON.stringify({
-          code: "111111",
-          state: "oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A",
-        }),
-      });
+      const response = await fetch(
+        `http://localhost:${process.env.REACT_APP_API_PORT}/auth/intra/signin`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Add authentication headers if needed
+          },
+          body: JSON.stringify({
+            code: "111111",
+            state: "oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A",
+          }),
+        }
+      );
 
       if (response.ok) {
         setMessage('Login successful');
