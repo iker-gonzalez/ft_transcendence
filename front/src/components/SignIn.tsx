@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 
 const formStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
+  position: 'fixed',
+  top: '40%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)'
 };
 
 function SignIn() {
@@ -47,12 +47,12 @@ function SignIn() {
 
   return (
     <div style={formStyle}>
-      <h1 style={{ fontFamily: 'Arial Black', fontSize: '36px', color: 'white' }}>Pong Game</h1>
+      <h1 style={{ fontFamily: 'Arial Black', fontSize: '36px'}}>Pong Game</h1>
       <img src="/assets/school_42.jpeg" alt='42 logo' style={{ width: '150px', marginBottom: '12px' }} />
       <form onSubmit={handleSubmit}>
         <button style={{ width: '175px' }} type="submit">Sign In with 42</button>
       </form>
-      {message && <p style={{ color: 'white' }}>{message}</p>}
+      {message && <p>{message}</p>}
     </div>
   );
 }
