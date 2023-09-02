@@ -22,7 +22,7 @@ export class GameDataService {
       });
     }
 
-    server.emit('gameDataCreated');
+    server.emit(`gameDataCreated/${gameDataId}`);
   }
 
   async onPlayerReady(server: Server, data: string): Promise<void> {
@@ -42,9 +42,9 @@ export class GameDataService {
     });
 
     if ((isUser1 && gameData.user2Ready) || (!isUser1 && gameData.user1Ready)) {
-      server.emit('allOpponentsReady');
+      server.emit(`allOpponentsReady/${gameDataId}`);
     } else {
-      server.emit('awaitingOpponent');
+      server.emit(`awaitingOpponent/${gameDataId}`);
     }
   }
 
@@ -74,9 +74,15 @@ export class GameDataService {
       });
 
       if (isUser1) {
-        server.emit('download/user2', JSON.stringify(updatedGameDataPayload));
+        server.emit(
+          `download/user2/${gameDataId}`,
+          JSON.stringify(updatedGameDataPayload),
+        );
       } else {
-        server.emit('download/user1', JSON.stringify(updatedGameDataPayload));
+        server.emit(
+          `download/user1/${gameDataId}`,
+          JSON.stringify(updatedGameDataPayload),
+        );
       }
     }
   }
@@ -89,10 +95,10 @@ export class GameDataService {
         where: { gameDataId: gameDataId.toString() },
       });
     } catch (e) {
-      server.emit('gameSetDeleted');
+      server.emit(`gameSetDeleted/${gameDataId}`);
       return;
     }
 
-    server.emit('gameSetDeleted');
+    server.emit(`gameSetDeleted/${gameDataId}`);
   }
 }
