@@ -16,23 +16,19 @@ function SignIn({ onSignIn }: SignInProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const formData = new URLSearchParams();
-    formData.append('state', 'oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A');
-    formData.append('code', '111111');
-
-    // Change to your corresponding BE endpoint:
-    //const url = 'https://localhost:3000/auth/intra/signin'; //BE endpoint for Diego, Nico, Zaloa
-    const url = 'https://symmetrical-carnival-wj7r59qxprg2grj-3000.app.github.dev/auth/intra/signin' //BE endpoint for Iker
-
+    
+    // TODO change 3000 with env variable
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`http://localhost:3000/auth/intra/signin`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
           // Add authentication headers if needed
         },
-        body: formData.toString(),
+        body: JSON.stringify({
+          code: "111111",
+          state: "oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A",
+        }),
       });
 
       if (response.ok) {
