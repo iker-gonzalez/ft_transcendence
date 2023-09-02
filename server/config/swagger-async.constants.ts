@@ -15,6 +15,33 @@ export const swaggerAsyncConstants = {
       },
     },
   },
+  gameData: {
+    slug: 'game-data',
+    description:
+      'Users hit this endpoint when they are playing a game. Game data is sent to to server to be shared among the two players.',
+    endpoints: {
+      startGame: {
+        channel: 'game-data:startGame',
+        description:
+          'user1 sends this message to the server to initialize the game session.',
+      },
+      gameDataCreatedSessionId: {
+        channel: 'game-data:gameDataCreated/{sessionId}',
+        description:
+          'Users receive this message when the game data has been created for their game session',
+      },
+      ready: {
+        channel: 'game-data:ready',
+        description:
+          'Users send this message to the server when they are ready to start playing',
+      },
+      allOpponentsReadySessionId: {
+        channel: 'game-data:allOpponentsReady/{sessionId}',
+        description:
+          'Users receive this message when both players are ready to start playing',
+      },
+    },
+  },
   dtos: {
     newQueuedUser: {
       intraId: {
@@ -52,6 +79,66 @@ export const swaggerAsyncConstants = {
             },
           ],
         },
+      },
+    },
+    startGameDto: {
+      gameDataId: {
+        description: 'The ID of the game session including the two players',
+        example: '1111',
+      },
+      ball: {
+        description: 'The initial data of the ball',
+        example: {
+          x: -179.93585185334203,
+          y: 182.38455876725595,
+          radius: 10,
+          velocityX: -7.382011345379114,
+          velocityY: 6.893178403080399,
+          speed: 10.2,
+          color: 'WHITE',
+          reset: true,
+          top: 172.38455876725595,
+          bottom: 192.38455876725595,
+          left: -189.93585185334203,
+          right: -169.93585185334203,
+        },
+      },
+      user1: {
+        description: 'The initial data of the first player',
+        example: {
+          x: 30,
+          y: 250,
+          width: 10,
+          height: 96,
+          score: 2,
+          color: 'WHITE',
+          top: 250,
+          bottom: 346,
+          left: 30,
+          right: 40,
+        },
+      },
+      user2: {
+        description: 'The initial data of the second player',
+        example: {
+          x: 860,
+          y: 357.7496151396943,
+          width: 10,
+          height: 100,
+          score: 1,
+          color: 'WHITE',
+          top: 357.7496151396943,
+          bottom: 457.7496151396943,
+          left: 860,
+          right: 870,
+        },
+      },
+    },
+    readyPlayerDto: {
+      isUser1: {
+        description:
+          'Whether the player is the first player (true) or the second player (false)',
+        example: true,
       },
     },
   },
