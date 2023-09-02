@@ -7,10 +7,14 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { UpdateUsernameResponseDto } from './dto/update-username-response.dto';
 import { UpdateAvatarResponseDto } from './dto/update-avatar-response.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async updateUsername(
     user: User,
@@ -81,7 +85,7 @@ export class UserService {
     ws.write(file.buffer);
 
     const avatarUrl = path.join(
-      `http://localhost:3000`,
+      `http://localhost:${this.configService.get('API_PORT')}`,
       avatarsFolderPath,
       newAvatarName,
     );
@@ -95,10 +99,13 @@ export class UserService {
       },
     });
 
-    return { updated: 1, data: {
-      id: user.id,
-      intraId: user.intraId,
-      avatar: newUserData.avatar,
-    } };
+    return {
+      updated: 1,
+      data: {
+        id: user.id,
+        intraId: user.intraId,
+        avatar: newUserData.avatar,
+      },
+    };
   }
 }
