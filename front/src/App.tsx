@@ -1,19 +1,20 @@
 import React from 'react';
 import SignIn from "./components/SignIn";
+import SetProfile from './components/SetProfile';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 
 function App() {
-    const handleSignIn = (username: string, password: string) => {
-        // Handle the sign-in logic here, such as sending the credentials to a server for authentication.
-        
-      };    
       
     return (
+        <Router>
         <div>
-          <h1>Sign In</h1>
-          <SignIn onSignIn={handleSignIn} />
+          <Routes>
+            <Route path="/" element={<SignIn />} />
+            <Route path="/set-profile" element={<SetProfile />} />
+          </Routes>
         </div>
+        </Router>
       );
     };
 
