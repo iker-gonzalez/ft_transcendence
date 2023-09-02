@@ -1728,7 +1728,7 @@ describe('App e2e', () => {
             socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
-          socket.on('gameDataCreated', () => {
+          socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
             socket.emit(
               'ready',
               JSON.stringify({
@@ -1738,11 +1738,11 @@ describe('App e2e', () => {
             );
           });
 
-          socket.on('allOpponentsReady', () => {
+          socket.on(`allOpponentsReady/${dataSetInitial.gameDataId}`, () => {
             done.fail(new Error('allOpponentsReady should not be emitted'));
           });
 
-          socket.on('awaitingOpponent', () => {
+          socket.on(`awaitingOpponent/${dataSetInitial.gameDataId}`, () => {
             socket.disconnect();
 
             done();
@@ -1758,7 +1758,7 @@ describe('App e2e', () => {
             socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
-          socket.on('gameDataCreated', () => {
+          socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
             socket.emit(
               'ready',
               JSON.stringify({
@@ -1768,14 +1768,50 @@ describe('App e2e', () => {
             );
           });
 
-          socket.on('allOpponentsReady', () => {
+          socket.on(`allOpponentsReady/${dataSetInitial.gameDataId}`, () => {
             done.fail(new Error('allOpponentsReady should not be emitted'));
           });
 
-          socket.on('awaitingOpponent', () => {
+          socket.on(`awaitingOpponent/${dataSetInitial.gameDataId}`, () => {
             socket.disconnect();
 
             done();
+          });
+        });
+
+        it('should emit allOpponentsReady when both users are ready', (done) => {
+          expect.assertions(0);
+
+          const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+          socket.on('connect', () => {
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
+          });
+
+          socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
+            socket.emit(
+              'ready',
+              JSON.stringify({
+                gameDataId: dataSetInitial.gameDataId,
+                isUser1: true,
+              }),
+            );
+          });
+
+          socket.on(`allOpponentsReady/${dataSetInitial.gameDataId}`, () => {
+            socket.disconnect();
+
+            done();
+          });
+
+          socket.on(`awaitingOpponent/${dataSetInitial.gameDataId}`, () => {
+            socket.emit(
+              'ready',
+              JSON.stringify({
+                gameDataId: dataSetInitial.gameDataId,
+                isUser1: false,
+              }),
+            );
           });
         });
       });
@@ -1795,7 +1831,7 @@ describe('App e2e', () => {
               socket.emit('startGame', JSON.stringify(dataSetInitial));
             });
 
-            socket.on('gameDataCreated', () => {
+            socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
               socket.disconnect();
 
               prisma.gameDataSet.findMany().then((gameDataSets) => {
@@ -1821,7 +1857,7 @@ describe('App e2e', () => {
             });
 
             let isFirstTimeTriggered = true;
-            socket.on('gameDataCreated', () => {
+            socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
               if (isFirstTimeTriggered) {
                 isFirstTimeTriggered = false;
 
@@ -1857,11 +1893,11 @@ describe('App e2e', () => {
 
               socket.emit(
                 'deleteGameSet',
-                JSON.stringify({ gameDataId: 1111 }),
+                JSON.stringify({ gameDataId: dataSetInitial.gameDataId }),
               );
             });
 
-            socket.on('gameSetDeleted', () => {
+            socket.on(`gameSetDeleted/${dataSetInitial.gameDataId}`, () => {
               prisma.gameDataSet.findMany().then((gameDataSets) => {
                 expect(gameDataSets).toHaveLength(0);
                 done();
@@ -1884,7 +1920,7 @@ describe('App e2e', () => {
               socket.emit('startGame', JSON.stringify(dataSetInitial));
             });
 
-            socket.on('gameDataCreated', () => {
+            socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
               prisma.gameDataSet.findMany().then((gameDataSets) => {
                 expect(gameDataSets).toHaveLength(1);
 
@@ -1895,7 +1931,7 @@ describe('App e2e', () => {
               });
             });
 
-            socket.on('gameSetDeleted', () => {
+            socket.on(`gameSetDeleted/${dataSetInitial.gameDataId}`, () => {
               prisma.gameDataSet.findMany().then((gameDataSets) => {
                 expect(gameDataSets).toHaveLength(0);
                 done();
@@ -1918,7 +1954,7 @@ describe('App e2e', () => {
             socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
-          socket.on('gameDataCreated', () => {
+          socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
             prisma.gameDataSet.findMany().then((gameDataSets) => {
               expect(gameDataSets).toHaveLength(1);
             });
@@ -1933,11 +1969,11 @@ describe('App e2e', () => {
             );
           });
 
-          socket.on('download/user1', () => {
+          socket.on(`download/user1/${dataSetInitial.gameDataId}`, () => {
             done.fail(new Error('download/user1 should not be emitted'));
           });
 
-          socket.on('download/user2', (data) => {
+          socket.on(`download/user2/${dataSetInitial.gameDataId}`, (data) => {
             expect(data).toStrictEqual(
               JSON.stringify({ ...dataSetInitial, ...updatedDataSetBothUser }),
             );
@@ -1959,7 +1995,7 @@ describe('App e2e', () => {
             socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
-          socket.on('gameDataCreated', () => {
+          socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
             prisma.gameDataSet.findMany().then((gameDataSets) => {
               expect(gameDataSets).toHaveLength(1);
             });
@@ -1974,11 +2010,11 @@ describe('App e2e', () => {
             );
           });
 
-          socket.on('download/user2', () => {
+          socket.on(`download/user2/${dataSetInitial.gameDataId}`, () => {
             done.fail(new Error('download/user1 should not be emitted'));
           });
 
-          socket.on('download/user1', (data) => {
+          socket.on(`download/user1/${dataSetInitial.gameDataId}`, (data) => {
             expect(data).toStrictEqual(
               JSON.stringify({ ...dataSetInitial, ...updatedDataSetBothUser }),
             );
