@@ -39,6 +39,11 @@ async function bootstrap() {
         protocol: 'socket.io',
         description: swaggerAsyncConstants.matchmaking.description,
       })
+      .addServer(swaggerAsyncConstants.gameData.slug, {
+        url: `ws://localhost:${process.env.API_PORT}`,
+        protocol: 'socket.io',
+        description: swaggerAsyncConstants.gameData.description,
+      })
       .build(),
   );
   await AsyncApiModule.setup(swaggerAsyncConfig.slug, app, asyncapiDocument);
