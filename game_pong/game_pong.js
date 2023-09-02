@@ -376,12 +376,14 @@ const fps = 60;
         "There was an error connecting to the server. Deleting game session"
       );
       socket.emit("deleteGameSet", JSON.stringify({ gameDataId: fakeGameId }));
+      window.location.reload();
     });
 
     socket.on("disconnect", () => {
       console.log("socket disconnected");
       alert("Socket connection was disconnected");
       socket.emit("deleteGameSet", JSON.stringify({ gameDataId: fakeGameId }));
+      window.location.reload();
     });
 
     socket.on("connect", async () => {
@@ -397,22 +399,20 @@ const fps = 60;
         );
       }
 
-      if (confirm("Are you ready to play?")) {
-        socket.emit(
-          "ready",
-          JSON.stringify({ gameDataId: fakeGameId, isUser1: isPlayer1 })
-        );
-        drawText(
-          `Hi, ${
-            isPlayer1 ? "Player 1" : "Player 2"
-          }! We're waiting for your opponent to be ready...`,
-          canvas.width / 2 - 300,
-          canvas.height / 2,
-          "25px Arial",
-          "left",
-          "grey"
-        );
-      }
+      socket.emit(
+        "ready",
+        JSON.stringify({ gameDataId: fakeGameId, isUser1: isPlayer1 })
+      );
+      drawText(
+        `Hi, ${
+          isPlayer1 ? "Player 1" : "Player 2"
+        }! We're waiting for your opponent to be ready...`,
+        canvas.width / 2 - 300,
+        canvas.height / 2,
+        "25px Arial",
+        "left",
+        "grey"
+      );
     });
 
     socket.on(`allOpponentsReady/${fakeGameId}`, () => {
