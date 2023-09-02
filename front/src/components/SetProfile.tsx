@@ -1,11 +1,29 @@
 import React, { useState } from 'react';
 
 const formStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-};
+    position: 'fixed',
+    top: '40%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  };
+  
+  const buttonStyles = {
+    width: '175px',
+    height: '50px',
+    backgroundColor: 'gold',
+    color: 'black',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)',
+    marginTop: '30px'
+  };
 
 function SetProfile() {
   const [username, setUsername] = useState('');
@@ -62,7 +80,7 @@ function SetProfile() {
           />
         </label>
       </div>
-      <button onClick={handleCreate} style={{ marginTop: '20px' }}>
+      <button onClick={handleCreate} style={buttonStyles}>
         Create
       </button>
     </div>
