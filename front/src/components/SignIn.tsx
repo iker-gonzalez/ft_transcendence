@@ -2,12 +2,28 @@ import React, { useState } from 'react';
 import {getBaseUrl} from '../utils/utils';
 import { useNavigate } from 'react-router-dom';
 
-
 const formStyle: React.CSSProperties = {
   position: 'fixed',
   top: '40%',
   left: '50%',
-  transform: 'translate(-50%, -50%)'
+  transform: 'translate(-50%, -50%)',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const buttonStyles = {
+  width: '175px',
+  height: '50px',
+  backgroundColor: 'gold',
+  color: 'black',
+  borderRadius: '5px',
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: '16px',
+  fontWeight: 'bold',
+  boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)',
 };
 
 function SignIn() {
@@ -50,7 +66,7 @@ function SignIn() {
       <h1 style={{ fontFamily: 'Arial Black', fontSize: '36px'}}>Pong Game</h1>
       <img src="/assets/school_42.jpeg" alt='42 logo' style={{ width: '150px', marginBottom: '12px' }} />
       <form onSubmit={handleSubmit}>
-        <button style={{ width: '175px' }} type="submit">Sign In with 42</button>
+        <button style={buttonStyles} type="submit">Sign In with 42</button>
       </form>
       {message && <p>{message}</p>}
     </div>
