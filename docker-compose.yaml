@@ -57,7 +57,8 @@ services:
     networks:
       - frontend_network
     environment:
-      - REACT_APP_API_PORT=3000
+      REACT_APP_API_PORT: 3000
+      REACT_APP_CLIENT_PORT: 4200
 
   dev-db:
     image: postgres:latest
