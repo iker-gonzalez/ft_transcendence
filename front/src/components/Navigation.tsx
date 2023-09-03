@@ -39,6 +39,9 @@ const Navbar = () => {
         <li style={navItemStyles}>
           <a href="/profile" style={navLinkStyles}>Profile</a>
         </li>
+        <li style={navItemStyles}>
+          <a href="/game" style={navLinkStyles}>Game</a>
+        </li>
       </ul>
     </nav>
   );
