@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const formStyle: React.CSSProperties = {
     position: 'fixed',
-    top: '40%',
+    top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
     display: 'flex',

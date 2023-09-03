@@ -16,7 +16,7 @@ const formStyle: React.CSSProperties = {
 const buttonStyles = {
   width: '175px',
   height: '50px',
-  backgroundColor: 'gold',
+  backgroundColor: '#FFD369',
   color: 'black',
   borderRadius: '5px',
   border: 'none',
