@@ -372,10 +372,6 @@ export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
       // DOWN ARROW key
       user1.y += userSpeedInput * 5;
     }
-    if (event.keyCode === 27) {
-      // ESCAPE key
-      alert("🚦 PAUSE");
-    }
   });
 
   canvas.addEventListener("mousemove", function (event) {
