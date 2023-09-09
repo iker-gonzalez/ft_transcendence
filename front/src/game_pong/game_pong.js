@@ -13,7 +13,7 @@ import {
   initializeSounds,
 } from "./game_pong.functions.js";
 
-const fps = 60;
+const fps = 30;
 const thickness = 10;
 const slit = 3;
 const userSpeedInput = 10;
