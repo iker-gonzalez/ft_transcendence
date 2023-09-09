@@ -21,6 +21,7 @@ function Game() {
   const [isAwaitingOpponent, setIsAwaitingOpponent] = useState(
     false as Boolean
   );
+  const [isSessionCreated, setIsSessionCreated] = useState(false as Boolean);
 
   useEffect(() => {
     if (!sessionId || isComponentMounted.current) {
@@ -42,12 +43,28 @@ function Game() {
 
     socketRef.current.on("connect", async () => {
       console.info("connected to socket");
+
+      if (!isSessionCreated) {
+        setIsSessionCreated(true);
+        // TODO uncomment this when matchmaking flow is implemented
+        // Uncomment this only once to create a Session
+        // Once created, comment the code again
+        // socketRef.current.emit(
+        //   "startGame",
+        //   JSON.stringify({
+        //     gameDataId: sessionId,
+        //     ball: {},
+        //     user1: {},
+        //     user2: {},
+        //   })
+        // );
+      }
     });
 
     socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
       setShowGame(true);
-
       isComponentMounted.current = true;
+
       const canvas: HTMLElement = document.getElementById(
         "gamePong"
       ) as HTMLCanvasElement;
