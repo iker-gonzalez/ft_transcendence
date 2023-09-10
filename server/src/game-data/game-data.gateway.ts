@@ -21,14 +21,14 @@ export class GameDataGateway {
   @WebSocketServer()
   server: Server;
 
-  @AsyncApiSub({
+  @AsyncApiPub({
     channel: swaggerAsyncConstants.gameData.endpoints.startGame.channel,
     description: swaggerAsyncConstants.gameData.endpoints.startGame.description,
     message: {
       payload: StartGameDto,
     },
   })
-  @AsyncApiPub({
+  @AsyncApiSub({
     channel:
       swaggerAsyncConstants.gameData.endpoints.gameDataCreatedSessionId.channel,
     description:
