@@ -27,6 +27,7 @@ const buttonStyles = {
 };
 
 function SignIn() {
+  const [intraCodeValue, setIntraCodeValue] = useState("123456");
   const [message, setMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -61,13 +62,35 @@ function SignIn() {
     }
   };
 
+  const onCodeInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIntraCodeValue(event.target.value);
+  };
+
   return (
     <div style={formStyle}>
       <h1 style={{ fontFamily: 'Arial Black', fontSize: '36px'}}>Pong Game</h1>
       <img src="/assets/school_42.jpeg" alt='42 logo' style={{ width: '150px', marginBottom: '12px' }} />
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+      >
+        <label>
+          IntraId code:
+          <input
+            type="text"
+            placeholder="123456"
+            maxLength={6}
+            value={intraCodeValue}
+            onChange={onCodeInputChange}
+            style={{ marginLeft: "10px" }}
+          />
+        </label>
         <button style={buttonStyles} type="submit">Sign In with 42</button>
       </form>
+      <p>
+        Currently, we support <span style={{ color: "yellow" }}>123456</span>{" "}
+        and <span style={{ color: "yellow" }}>111111</span> test users.
+      </p>
       {message && <p>{message}</p>}
     </div>
   );
