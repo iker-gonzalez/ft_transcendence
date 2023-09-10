@@ -2,62 +2,76 @@ import React, { useEffect, useRef, useState } from "react";
 import { gameLoop } from "../game_pong/game_pong";
 import { Socket, io } from "socket.io-client";
 import { getBaseUrl } from "../utils/utils";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useGameRouteContext } from "../pages/Game";
 
-const sessionId = 12345;
-const gamePlayerDataString: string = String(
-  sessionStorage.getItem("gamePlayerData")
-);
-const gamePlayerData = JSON.parse(gamePlayerDataString);
-const isPlayer1: Boolean = gamePlayerData?.isPlayer1;
+const getIsPlayer1 = (sessionData: any, userId: number): Boolean => {
+  const playerIndex = sessionData.players?.findIndex(
+    (player: any) => player.intraId === userId
+  );
 
-const GameMatch = () => {
+  return playerIndex === 0;
+};
+
+const getUserId = (): number => {
+  const userIdString: string | null = sessionStorage.getItem("userId");
+
+  return userIdString ? parseInt(userIdString) : 666;
+};
+
+// Replace with real userId
+const userId: number = getUserId();
+
+export default function GameMatch() {
+  const navigate = useNavigate();
+  const { sessionDataState } = useGameRouteContext();
+
   const isComponentMounted = useRef(false as Boolean);
+  const [isSessionCreated, setIsSessionCreated] = useState(false as Boolean);
+  const [isAwaitingOpponent, setIsAwaitingOpponent] = useState(false);
+  const isPlayer1 = getIsPlayer1(sessionDataState[0], userId);
+  const sessionId = useSearchParams()[0].get("sessionId");
+  const [showGame, setShowGame] = useState(false as Boolean);
   const socketRef = useRef(
     io(`${getBaseUrl()}/game-data`, {
       transports: ["websocket"],
     }) as Socket
   );
-  const [showGame, setShowGame] = useState(false as Boolean);
-  const [isAwaitingOpponent, setIsAwaitingOpponent] = useState(
-    false as Boolean
-  );
-  const [isSessionCreated, setIsSessionCreated] = useState(false as Boolean);
 
   useEffect(() => {
-    if (!sessionId || isComponentMounted.current) {
-      return;
+    if (!sessionId) {
+      navigate("/game");
     }
+
+    if (isComponentMounted.current) return;
 
     isComponentMounted.current = true;
 
     socketRef.current.on("connect_error", (error) => {
-      console.warn("socket connect error", error);
+      console.warn("GameData socket connection error: ", error);
       setShowGame(false);
     });
 
     socketRef.current.on("disconnect", () => {
-      console.warn("socket disconnected");
+      console.warn("GameData socket disconnected");
       setShowGame(false);
       window.location.reload();
     });
 
     socketRef.current.on("connect", async () => {
-      console.info("connected to socket");
+      console.info("Connected to GameData socket");
 
       if (!isSessionCreated) {
         setIsSessionCreated(true);
-        // TODO uncomment this when matchmaking flow is implemented
-        // Uncomment this only once to create a Session
-        // Once created, comment the code again
-        // socketRef.current.emit(
-        //   "startGame",
-        //   JSON.stringify({
-        //     gameDataId: sessionId,
-        //     ball: {},
-        //     user1: {},
-        //     user2: {},
-        //   })
-        // );
+        socketRef.current.emit(
+          "startGame",
+          JSON.stringify({
+            gameDataId: sessionId,
+            ball: {},
+            user1: {},
+            user2: {},
+          })
+        );
       }
     });
 
@@ -131,6 +145,4 @@ const GameMatch = () => {
       </div>
     </div>
   );
-};
-
-export default GameMatch;
+}
