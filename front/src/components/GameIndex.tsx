@@ -36,36 +36,13 @@ export default function GameIndex() {
       </Link>
       <div style={{ marginTop: "50px" }}>
         <p>
-          ℹ️ If you want to simulate a match with two players, you first have to
-          log in with the our test users ℹ️
+          ℹ️ If you want to simulate a match with two players, you first have to{" "}
+          <Link to="/" style={{ color: "yellow", fontWeight: "bold" }}>
+            log in
+          </Link>{" "}
+          with our test users (<span style={{ color: "yellow" }}>123456</span>{" "}
+          and <span style={{ color: "yellow" }}>111111</span>) ℹ️
         </p>
-        <ul style={{ maxWidth: "700px" }}>
-          <li
-            style={{
-              fontFamily: "monospace",
-              backgroundColor: "dimgray",
-              padding: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            curl --location 'http://localhost:3000/auth/intra/signin' \ --header
-            'Content-Type: application/x-www-form-urlencoded' \ --data-urlencode
-            'state=oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A' \ --data-urlencode
-            'code=111111'
-          </li>
-          <li
-            style={{
-              fontFamily: "monospace",
-              backgroundColor: "dimgray",
-              padding: "10px",
-            }}
-          >
-            curl --location 'http://localhost:3000/auth/intra/signin' \ --header
-            'Content-Type: application/x-www-form-urlencoded' \ --data-urlencode
-            'state=oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A' \ --data-urlencode
-            'code=123456'
-          </li>
-        </ul>
       </div>
     </div>
   );
