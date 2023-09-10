@@ -42,6 +42,15 @@ export class MatchmakingGateway implements OnGatewayDisconnect {
     return this.matchmakingService.addUserToQueue(this.server, client.id, data);
   }
 
+  @SubscribeMessage('unqueueUser')
+  onUnqueueUser(client: Socket, data: string): Promise<void> {
+    return this.matchmakingService.removeUserFromQueue(
+      this.server,
+      client.id,
+      data,
+    );
+  }
+
   handleDisconnect(client: any): Promise<void> {
     return this.matchmakingService.onRemoveUser(client.id);
   }

@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { NewQueuedUserDto } from './dto/new-queued-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { User } from '@prisma/client';
+import { User, UserGameSession } from '@prisma/client';
 import { Server } from 'socket.io';
 import { NewQueuedUserResponseDto } from './dto/new-queued-user-response.dto';
+
+type QueueUser = {
+  id: string;
+  data: User;
+};
 
 @Injectable()
 export class MatchmakingService {
   constructor(private readonly prisma: PrismaService) {}
 
-  queue: { id: string; data: User }[] = [];
+  queue: QueueUser[] = [];
 
   async addUserToQueue(
     server: Server,
@@ -43,7 +48,7 @@ export class MatchmakingService {
       return;
     }
 
-    const isAlreadyQueued = this.queue.some((user) => {
+    const isAlreadyQueued = this.queue.some((user: QueueUser) => {
       return user.data.intraId === userData.intraId;
     });
 
@@ -61,7 +66,7 @@ export class MatchmakingService {
     });
 
     if (this.queue.length >= 2) {
-      const sessionUsers: { id: string; data: User }[] = [];
+      const sessionUsers: QueueUser[] = [];
 
       sessionUsers.push(this.queue.shift());
       sessionUsers.push(this.queue.shift());
@@ -111,6 +116,31 @@ export class MatchmakingService {
   async onRemoveUser(clientId: string): Promise<void> {
     this.queue = this.queue.filter((user) => {
       return user.id !== clientId;
+    });
+  }
+
+  async removeUserFromQueue(
+    server: Server,
+    clientId: string,
+    body: string,
+  ): Promise<void> {
+    const parsedBody: NewQueuedUserDto = JSON.parse(body);
+    const intraId = Number(parsedBody.intraId);
+
+    if (!intraId) {
+      server.emit(`unqueuedUser/${parsedBody.intraId}`, {
+        queued: true,
+        message: 'Invalid intraId',
+      });
+      return;
+    }
+
+    this.queue = [
+      ...this.queue.filter((user: QueueUser) => user.id !== clientId),
+    ];
+
+    server.emit(`unqueuedUser/${parsedBody.intraId}`, {
+      queued: false,
     });
   }
 }
