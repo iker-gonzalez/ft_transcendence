@@ -14,12 +14,12 @@ const getIsPlayer1 = (sessionData: any, userId: number): Boolean => {
 };
 
 const getUserId = (): number => {
-  const userIdString: string | null = sessionStorage.getItem("userId");
+  const userIdString: string | null = sessionStorage.getItem("intraId");
 
   return userIdString ? parseInt(userIdString) : 666;
 };
 
-// Replace with real userId
+// TODO Replace with real userId
 const userId: number = getUserId();
 
 export default function GameMatch() {
