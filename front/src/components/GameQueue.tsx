@@ -67,7 +67,7 @@ export default function GameQueue() {
         }
       }
     );
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoinQueue = () => {
     matchmakingSocket.emit(
