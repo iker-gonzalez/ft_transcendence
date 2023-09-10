@@ -285,7 +285,7 @@ function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
 
   drawText(
     canvas,
-    "Ball Speed: " + ballData.speed.toFixed(2),
+    "Ball Speed: " + ballData.speed?.toFixed(2),
     (canvas.width / 10) * 7,
     (canvas.height / 20) * 17,
     "15px Arial",
