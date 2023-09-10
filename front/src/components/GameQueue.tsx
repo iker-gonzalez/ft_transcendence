@@ -18,7 +18,7 @@ type SessionType = {
 };
 
 // TODO Replace with real userId from login
-const userId = sessionStorage.getItem("userId") ?? 666;
+const userId = sessionStorage.getItem("intraId");
 
 export default function GameQueue() {
   const navigate = useNavigate();
@@ -190,26 +190,6 @@ export default function GameQueue() {
         }
       })()}
       <button onClick={disconnectSocket}>Remove from queue</button>
-
-      {!isQueued && (
-        <div style={{ marginTop: "50px" }}>
-          <p>
-            ℹ️ For now, we need to mock the userId. In one of the two tabs, set
-            the intraId manually ℹ️
-          </p>
-          <p
-            style={{
-              fontFamily: "monospace",
-              backgroundColor: "dimgray",
-              padding: "10px",
-              marginBottom: "10px",
-              maxWidth: "fit-content",
-            }}
-          >
-            sessionStorage.setItem("userId", 667)
-          </p>
-        </div>
-      )}
     </div>
   );
 }

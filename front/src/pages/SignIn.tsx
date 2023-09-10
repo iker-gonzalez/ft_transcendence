@@ -43,13 +43,19 @@ function SignIn() {
             // Add authentication headers if needed
           },
           body: JSON.stringify({
-            code: "111111",
+          code: intraCodeValue,
             state: "oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A",
           }),
         }
       );
 
       if (response.ok) {
+        // TODO use a better system to store user's intraId
+        // e.g. use a cookie or a store
+        const data = await response.json();
+        console.log(data);
+        sessionStorage.setItem("intraId", data.data.intraId);
+
         navigate("/set-profile");
       } else {
         const errorData = await response.json().catch(() => ({})); // Handle potential non-JSON responses
