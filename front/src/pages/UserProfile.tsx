@@ -47,7 +47,7 @@ function UserProfile() {
     };
 
     fetchData();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
     // Display a loading message while fetching data
