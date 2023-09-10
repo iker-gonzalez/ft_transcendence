@@ -2,24 +2,29 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Outlet, useOutletContext } from "react-router-dom";
 import { Socket, io } from "socket.io-client";
 import { getBaseUrl } from "../utils/utils";
+import SessionData from "../models/session-data.interface";
 
-type ContextType = {
+type GameContextType = {
   matchmakingSocket: Socket;
-  sessionDataState: [sessionData: any, setSessionData: any];
+  sessionDataState: [
+    sessionData: SessionData,
+    setSessionData: (arg0: SessionData) => void
+  ];
 };
 
 export default function Game() {
-  const isComponentMounted = useRef(false as Boolean);
-  const [isConnectionError, setIsConnectionError] = useState(false);
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const matchmakingSocketRef = useRef(
+  const isComponentMounted = useRef<boolean>(false);
+  const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
+  const [isSocketConnected, setIsSocketConnected] = useState<boolean>(false);
+  const matchmakingSocketRef = useRef<Socket>(
     io(`${getBaseUrl()}/matchmaking`, {
       transports: ["websocket"],
-    }) as Socket
+    })
   );
-  const [sessionData, setSessionData] = useState({} as any);
+  const [sessionData, setSessionData] = useState<SessionData>();
 
   useEffect(() => {
+    // We want to run this effect only once
     if (isComponentMounted.current) {
       return;
     }
@@ -44,6 +49,10 @@ export default function Game() {
   return (
     <main>
       {(() => {
+        if (!isSocketConnected && !isConnectionError) {
+          return <p>Connecting to the socket...</p>;
+        }
+
         if (isConnectionError) {
           return <p style={{ color: "red" }}>Error connecting to the server</p>;
         }
@@ -66,5 +75,5 @@ export default function Game() {
 }
 
 export function useGameRouteContext() {
-  return useOutletContext<ContextType>();
+  return useOutletContext<GameContextType>();
 }
