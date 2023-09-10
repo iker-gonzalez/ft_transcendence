@@ -85,7 +85,7 @@ export default function GameMatch() {
       ) as HTMLCanvasElement;
       gameLoop(canvas, socketRef.current, isPlayer1, sessionId);
     });
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onReadyToPlay = (): void => {
     socketRef.current.emit(

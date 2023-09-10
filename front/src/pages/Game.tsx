@@ -44,7 +44,7 @@ export default function Game() {
       setIsSocketConnected(true);
       console.info("Matchmaking socket connected");
     });
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <main>
