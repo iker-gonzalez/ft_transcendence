@@ -4,9 +4,10 @@ import { Socket, io } from "socket.io-client";
 import { getBaseUrl } from "../utils/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGameRouteContext } from "../pages/Game";
+import SessionData from "../models/session-data.interface";
 
-const getIsPlayer1 = (sessionData: any, userId: number): Boolean => {
-  const playerIndex = sessionData.players?.findIndex(
+const getIsPlayer1 = (sessionData: SessionData, userId: number): boolean => {
+  const playerIndex: number = sessionData!.players!.findIndex(
     (player: any) => player.intraId === userId
   );
 
@@ -26,16 +27,16 @@ export default function GameMatch() {
   const navigate = useNavigate();
   const { sessionDataState } = useGameRouteContext();
 
-  const isComponentMounted = useRef(false as Boolean);
-  const [isSessionCreated, setIsSessionCreated] = useState(false as Boolean);
-  const [isAwaitingOpponent, setIsAwaitingOpponent] = useState(false);
-  const isPlayer1 = getIsPlayer1(sessionDataState[0], userId);
-  const sessionId = useSearchParams()[0].get("sessionId");
-  const [showGame, setShowGame] = useState(false as Boolean);
-  const socketRef = useRef(
+  const isComponentMounted = useRef<boolean>(false);
+  const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
+  const [isAwaitingOpponent, setIsAwaitingOpponent] = useState<boolean>(false);
+  const isPlayer1: boolean = getIsPlayer1(sessionDataState[0], userId);
+  const sessionId: string | null = useSearchParams()[0]!.get("sessionId");
+  const [showGame, setShowGame] = useState<boolean>(false);
+  const socketRef = useRef<Socket>(
     io(`${getBaseUrl()}/game-data`, {
       transports: ["websocket"],
-    }) as Socket
+    })
   );
 
   useEffect(() => {
