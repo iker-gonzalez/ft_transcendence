@@ -1,33 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useGameRouteContext } from "../pages/Game";
 import { createSearchParams, useNavigate } from "react-router-dom";
-
-type SessionType = {
-  id: string;
-  createdAt: string;
-  players: [
-    {
-      id: string;
-      intraId: number;
-      username: string;
-      avatar: string;
-      email: string;
-      userGameSessionid: string;
-    }
-  ];
-};
+import User from "../models/user.interface";
 
 // TODO Replace with real userId from login
-const userId = sessionStorage.getItem("intraId");
+const userId: string | null = sessionStorage.getItem("intraId");
 
 export default function GameQueue() {
   const navigate = useNavigate();
 
-  const isComponentMounted = useRef(false as Boolean);
-  const [isQueued, setIsQueued] = useState(false);
-  const [isSessionCreated, setIsSessionCreated] = useState(false);
+  const isComponentMounted = useRef<boolean>(false);
+  const [isQueued, setIsQueued] = useState<boolean>(false);
+  const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
   const { matchmakingSocket, sessionDataState } = useGameRouteContext();
-  const newSessionRef = useRef({} as SessionType);
 
   useEffect(() => {
     if (isComponentMounted.current) {
@@ -44,8 +29,6 @@ export default function GameQueue() {
 
     matchmakingSocket.on(`newSession/${userId}`, (newSessionRes) => {
       if (newSessionRes.success) {
-        newSessionRef.current = newSessionRes.data;
-
         const setSessionData = sessionDataState[1];
         setSessionData(newSessionRes.data);
 
@@ -70,7 +53,7 @@ export default function GameQueue() {
       {
         pathname: "/game/match",
         search: createSearchParams({
-          sessionId: newSessionRef.current.id,
+          sessionId: sessionDataState[0].id,
         }).toString(),
       },
       {
@@ -114,7 +97,7 @@ export default function GameQueue() {
             >
               <h2>This is your new session</h2>
               <div style={{ display: "flex", gap: "30px" }}>
-                {newSessionRef.current.players.map((player) => {
+                {sessionDataState[0].players.map((player: User) => {
                   return (
                     <div
                       style={{
