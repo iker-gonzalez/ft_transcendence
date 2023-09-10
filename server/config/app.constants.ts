@@ -6,7 +6,7 @@ export const testUserData = {
 };
 
 export const testUser2Data = {
-  avatar: 'http://placekitten.com/500/500',
+  avatar: 'http://placekitten.com/600/600',
   intraId: 667,
   email: 'test2@42urduliz.com',
   username: 'test2-',
