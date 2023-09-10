@@ -2,6 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { useGameRouteContext } from "../pages/Game";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import User from "../models/user.interface";
+import SessionData from "../models/session-data.interface";
+
+type GameQueueRes = {
+  queued: boolean;
+};
+
+type GameSessionRes = {
+  success: boolean;
+  data: SessionData;
+};
 
 // TODO Replace with real userId from login
 const userId: string | null = sessionStorage.getItem("intraId");
@@ -15,28 +25,48 @@ export default function GameQueue() {
   const { matchmakingSocket, sessionDataState } = useGameRouteContext();
 
   useEffect(() => {
+    // TODO remove this when we have a better way to store userId
+    if (!userId) {
+      navigate("/");
+    }
+
     if (isComponentMounted.current) {
       return;
     }
 
     isComponentMounted.current = true;
 
-    matchmakingSocket.on(`userJoined/${userId}`, (userJoinedRes) => {
-      if (userJoinedRes.queued) {
-        setIsQueued(true);
+    matchmakingSocket.on(
+      `userJoined/${userId}`,
+      (userJoinedRes: GameQueueRes) => {
+        if (userJoinedRes.queued) {
+          setIsQueued(true);
+        }
       }
-    });
+    );
 
-    matchmakingSocket.on(`newSession/${userId}`, (newSessionRes) => {
-      if (newSessionRes.success) {
-        const setSessionData = sessionDataState[1];
-        setSessionData(newSessionRes.data);
+    matchmakingSocket.on(
+      `newSession/${userId}`,
+      (newSessionRes: GameSessionRes) => {
+        if (newSessionRes.success) {
+          const setSessionData = sessionDataState[1];
+          setSessionData(newSessionRes.data);
 
-        setIsSessionCreated(true);
-      } else {
-        console.warn("error creating session");
+          setIsSessionCreated(true);
+        } else {
+          console.warn("error creating session");
+        }
       }
-    });
+    );
+
+    matchmakingSocket.on(
+      `unqueuedUser/${userId}`,
+      (unqueuedUserRes: GameQueueRes) => {
+        if (!unqueuedUserRes.queued) {
+          setIsQueued(false);
+        }
+      }
+    );
   }, []);
 
   const onJoinQueue = () => {
@@ -62,8 +92,13 @@ export default function GameQueue() {
     );
   };
 
-  const disconnectSocket = () => {
-    matchmakingSocket.disconnect();
+  const onRemoveFromQueue = () => {
+    matchmakingSocket.emit(
+      "unqueueUser",
+      JSON.stringify({
+        intraId: userId,
+      })
+    );
   };
 
   return (
@@ -145,9 +180,12 @@ export default function GameQueue() {
         } else {
           if (isQueued) {
             return (
-              <p style={{ fontWeight: "bold", color: "yellow" }}>
-                Queue joined. Waiting for another player to join...
-              </p>
+              <>
+                <p style={{ fontWeight: "bold", color: "yellow" }}>
+                  Queue joined. Waiting for another player to join...
+                </p>
+                <button onClick={onRemoveFromQueue}>Remove from queue</button>
+              </>
             );
           } else {
             return (
@@ -172,7 +210,6 @@ export default function GameQueue() {
           }
         }
       })()}
-      <button onClick={disconnectSocket}>Remove from queue</button>
     </div>
   );
 }
