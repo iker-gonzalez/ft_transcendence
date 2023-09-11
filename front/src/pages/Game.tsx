@@ -3,6 +3,7 @@ import { Outlet, useOutletContext } from "react-router-dom";
 import { Socket, io } from "socket.io-client";
 import { getBaseUrl } from "../utils/utils";
 import SessionData from "../models/session-data.interface";
+import { styled } from "styled-components";
 
 type GameContextType = {
   matchmakingSocket: Socket;
@@ -11,6 +12,12 @@ type GameContextType = {
     setSessionData: (arg0: SessionData) => void
   ];
 };
+
+const WrapperMain = styled.main`
+  .error-message {
+    color: red;
+  }
+`;
 
 export default function Game() {
   const isComponentMounted = useRef<boolean>(false);
@@ -47,14 +54,16 @@ export default function Game() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <main>
+    <WrapperMain>
       {(() => {
         if (!isSocketConnected && !isConnectionError) {
           return <p>Connecting to the socket...</p>;
         }
 
         if (isConnectionError) {
-          return <p style={{ color: "red" }}>Error connecting to the server</p>;
+          return (
+            <p className="error-message">Error connecting to the server</p>
+          );
         }
 
         if (isSocketConnected) {
@@ -70,7 +79,7 @@ export default function Game() {
           <p>Connecting to the sever...</p>;
         }
       })()}
-    </main>
+    </WrapperMain>
   );
 }
 
