@@ -5,6 +5,7 @@ import { getBaseUrl } from "../utils/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGameRouteContext } from "../pages/Game";
 import SessionData from "../models/session-data.interface";
+import MainButton from "./UI/MainButton";
 
 const getIsPlayer1 = (sessionData: SessionData, userId: number): boolean => {
   const playerIndex: number = sessionData!.players!.findIndex(
@@ -122,23 +123,7 @@ export default function GameMatch() {
             {isAwaitingOpponent ? (
               <p>Awaiting opponent...</p>
             ) : (
-              <button
-                onClick={onReadyToPlay}
-                style={{
-                  width: "175px",
-                  height: "50px",
-                  backgroundColor: "#FFD369",
-                  color: "black",
-                  borderRadius: "5px",
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                Play
-              </button>
+              <MainButton onClick={onReadyToPlay}>Play</MainButton>
             )}
           </div>
         )}
