@@ -4,6 +4,7 @@ import { createSearchParams, useNavigate } from "react-router-dom";
 import User from "../models/user.interface";
 import SessionData from "../models/session-data.interface";
 import MainButton from "./UI/MainButton";
+import { styled } from "styled-components";
 
 type GameQueueRes = {
   queued: boolean;
@@ -13,6 +14,48 @@ type GameSessionRes = {
   success: boolean;
   data: SessionData;
 };
+
+const WrapperDiv = styled.div`
+  .highlighted {
+    color: yellow;
+    font-weight: bold;
+  }
+
+  .session-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    width: fit-content;
+    color: black;
+    border-radius: 25px;
+    padding: 15px 30px;
+    margin: 10px;
+  }
+
+  .users-box {
+    display: flex;
+    gap: 30px;
+
+    .user-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      p {
+        font-weight: bold;
+      }
+
+      img {
+        border-radius: 50%;
+        width: 150px;
+        object-fit: cover;
+      }
+    }
+  }
+`;
 
 // TODO Replace with real userId from login
 const userId: string | null = sessionStorage.getItem("intraId");
@@ -103,10 +146,10 @@ export default function GameQueue() {
   };
 
   return (
-    <div>
+    <WrapperDiv>
       <h1>
         Game queue for user with intradId{" "}
-        <span style={{ color: "yellow" }}>{userId}</span>
+        <span className="highlighted">{userId}</span>
       </h1>
       <p>This is the page that is shown when users decide to join the queue.</p>
       <p>
@@ -117,57 +160,26 @@ export default function GameQueue() {
       {(function () {
         if (isSessionCreated) {
           return (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "white",
-                width: "fit-content",
-                color: "black",
-                borderRadius: "25px",
-                padding: "15px 30px",
-                margin: "10px",
-              }}
-            >
+            <div className="session-box">
               <h2>This is your new session</h2>
-              <div style={{ display: "flex", gap: "30px" }}>
+              <div className="users-box">
                 {sessionDataState[0].players.map((player: User) => {
                   return (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                      key={player.id}
-                    >
-                      <p style={{ fontWeight: "bold" }}>{player.username}</p>
-                      <img
-                        style={{
-                          borderRadius: "50%",
-                          width: "150px",
-                          objectFit: "cover",
-                        }}
-                        alt=""
-                        src={player.avatar}
-                      />
+                    <div className="user-box" key={player.id}>
+                      <p>{player.username}</p>
+                      <img alt="" src={player.avatar} />
                     </div>
                   );
                 })}
               </div>
-              <MainButton onClick={onGoToMatch} style={{ marginTop: "20px" }}>
-                Go to match
-              </MainButton>
+              <MainButton onClick={onGoToMatch}>Go to match</MainButton>
             </div>
           );
         } else {
           if (isQueued) {
             return (
               <>
-                <p style={{ fontWeight: "bold", color: "yellow" }}>
+                <p className="highlighted">
                   Queue joined. Waiting for another player to join...
                 </p>
                 <button onClick={onRemoveFromQueue}>Remove from queue</button>
@@ -178,6 +190,6 @@ export default function GameQueue() {
           }
         }
       })()}
-    </div>
+    </WrapperDiv>
   );
 }
