@@ -5,6 +5,8 @@ import User from "../models/user.interface";
 import SessionData from "../models/session-data.interface";
 import MainButton from "./UI/MainButton";
 import { styled } from "styled-components";
+import CenteredLayout from "./UI/CenteredLayout";
+import RoundImg from "./UI/RoundImage";
 
 type GameQueueRes = {
   queued: boolean;
@@ -32,6 +34,10 @@ const WrapperDiv = styled.div`
     border-radius: 25px;
     padding: 15px 30px;
     margin: 10px;
+
+    .game-cta {
+      margin-top: 20px;
+    }
   }
 
   .users-box {
@@ -49,9 +55,7 @@ const WrapperDiv = styled.div`
       }
 
       img {
-        border-radius: 50%;
         width: 150px;
-        object-fit: cover;
       }
     }
   }
@@ -147,49 +151,56 @@ export default function GameQueue() {
 
   return (
     <WrapperDiv>
-      <h1>
-        Game queue for user with intradId{" "}
-        <span className="highlighted">{userId}</span>
-      </h1>
-      <p>This is the page that is shown when users decide to join the queue.</p>
-      <p>
-        The user joins the queue and stays there until they're joined by another
-        user.
-      </p>
-      <p>Once the session is created, the game session can start.</p>
-      {(function () {
-        if (isSessionCreated) {
-          return (
-            <div className="session-box">
-              <h2>This is your new session</h2>
-              <div className="users-box">
-                {sessionDataState[0].players.map((player: User) => {
-                  return (
-                    <div className="user-box" key={player.id}>
-                      <p>{player.username}</p>
-                      <img alt="" src={player.avatar} />
-                    </div>
-                  );
-                })}
-              </div>
-              <MainButton onClick={onGoToMatch}>Go to match</MainButton>
-            </div>
-          );
-        } else {
-          if (isQueued) {
+      <CenteredLayout>
+        <h1>
+          Game queue for user with intradId{" "}
+          <span className="highlighted">{userId}</span>
+        </h1>
+        <p>
+          This is the page that is shown when users decide to join the queue.
+        </p>
+        <p>
+          The user joins the queue and stays there until they're joined by
+          another user.
+        </p>
+        {(function () {
+          if (isSessionCreated) {
             return (
-              <>
-                <p className="highlighted">
-                  Queue joined. Waiting for another player to join...
-                </p>
-                <button onClick={onRemoveFromQueue}>Remove from queue</button>
-              </>
+              <div className="session-box">
+                <h2>This is your new session</h2>
+                <div className="users-box">
+                  {sessionDataState[0].players.map((player: User) => {
+                    return (
+                      <div className="user-box" key={player.id}>
+                        <p>{player.username}</p>
+                        <RoundImg alt="" src={player.avatar} />
+                      </div>
+                    );
+                  })}
+                </div>
+                <MainButton className="game-cta" onClick={onGoToMatch}>
+                  Go to match
+                </MainButton>
+              </div>
             );
           } else {
-            return <MainButton onClick={onJoinQueue}>Join a queue</MainButton>;
+            if (isQueued) {
+              return (
+                <>
+                  <p className="highlighted">
+                    Queue joined. Waiting for another player to join...
+                  </p>
+                  <MainButton onClick={onRemoveFromQueue}>
+                    Remove from queue
+                  </MainButton>
+                </>
+              );
+            } else {
+              return <MainButton onClick={onJoinQueue}>Join game</MainButton>;
+            }
           }
-        }
-      })()}
+        })()}
+      </CenteredLayout>
     </WrapperDiv>
   );
 }
