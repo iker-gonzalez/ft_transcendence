@@ -3,6 +3,7 @@ import { useGameRouteContext } from "../pages/Game";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import User from "../models/user.interface";
 import SessionData from "../models/session-data.interface";
+import MainButton from "./UI/MainButton";
 
 type GameQueueRes = {
   queued: boolean;
@@ -157,24 +158,9 @@ export default function GameQueue() {
                   );
                 })}
               </div>
-              <button
-                style={{
-                  width: "175px",
-                  height: "50px",
-                  backgroundColor: "#FFD369",
-                  color: "black",
-                  borderRadius: "5px",
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.1)",
-                  marginTop: "20px",
-                }}
-                onClick={onGoToMatch}
-              >
+              <MainButton onClick={onGoToMatch} style={{ marginTop: "20px" }}>
                 Go to match
-              </button>
+              </MainButton>
             </div>
           );
         } else {
@@ -188,25 +174,7 @@ export default function GameQueue() {
               </>
             );
           } else {
-            return (
-              <button
-                style={{
-                  width: "175px",
-                  height: "50px",
-                  backgroundColor: "#FFD369",
-                  color: "black",
-                  borderRadius: "5px",
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.1)",
-                }}
-                onClick={onJoinQueue}
-              >
-                Join a queue
-              </button>
-            );
+            return <MainButton onClick={onJoinQueue}>Join a queue</MainButton>;
           }
         }
       })()}
