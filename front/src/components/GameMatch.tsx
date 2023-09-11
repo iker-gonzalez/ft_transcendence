@@ -7,6 +7,7 @@ import { useGameRouteContext } from "../pages/Game";
 import SessionData from "../models/session-data.interface";
 import MainButton from "./UI/MainButton";
 import { styled } from "styled-components";
+import CenteredLayout from "./UI/CenteredLayout";
 
 const getIsPlayer1 = (sessionData: SessionData, userId: number): boolean => {
   const playerIndex: number = sessionData!.players!.findIndex(
@@ -26,6 +27,11 @@ const getUserId = (): number => {
 const userId: number = getUserId();
 
 const WrapperDiv = styled.div`
+  .highlighted {
+    color: yellow;
+    font-weight: bold;
+  }
+
   .game-container {
     position: relative;
     width: 100%;
@@ -115,23 +121,27 @@ export default function GameMatch() {
 
   return (
     <WrapperDiv>
-      <h2>Hello, player {isPlayer1 ? 1 : 2}</h2>
-      <p>
-        This is the page the is shown when two users are matched in a session
-        and the game can begin.
-      </p>
-      <div className="game-container">
-        {!showGame && (
-          <div className="cta-container">
-            {isAwaitingOpponent ? (
-              <p>Awaiting opponent...</p>
-            ) : (
-              <MainButton onClick={onReadyToPlay}>Play</MainButton>
-            )}
-          </div>
-        )}
-        <canvas id="gamePong" width="900" height="600"></canvas>
-      </div>
+      <CenteredLayout>
+        <h2>
+          Hello, player <span className="highlighted">{isPlayer1 ? 1 : 2}</span>
+        </h2>
+        <p>
+          This is the page the is shown when two users are matched in a session
+          and the game can begin.
+        </p>
+        <div className="game-container">
+          {!showGame && (
+            <div className="cta-container">
+              {isAwaitingOpponent ? (
+                <p>Awaiting opponent...</p>
+              ) : (
+                <MainButton onClick={onReadyToPlay}>Play</MainButton>
+              )}
+            </div>
+          )}
+          <canvas id="gamePong" width="900" height="600"></canvas>
+        </div>
+      </CenteredLayout>
     </WrapperDiv>
   );
 }
