@@ -2,11 +2,32 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import MainButton from "../components/UI/MainButton";
 import { styled } from "styled-components";
+import CenteredLayout from "./UI/CenteredLayout";
 
 const WrapperDiv = styled.div`
   .highlighted {
     color: yellow;
     font-weight: bold;
+  }
+
+  .user-info-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 100px;
+    grid-gap: 20px;
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .user-info-box {
+    width: 300px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px yellow solid;
+    border-radius: 20px;
   }
 
   .warning-box {
@@ -23,28 +44,33 @@ export default function GameIndex() {
 
   return (
     <WrapperDiv>
-      <h1>Game Index</h1>
-      <p>
-        This is the content of the page that is shown when you first access the
-        /game route
-      </p>
-      <p>
-        Here we need to put an option to start a new game by joining the
-        matchmaking first.
-      </p>
-      <p>Maybe we can show the latest games and the user stats.</p>
-      <p>We could also show the user's friends that are online</p>
-      <MainButton onClick={onGoToGameQueue}>Go to Game queue</MainButton>
-      <div className="warning-box">
+      <CenteredLayout>
+        <h1>Game dashboard</h1>
         <p>
-          ℹ️ If you want to simulate a match with two players, you first have to{" "}
-          <Link to="/" className="highlighted">
-            log in
-          </Link>{" "}
-          with our test users (<span className="highlighted">123456</span> and{" "}
-          <span className="highlighted">111111</span>) ℹ️
+          This is the content of the page that is shown when you first access
+          the <span className="highlighted">game</span> route
         </p>
-      </div>
+        <div className="user-info-container">
+          <div className="user-info-box">
+            <p>Online friends?</p>
+          </div>
+          <div className="user-info-box">
+            <p>User stats?</p>
+          </div>
+        </div>
+        <MainButton onClick={onGoToGameQueue}>Go to matchmaking</MainButton>
+        <div className="warning-box">
+          <p>
+            ℹ️ If you want to simulate a match with two players, you first have
+            to{" "}
+            <Link to="/" className="highlighted">
+              log in
+            </Link>{" "}
+            with our test users (<span className="highlighted">123456</span> and{" "}
+            <span className="highlighted">111111</span>) ℹ️
+          </p>
+        </div>
+      </CenteredLayout>
     </WrapperDiv>
   );
 }
