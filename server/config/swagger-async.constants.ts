@@ -13,6 +13,16 @@ export const swaggerAsyncConstants = {
         description:
           "Users receive this message when they are matched to a game session. In case the intraId is not valid, the user doesn't exist or there was an error creating the session, an error payload is returned by the socket.",
       },
+      unqueuedUserIntraId: {
+        channel: 'matchmaking:unqueuedUser/{intraId}',
+        description:
+          'Users receive this message when they are removed from the matchmaking queue.',
+      },
+      unqueueUser: {
+        channel: 'matchmaking:unqueueUser',
+        description:
+          'Users send this message to abandon the matchmaking queue.',
+      },
     },
   },
   gameData: {
@@ -79,6 +89,12 @@ export const swaggerAsyncConstants = {
             },
           ],
         },
+      },
+    },
+    unqueuedUser: {
+      queued: {
+        description: 'Whether the user is queued or not',
+        example: false,
       },
     },
     startGameDto: {
