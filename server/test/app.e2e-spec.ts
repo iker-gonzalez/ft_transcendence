@@ -1596,6 +1596,44 @@ describe('App e2e', () => {
         });
       });
 
+      it('should emit unqueuedUser and remove user from queue on unqueueUser', (done) => {
+        expect.assertions(3);
+
+        createUser(prisma, intraService, intraUserToken, userData).then(
+          (user: User) => {
+            const socket = createSocketClient(app, MATCHMAKING_ENDPOINT);
+
+            socket.on('connect', async () => {
+              socket.emit('newUser', JSON.stringify({ intraId: user.intraId }));
+            });
+
+            socket.on(`unqueuedUser/${user.intraId}`, (data) => {
+              expect(data).toStrictEqual({
+                queued: false,
+              });
+
+              socket.disconnect();
+
+              prisma.userGameSession.findMany().then((userGameSessions) => {
+                expect(userGameSessions).toHaveLength(0);
+                done();
+              });
+            });
+
+            socket.on(`userJoined/${user.intraId}`, (data) => {
+              expect(data).toStrictEqual({
+                queued: true,
+              });
+
+              socket.emit(
+                'unqueueUser',
+                JSON.stringify({ intraId: user.intraId }),
+              );
+            });
+          },
+        );
+      });
+
       it('should emit error if intraId is not valid number', (done) => {
         expect.assertions(2);
 
