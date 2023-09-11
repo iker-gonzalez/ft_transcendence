@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGameRouteContext } from "../pages/Game";
 import SessionData from "../models/session-data.interface";
 import MainButton from "./UI/MainButton";
+import { styled } from "styled-components";
 
 const getIsPlayer1 = (sessionData: SessionData, userId: number): boolean => {
   const playerIndex: number = sessionData!.players!.findIndex(
@@ -23,6 +24,22 @@ const getUserId = (): number => {
 
 // TODO Replace with real userId
 const userId: number = getUserId();
+
+const WrapperDiv = styled.div`
+  .game-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .cta-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+`;
 
 export default function GameMatch() {
   const navigate = useNavigate();
@@ -97,29 +114,15 @@ export default function GameMatch() {
   };
 
   return (
-    <div>
-      <h2>Hello, {isPlayer1 ? "Player 1" : "Player 2"}</h2>
+    <WrapperDiv>
+      <h2>Hello, player {isPlayer1 ? 1 : 2}</h2>
       <p>
         This is the page the is shown when two users are matched in a session
         and the game can begin.
       </p>
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <div className="game-container">
         {!showGame && (
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              transform: "translateY(-50%)",
-            }}
-          >
+          <div className="cta-container">
             {isAwaitingOpponent ? (
               <p>Awaiting opponent...</p>
             ) : (
@@ -129,6 +132,6 @@ export default function GameMatch() {
         )}
         <canvas id="gamePong" width="900" height="600"></canvas>
       </div>
-    </div>
+    </WrapperDiv>
   );
 }
