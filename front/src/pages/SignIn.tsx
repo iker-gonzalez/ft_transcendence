@@ -1,30 +1,19 @@
 import React, { useState } from 'react';
 import {getBaseUrl} from '../utils/utils';
 import { useNavigate } from 'react-router-dom';
+import MainButton from "../components/UI/MainButton";
+import { styled } from "styled-components";
 
-const formStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: '40%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-};
-
-const buttonStyles = {
-  width: '175px',
-  height: '50px',
-  backgroundColor: '#FFD369',
-  color: 'black',
-  borderRadius: '5px',
-  border: 'none',
-  cursor: 'pointer',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.1)',
-};
+const PageWrapperDiv = styled.div`
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
 
 function SignIn() {
   const [intraCodeValue, setIntraCodeValue] = useState("123456");
@@ -73,7 +62,7 @@ function SignIn() {
   };
 
   return (
-    <div style={formStyle}>
+    <PageWrapperDiv>
       <h1 style={{ fontFamily: 'Arial Black', fontSize: '36px'}}>Pong Game</h1>
       <img src="/assets/school_42.jpeg" alt='42 logo' style={{ width: '150px', marginBottom: '12px' }} />
       <form
@@ -91,14 +80,14 @@ function SignIn() {
             style={{ marginLeft: "10px" }}
           />
         </label>
-        <button style={buttonStyles} type="submit">Sign In with 42</button>
+        <MainButton type="submit">Sign In with 42</MainButton>
       </form>
       <p>
         Currently, we support <span style={{ color: "yellow" }}>123456</span>{" "}
         and <span style={{ color: "yellow" }}>111111</span> test users.
       </p>
       {message && <p>{message}</p>}
-    </div>
+    </PageWrapperDiv>
   );
 }
 

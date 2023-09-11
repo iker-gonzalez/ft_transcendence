@@ -1,7 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import MainButton from "../components/UI/MainButton";
 
 export default function GameIndex() {
+  const navigate = useNavigate();
+
+  const onGoToGameQueue = () => {
+    navigate("queue");
+  };
+
   return (
     <div>
       <h1>Game Index</h1>
@@ -15,25 +22,7 @@ export default function GameIndex() {
       </p>
       <p>Maybe we can show the latest games and the user stats.</p>
       <p>We could also show the user's friends that are online</p>
-      <Link
-        to="queue"
-        style={{
-          textDecoration: "none",
-          padding: "10px 15px",
-          width: "175px",
-          height: "50px",
-          backgroundColor: "#FFD369",
-          color: "black",
-          borderRadius: "5px",
-          border: "none",
-          cursor: "pointer",
-          fontSize: "16px",
-          fontWeight: "bold",
-          boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        Go to Game queue
-      </Link>
+      <MainButton onClick={onGoToGameQueue}>Go to Game queue</MainButton>
       <div style={{ marginTop: "50px" }}>
         <p>
           ℹ️ If you want to simulate a match with two players, you first have to{" "}
