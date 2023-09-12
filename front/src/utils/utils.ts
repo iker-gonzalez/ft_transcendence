@@ -8,5 +8,5 @@ export function getBaseUrl(): string {
 
   return window.location.hostname === "localhost"
     ? `http://localhost:${apiPort}`
-    : `https://${window.location.hostname.replace(clientPort, apiPort)}`;
+    : `https://${window.location.hostname.replace(apiPort, clientPort)}`;
 }
