@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import {getBaseUrl} from '../utils/utils';
+import React, { useState, useEffect } from 'react';
+import { getBaseUrl } from '../utils/utils';
 import { useNavigate } from 'react-router-dom';
 import MainButton from "../components/UI/MainButton";
 import { styled } from "styled-components";
 
 const PageWrapperDiv = styled.div`
   position: fixed;
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -20,6 +20,21 @@ function SignIn() {
   const [message, setMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+
+    if (code) {
+      // Code has been received from the redirected URL, use it
+      setIntraCodeValue(code);
+    }
+  }, []);
+
+  const handleSignInClick = () => {
+    // Redirect the user to the intranet URL
+    window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-74ad9c2d9b47a3981f7a3e1c602472165f4956ddfff7109409f90e46df0d8f81&redirect_uri=${getBaseUrl()}/profile&response_type=code`;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -32,7 +47,7 @@ function SignIn() {
             // Add authentication headers if needed
           },
           body: JSON.stringify({
-          code: intraCodeValue,
+            code: intraCodeValue,
             state: "oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A",
           }),
         }
@@ -45,7 +60,7 @@ function SignIn() {
         console.log(data);
         sessionStorage.setItem("intraId", data.data.intraId);
 
-        navigate("/set-profile");
+        navigate("/profile");
       } else {
         const errorData = await response.json().catch(() => ({})); // Handle potential non-JSON responses
         const errorMessage = errorData.message || 'An error occurred on the server.';
@@ -63,7 +78,7 @@ function SignIn() {
 
   return (
     <PageWrapperDiv>
-      <h1 style={{ fontFamily: 'Arial Black', fontSize: '36px'}}>Pong Game</h1>
+      <h1 style={{ fontFamily: 'Arial Black', fontSize: '36px' }}>Pong Game</h1>
       <img src="/assets/school_42.jpeg" alt='42 logo' style={{ width: '150px', marginBottom: '12px' }} />
       <form
         onSubmit={handleSubmit}
@@ -80,7 +95,9 @@ function SignIn() {
             style={{ marginLeft: "10px" }}
           />
         </label>
-        <MainButton type="submit">Sign In with 42</MainButton>
+        <MainButton type="button" onClick={handleSignInClick}>
+          Sign In with 42
+        </MainButton>
       </form>
       <p>
         Currently, we support <span style={{ color: "yellow" }}>123456</span>{" "}
