@@ -3,6 +3,7 @@ import { getBaseUrl, getRedirectUri } from '../utils/utils';
 import { useNavigate } from 'react-router-dom';
 import MainButton from "../components/UI/MainButton";
 import { styled } from "styled-components";
+import LoadingPage from './LoadingPage';
 
 const PageWrapperDiv = styled.div`
   position: fixed;
@@ -18,7 +19,6 @@ const PageWrapperDiv = styled.div`
 function SignIn() {
   const [intraCodeValue, setIntraCodeValue] = useState("123456");
   const [message, setMessage] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -32,7 +32,7 @@ function SignIn() {
 
   const handleSignInClick = () => {
     // Redirect the user to the intranet URL
-    window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-9cb83bc7b397ff158ac07327f79c1644a468e224e70c0831d3842925322095c0&redirect_uri=${getRedirectUri()}&response_type=code`;
+    window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-78e523c29b40758f1eba3c7be173784cac894117a8f7856ec9c1e8062ad43b6d&redirect_uri=${getRedirectUri()}&response_type=code`;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,7 +60,7 @@ function SignIn() {
         console.log(data);
         sessionStorage.setItem("intraId", data.data.intraId);
 
-        navigate("/profile");
+        <LoadingPage targetPath="/profile" />
       } else {
         const errorData = await response.json().catch(() => ({})); // Handle potential non-JSON responses
         const errorMessage = errorData.message || 'An error occurred on the server.';

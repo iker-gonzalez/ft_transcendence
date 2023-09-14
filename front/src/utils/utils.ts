@@ -17,6 +17,6 @@ export function getRedirectUri(): string {
   const clientPort: string = process.env.REACT_APP_CLIENT_PORT || "4200";
 
   return window.location.hostname === "localhost"
-    ? `http://localhost:${apiPort}/profile`
-    : `https://${window.location.hostname.replace(apiPort, clientPort)}/profile`;
+    ? `http://localhost:${apiPort}/loading`
+    : `https://${window.location.hostname.replace(apiPort, clientPort)}/loading`;
 }
