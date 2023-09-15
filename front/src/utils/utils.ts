@@ -1,22 +1,16 @@
 /**
- * Depending if the current hostname is localhost or not (e.g. a GitHub Codespace), it returns the correct base url to use in API calls.
- * @returns the computed base url of the api
+ * Depending on whether the current hostname is localhost or not (e.g., a GitHub Codespace),
+ * it returns the correct base URL to use in API calls with an optional relative path.
+ * @param relativePath - The relative path to append to the URL (optional).
+ * @returns the computed URL.
  */
 
-export function getBaseUrl(): string {
+export function getUrlWithRelativePath(relativePath: string = ""): string {
   const apiPort: string = process.env.REACT_APP_API_PORT || "3000";
   const clientPort: string = process.env.REACT_APP_CLIENT_PORT || "4200";
-
-  return window.location.hostname === "localhost"
+  const baseUrl = window.location.hostname === "localhost"
     ? `http://localhost:${apiPort}`
     : `https://${window.location.hostname.replace(apiPort, clientPort)}`;
-}
 
-export function getRedirectUri(): string {
-  const apiPort: string = process.env.REACT_APP_API_PORT || "3000";
-  const clientPort: string = process.env.REACT_APP_CLIENT_PORT || "4200";
-
-  return window.location.hostname === "localhost"
-    ? `http://localhost:${apiPort}/loading`
-    : `https://${window.location.hostname.replace(apiPort, clientPort)}/loading`;
+  return baseUrl + (relativePath ? `/${relativePath}` : "");
 }
