@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Outlet, useOutletContext } from "react-router-dom";
 import { Socket, io } from "socket.io-client";
-import { getBaseUrl } from "../utils/utils";
+import { getUrlWithRelativePath } from "../utils/utils";
 import SessionData from "../models/session-data.interface";
 import { styled } from "styled-components";
 
@@ -24,7 +24,7 @@ export default function Game() {
   const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
   const [isSocketConnected, setIsSocketConnected] = useState<boolean>(false);
   const matchmakingSocketRef = useRef<Socket>(
-    io(`${getBaseUrl()}/matchmaking`, {
+    io(`${getUrlWithRelativePath('matchmaking')}`, {
       transports: ["websocket"],
     })
   );

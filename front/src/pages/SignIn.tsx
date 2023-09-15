@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getBaseUrl, getRedirectUri } from '../utils/utils';
+import { getUrlWithRelativePath } from '../utils/utils';
 import { useNavigate } from 'react-router-dom';
 import MainButton from "../components/UI/MainButton";
 import { styled } from "styled-components";
@@ -32,14 +32,14 @@ function SignIn() {
 
   const handleSignInClick = () => {
     // Redirect the user to the intranet URL
-    window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-78e523c29b40758f1eba3c7be173784cac894117a8f7856ec9c1e8062ad43b6d&redirect_uri=${getRedirectUri()}&response_type=code`;
+    window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-78e523c29b40758f1eba3c7be173784cac894117a8f7856ec9c1e8062ad43b6d&redirect_uri=${getUrlWithRelativePath('profile')}&response_type=code`;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `${getBaseUrl()}/auth/intra/signin`,
+        `${getUrlWithRelativePath("/auth/intra/signin")}`,
         {
           method: "POST",
           headers: {
