@@ -14,10 +14,12 @@ interface UserData {
 }
 
 function UserProfile() {
-  const [userData, setUserData] = useState<UserData | null>(null);
+  return (
+    <div>hello</div>  
+  );
+  /*const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const url = `${getUrlWithRelativePath('users/me')}`;
-  console.log(url);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,7 +75,7 @@ function UserProfile() {
         <p>Avatar: <img src={userData.avatar} alt="Avatar" /></p>
       </div>
     </div>
-  );
+  );*/
 }
 
 export default UserProfile;

@@ -1,5 +1,5 @@
 import React from "react";
-import SignIn from "./pages/SignIn";
+import SignIn from "./pages/Home";
 import SetProfile from "./pages/SetProfile";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navigation from "./components/Navigation";
@@ -9,6 +9,7 @@ import GameMatch from "./components/GameMatch";
 import GameIndex from "./components/GameIndex";
 import GameQueue from "./components/GameQueue";
 import LoadingPage from "./pages/LoadingPage";
+import Login from "./components/Login";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/" element={<SignIn />} />
           <Route path="/set-profile" element={<SetProfile />} />
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/loading" element={<LoadingPage targetPath={""} />} />
           <Route path="game" element={<Game />}>
             <Route index element={<GameIndex />} />
