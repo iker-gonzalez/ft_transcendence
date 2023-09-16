@@ -1980,7 +1980,7 @@ describe('App e2e', () => {
       });
 
       describe('upload', () => {
-        test('should upload data from user1 and emit download event to user2', (done) => {
+        test('should upload data from user1 and emit uploaded event to user1', (done) => {
           const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
 
           // Initialize data set first
@@ -2007,21 +2007,17 @@ describe('App e2e', () => {
             );
           });
 
-          socket.on(`download/user1/${dataSetInitial.gameDataId}`, () => {
+          socket.on(`uploaded/user2/${dataSetInitial.gameDataId}`, () => {
             done.fail(new Error('download/user1 should not be emitted'));
           });
 
-          socket.on(`download/user2/${dataSetInitial.gameDataId}`, (data) => {
-            expect(data).toStrictEqual(
-              JSON.stringify({ ...dataSetInitial, ...updatedDataSetBothUser }),
-            );
-
+          socket.on(`uploaded/user1/${dataSetInitial.gameDataId}`, () => {
             socket.disconnect();
             done();
           });
         });
 
-        test('should upload data from user2 and emit download event to user1', (done) => {
+        test('should upload data from user2 and emit uploaded event to user2', (done) => {
           const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
 
           // Initialize data set first
@@ -2048,15 +2044,11 @@ describe('App e2e', () => {
             );
           });
 
-          socket.on(`download/user2/${dataSetInitial.gameDataId}`, () => {
+          socket.on(`uploaded/user1/${dataSetInitial.gameDataId}`, () => {
             done.fail(new Error('download/user1 should not be emitted'));
           });
 
-          socket.on(`download/user1/${dataSetInitial.gameDataId}`, (data) => {
-            expect(data).toStrictEqual(
-              JSON.stringify({ ...dataSetInitial, ...updatedDataSetBothUser }),
-            );
-
+          socket.on(`uploaded/user2/${dataSetInitial.gameDataId}`, () => {
             socket.disconnect();
             done();
           });
