@@ -2,7 +2,7 @@ import React from 'react';
 import { getRedirectUri } from '../utils/utils';
 import MainButton from "../components/UI/MainButton";
 import { styled } from "styled-components";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const PageWrapperDiv = styled.div`
   position: fixed;
@@ -13,6 +13,12 @@ const PageWrapperDiv = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  .signin-link {
+    color: white;
+    text-decoration: underline;
+    cursor: pointer;
+  }
 `;
 
 function SignIn() {
@@ -35,6 +41,8 @@ function SignIn() {
         <MainButton type="button" onClick={handleSignInClick}>
           Sign In with 42
         </MainButton>
+        <Link to={`login?code=${process.env.REACT_APP_USER_TEST_1_CODE}`} className="signin-link">Sign in with test user 1</Link>
+        <Link to={`login?code=${process.env.REACT_APP_USER_TEST_2_CODE}`} className="signin-link">Sign in with test user 2</Link>
       </form>
       {message && <p>{message}</p>}
     </PageWrapperDiv>
