@@ -65,7 +65,7 @@ export default function Game() {
 
         if (isConnectionError) {
           return (
-            <p className="error-message">Error connecting to the server</p>
+            <p className="error-message">Server error. Reconnecting to server...</p>
           );
         }
 
