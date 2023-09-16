@@ -1,5 +1,5 @@
 import React from 'react';
-import { getUrlWithRelativePath } from '../utils/utils';
+import { getRedirectUri } from '../utils/utils';
 import MainButton from "../components/UI/MainButton";
 import { styled } from "styled-components";
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +21,7 @@ function SignIn() {
 
   const handleSignInClick = () => {
     // Redirect the user to the intranet URL
-    window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-823d4a335c6215d2862f2791ca0cbeed1008279abd69da67dba4ff537b0a6105&redirect_uri=https%3A%2F%2Fsymmetrical-carnival-wj7r59qxprg2grj-4200.app.github.dev%2Flogin&response_type=code`;
+    window.location.href = getRedirectUri();
   };
 
   return (
