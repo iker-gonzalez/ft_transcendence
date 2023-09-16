@@ -59,6 +59,11 @@ services:
     environment:
       REACT_APP_API_PORT: 3000
       REACT_APP_CLIENT_PORT: 4200
+      INTRA_CLIENT_ID: $$INTRA_CLIENT_ID
+      INTRA_STATE: $$INTRA_STATE
+    env_file:
+      .env
+
 
   dev-db:
     image: postgres:latest
