@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Outlet, useOutletContext } from "react-router-dom";
+import { Outlet, useNavigate, useOutletContext } from "react-router-dom";
 import { Socket, io } from "socket.io-client";
 import { getUrlWithRelativePath } from "../utils/utils";
 import SessionData from "../models/session-data.interface";
@@ -28,6 +28,7 @@ export default function Game() {
       transports: ["websocket"],
     })
   );
+  const navigate = useNavigate();
   const [sessionData, setSessionData] = useState<SessionData>();
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export default function Game() {
       setIsSocketConnected(false);
       setIsConnectionError(true);
       console.warn("Matchmaking socket connection error: ", error);
+      navigate("/game");
     });
 
     matchmakingSocketRef.current.on("disconnect", () => {
@@ -49,6 +51,7 @@ export default function Game() {
 
     matchmakingSocketRef.current.on("connect", async () => {
       setIsSocketConnected(true);
+      setIsConnectionError(false);
       console.info("Matchmaking socket connected");
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -62,7 +65,7 @@ export default function Game() {
 
         if (isConnectionError) {
           return (
-            <p className="error-message">Error connecting to the server</p>
+            <p className="error-message">Server error. Reconnecting to server...</p>
           );
         }
 

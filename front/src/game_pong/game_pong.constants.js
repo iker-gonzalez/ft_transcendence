@@ -8,7 +8,7 @@ export const ballDataInit = {
   velocityX: 8,
   velocityY: 8,
   speed: userSpeedInput,
-  color: "WHITE",
+  color: 'WHITE',
   reset: false,
 };
 
@@ -18,7 +18,7 @@ export const user1Init = {
   width: 10,
   height: 100,
   score: 0,
-  color: "WHITE",
+  color: 'WHITE',
 };
 
 export const user2Init = {
@@ -27,7 +27,7 @@ export const user2Init = {
   width: 10,
   height: 100,
   score: 0,
-  color: "WHITE",
+  color: 'WHITE',
 };
 
 export const botInit = {
@@ -36,7 +36,7 @@ export const botInit = {
   width: 10,
   height: 100,
   score: 0,
-  color: "WHITE",
+  color: 'WHITE',
 };
 
 export const netInit = {
@@ -44,5 +44,5 @@ export const netInit = {
   y: 0,
   height: 10,
   width: 10,
-  color: "WHITE",
+  color: 'WHITE',
 };

@@ -45,6 +45,16 @@ export const swaggerAsyncConstants = {
         description:
           'Users send this message to the server when they are ready to start playing',
       },
+      download: {
+        channel: 'game-data:download',
+        description:
+          'Users send this message to the server when they want to download current game data',
+      },
+      downloaded: {
+        channel: 'game-data:downloaded/user{userIndex}/{sessionId}',
+        description:
+          'Users receive this message when the server has sent them the current game data',
+      },
       allOpponentsReadySessionId: {
         channel: 'game-data:allOpponentsReady/{sessionId}',
         description:
