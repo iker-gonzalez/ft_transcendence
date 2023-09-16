@@ -33,7 +33,7 @@ function SignIn() {
   return (
     <PageWrapperDiv>
       <h1 style={{ fontFamily: 'Arial Black', fontSize: '36px' }}>Pong Game</h1>
-      <img src="/assets/school_42.jpeg" alt='42 logo' style={{ width: '150px', marginBottom: '12px' }} />
+      <img src="/assets/school_42.png" alt='42 logo' style={{ width: '150px', marginBottom: '12px' }} />
       <form
         onSubmit={(e) => e.preventDefault()} // Prevent form submission
         style={{ display: "flex", flexDirection: "column", gap: "20px" }}
