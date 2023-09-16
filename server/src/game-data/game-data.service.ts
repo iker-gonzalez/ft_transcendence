@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Server } from 'socket.io';
+import { GameDataSet } from '@prisma/client';
 
 @Injectable()
 export class GameDataService {
@@ -49,9 +50,10 @@ export class GameDataService {
   }
 
   async uploadGameData(server: Server, data: string): Promise<void> {
-    const { isUser1, gameDataId } = JSON.parse(data);
+    const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: number } =
+      JSON.parse(data);
 
-    let gameData;
+    let gameData: GameDataSet;
     try {
       gameData = await this.prisma.gameDataSet.findUniqueOrThrow({
         where: { gameDataId: gameDataId.toString() },
@@ -61,7 +63,7 @@ export class GameDataService {
     }
 
     if (gameData.gameData !== data) {
-      let updatedGameDataPayload = {
+      let updatedGameDataPayload: any = {
         ...JSON.parse(gameData.gameData),
         ...JSON.parse(data),
       };
@@ -73,17 +75,40 @@ export class GameDataService {
         data: { gameData: JSON.stringify(updatedGameDataPayload) },
       });
 
+      // Emitting these events is not necessary, but it eases testing
       if (isUser1) {
-        server.emit(
-          `download/user2/${gameDataId}`,
-          JSON.stringify(updatedGameDataPayload),
-        );
+        server.emit(`uploaded/user1/${gameDataId}`);
       } else {
-        server.emit(
-          `download/user1/${gameDataId}`,
-          JSON.stringify(updatedGameDataPayload),
-        );
+        server.emit(`uploaded/user2/${gameDataId}`);
       }
+    }
+  }
+
+  async downloadGameData(server: Server, data: string): Promise<void> {
+    const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: number } =
+      JSON.parse(data);
+
+    let gameDataSet: GameDataSet;
+    try {
+      gameDataSet = await this.prisma.gameDataSet.findUniqueOrThrow({
+        where: { gameDataId: gameDataId.toString() },
+      });
+    } catch (e) {
+      return;
+    }
+
+    const gameData: any = JSON.parse(gameDataSet.gameData);
+
+    if (isUser1) {
+      server.emit(
+        `downloaded/user1/${gameDataId}`,
+        JSON.stringify({ user2: gameData.user2 }),
+      );
+    } else {
+      server.emit(
+        `downloaded/user2/${gameDataId}`,
+        JSON.stringify({ user1: gameData.user1, ball: gameData.ball }),
+      );
     }
   }
 
