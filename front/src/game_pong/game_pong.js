@@ -3,7 +3,7 @@ import {
   user1Init,
   botInit,
   netInit,
-} from "./game_pong.constants.js";
+} from './game_pong.constants.js';
 import {
   checkCollision,
   drawArc,
@@ -11,7 +11,7 @@ import {
   drawRect,
   drawText,
   initializeSounds,
-} from "./game_pong.functions.js";
+} from './game_pong.functions.js';
 
 const fps = 30;
 const thickness = 10;
@@ -213,103 +213,103 @@ function resetBall(canvas, ballData, user1) {
 }
 
 function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
-  drawRect(canvas, 0, 0, canvas.width, canvas.height, "Black");
+  drawRect(canvas, 0, 0, canvas.width, canvas.height, 'Black');
 
   drawText(
     canvas,
-    "USER_1",
+    'USER_1',
     (canvas.width / 10) * 4,
     canvas.height / 10,
-    "10px Arial",
-    "right",
-    "yellow"
+    '10px Arial',
+    'right',
+    'yellow',
   );
   drawText(
     canvas,
     user1.score,
     (canvas.width / 10) * 4,
     canvas.height / 6,
-    "40px Arial",
-    "right",
-    "red"
+    '40px Arial',
+    'right',
+    'red',
   );
   if (user1.score >= match_points) {
     match_finish = true;
     drawText(
       canvas,
-      "🏆 WINNER",
+      '🏆 WINNER',
       (canvas.width / 10) * 4,
       canvas.height / 4.5,
-      "30px Arial",
-      "right",
-      "green"
+      '30px Arial',
+      'right',
+      'green',
     );
     setTimeout(() => {
-      alert("⭐️ USER 1 WINS ⭐️");
+      alert('⭐️ USER 1 WINS ⭐️');
     }, 10);
   }
 
   drawText(
     canvas,
-    "COMPUTER_BOT",
+    'COMPUTER_BOT',
     (canvas.width / 10) * 6,
     canvas.height / 10,
-    "10px Arial",
-    "left",
-    "yellow"
+    '10px Arial',
+    'left',
+    'yellow',
   );
   drawText(
     canvas,
     bot.score,
     (canvas.width / 10) * 6,
     canvas.height / 6,
-    "40px Arial",
-    "left",
-    "red"
+    '40px Arial',
+    'left',
+    'red',
   );
   if (bot.score >= match_points) {
     match_finish = true;
     drawText(
       canvas,
-      "🏆 WINNER",
+      '🏆 WINNER',
       (canvas.width / 10) * 6,
       canvas.height / 4.5,
-      "30px Arial",
-      "left",
-      "green"
+      '30px Arial',
+      'left',
+      'green',
     );
     setTimeout(() => {
-      alert("⭐️ COMPUTER BOT WINS ⭐️");
+      alert('⭐️ COMPUTER BOT WINS ⭐️');
     }, 10);
   }
 
   drawText(
     canvas,
-    "Ball Speed: " + ballData.speed?.toFixed(2),
+    'Ball Speed: ' + ballData.speed?.toFixed(2),
     (canvas.width / 10) * 7,
     (canvas.height / 20) * 17,
-    "15px Arial",
-    "left",
-    "grey"
+    '15px Arial',
+    'left',
+    'grey',
   );
   drawText(
     canvas,
-    "Paddle Height: " + user1.height,
+    'Paddle Height: ' + user1.height,
     (canvas.width / 10) * 7,
     (canvas.height / 20) * 18,
-    "15px Arial",
-    "left",
-    "grey"
+    '15px Arial',
+    'left',
+    'grey',
   );
 
-  drawRect(canvas, 0, 0, canvas.width, thickness, "White");
+  drawRect(canvas, 0, 0, canvas.width, thickness, 'White');
   drawRect(
     canvas,
     0,
     canvas.height - thickness,
     canvas.width,
     thickness,
-    "White"
+    'White',
   );
   drawDashedLine(canvas, net);
 
@@ -364,7 +364,7 @@ export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
     botScore,
   };
 
-  document.addEventListener("keydown", function (event) {
+  document.addEventListener('keydown', function (event) {
     if (event.keyCode === 38) {
       // UP ARROW key
       user1.y -= userSpeedInput * 5;
@@ -374,7 +374,7 @@ export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
     }
   });
 
-  canvas.addEventListener("mousemove", function (event) {
+  canvas.addEventListener('mousemove', function (event) {
     let rect = canvas.getBoundingClientRect();
     user1.y = event.clientY - rect.top - user1.height / 2;
     if (user1.y < thickness + ballData.radius * slit) {
@@ -388,7 +388,7 @@ export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
     }
   });
 
-  canvas.addEventListener("touchstart", function (event) {
+  canvas.addEventListener('touchstart', function (event) {
     user1.y = event.clientY - user1.height / 2;
     if (user1.y < thickness + ballData.radius * slit) {
       user1.y = thickness + ballData.radius * slit;
@@ -413,7 +413,7 @@ export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
       match_finish,
       match_points,
       sounds,
-      sessionId
+      sessionId,
     );
   }, [1000]);
 }
