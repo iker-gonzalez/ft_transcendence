@@ -71,6 +71,26 @@ export class GameDataGateway {
     return this.gameDataService.uploadGameData(this.server, data);
   }
 
+  @AsyncApiSub({
+    channel: swaggerAsyncConstants.gameData.endpoints.downloaded.channel,
+    description:
+      swaggerAsyncConstants.gameData.endpoints.downloaded.description,
+    message: {
+      payload: ReadyPlayerDto,
+    },
+  })
+  @AsyncApiPub({
+    channel: swaggerAsyncConstants.gameData.endpoints.download.channel,
+    description: swaggerAsyncConstants.gameData.endpoints.download.description,
+    message: {
+      payload: EmptyDto, // TODO create DTO for this
+    },
+  })
+  @SubscribeMessage('download')
+  onDownloadGameDataUser(@MessageBody() data: string): Promise<void> {
+    return this.gameDataService.downloadGameData(this.server, data);
+  }
+
   @SubscribeMessage('deleteGameSet')
   onDeleteGameDataSet(@MessageBody() data: string): Promise<void> {
     return this.gameDataService.deleteGameDataSet(this.server, data);

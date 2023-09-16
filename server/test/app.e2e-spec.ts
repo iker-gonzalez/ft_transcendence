@@ -1997,7 +1997,7 @@ describe('App e2e', () => {
               expect(gameDataSets).toHaveLength(1);
             });
 
-            // Uploading updated data
+            // Uploading game data
             socket.emit(
               'upload',
               JSON.stringify({
@@ -2034,7 +2034,7 @@ describe('App e2e', () => {
               expect(gameDataSets).toHaveLength(1);
             });
 
-            // Uploading updated data
+            // Uploading game data
             socket.emit(
               'upload',
               JSON.stringify({
@@ -2049,6 +2049,86 @@ describe('App e2e', () => {
           });
 
           socket.on(`uploaded/user2/${dataSetInitial.gameDataId}`, () => {
+            socket.disconnect();
+            done();
+          });
+        });
+      });
+
+      describe('download', () => {
+        test('should received data to be downloaded from user1 and emit downloaded event to user1', (done) => {
+          const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+          // Initialize data set first
+          socket.on('connect', () => {
+            prisma.gameDataSet.findMany().then((gameDataSets) => {
+              expect(gameDataSets).toHaveLength(0);
+            });
+
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
+          });
+
+          socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
+            prisma.gameDataSet.findMany().then((gameDataSets) => {
+              expect(gameDataSets).toHaveLength(1);
+            });
+
+            socket.emit(
+              'download',
+              JSON.stringify({
+                isUser1: true,
+                gameDataId: dataSetInitial.gameDataId,
+              }),
+            );
+          });
+
+          socket.on(`downloaded/user2/${dataSetInitial.gameDataId}`, () => {
+            done.fail(new Error('download/user1 should not be emitted'));
+          });
+
+          socket.on(`downloaded/user1/${dataSetInitial.gameDataId}`, (data) => {
+            const parsedData = JSON.parse(data);
+            expect(parsedData).toMatchObject({ user2: {} });
+
+            socket.disconnect();
+            done();
+          });
+        });
+
+        test('should received data to be downloaded from user2 and emit downloaded event to user2', (done) => {
+          const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+          // Initialize data set first
+          socket.on('connect', () => {
+            prisma.gameDataSet.findMany().then((gameDataSets) => {
+              expect(gameDataSets).toHaveLength(0);
+            });
+
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
+          });
+
+          socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
+            prisma.gameDataSet.findMany().then((gameDataSets) => {
+              expect(gameDataSets).toHaveLength(1);
+            });
+
+            socket.emit(
+              'download',
+              JSON.stringify({
+                isUser1: false,
+                gameDataId: dataSetInitial.gameDataId,
+              }),
+            );
+          });
+
+          socket.on(`downloaded/user1/${dataSetInitial.gameDataId}`, () => {
+            done.fail(new Error('download/user1 should not be emitted'));
+          });
+
+          socket.on(`downloaded/user2/${dataSetInitial.gameDataId}`, (data) => {
+            const parsedData = JSON.parse(data);
+            expect(parsedData).toMatchObject({ user1: {}, ball: {} });
+
             socket.disconnect();
             done();
           });
