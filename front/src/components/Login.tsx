@@ -26,7 +26,7 @@ function Login() {
           // Add authentication headers if needed
         },
         body: JSON.stringify({
-          code: 111111, // Use the captured code from the URL
+          code, // Use the captured code from the URL
           state: "oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A",
         }),
       })
