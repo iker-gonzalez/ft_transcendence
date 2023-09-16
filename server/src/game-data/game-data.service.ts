@@ -84,6 +84,34 @@ export class GameDataService {
     }
   }
 
+  async downloadGameData(server: Server, data: string): Promise<void> {
+    const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: number } =
+      JSON.parse(data);
+
+    let gameDataSet: GameDataSet;
+    try {
+      gameDataSet = await this.prisma.gameDataSet.findUniqueOrThrow({
+        where: { gameDataId: gameDataId.toString() },
+      });
+    } catch (e) {
+      return;
+    }
+
+    const gameData: any = JSON.parse(gameDataSet.gameData);
+
+    if (isUser1) {
+      server.emit(
+        `downloaded/user1/${gameDataId}`,
+        JSON.stringify({ user2: gameData.user2 }),
+      );
+    } else {
+      server.emit(
+        `downloaded/user2/${gameDataId}`,
+        JSON.stringify({ user1: gameData.user1, ball: gameData.ball }),
+      );
+    }
+  }
+
   async deleteGameDataSet(server: Server, data: string): Promise<void> {
     const { gameDataId } = JSON.parse(data);
 
