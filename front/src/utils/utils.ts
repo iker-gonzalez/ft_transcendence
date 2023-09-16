@@ -10,7 +10,7 @@ export function getUrlWithRelativePath(relativePath: string = ""): string {
   const clientPort: string = process.env.REACT_APP_CLIENT_PORT || "4200";
   const baseUrl = window.location.hostname === "localhost"
     ? `http://localhost:${apiPort}`
-    : `https://${window.location.hostname.replace(apiPort, clientPort)}`;
+    : `https://${window.location.hostname.replace(clientPort, apiPort)}`;
 
   return baseUrl + (relativePath ? `/${relativePath}` : "");
 }
