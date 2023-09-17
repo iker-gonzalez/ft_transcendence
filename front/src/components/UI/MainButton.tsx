@@ -1,9 +1,11 @@
 import { styled } from 'styled-components';
 
+import { primaryColor } from '../../constants/color-tokens';
+
 const Button = styled.button`
   width: 175px;
   height: 50px;
-  background-color: #ffd369;
+  background-color: ${primaryColor};
   color: black;
   border-radius: 5px;
   border: none;

@@ -1,10 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
+import {
+  darkBgColor,
+  primaryLightColor,
+  primaryAccentColor,
+} from '../constants/color-tokens';
 
 // Define styled components
 const NavbarContainer = styled.nav`
-  background-color: #393E46;
-  color: #fff;
+  background-color: ${darkBgColor};
+  color: ${primaryLightColor};
   padding: 10px 0;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 `;
@@ -22,13 +27,13 @@ const NavItem = styled.li`
 
 const NavLink = styled.a`
   text-decoration: none;
-  color: #fff;
+  color: ${primaryLightColor};
   font-size: 18px;
   font-weight: bold;
   transition: color 0.3s ease-in-out;
 
   &:hover {
-    color: #00adb5; /* Change color on hover */
+    color: ${primaryAccentColor}; /* Change color on hover */
   }
 `;
 
