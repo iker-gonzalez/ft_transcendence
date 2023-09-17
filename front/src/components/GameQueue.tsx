@@ -9,6 +9,10 @@ import CenteredLayout from './UI/CenteredLayout';
 import RoundImg from './UI/RoundImage';
 import { Socket, io } from 'socket.io-client';
 import { getUrlWithRelativePath } from '../utils/utils';
+import {
+  primaryAccentColor,
+  primaryLightColor,
+} from '../constants/color-tokens';
 
 type GameQueueRes = {
   queued: boolean;
@@ -21,7 +25,7 @@ type GameSessionRes = {
 
 const WrapperDiv = styled.div`
   .highlighted {
-    color: yellow;
+    color: ${primaryAccentColor};
     font-weight: bold;
   }
 
@@ -34,7 +38,7 @@ const WrapperDiv = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: white;
+    background-color: ${primaryLightColor};
     width: fit-content;
     color: black;
     border-radius: 25px;

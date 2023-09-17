@@ -1,12 +1,13 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import MainButton from "../components/UI/MainButton";
-import { styled } from "styled-components";
-import CenteredLayout from "./UI/CenteredLayout";
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import MainButton from '../components/UI/MainButton';
+import { styled } from 'styled-components';
+import CenteredLayout from './UI/CenteredLayout';
+import { primaryAccentColor } from '../constants/color-tokens';
 
 const WrapperDiv = styled.div`
   .highlighted {
-    color: yellow;
+    color: ${primaryAccentColor};
     font-weight: bold;
   }
 
@@ -26,7 +27,7 @@ const WrapperDiv = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px yellow solid;
+    border: 1px ${primaryAccentColor} solid;
     border-radius: 20px;
   }
 
@@ -39,7 +40,7 @@ export default function GameIndex() {
   const navigate = useNavigate();
 
   const onGoToGameQueue = () => {
-    navigate("queue");
+    navigate('queue');
   };
 
   return (
@@ -62,11 +63,11 @@ export default function GameIndex() {
         <div className="warning-box">
           <p>
             ℹ️ If you want to simulate a match with two players, you first have
-            to{" "}
+            to{' '}
             <Link to="/" className="highlighted">
               log in
-            </Link>{" "}
-            with our test users (<span className="highlighted">123456</span> and{" "}
+            </Link>{' '}
+            with our test users (<span className="highlighted">123456</span> and{' '}
             <span className="highlighted">111111</span>) ℹ️
           </p>
         </div>

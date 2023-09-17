@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { primaryAccentColor } from '../constants/color-tokens';
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
@@ -17,14 +18,14 @@ const LoadingSpinner = styled.div`
 const Spinner = styled.div`
   border: 4px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top: 4px solid #00adb5; /* Change the spinner color */
+  border-top: 4px solid ${primaryAccentColor}; /* Change the spinner color */
   width: 50px;
   height: 50px;
   animation: ${spin} 1s linear infinite;
 `;
 
 interface LoadingPageProps {
-  targetPath: string; 
+  targetPath: string;
 }
 
 function LoadingPage({ targetPath }: LoadingPageProps) {
@@ -43,11 +44,13 @@ function LoadingPage({ targetPath }: LoadingPageProps) {
 
   return (
     <div>
-      {isLoading ? (
-        <LoadingSpinner>
-          <Spinner />
-        </LoadingSpinner>
-      ) : null /* No content to display */}
+      {
+        isLoading ? (
+          <LoadingSpinner>
+            <Spinner />
+          </LoadingSpinner>
+        ) : null /* No content to display */
+      }
     </div>
   );
 }
