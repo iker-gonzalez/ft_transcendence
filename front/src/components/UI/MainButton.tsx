@@ -1,4 +1,4 @@
-import { styled } from "styled-components";
+import { styled } from 'styled-components';
 
 const Button = styled.button`
   width: 175px;
@@ -11,6 +11,11 @@ const Button = styled.button`
   font-size: 16px;
   font-weight: bold;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
 `;
 
 export default Button;

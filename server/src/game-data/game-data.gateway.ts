@@ -39,7 +39,7 @@ export class GameDataGateway {
     },
   })
   @SubscribeMessage('startGame')
-  onGameStart(@MessageBody() data: string): Promise<void> {
+  onGameStart(@MessageBody() data: string): void {
     return this.gameDataService.onGameStart(this.server, data);
   }
 
@@ -62,17 +62,38 @@ export class GameDataGateway {
     },
   })
   @SubscribeMessage('ready')
-  onUser1Ready(@MessageBody() data: string): Promise<void> {
+  onUser1Ready(@MessageBody() data: string): void {
     return this.gameDataService.onPlayerReady(this.server, data);
   }
 
   @SubscribeMessage('upload')
-  onUploadGameDataUser(@MessageBody() data: string): Promise<void> {
+  onUploadGameDataUser(@MessageBody() data: string): void {
     return this.gameDataService.uploadGameData(this.server, data);
   }
 
+  @AsyncApiSub({
+    channel: swaggerAsyncConstants.gameData.endpoints.downloaded.channel,
+    description:
+      swaggerAsyncConstants.gameData.endpoints.downloaded.description,
+    message: {
+      payload: ReadyPlayerDto,
+    },
+  })
+  @AsyncApiPub({
+    channel: swaggerAsyncConstants.gameData.endpoints.download.channel,
+    description: swaggerAsyncConstants.gameData.endpoints.download.description,
+    message: {
+      payload: EmptyDto, // TODO create DTO for this
+    },
+  })
+  @SubscribeMessage('download')
+  onDownloadGameDataUser(@MessageBody() data: string): void {
+    return this.gameDataService.downloadGameData(this.server, data);
+  }
+
+  // TODO create documentation for this
   @SubscribeMessage('deleteGameSet')
-  onDeleteGameDataSet(@MessageBody() data: string): Promise<void> {
+  onDeleteGameDataSet(@MessageBody() data: string): void {
     return this.gameDataService.deleteGameDataSet(this.server, data);
   }
 }
