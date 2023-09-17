@@ -2,7 +2,6 @@ import React from 'react';
 import { getRedirectUri } from '../utils/utils';
 import MainButton from "../components/UI/MainButton";
 import { styled } from "styled-components";
-import { useNavigate } from 'react-router-dom';
 
 const PageWrapperDiv = styled.div`
   position: fixed;
@@ -16,8 +15,6 @@ const PageWrapperDiv = styled.div`
 `;
 
 function SignIn() {
-  const [message, setMessage] = React.useState<string | null>(null);
-  const navigate = useNavigate();
 
   const handleSignInClick = () => {
     // Redirect the user to the intranet URL
@@ -36,7 +33,6 @@ function SignIn() {
           Sign In with 42
         </MainButton>
       </form>
-      {message && <p>{message}</p>}
     </PageWrapperDiv>
   );
 }
