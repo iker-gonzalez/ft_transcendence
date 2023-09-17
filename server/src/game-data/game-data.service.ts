@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { GameDataSetDto } from './dto/game-data-set.dto';
+import { GameDataDto } from './dto/game-data.dto';
 
 @Injectable()
 export class GameDataService {
@@ -11,8 +12,9 @@ export class GameDataService {
   onGameStart(server: Server, data: string): void {
     const { gameDataId } = JSON.parse(data);
 
-    const gameDataSet: any = this.gameDataSets.find(
-      (gameDataSet: any) => gameDataSet.gameDataId === gameDataId.toString(),
+    const gameDataSet: GameDataSetDto = this.gameDataSets.find(
+      (gameDataSet: GameDataSetDto) =>
+        gameDataSet.gameDataId === gameDataId.toString(),
     );
 
     if (!gameDataSet) {
@@ -74,12 +76,10 @@ export class GameDataService {
     }
 
     if (this.gameDataSets[gameDataIndex].gameData !== data) {
-      let updatedGameDataPayload: any = {
+      let updatedGameDataPayload: GameDataDto = {
         ...JSON.parse(this.gameDataSets[gameDataIndex].gameData),
         ...JSON.parse(data),
       };
-
-      delete updatedGameDataPayload.isUser1;
 
       this.gameDataSets[gameDataIndex].gameData = JSON.stringify(
         updatedGameDataPayload,
@@ -98,7 +98,7 @@ export class GameDataService {
     const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: number } =
       JSON.parse(data);
 
-    const gameDataSet: any = this.gameDataSets.find(
+    const gameDataSet: GameDataSetDto = this.gameDataSets.find(
       (gameDataSet) => gameDataSet.gameDataId === gameDataId.toString(),
     );
 
@@ -106,7 +106,7 @@ export class GameDataService {
       return;
     }
 
-    const gameData: any = JSON.parse(gameDataSet.gameData);
+    const gameData: GameDataDto = JSON.parse(gameDataSet.gameData);
 
     if (isUser1) {
       server.emit(
@@ -126,7 +126,8 @@ export class GameDataService {
 
     // Emit different event if gameDataId is not found
     const filteredGameDataSets: GameDataSetDto[] = this.gameDataSets.filter(
-      (gameDataSet: any) => gameDataSet.gameDataId !== gameDataId.toString(),
+      (gameDataSet: GameDataSetDto) =>
+        gameDataSet.gameDataId !== gameDataId.toString(),
     );
 
     if (filteredGameDataSets.length === this.gameDataSets.length) {
