@@ -1,12 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useGameRouteContext } from "../pages/Game";
-import { createSearchParams, useNavigate } from "react-router-dom";
-import User from "../models/user.interface";
-import SessionData from "../models/session-data.interface";
-import MainButton from "./UI/MainButton";
-import { styled } from "styled-components";
-import CenteredLayout from "./UI/CenteredLayout";
-import RoundImg from "./UI/RoundImage";
+import React, { useEffect, useRef, useState } from 'react';
+import { useGameRouteContext } from '../pages/Game';
+import { createSearchParams, useNavigate } from 'react-router-dom';
+import User from '../models/user.interface';
+import SessionData from '../models/session-data.interface';
+import MainButton from './UI/MainButton';
+import { styled } from 'styled-components';
+import CenteredLayout from './UI/CenteredLayout';
+import RoundImg from './UI/RoundImage';
+import { Socket, io } from 'socket.io-client';
+import { getUrlWithRelativePath } from '../utils/utils';
 
 type GameQueueRes = {
   queued: boolean;
@@ -21,6 +23,10 @@ const WrapperDiv = styled.div`
   .highlighted {
     color: yellow;
     font-weight: bold;
+  }
+
+  .error-message {
+    color: red;
   }
 
   .session-box {
@@ -62,38 +68,56 @@ const WrapperDiv = styled.div`
 `;
 
 // TODO Replace with real userId from login
-const userId: string | null = sessionStorage.getItem("intraId");
+const userId: string | null = sessionStorage.getItem('intraId');
 
 export default function GameQueue() {
   const navigate = useNavigate();
 
-  const isComponentMounted = useRef<boolean>(false);
+  const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
   const [isQueued, setIsQueued] = useState<boolean>(false);
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
-  const { matchmakingSocket, sessionDataState } = useGameRouteContext();
+  const [isSocketConnected, setIsSocketConnected] = useState<boolean>(false);
+
+  const { sessionDataState } = useGameRouteContext();
+  const matchmakingSocketRef = useRef<Socket>(
+    io(`${getUrlWithRelativePath('matchmaking')}`, {
+      transports: ['websocket'],
+    }),
+  );
 
   useEffect(() => {
     // TODO remove this when we have a better way to store userId
     if (!userId) {
-      navigate("/");
+      navigate('/');
     }
 
-    if (isComponentMounted.current) {
-      return;
-    }
+    matchmakingSocketRef.current.on('connect_error', (error) => {
+      setIsSocketConnected(false);
+      setIsConnectionError(true);
+      console.warn('Matchmaking socket connection error: ', error);
+    });
 
-    isComponentMounted.current = true;
+    matchmakingSocketRef.current.on('disconnect', () => {
+      setIsSocketConnected(false);
+      console.warn('matchmaking socket disconnected');
+    });
 
-    matchmakingSocket.on(
+    matchmakingSocketRef.current.on('connect', async () => {
+      setIsSocketConnected(true);
+      setIsConnectionError(false);
+      console.info('Matchmaking socket connected');
+    });
+
+    matchmakingSocketRef.current.on(
       `userJoined/${userId}`,
       (userJoinedRes: GameQueueRes) => {
         if (userJoinedRes.queued) {
           setIsQueued(true);
         }
-      }
+      },
     );
 
-    matchmakingSocket.on(
+    matchmakingSocketRef.current.on(
       `newSession/${userId}`,
       (newSessionRes: GameSessionRes) => {
         if (newSessionRes.success) {
@@ -102,50 +126,50 @@ export default function GameQueue() {
 
           setIsSessionCreated(true);
         } else {
-          console.warn("error creating session");
+          console.warn('error creating session');
         }
-      }
+      },
     );
 
-    matchmakingSocket.on(
+    matchmakingSocketRef.current.on(
       `unqueuedUser/${userId}`,
       (unqueuedUserRes: GameQueueRes) => {
         if (!unqueuedUserRes.queued) {
           setIsQueued(false);
         }
-      }
+      },
     );
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoinQueue = () => {
-    matchmakingSocket.emit(
-      "newUser",
+    matchmakingSocketRef.current.emit(
+      'newUser',
       JSON.stringify({
         intraId: userId,
-      })
+      }),
     );
   };
 
   const onGoToMatch = () => {
     navigate(
       {
-        pathname: "/game/match",
+        pathname: '/game/match',
         search: createSearchParams({
           sessionId: sessionDataState[0].id,
         }).toString(),
       },
       {
         replace: true,
-      }
+      },
     );
   };
 
   const onRemoveFromQueue = () => {
-    matchmakingSocket.emit(
-      "unqueueUser",
+    matchmakingSocketRef.current.emit(
+      'unqueueUser',
       JSON.stringify({
         intraId: userId,
-      })
+      }),
     );
   };
 
@@ -153,7 +177,7 @@ export default function GameQueue() {
     <WrapperDiv>
       <CenteredLayout>
         <h1>
-          Game queue for user with intradId{" "}
+          Game queue for user with intradId{' '}
           <span className="highlighted">{userId}</span>
         </h1>
         <p>
@@ -164,6 +188,18 @@ export default function GameQueue() {
           another user.
         </p>
         {(function () {
+          if (!isSocketConnected && !isConnectionError) {
+            return <p>Connecting to the socket...</p>;
+          }
+
+          if (isConnectionError) {
+            return (
+              <p className="error-message">
+                Server error. Reconnecting to server...
+              </p>
+            );
+          }
+
           if (isSessionCreated) {
             return (
               <div className="session-box">
