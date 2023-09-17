@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NewQueuedUserDto } from './dto/new-queued-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { User, UserGameSession } from '@prisma/client';
+import { User } from '@prisma/client';
 import { Server } from 'socket.io';
 import { NewQueuedUserResponseDto } from './dto/new-queued-user-response.dto';
 
