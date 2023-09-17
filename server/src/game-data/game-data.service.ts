@@ -1,79 +1,89 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { Server } from 'socket.io';
-import { GameDataSet } from '@prisma/client';
+import { GameDataSetDto } from './dto/game-data-set.dto';
 
 @Injectable()
 export class GameDataService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor() {}
 
-  async onGameStart(server: Server, data: string): Promise<void> {
+  gameDataSets: GameDataSetDto[] = [];
+
+  onGameStart(server: Server, data: string): void {
     const { gameDataId } = JSON.parse(data);
 
-    const gameDataSet = await this.prisma.gameDataSet.findUnique({
-      where: { gameDataId: gameDataId.toString() },
-    });
+    const gameDataSet: any = this.gameDataSets.find(
+      (gameDataSet: any) => gameDataSet.gameDataId === gameDataId.toString(),
+    );
 
     if (!gameDataSet) {
-      await this.prisma.gameDataSet.create({
-        data: {
-          gameDataId: gameDataId.toString(),
-          gameData: data,
-        },
+      this.gameDataSets.push({
+        gameDataId: gameDataId.toString(),
+        gameData: data,
+        user1Ready: false,
+        user2Ready: false,
       });
     }
 
     server.emit(`gameDataCreated/${gameDataId}`);
   }
 
-  async onPlayerReady(server: Server, data: string): Promise<void> {
+  onPlayerReady(server: Server, data: string): void {
     const { isUser1, gameDataId } = JSON.parse(data);
 
-    const gameData = await this.prisma.gameDataSet.findUnique({
-      where: { gameDataId: gameDataId.toString() },
-    });
+    const gameDataIndex: number = this.gameDataSets.findIndex(
+      (gameDataSet) => gameDataSet.gameDataId === gameDataId.toString(),
+    );
 
-    if (!gameData) {
+    if (gameDataIndex === -1) {
       return;
     }
 
-    await this.prisma.gameDataSet.update({
-      where: { gameDataId: gameDataId.toString() },
-      data: isUser1 ? { user1Ready: true } : { user2Ready: true },
-    });
+    if (isUser1) {
+      this.gameDataSets[gameDataIndex] = {
+        ...this.gameDataSets[gameDataIndex],
+        user1Ready: true,
+      };
+    } else {
+      this.gameDataSets[gameDataIndex] = {
+        ...this.gameDataSets[gameDataIndex],
+        user2Ready: true,
+      };
+    }
 
-    if ((isUser1 && gameData.user2Ready) || (!isUser1 && gameData.user1Ready)) {
+    if (
+      this.gameDataSets[gameDataIndex].user1Ready &&
+      this.gameDataSets[gameDataIndex].user2Ready
+    ) {
       server.emit(`allOpponentsReady/${gameDataId}`);
     } else {
       server.emit(`awaitingOpponent/${gameDataId}`);
     }
   }
 
-  async uploadGameData(server: Server, data: string): Promise<void> {
+  uploadGameData(server: Server, data: string): void {
     const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: number } =
       JSON.parse(data);
 
-    let gameData: GameDataSet;
-    try {
-      gameData = await this.prisma.gameDataSet.findUniqueOrThrow({
-        where: { gameDataId: gameDataId.toString() },
-      });
-    } catch (e) {
+    const gameDataIndex: number = this.gameDataSets.findIndex(
+      (gameDataSet) =>
+        gameDataSet.gameDataId.toString() === gameDataId.toString(),
+    );
+
+    if (gameDataIndex === -1) {
       return;
     }
 
-    if (gameData.gameData !== data) {
+    if (this.gameDataSets[gameDataIndex].gameData !== data) {
       let updatedGameDataPayload: any = {
-        ...JSON.parse(gameData.gameData),
+        ...JSON.parse(this.gameDataSets[gameDataIndex].gameData),
         ...JSON.parse(data),
       };
 
       delete updatedGameDataPayload.isUser1;
 
-      await this.prisma.gameDataSet.update({
-        where: { gameDataId: gameDataId.toString() },
-        data: { gameData: JSON.stringify(updatedGameDataPayload) },
-      });
+      this.gameDataSets[gameDataIndex].gameData = JSON.stringify(
+        updatedGameDataPayload,
+      );
 
       // Emitting these events is not necessary, but it eases testing
       if (isUser1) {
@@ -84,16 +94,15 @@ export class GameDataService {
     }
   }
 
-  async downloadGameData(server: Server, data: string): Promise<void> {
+  downloadGameData(server: Server, data: string): void {
     const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: number } =
       JSON.parse(data);
 
-    let gameDataSet: GameDataSet;
-    try {
-      gameDataSet = await this.prisma.gameDataSet.findUniqueOrThrow({
-        where: { gameDataId: gameDataId.toString() },
-      });
-    } catch (e) {
+    const gameDataSet: any = this.gameDataSets.find(
+      (gameDataSet) => gameDataSet.gameDataId === gameDataId.toString(),
+    );
+
+    if (!gameDataSet) {
       return;
     }
 
@@ -112,18 +121,20 @@ export class GameDataService {
     }
   }
 
-  async deleteGameDataSet(server: Server, data: string): Promise<void> {
+  deleteGameDataSet(server: Server, data: string): void {
     const { gameDataId } = JSON.parse(data);
 
-    try {
-      await this.prisma.gameDataSet.delete({
-        where: { gameDataId: gameDataId.toString() },
-      });
-    } catch (e) {
-      server.emit(`gameSetDeleted/${gameDataId}`);
+    // Emit different event if gameDataId is not found
+    const filteredGameDataSets: GameDataSetDto[] = this.gameDataSets.filter(
+      (gameDataSet: any) => gameDataSet.gameDataId !== gameDataId.toString(),
+    );
+
+    if (filteredGameDataSets.length === this.gameDataSets.length) {
+      server.emit(`gameSetNotFound/${gameDataId}`);
       return;
     }
 
+    this.gameDataSets = filteredGameDataSets;
     server.emit(`gameSetDeleted/${gameDataId}`);
   }
 }
