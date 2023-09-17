@@ -52,7 +52,6 @@ export default function GameMatch() {
   const navigate = useNavigate();
   const { sessionDataState } = useGameRouteContext();
 
-  const isComponentMounted = useRef<boolean>(false);
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
   const [isAwaitingOpponent, setIsAwaitingOpponent] = useState<boolean>(false);
   const isPlayer1: boolean = getIsPlayer1(sessionDataState[0], userId);
@@ -68,10 +67,6 @@ export default function GameMatch() {
     if (!sessionId) {
       navigate('/game');
     }
-
-    if (isComponentMounted.current) return;
-
-    isComponentMounted.current = true;
 
     socketRef.current.on('connect_error', (error) => {
       console.warn('GameData socket connection error: ', error);
@@ -103,7 +98,6 @@ export default function GameMatch() {
 
     socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
       setShowGame(true);
-      isComponentMounted.current = true;
 
       const canvas: HTMLElement = document.getElementById(
         'gamePong',
