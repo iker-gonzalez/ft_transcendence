@@ -188,10 +188,6 @@ export default function GameQueue() {
           another user.
         </p>
         {(function () {
-          if (!isSocketConnected && !isConnectionError) {
-            return <p>Connecting to the socket...</p>;
-          }
-
           if (isConnectionError) {
             return (
               <p className="error-message">
@@ -232,7 +228,11 @@ export default function GameQueue() {
                 </>
               );
             } else {
-              return <MainButton onClick={onJoinQueue}>Join game</MainButton>;
+              return (
+                <MainButton onClick={onJoinQueue} disabled={!isSocketConnected}>
+                  Join game
+                </MainButton>
+              );
             }
           }
         })()}
