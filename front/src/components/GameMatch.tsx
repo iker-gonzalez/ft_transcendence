@@ -48,7 +48,6 @@ const WrapperDiv = styled.div`
   }
 `;
 
-
 export default function GameMatch() {
   const navigate = useNavigate();
   const { sessionDataState } = useGameRouteContext();
