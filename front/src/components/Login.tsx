@@ -4,7 +4,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import UserProfile from '../pages/UserProfile';
 import LoadingPage from '../pages/LoadingPage';
 
-function Login() {
+// TODO add TS interface for userData
+const Login: React.FC<{ userData: any; setUserData: (arg0: any) => void }> = ({
+  userData,
+  setUserData,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +43,7 @@ function Login() {
         })
         .then((data) => {
           sessionStorage.setItem("intraId", data.data.intraId);
+          setUserData(data.data); // Set the user data in the global state
           navigate('/profile'); // Redirect to the "/profile" route
         })
         .catch((error) => {
@@ -54,9 +59,13 @@ function Login() {
   return (
     // Render either the loading page or user profile content based on isLoading state
     <div>
-      {isLoading ? <LoadingPage targetPath="/profile" /> : <UserProfile />}
+      {isLoading ? (
+        <LoadingPage targetPath="/profile" />
+      ) : (
+        <UserProfile userData={userData} />
+      )}
     </div>
   );
-}
+};
 
 export default Login;
