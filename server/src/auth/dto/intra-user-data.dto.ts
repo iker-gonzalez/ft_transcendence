@@ -1,21 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNumber, IsString, IsUrl } from 'class-validator';
+import { IsBoolean, IsEmail, IsNumber, IsString, IsUrl } from 'class-validator';
 import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class IntraUserDataDto {
   @ApiProperty({
-    description: swaggerConstants.dto.intraUserSignin.intraId.description,
-    example: swaggerConstants.dto.intraUserSignin.intraId.example,
-  })
-  @IsNumber()
-  intraId: number;
-
-  @ApiProperty({
-    description: swaggerConstants.dto.intraUserSignin.username.description,
-    example: swaggerConstants.dto.intraUserSignin.username.example,
+    description: swaggerConstants.dto.intraUserSignin.avatar.description,
+    example: swaggerConstants.dto.intraUserSignin.avatar.example,
   })
   @IsString()
-  username: string;
+  @IsUrl()
+  avatar: string;
 
   @ApiProperty({
     description: swaggerConstants.dto.intraUserSignin.email.description,
@@ -26,10 +20,25 @@ export class IntraUserDataDto {
   email: string;
 
   @ApiProperty({
-    description: swaggerConstants.dto.intraUserSignin.avatar.description,
-    example: swaggerConstants.dto.intraUserSignin.avatar.example,
+    description: swaggerConstants.dto.intraUserSignin.intraId.description,
+    example: swaggerConstants.dto.intraUserSignin.intraId.example,
+  })
+  @IsNumber()
+  intraId: number;
+
+  @ApiProperty({
+    description:
+      swaggerConstants.dto.intraUserSignin.isTwoFactorAuthEnabled.description,
+    example:
+      swaggerConstants.dto.intraUserSignin.isTwoFactorAuthEnabled.example,
+  })
+  @IsBoolean()
+  isTwoFactorAuthEnabled: boolean;
+
+  @ApiProperty({
+    description: swaggerConstants.dto.intraUserSignin.username.description,
+    example: swaggerConstants.dto.intraUserSignin.username.example,
   })
   @IsString()
-  @IsUrl()
-  avatar: string;
+  username: string;
 }
