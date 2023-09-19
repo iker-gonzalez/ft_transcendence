@@ -34,6 +34,7 @@ describe('App e2e', () => {
     username: 'ntest',
     email: 'test@student.42urduliz.com',
     avatar: 'https://cdn.intra.42.fr/users/test.jpg',
+    isTwoFactorAuthEnabled: false,
   };
 
   const userData2 = {
@@ -41,6 +42,7 @@ describe('App e2e', () => {
     username: 'ntest2',
     email: 'test2@student.42urduliz.com',
     avatar: 'https://cdn.intra.42.fr/users/test2.jpg',
+    isTwoFactorAuthEnabled: false,
   };
 
   const userData3 = {
@@ -48,6 +50,7 @@ describe('App e2e', () => {
     username: 'ntest3',
     email: 'test3@student.42urduliz.com',
     avatar: 'https://cdn.intra.42.fr/users/test3.jpg',
+    isTwoFactorAuthEnabled: false,
   };
 
   const testAvatarPath = `public/uploads/avatars/${userData.username}.png`;
@@ -206,7 +209,7 @@ describe('App e2e', () => {
           .expectJsonLike({
             created: 0,
             access_token: /.*/,
-            data: userData,
+            data: { ...userData, isTwoFactorAuthEnabled: true },
           });
       });
 

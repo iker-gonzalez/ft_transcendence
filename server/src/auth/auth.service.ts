@@ -53,7 +53,8 @@ export class AuthService {
 
     // If user already exists, return it
     if (user) {
-      const { id, intraId, username, email, avatar } = user;
+      const { avatar, email, id, intraId, isTwoFactorAuthEnabled, username } =
+        user;
 
       if (user.isTwoFactorAuthEnabled && !this._isTestUser(code)) {
         const isOtpCodeValid =
@@ -73,10 +74,11 @@ export class AuthService {
         created: 0,
         access_token: await this._signToken(id),
         data: {
-          intraId,
-          username,
-          email,
           avatar,
+          email,
+          intraId,
+          isTwoFactorAuthEnabled,
+          username,
         },
       };
       return response;
@@ -87,11 +89,12 @@ export class AuthService {
       data: userData,
     });
 
-    const { id, intraId, username, email, avatar } = newUser;
+    const { avatar, email, id, intraId, isTwoFactorAuthEnabled, username } =
+      newUser;
     const response: SigninResponseDto = {
       created: 1,
       access_token: await this._signToken(id),
-      data: { intraId, username, email, avatar },
+      data: { avatar, email, intraId, isTwoFactorAuthEnabled, username },
     };
     return response;
   }
