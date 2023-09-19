@@ -14,10 +14,7 @@ interface UserData {
 }
 
 function UserProfile() {
-  return (
-    <div>hello</div>  
-  );
-  /*const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const url = `${getUrlWithRelativePath('users/me')}`;
 
@@ -75,7 +72,7 @@ function UserProfile() {
         <p>Avatar: <img src={userData.avatar} alt="Avatar" /></p>
       </div>
     </div>
-  );*/
+  );
 }
 
 export default UserProfile;

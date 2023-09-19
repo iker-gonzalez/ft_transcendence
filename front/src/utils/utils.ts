@@ -17,10 +17,9 @@ export function getUrlWithRelativePath(relativePath: string = ""): string {
 
 export function getRedirectUri() {
   const endpoint = 'https://api.intra.42.fr/oauth/authorize';
-  const client_id = process.env.REACT_APP_INTRA_CLIENT_ID;
   const redirectUri = window.location.hostname === "localhost"
-    ? `${endpoint}?client_id=${client_id}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Flogin&response_type=code`
-    : `${endpoint}?client_id=${client_id}&redirect_uri=https%3A%2F%2Fsymmetrical-carnival-wj7r59qxprg2grj-4200.app.github.dev%2Flogin&response_type=code`;
+    ? `${endpoint}?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Flogin&response_type=code`
+    : `${endpoint}?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code`;
 
   return redirectUri;
 }

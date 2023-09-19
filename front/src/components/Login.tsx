@@ -27,7 +27,7 @@ function Login() {
         },
         body: JSON.stringify({
           code, // Use the captured code from the URL
-          state: "oI7a4edGeu8kamVFhYkJqF2EWu2zFk9A",
+          state: process.env.REACT_APP_INTRA_STATE,
         }),
       })
         .then((response) => {
