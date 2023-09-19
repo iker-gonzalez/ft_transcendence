@@ -13,7 +13,8 @@ import Login from './components/Login';
 
 function App() {
   // TODO refactor this with global store like Context API or Redux
-  const [userData, setUserData] = useState<any>({});
+  // TODO add TS interface for UserData
+  const [userData, setUserData] = useState<any | null>(null);
   return (
     <Router>
       <div>
