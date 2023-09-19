@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gameLoop } from '../game_pong/game_pong';
 import { Socket, io } from 'socket.io-client';
-import { getUrlWithRelativePath } from '../utils/utils';
+import { getBaseUrl } from '../utils/utils';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameRouteContext } from '../pages/Game';
 import SessionData from '../models/session-data.interface';
@@ -58,7 +58,7 @@ export default function GameMatch() {
   const sessionId: string | null = useSearchParams()[0]!.get('sessionId');
   const [showGame, setShowGame] = useState<boolean>(false);
   const socketRef = useRef<Socket>(
-    io(`${getUrlWithRelativePath('game-data')}`, {
+    io(`${getBaseUrl()}/game-data`, {
       transports: ['websocket'],
     }),
   );
