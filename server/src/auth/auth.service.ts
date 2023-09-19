@@ -29,8 +29,7 @@ export class AuthService {
     state: string,
     otp?: string,
   ): Promise<SigninResponseDto> {
-    // Check if state value matches
-    // Othwerwise, it means that the request is not coming from our app
+    // If state doesn't match, it means that the request is not coming from our app
     if (state !== this.configService.get<string>('INTRA_STATE')) {
       throw new BadRequestException('State value does not match');
     }
@@ -53,7 +52,15 @@ export class AuthService {
 
     // If user already exists, return it
     if (user) {
-      const { id, intraId, username, email, avatar } = user;
+      const {
+        avatar,
+        email,
+        intraId,
+        isTwoFactorAuthEnabled,
+        username,
+      }: IntraUserDataDto = user;
+
+      const id: string = user.id;
 
       if (user.isTwoFactorAuthEnabled && !this._isTestUser(code)) {
         const isOtpCodeValid =
@@ -73,10 +80,11 @@ export class AuthService {
         created: 0,
         access_token: await this._signToken(id),
         data: {
-          intraId,
-          username,
-          email,
           avatar,
+          email,
+          intraId,
+          isTwoFactorAuthEnabled,
+          username,
         },
       };
       return response;
@@ -87,17 +95,26 @@ export class AuthService {
       data: userData,
     });
 
-    const { id, intraId, username, email, avatar } = newUser;
+    const {
+      avatar,
+      email,
+      intraId,
+      isTwoFactorAuthEnabled,
+      username,
+    }: IntraUserDataDto = newUser;
+
+    const id: string = newUser.id;
+
     const response: SigninResponseDto = {
       created: 1,
       access_token: await this._signToken(id),
-      data: { intraId, username, email, avatar },
+      data: { avatar, email, intraId, isTwoFactorAuthEnabled, username },
     };
     return response;
   }
 
   _signToken(userId: string): Promise<string> {
-    const payload = {
+    const payload: { sub: string } = {
       sub: userId,
     };
 

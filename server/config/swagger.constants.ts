@@ -179,6 +179,10 @@ export const swaggerConstants = {
         description: 'User ID from 42 Intra API',
         example: 12345,
       },
+      isTwoFactorAuthEnabled: {
+        description: 'Wether 2FA is enabled or not',
+        example: false,
+      },
       username: {
         description: 'Username from 42 Intra API',
         example: 'jdoe',
