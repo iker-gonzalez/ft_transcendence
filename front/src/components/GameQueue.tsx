@@ -8,7 +8,7 @@ import { styled } from 'styled-components';
 import CenteredLayout from './UI/CenteredLayout';
 import RoundImg from './UI/RoundImage';
 import { Socket, io } from 'socket.io-client';
-import { getUrlWithRelativePath } from '../utils/utils';
+import { getBaseUrl } from '../utils/utils';
 import {
   primaryAccentColor,
   primaryLightColor,
@@ -84,7 +84,7 @@ export default function GameQueue() {
 
   const { sessionDataState } = useGameRouteContext();
   const matchmakingSocketRef = useRef<Socket>(
-    io(`${getUrlWithRelativePath('matchmaking')}`, {
+    io(`${getBaseUrl()}/matchmaking`, {
       transports: ['websocket'],
     }),
   );
