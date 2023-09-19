@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getUrlWithRelativePath } from '../utils/utils';
+import { getBaseUrl } from '../utils/utils';
 
 // Define a TypeScript interface for the user data
 interface UserData {
@@ -16,11 +16,11 @@ interface UserData {
 function UserProfile() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const url = `${getUrlWithRelativePath('users/me')}`;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const url = `${getBaseUrl()}/users/me`;
         const response = await fetch(
             url,
             {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getUrlWithRelativePath } from '../utils/utils';
+import { getBaseUrl } from '../utils/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
 import UserProfile from '../pages/UserProfile';
 import LoadingPage from '../pages/LoadingPage';
@@ -19,7 +19,7 @@ function Login() {
       setIsLoading(true); // Set loading state to true
 
       // Make the POST request with the captured code
-      fetch(`${getUrlWithRelativePath("auth/intra/signin")}`, {
+      fetch(`${getBaseUrl()}/auth/intra/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
