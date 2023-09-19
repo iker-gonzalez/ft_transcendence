@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SignIn from './pages/Home';
 import SetProfile from './pages/SetProfile';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -12,6 +12,8 @@ import LoadingPage from './pages/LoadingPage';
 import Login from './components/Login';
 
 function App() {
+  // TODO refactor this with global store like Context API or Redux
+  const [userData, setUserData] = useState<any>({});
   return (
     <Router>
       <div>
@@ -19,8 +21,14 @@ function App() {
         <Routes>
           <Route path="/" element={<SignIn />} />
           <Route path="/set-profile" element={<SetProfile />} />
-          <Route path="/profile" element={<UserProfile />} />
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/profile"
+            element={<UserProfile userData={userData} />}
+          />
+          <Route
+            path="/login"
+            element={<Login userData={userData} setUserData={setUserData} />}
+          />
           <Route path="/loading" element={<LoadingPage targetPath={''} />} />
           <Route path="game" element={<Game />}>
             <Route index element={<GameIndex />} />
