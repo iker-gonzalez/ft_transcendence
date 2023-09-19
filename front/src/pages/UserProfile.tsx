@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getBaseUrl } from '../utils/utils';
+import UserProfileHero from '../components/UserProfileHero';
 
 // Define a TypeScript interface for the user data
 interface UserData {
@@ -61,13 +62,7 @@ const UserProfile: React.FC<{ userData: any }> = ({ userData }) => {
 
   return (
     <div>
-      <h2>User Profile</h2>
-      <div>
-        <p>Intra ID: {userData.intraId}</p>
-        <p>Username: {userData.username}</p>
-        <p>Email: {userData.email}</p>
-        <p>Avatar: <img src={userData.avatar} alt="Avatar" /></p>
-      </div>
+      {userData && <UserProfileHero userData={userData} />}
     </div>
   );
 };
