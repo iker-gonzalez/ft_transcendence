@@ -13,8 +13,9 @@ interface UserData {
   email: string;
 }
 
-function UserProfile() {
-  const [userData, setUserData] = useState<UserData | null>(null);
+// TODO add TS interface for userData
+const UserProfile: React.FC<{ userData: any }> = ({ userData }) => {
+  // const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const url = `${getUrlWithRelativePath('users/me')}`;
 
@@ -34,7 +35,7 @@ function UserProfile() {
 
         if (response.ok) {
           const data = await response.json();
-          setUserData(data.data);
+          // setUserData(data.data);
         } else {
           console.error('Error fetching user data:', response.statusText);
         }
@@ -62,10 +63,6 @@ function UserProfile() {
     <div>
       <h2>User Profile</h2>
       <div>
-        <p>ID: {userData.id}</p>
-        <p>Created At: {userData.createdAt}</p>
-        <p>Updated At: {userData.updatedAt}</p>
-        <p>Two-Factor Auth Enabled: {userData.isTwoFactorAuthEnabled ? 'Yes' : 'No'}</p>
         <p>Intra ID: {userData.intraId}</p>
         <p>Username: {userData.username}</p>
         <p>Email: {userData.email}</p>
@@ -73,6 +70,6 @@ function UserProfile() {
       </div>
     </div>
   );
-}
+};
 
 export default UserProfile;
