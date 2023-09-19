@@ -4,7 +4,7 @@ import { darkerBgColor } from '../../constants/color-tokens';
 const ContrastPanel = styled.div`
   background-color: ${darkerBgColor};
 
-  max-width: fit-content;
+  width: fit-content;
   padding: 25px 20px;
   border-radius: 20px;
 

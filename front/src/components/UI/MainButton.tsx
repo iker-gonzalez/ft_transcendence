@@ -18,6 +18,10 @@ const Button = styled.button`
     opacity: 0.65;
     cursor: not-allowed;
   }
+
+  &:hover {
+    filter: brightness(1.1);
+  }
 `;
 
 export default Button;
