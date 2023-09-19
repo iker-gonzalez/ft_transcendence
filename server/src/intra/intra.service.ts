@@ -13,6 +13,7 @@ export class IntraService {
   ) {}
 
   async getIntraUserToken(code: string): Promise<string> {
+    console.log('redirect uri: ', process.env.INTRA_AUTH_REDIRECT_URI);
     const params: IntraTokenParams = {
       grant_type: this.configService.get('INTRA_AUTH_GRANT_TYPE'),
       client_id: this.configService.get('INTRA_CLIENT_ID'),

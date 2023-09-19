@@ -36,7 +36,7 @@ export class AuthService {
     }
 
     let userData: IntraUserDataDto;
-
+    console.log('code before: ', code);
     if (code === this.configService.get<string>('FAKE_USER_1_CODE')) {
       userData = testUserData;
     } else if (code === this.configService.get<string>('FAKE_USER_2_CODE')) {
@@ -44,9 +44,10 @@ export class AuthService {
     } else {
       // Get Intra User Token
       const token: string = await this.intraService.getIntraUserToken(code);
-
+      console.log('token: ', token);
       // Fetch user data from Intra API
       userData = await this.intraService.getIntraUserInfo(token);
+      console.log(userData);
     }
 
     const user: User = await this.prisma.user.findUnique({
