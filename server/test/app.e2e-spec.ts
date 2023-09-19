@@ -18,48 +18,23 @@ import { testUserData } from '../config/app.constants';
 import { User } from '@prisma/client';
 import { IntraUserDataDto } from 'src/auth/dto/intra-user-data.dto';
 import { Socket } from 'socket.io-client';
+import {
+  baseUrl,
+  port,
+  userData,
+  userData2,
+  userData3,
+  testAvatarPath,
+  intraUserToken,
+  uuidRegex,
+} from './test.constants';
 
 describe('App e2e', () => {
-  const port = 3333;
-  const baseUrl = `http://localhost:${port}`;
-
   let app: INestApplication;
   let prisma: PrismaService;
   let intraService: IntraService;
   let twoFactorAuthService: TwoFactorAuthService;
   let gameDataService: GameDataService;
-
-  const userData = {
-    intraId: 88103,
-    username: 'ntest',
-    email: 'test@student.42urduliz.com',
-    avatar: 'https://cdn.intra.42.fr/users/test.jpg',
-    isTwoFactorAuthEnabled: false,
-  };
-
-  const userData2 = {
-    intraId: 88104,
-    username: 'ntest2',
-    email: 'test2@student.42urduliz.com',
-    avatar: 'https://cdn.intra.42.fr/users/test2.jpg',
-    isTwoFactorAuthEnabled: false,
-  };
-
-  const userData3 = {
-    intraId: 88105,
-    username: 'ntest3',
-    email: 'test3@student.42urduliz.com',
-    avatar: 'https://cdn.intra.42.fr/users/test3.jpg',
-    isTwoFactorAuthEnabled: false,
-  };
-
-  const testAvatarPath = `public/uploads/avatars/${userData.username}.png`;
-
-  const intraUserToken =
-    'de08a5e57571452221f95fc44d0073d2a383178d7d893d99c29ad955103b3981';
-
-  const uuidRegex =
-    /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
