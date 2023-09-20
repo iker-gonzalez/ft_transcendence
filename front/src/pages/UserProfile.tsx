@@ -5,26 +5,13 @@ import CenteredLayout from '../components/UI/CenteredLayout';
 import UserProfileSettings from '../components/UserProfileSettings';
 import styled from 'styled-components';
 
-// Define a TypeScript interface for the user data
-interface UserData {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  isTwoFactorAuthEnabled: boolean;
-  intraId: number;
-  username: string;
-  avatar: string;
-  email: string;
-}
-
 const WrapperDiv = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 60px;
 `;
 
-// TODO add TS interface for userData
-const UserProfile: React.FC<{ userData: any }> = ({ userData }) => {
+const UserProfile: React.FC<{ userData: UserData | null }> = ({ userData }) => {
   // const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
