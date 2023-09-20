@@ -39,7 +39,7 @@ const UserProfileSettings: React.FC<{ userData: UserData }> = ({
           )}
         </div>
         <div className="settings-item">
-          <p className="title-3">Email</p>
+          <p className="title-3">Username</p>
           <MainButton>Change</MainButton>
         </div>
       </WrapperDiv>
