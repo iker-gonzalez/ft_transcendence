@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { getBaseUrl } from '../utils/utils';
 import UserProfileHero from '../components/UserProfileHero';
+import CenteredLayout from '../components/UI/CenteredLayout';
+import UserProfileSettings from '../components/UserProfileSettings';
+import styled from 'styled-components';
 
 // Define a TypeScript interface for the user data
 interface UserData {
@@ -13,6 +16,12 @@ interface UserData {
   avatar: string;
   email: string;
 }
+
+const WrapperDiv = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 60px;
+`;
 
 // TODO add TS interface for userData
 const UserProfile: React.FC<{ userData: any }> = ({ userData }) => {
@@ -61,9 +70,14 @@ const UserProfile: React.FC<{ userData: any }> = ({ userData }) => {
   }
 
   return (
-    <div>
-      {userData && <UserProfileHero userData={userData} />}
-    </div>
+    <CenteredLayout>
+      {userData && (
+        <WrapperDiv>
+          <UserProfileHero userData={userData} />
+          <UserProfileSettings userData={userData} />
+        </WrapperDiv>
+      )}
+    </CenteredLayout>
   );
 };
 
