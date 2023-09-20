@@ -24,8 +24,9 @@ const WrapperDiv = styled.div`
   }
 `;
 
-// TODO add TS interface for userData
-const UserProfileSettings: React.FC<{ userData: any }> = ({ userData }) => {
+const UserProfileSettings: React.FC<{ userData: UserData }> = ({
+  userData,
+}) => {
   return (
     <ContrastPanel>
       <WrapperDiv>
