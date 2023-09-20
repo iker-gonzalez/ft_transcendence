@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import ContrastPanel from './UI/ContrastPanel';
 
 const WrapperDiv = styled.div`
-  padding: 60px 100px;
-
   .avatar {
     width: 250px;
     height: 250px;
@@ -35,15 +33,15 @@ const WrapperDiv = styled.div`
 // TODO add TS interface for userData
 const UserProfileHero: React.FC<{ userData: any }> = ({ userData }) => {
   return (
-    <WrapperDiv>
-      <ContrastPanel>
+    <ContrastPanel>
+      <WrapperDiv>
         <img className="avatar" src={userData.avatar} alt="" />
         <p className="username">Hello, {userData.username}!</p>
         <p className="email">{userData.email}</p>
         <p className="intra-id">IntraId: {userData.intraId}</p>
         {/* TODO delete intraId, users don't really care about it */}
-      </ContrastPanel>
-    </WrapperDiv>
+      </WrapperDiv>
+    </ContrastPanel>
   );
 };
 
