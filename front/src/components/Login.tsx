@@ -4,11 +4,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import UserProfile from '../pages/UserProfile';
 import LoadingPage from '../pages/LoadingPage';
 
-// TODO add TS interface for userData
-const Login: React.FC<{ userData: any; setUserData: (arg0: any) => void }> = ({
-  userData,
-  setUserData,
-}) => {
+const Login: React.FC<{
+  userData: UserData | null;
+  setUserData: (arg0: UserData | null) => void;
+}> = ({ userData, setUserData }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
