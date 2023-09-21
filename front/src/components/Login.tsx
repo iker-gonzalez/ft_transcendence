@@ -40,7 +40,6 @@ const Login: React.FC = () => {
           }
         })
         .then((data) => {
-          sessionStorage.setItem('intraId', data.data.intraId);
           setUserData(data.data); // Set the user data in the global state
           navigate('/profile'); // Redirect to the "/profile" route
         })

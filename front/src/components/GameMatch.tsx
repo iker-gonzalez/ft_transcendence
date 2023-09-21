@@ -9,6 +9,7 @@ import MainButton from './UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from './UI/CenteredLayout';
 import { primaryAccentColor } from '../constants/color-tokens';
+import { useUserData } from '../context/UserDataContext';
 
 const getIsPlayer1 = (sessionData: SessionData, userId: number): boolean => {
   const playerIndex: number = sessionData!.players!.findIndex(
@@ -17,15 +18,6 @@ const getIsPlayer1 = (sessionData: SessionData, userId: number): boolean => {
 
   return playerIndex === 0;
 };
-
-const getUserId = (): number => {
-  const userIdString: string | null = sessionStorage.getItem('intraId');
-
-  return userIdString ? parseInt(userIdString) : 666;
-};
-
-// TODO Replace with real userId
-const userId: number = getUserId();
 
 const WrapperDiv = styled.div`
   .highlighted {
@@ -52,9 +44,13 @@ export default function GameMatch() {
   const navigate = useNavigate();
   const { sessionDataState } = useGameRouteContext();
 
+  const { userData } = useUserData();
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
   const [isAwaitingOpponent, setIsAwaitingOpponent] = useState<boolean>(false);
-  const isPlayer1: boolean = getIsPlayer1(sessionDataState[0], userId);
+  const isPlayer1: boolean = getIsPlayer1(
+    sessionDataState[0],
+    userData!.intraId,
+  );
   const sessionId: string | null = useSearchParams()[0]!.get('sessionId');
   const [showGame, setShowGame] = useState<boolean>(false);
   const socketRef = useRef<Socket>(
