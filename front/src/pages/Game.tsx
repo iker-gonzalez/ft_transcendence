@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
-import SessionData from '../models/session-data.interface';
+import SessionData from '../interfaces/game-session-data.interface';
 
 type GameContextType = {
   matchmakingSocket: Socket;

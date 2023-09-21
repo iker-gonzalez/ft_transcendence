@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useGameRouteContext } from '../pages/Game';
 import { createSearchParams, useNavigate } from 'react-router-dom';
-import User from '../models/user.interface';
-import SessionData from '../models/session-data.interface';
 import MainButton from './UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from './UI/CenteredLayout';
@@ -14,6 +12,8 @@ import {
   primaryLightColor,
 } from '../constants/color-tokens';
 import { useUserData } from '../context/UserDataContext';
+import SessionData from '../interfaces/game-session-data.interface';
+import GameSessionUser from '../interfaces/game-session-user.interface';
 
 type GameQueueRes = {
   queued: boolean;
@@ -203,14 +203,16 @@ export default function GameQueue() {
               <div className="session-box">
                 <h2>This is your new session</h2>
                 <div className="users-box">
-                  {sessionDataState[0].players.map((player: User) => {
-                    return (
-                      <div className="user-box" key={player.id}>
-                        <p>{player.username}</p>
-                        <RoundImg alt="" src={player.avatar} />
-                      </div>
-                    );
-                  })}
+                  {sessionDataState[0].players.map(
+                    (player: GameSessionUser) => {
+                      return (
+                        <div className="user-box" key={player.id}>
+                          <p>{player.username}</p>
+                          <RoundImg alt="" src={player.avatar} />
+                        </div>
+                      );
+                    },
+                  )}
                 </div>
                 <MainButton className="game-cta" onClick={onGoToMatch}>
                   Go to match
