@@ -1,5 +1,5 @@
 import React, { ReactNode, useContext, useState } from 'react';
-import { UserData } from '../interfaces/user-data.interface';
+import UserData from '../interfaces/user-data.interface';
 
 interface UserDataContextData {
   userData: UserData | null;

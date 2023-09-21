@@ -1,7 +1,5 @@
-export interface UserData {
-  avatar: string;
-  email: string;
-  intraId: number;
+import UserCoreData from './user-core-data.interface';
+
+export default interface UserData extends UserCoreData {
   isTwoFactorAuthEnabled: boolean;
-  username: string;
 }
