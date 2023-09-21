@@ -13,6 +13,7 @@ import {
   primaryAccentColor,
   primaryLightColor,
 } from '../constants/color-tokens';
+import { useUserData } from '../context/UserDataContext';
 
 type GameQueueRes = {
   queued: boolean;
@@ -71,12 +72,10 @@ const WrapperDiv = styled.div`
   }
 `;
 
-// TODO Replace with real userId from login
-const userId: string | null = sessionStorage.getItem('intraId');
-
 export default function GameQueue() {
   const navigate = useNavigate();
 
+  const { userData } = useUserData();
   const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
   const [isQueued, setIsQueued] = useState<boolean>(false);
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
@@ -90,8 +89,7 @@ export default function GameQueue() {
   );
 
   useEffect(() => {
-    // TODO remove this when we have a better way to store userId
-    if (!userId) {
+    if (!userData!.intraId) {
       navigate('/');
     }
 
@@ -113,7 +111,7 @@ export default function GameQueue() {
     });
 
     matchmakingSocketRef.current.on(
-      `userJoined/${userId}`,
+      `userJoined/${userData!.intraId}`,
       (userJoinedRes: GameQueueRes) => {
         if (userJoinedRes.queued) {
           setIsQueued(true);
@@ -122,7 +120,7 @@ export default function GameQueue() {
     );
 
     matchmakingSocketRef.current.on(
-      `newSession/${userId}`,
+      `newSession/${userData!.intraId}`,
       (newSessionRes: GameSessionRes) => {
         if (newSessionRes.success) {
           const setSessionData = sessionDataState[1];
@@ -136,7 +134,7 @@ export default function GameQueue() {
     );
 
     matchmakingSocketRef.current.on(
-      `unqueuedUser/${userId}`,
+      `unqueuedUser/${userData!.intraId}`,
       (unqueuedUserRes: GameQueueRes) => {
         if (!unqueuedUserRes.queued) {
           setIsQueued(false);
@@ -149,7 +147,7 @@ export default function GameQueue() {
     matchmakingSocketRef.current.emit(
       'newUser',
       JSON.stringify({
-        intraId: userId,
+        intraId: userData!.intraId,
       }),
     );
   };
@@ -172,7 +170,7 @@ export default function GameQueue() {
     matchmakingSocketRef.current.emit(
       'unqueueUser',
       JSON.stringify({
-        intraId: userId,
+        intraId: userData!.intraId,
       }),
     );
   };
@@ -182,7 +180,7 @@ export default function GameQueue() {
       <CenteredLayout>
         <h1>
           Game queue for user with intradId{' '}
-          <span className="highlighted">{userId}</span>
+          <span className="highlighted">{userData!.intraId}</span>
         </h1>
         <p>
           This is the page that is shown when users decide to join the queue.
