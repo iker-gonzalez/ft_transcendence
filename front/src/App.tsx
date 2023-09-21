@@ -10,34 +10,29 @@ import GameIndex from './components/GameIndex';
 import GameQueue from './components/GameQueue';
 import LoadingPage from './pages/LoadingPage';
 import Login from './components/Login';
+import { UserDataProvider } from './context/UserDataContext';
 
 function App() {
-  // TODO refactor this with global store like Context API or Redux
-  const [userData, setUserData] = useState<UserData | null>(null);
   return (
-    <Router>
-      <div>
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<SignIn />} />
-          <Route path="/set-profile" element={<SetProfile />} />
-          <Route
-            path="/profile"
-            element={<UserProfile userData={userData} />}
-          />
-          <Route
-            path="/login"
-            element={<Login userData={userData} setUserData={setUserData} />}
-          />
-          <Route path="/loading" element={<LoadingPage targetPath={''} />} />
-          <Route path="game" element={<Game />}>
-            <Route index element={<GameIndex />} />
-            <Route path="queue" element={<GameQueue />} />
-            <Route path="match" element={<GameMatch />} />
-          </Route>
-        </Routes>
-      </div>
-    </Router>
+    <UserDataProvider>
+      <Router>
+        <div>
+          <Navigation />
+          <Routes>
+            <Route path="/" element={<SignIn />} />
+            <Route path="/set-profile" element={<SetProfile />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/loading" element={<LoadingPage targetPath={''} />} />
+            <Route path="game" element={<Game />}>
+              <Route index element={<GameIndex />} />
+              <Route path="queue" element={<GameQueue />} />
+              <Route path="match" element={<GameMatch />} />
+            </Route>
+          </Routes>
+        </div>
+      </Router>
+    </UserDataProvider>
   );
 }
 
