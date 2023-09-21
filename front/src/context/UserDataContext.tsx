@@ -35,7 +35,7 @@ export function UserDataProvider({
   const [userData, setUserData] = useState<UserData | null>(null);
 
   /**
-   * Gets the persisted user data from local storage or state.
+   * Gets the persisted user data from session storage or state.
    * @returns The persisted user data or null if none exists.
    */
   function getPersistedUserData(): UserData | null {
@@ -43,26 +43,28 @@ export function UserDataProvider({
       return userData;
     }
 
-    const localStorageUserData: string | null =
-      localStorage.getItem('userData');
-    if (localStorageUserData) {
-      return JSON.parse(localStorageUserData);
+    const sessionStorageUserData: string | null =
+      sessionStorage.getItem('userData');
+    if (sessionStorageUserData) {
+      return JSON.parse(sessionStorageUserData);
     }
 
     return null;
   }
 
   /**
-   * Persists the user data to local storage and state.
+   * Persists the user data to session storage and state.
    * @param userData The user data to persist.
    */
   function setPersistedUserData(userData: UserData | null): void {
     setUserData(userData);
 
     if (!userData) {
-      localStorage.removeItem('userData');
+      sessionStorage.removeItem('userData');
     } else {
-      localStorage.setItem('userData', JSON.stringify(userData));
+      // Use sessionStorage instead of localStorage because we don't want
+      // different tabs of the same browser to share the same user data.
+      sessionStorage.setItem('userData', JSON.stringify(userData));
     }
   }
 
