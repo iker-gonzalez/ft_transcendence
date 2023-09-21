@@ -4,7 +4,6 @@ import CenteredLayout from '../components/UI/CenteredLayout';
 import UserProfileSettings from '../components/UserProfileSettings';
 import styled from 'styled-components';
 import { useUserData } from '../context/UserDataContext';
-import { UserData } from '../interfaces/user-data.interface';
 
 const WrapperDiv = styled.div`
   display: flex;
