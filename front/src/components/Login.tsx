@@ -3,11 +3,10 @@ import { getBaseUrl } from '../utils/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
 import UserProfile from '../pages/UserProfile';
 import LoadingPage from '../pages/LoadingPage';
+import { useUserData } from '../context/UserDataContext';
 
-const Login: React.FC<{
-  userData: UserData | null;
-  setUserData: (arg0: UserData | null) => void;
-}> = ({ userData, setUserData }) => {
+const Login: React.FC = () => {
+  const { setUserData } = useUserData();
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +14,7 @@ const Login: React.FC<{
   useEffect(() => {
     // You can directly access the code from the URL query parameter here
     const urlParams = new URLSearchParams(location.search);
-    const code = urlParams.get("code");
+    const code = urlParams.get('code');
     console.log('code:', code);
 
     if (code) {
@@ -23,9 +22,9 @@ const Login: React.FC<{
 
       // Make the POST request with the captured code
       fetch(`${getBaseUrl()}/auth/intra/signin`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           // Add authentication headers if needed
         },
         body: JSON.stringify({
@@ -37,16 +36,17 @@ const Login: React.FC<{
           if (response.ok) {
             return response.json();
           } else {
-            throw new Error("An error occurred on the server.");
+            throw new Error('An error occurred on the server.');
           }
         })
         .then((data) => {
-          sessionStorage.setItem("intraId", data.data.intraId);
+          sessionStorage.setItem('intraId', data.data.intraId);
           setUserData(data.data); // Set the user data in the global state
           navigate('/profile'); // Redirect to the "/profile" route
         })
         .catch((error) => {
           console.error('An error occurred:', error);
+          setUserData(null);
           // Handle the error and set a message if needed
         })
         .finally(() => {
@@ -58,11 +58,7 @@ const Login: React.FC<{
   return (
     // Render either the loading page or user profile content based on isLoading state
     <div>
-      {isLoading ? (
-        <LoadingPage targetPath="/profile" />
-      ) : (
-        <UserProfile userData={userData} />
-      )}
+      {isLoading ? <LoadingPage targetPath="/profile" /> : <UserProfile />}
     </div>
   );
 };
