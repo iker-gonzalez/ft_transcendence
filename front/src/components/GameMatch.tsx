@@ -4,12 +4,12 @@ import { Socket, io } from 'socket.io-client';
 import { getBaseUrl } from '../utils/utils';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameRouteContext } from '../pages/Game';
-import SessionData from '../models/session-data.interface';
 import MainButton from './UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from './UI/CenteredLayout';
 import { primaryAccentColor } from '../constants/color-tokens';
 import { useUserData } from '../context/UserDataContext';
+import SessionData from '../interfaces/game-session-data.interface';
 
 const getIsPlayer1 = (sessionData: SessionData, userId: number): boolean => {
   const playerIndex: number = sessionData!.players!.findIndex(

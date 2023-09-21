@@ -1,8 +1,6 @@
-export default interface User {
-  id: string;
+export default interface UserCoreData {
   username: string;
   avatar: string;
   email: string;
   intraId: number;
-  userGameSessionId: string;
 }
