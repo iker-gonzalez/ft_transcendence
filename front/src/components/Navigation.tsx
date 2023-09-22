@@ -5,6 +5,7 @@ import {
   primaryLightColor,
   primaryAccentColor,
 } from '../constants/color-tokens';
+import { Link } from 'react-router-dom';
 
 // Define styled components
 const NavbarContainer = styled.nav`
@@ -25,7 +26,7 @@ const NavItem = styled.li`
   margin: 0 20px;
 `;
 
-const NavLink = styled.a`
+const NavLink = styled(Link)`
   text-decoration: none;
   color: ${primaryLightColor};
   font-size: 18px;
@@ -42,16 +43,16 @@ const Navbar = () => {
     <NavbarContainer>
       <NavList>
         <NavItem>
-          <NavLink href="/">Home</NavLink>
+          <NavLink to="/">Home</NavLink>
         </NavItem>
         <NavItem>
-          <NavLink href="/stats">Stats</NavLink>
+          <NavLink to="/stats">Stats</NavLink>
         </NavItem>
         <NavItem>
-          <NavLink href="/profile">Profile</NavLink>
+          <NavLink to="/profile">Profile</NavLink>
         </NavItem>
         <NavItem>
-          <NavLink href="/game">Game</NavLink>
+          <NavLink to="/game">Game</NavLink>
         </NavItem>
       </NavList>
     </NavbarContainer>
