@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { getBaseUrl, getRedirectUri } from '../utils/utils';
+import { getRedirectUri } from '../utils/utils';
 import MainButton from '../components/UI/MainButton';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { primaryLightColor } from '../constants/color-tokens';
-import { useUserData } from '../context/UserDataContext';
+import { useRefetchUserData, useUserData } from '../context/UserDataContext';
 import UserData from '../interfaces/user-data.interface';
 import Cookies from 'js-cookie';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
@@ -29,33 +29,24 @@ const PageWrapperDiv = styled.div`
 function SignIn() {
   const { userData, setUserData }: UserDataContextData = useUserData();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
+
+  const refetchUserData = useRefetchUserData();
 
   useEffect(() => {
-    async function fetchUserData(token: string): Promise<UserData | null> {
-      try {
-        const response: Response = await fetch(`${getBaseUrl()}/users/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const fetchedUserData = await response.json();
-
-        const userData: UserData = fetchedUserData.data;
-        return userData;
-      } catch (error: any) {
-        console.error('fetchUserData error:', error);
-      }
-
-      return null;
-    }
-
     const token: string = Cookies.get('token') || '';
     // User data is not set, but section is still active
     if (!userData && token.length) {
-      fetchUserData(token).then((userData: UserData | null) => {
-        setUserData(userData);
-        setIsLoading(false);
-      });
+      refetchUserData(token)
+        .then((userData: UserData | null) => {
+          setUserData(userData);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error on Home page:', error);
+          setIsLoading(false);
+          setIsError(true);
+        });
     } else {
       setIsLoading(false);
     }
@@ -69,6 +60,8 @@ function SignIn() {
   return (
     <PageWrapperDiv>
       {(() => {
+        if (isError) return <p>An error occurred...</p>;
+
         if (isLoading) return <p>Loading...</p>;
 
         return (
