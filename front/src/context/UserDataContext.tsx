@@ -1,10 +1,6 @@
 import React, { ReactNode, useContext, useState } from 'react';
 import UserData from '../interfaces/user-data.interface';
-
-interface UserDataContextData {
-  userData: UserData | null;
-  setUserData: (userData: UserData | null) => void;
-}
+import UserDataContextData from '../interfaces/user-data-context-data.interface';
 
 /**
  * Context object for user data.
