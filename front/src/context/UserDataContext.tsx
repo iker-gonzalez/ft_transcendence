@@ -30,45 +30,11 @@ export function UserDataProvider({
 }): ReactNode {
   const [userData, setUserData] = useState<UserData | null>(null);
 
-  /**
-   * Gets the persisted user data from session storage or state.
-   * @returns The persisted user data or null if none exists.
-   */
-  function getPersistedUserData(): UserData | null {
-    if (userData) {
-      return userData;
-    }
-
-    const sessionStorageUserData: string | null =
-      sessionStorage.getItem('userData');
-    if (sessionStorageUserData) {
-      return JSON.parse(sessionStorageUserData);
-    }
-
-    return null;
-  }
-
-  /**
-   * Persists the user data to session storage and state.
-   * @param userData The user data to persist.
-   */
-  function setPersistedUserData(userData: UserData | null): void {
-    setUserData(userData);
-
-    if (!userData) {
-      sessionStorage.removeItem('userData');
-    } else {
-      // Use sessionStorage instead of localStorage because we don't want
-      // different tabs of the same browser to share the same user data.
-      sessionStorage.setItem('userData', JSON.stringify(userData));
-    }
-  }
-
   return (
     <UserDataContext.Provider
       value={{
-        userData: getPersistedUserData(),
-        setUserData: setPersistedUserData,
+        userData,
+        setUserData,
       }}
     >
       {children}
