@@ -403,7 +403,16 @@ describe('App e2e', () => {
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
           .expectStatus(200)
           .expectJson({
-            data: JSON.parse(JSON.stringify(user)),
+            id: user.id,
+            createdAt: user.createdAt.toISOString(),
+            updatedAt: user.updatedAt.toISOString(),
+            data: {
+              avatar: user.avatar,
+              email: user.email,
+              intraId: user.intraId,
+              isTwoFactorAuthEnabled: user.isTwoFactorAuthEnabled,
+              username: user.username,
+            },
           });
       });
 

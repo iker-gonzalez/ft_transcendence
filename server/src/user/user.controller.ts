@@ -44,18 +44,18 @@ export class UserController {
     description: swaggerConstants.users.me.unauthorized.description,
   })
   @Get('me')
-  // TODO fix DTO
-  getme(@GetUser() user: User): any {
+  getme(@GetUser() user: User): MeDto {
     // Do not share secret with client
     delete user.twoFactorAuthSecret;
+
     let {
-      id,
-      createdAt,
-      updatedAt,
       avatar,
+      createdAt,
       email,
+      id,
       intraId,
       isTwoFactorAuthEnabled,
+      updatedAt,
       username,
     } = user;
     return {
