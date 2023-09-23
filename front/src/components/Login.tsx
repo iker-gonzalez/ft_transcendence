@@ -4,6 +4,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import UserProfile from '../pages/UserProfile';
 import LoadingPage from '../pages/LoadingPage';
 import { useUserData } from '../context/UserDataContext';
+import moment from 'moment';
+import Cookies from 'js-cookie';
 
 const Login: React.FC = () => {
   const { setUserData } = useUserData();
@@ -41,6 +43,13 @@ const Login: React.FC = () => {
         })
         .then((data) => {
           setUserData(data.data); // Set the user data in the global state
+
+          // TODO set expiration synched with BE through env var
+          const tokenExpirationDate = moment().add(20, 'minutes').toDate();
+          Cookies.set('token', data.access_token, {
+            expires: tokenExpirationDate,
+          });
+
           navigate('/profile'); // Redirect to the "/profile" route
         })
         .catch((error) => {

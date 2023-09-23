@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import UserProfileHero from '../components/UserProfileHero';
 import CenteredLayout from '../components/UI/CenteredLayout';
 import UserProfileSettings from '../components/UserProfileSettings';
 import styled from 'styled-components';
 import { useUserData } from '../context/UserDataContext';
+import { useNavigate } from 'react-router-dom';
+import UserDataContextData from '../interfaces/user-data-context-data.interface';
 
 const WrapperDiv = styled.div`
   display: flex;
@@ -12,12 +14,14 @@ const WrapperDiv = styled.div`
 `;
 
 const UserProfile: React.FC = () => {
-  const { userData } = useUserData();
+  const { userData }: UserDataContextData = useUserData();
+  const navigate = useNavigate();
 
-  if (!userData) {
-    // Display an error message if the data couldn't be fetched
-    return <div>Error fetching user data.</div>;
-  }
+  useEffect(() => {
+    if (!userData) {
+      navigate('/');
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <CenteredLayout>
