@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getBaseUrl, getRedirectUri } from '../utils/utils';
 import MainButton from '../components/UI/MainButton';
 import { styled } from 'styled-components';
@@ -28,6 +28,7 @@ const PageWrapperDiv = styled.div`
 
 function SignIn() {
   const { userData, setUserData }: UserDataContextData = useUserData();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchUserData(token: string): Promise<UserData | null> {
@@ -53,7 +54,10 @@ function SignIn() {
     if (!userData && token.length) {
       fetchUserData(token).then((userData: UserData | null) => {
         setUserData(userData);
+        setIsLoading(false);
       });
+    } else {
+      setIsLoading(false);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -64,36 +68,48 @@ function SignIn() {
 
   return (
     <PageWrapperDiv>
-      <h1 className="title-1">Pong Game</h1>
-      <img
-        src="/assets/school_42.png"
-        alt="42 logo"
-        style={{ width: '150px', marginBottom: '12px' }}
-      />
-      {userData ? (
-        <h2 className="title-2">Hello, {userData.username}!</h2>
-      ) : (
-        <form
-          onSubmit={(e) => e.preventDefault()} // Prevent form submission
-          style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
-        >
-          <MainButton type="button" onClick={handleSignInClick}>
-            Sign In with 42
-          </MainButton>
-          <Link
-            to={`login?code=${process.env.REACT_APP_USER_TEST_1_CODE}`}
-            className="signin-link"
-          >
-            Sign in with test user 1
-          </Link>
-          <Link
-            to={`login?code=${process.env.REACT_APP_USER_TEST_2_CODE}`}
-            className="signin-link"
-          >
-            Sign in with test user 2
-          </Link>
-        </form>
-      )}
+      {(() => {
+        if (isLoading) return <p>Loading...</p>;
+
+        return (
+          <>
+            <h1 className="title-1">Pong Game</h1>
+            <img
+              src="/assets/school_42.png"
+              alt="42 logo"
+              style={{ width: '150px', marginBottom: '12px' }}
+            />
+            {userData ? (
+              <h2 className="title-2">Hello, {userData.username}!</h2>
+            ) : (
+              <form
+                onSubmit={(e) => e.preventDefault()} // Prevent form submission
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '20px',
+                }}
+              >
+                <MainButton type="button" onClick={handleSignInClick}>
+                  Sign In with 42
+                </MainButton>
+                <Link
+                  to={`login?code=${process.env.REACT_APP_USER_TEST_1_CODE}`}
+                  className="signin-link"
+                >
+                  Sign in with test user 1
+                </Link>
+                <Link
+                  to={`login?code=${process.env.REACT_APP_USER_TEST_2_CODE}`}
+                  className="signin-link"
+                >
+                  Sign in with test user 2
+                </Link>
+              </form>
+            )}
+          </>
+        );
+      })()}
     </PageWrapperDiv>
   );
 }
