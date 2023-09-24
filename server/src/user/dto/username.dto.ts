@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MaxLength, MinLength } from 'class-validator';
+import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class UsernameDto {
@@ -10,5 +10,8 @@ export class UsernameDto {
   @IsString()
   @MinLength(5)
   @MaxLength(12)
+  @Matches(/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/, {
+    message: swaggerConstants.dto.username.regex.message,
+  })
   username: string;
 }
