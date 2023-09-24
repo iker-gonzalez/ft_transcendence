@@ -1,6 +1,7 @@
 import React, { FormEvent, useState } from 'react';
 import styled from 'styled-components';
 import MainButton from './UI/MainButton';
+import SecondaryButton from './UI/SecondaryButton';
 import MainInput from './UI/MainInput';
 import { errorColor, successColor } from '../constants/color-tokens';
 import Cookies from 'js-cookie';
@@ -84,6 +85,12 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
     }
   };
 
+  const handleCloseEdit = (): void => {
+    setShowUsernameForm(false);
+    setUsernameError('');
+    setUsernameSuccessMessage('');
+  };
+
   return (
     <WrapperDiv className={className}>
       <p className="title-3">Username</p>
@@ -106,6 +113,9 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
             <MainButton type="submit" aria-label="Confirm edit">
               ✓
             </MainButton>
+            <SecondaryButton type="button" onClick={handleCloseEdit}>
+              ✗
+            </SecondaryButton>
           </form>
           {usernameError && (
             <p className="small error-message">
