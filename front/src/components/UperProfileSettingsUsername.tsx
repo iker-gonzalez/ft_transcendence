@@ -10,6 +10,7 @@ import { useUserData } from '../context/UserDataContext';
 
 const WrapperDiv = styled.div`
   .username-change-container {
+    overflow: visible;
     min-width: 200px;
     position: relative;
     display: flex;
@@ -28,6 +29,11 @@ const WrapperDiv = styled.div`
       justify-content: center;
       gap: 5px;
     }
+
+    .hint {
+      margin-top: 5px;
+      text-align: right;
+    }
   }
 
   .success-message {
@@ -39,6 +45,7 @@ const WrapperDiv = styled.div`
   .error-message,
   .success-message {
     position: absolute;
+    white-space: nowrap;
     bottom: -17px;
     right: 0;
   }
@@ -115,7 +122,7 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
             </label>
             <MainInput
               type="text"
-              placeholder="New username"
+              placeholder="New username*"
               id="username"
               name="username"
               maxLength={12}
@@ -127,9 +134,15 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
               ✗
             </SecondaryButton>
           </form>
-          {usernameError && (
+          {usernameError ? (
             <p className="small error-message">
               {capitalizeFirstLetter(usernameError[0])}
+            </p>
+          ) : (
+            <p className="small hint">
+              <span>*Username must be between 5 and 12 characters</span>
+              <br />
+              <span>Only letters, numbers, hyphen, and underscore are allowed</span>
             </p>
           )}
         </div>
