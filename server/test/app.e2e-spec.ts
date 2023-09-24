@@ -454,7 +454,7 @@ describe('App e2e', () => {
             Authorization: 'Bearer $S{userAt}',
           })
           .withBody({
-            username: 'new-username',
+            username: newUsername,
           })
           .expectStatus(200)
           .expectJsonLike({
@@ -529,6 +529,58 @@ describe('App e2e', () => {
         });
 
         expect(updatedUser.username).toBe(user.username);
+      });
+
+      it('should return 400 if username is not unique', async () => {
+        const newUsername = 'new-username';
+
+        // Create user first
+        const user1 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/username`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            username: newUsername,
+          })
+          .expectStatus(200);
+
+        const user2 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData2,
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/username`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            username: newUsername,
+          })
+          .expectStatus(400)
+          .expectJsonLike({
+            message: 'Username already taken',
+            error: 'Bad Request',
+            statusCode: 400,
+          });
+
+        const notUpdatedUser2 = await prisma.user.findUnique({
+          where: { id: user2.id },
+        });
+
+        expect(notUpdatedUser2.username).toBe(userData2.username);
       });
 
       it('should return 401 with invalid token', async () => {
