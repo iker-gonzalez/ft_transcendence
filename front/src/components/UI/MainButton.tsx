@@ -3,8 +3,7 @@ import { styled } from 'styled-components';
 import { primaryColor } from '../../constants/color-tokens';
 
 const Button = styled.button`
-  width: 175px;
-  height: 50px;
+  padding: 10px 25px;
   background-color: ${primaryColor};
   color: black;
   border-radius: 5px;
