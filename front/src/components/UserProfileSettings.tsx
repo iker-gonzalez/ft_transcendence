@@ -4,6 +4,7 @@ import ContrastPanel from './UI/ContrastPanel';
 import MainButton from './UI/MainButton';
 import { primaryLightColor } from '../constants/color-tokens';
 import UserData from '../interfaces/user-data.interface';
+import UserProfileSettingsUsername from './UperProfileSettingsUsername';
 
 const WrapperDiv = styled.div`
   width: 650px;
@@ -19,7 +20,7 @@ const WrapperDiv = styled.div`
       border-bottom: 1px ${primaryLightColor} solid;
     }
 
-    p {
+    > p {
       margin: 0;
     }
   }
@@ -39,10 +40,7 @@ const UserProfileSettings: React.FC<{ userData: UserData }> = ({
             <MainButton>Activate</MainButton>
           )}
         </div>
-        <div className="settings-item">
-          <p className="title-3">Username</p>
-          <MainButton>Change</MainButton>
-        </div>
+        <UserProfileSettingsUsername className="settings-item" />
       </WrapperDiv>
     </ContrastPanel>
   );
