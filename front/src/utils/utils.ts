@@ -14,9 +14,20 @@ export function getBaseUrl(): string {
 
 export function getRedirectUri() {
   const endpoint = 'https://api.intra.42.fr/oauth/authorize';
-  const redirectUri = window.location.hostname === "localhost"
-    ? `${endpoint}?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Flogin&response_type=code`
-    : `${endpoint}?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code`;
+  const redirectUri =
+    window.location.hostname === 'localhost'
+      ? `${endpoint}?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Flogin&response_type=code`
+      : `${endpoint}?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code`;
 
   return redirectUri;
+}
+
+/**
+ * Capitalizes the first letter of a string.
+ * @param string The string to capitalize.
+ * @returns The capitalized string.
+ */
+export function capitalizeFirstLetter(string: string): string {
+  console.log('string', string);
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
