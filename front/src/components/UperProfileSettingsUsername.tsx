@@ -62,6 +62,7 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
 
     try {
       const formData = new FormData(e.target as HTMLFormElement);
+      const newUsername: string = formData.get('username') as string;
 
       const res = await fetch(`${getBaseUrl()}/users/username`, {
         method: 'PATCH',
@@ -70,7 +71,7 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-          username: formData.get('username') as string,
+          username: newUsername.trim(),
         }),
       });
 
