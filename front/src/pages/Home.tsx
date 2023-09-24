@@ -57,6 +57,11 @@ function SignIn() {
     window.location.href = getRedirectUri();
   };
 
+  const handleUserLogOut = () => {
+    Cookies.remove('token');
+    setUserData(null);
+  };
+
   return (
     <PageWrapperDiv>
       {(() => {
@@ -73,7 +78,10 @@ function SignIn() {
               style={{ width: '150px', marginBottom: '12px' }}
             />
             {userData ? (
-              <h2 className="title-2">Hello, {userData.username}!</h2>
+              <>
+                <h2 className="title-2">Hello, {userData.username}!</h2>
+                <MainButton onClick={handleUserLogOut}>Log out</MainButton>
+              </>
             ) : (
               <form
                 onSubmit={(e) => e.preventDefault()} // Prevent form submission
