@@ -28,6 +28,11 @@ p {
   font-weight: normal;
 }
 
+.small {
+  font-size: 0.8rem;
+  font-weight: normal;
+}
+
 .body-link {
   font-size: 1rem;
   color: var(--primary-accent-color);
