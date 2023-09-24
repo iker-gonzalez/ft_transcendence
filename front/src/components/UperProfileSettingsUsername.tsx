@@ -10,6 +10,8 @@ import { useUserData } from '../context/UserDataContext';
 
 const WrapperDiv = styled.div`
   .username-change-container {
+    min-width: 200px;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -32,6 +34,13 @@ const WrapperDiv = styled.div`
     color: ${successColor};
     margin-top: 5px;
     font-weight: bold;
+  }
+
+  .error-message,
+  .success-message {
+    position: absolute;
+    bottom: -17px;
+    right: 0;
   }
 `;
 
