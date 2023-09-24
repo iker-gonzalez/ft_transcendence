@@ -50,7 +50,7 @@ export class UserService {
       };
     } catch (e) {
       if (e.code === 'P2002')
-        throw new BadRequestException(['Username already taken']);
+        throw new BadRequestException(['Username already exists']);
     }
   }
 

@@ -456,5 +456,10 @@ export const swaggerConstants = {
         },
       },
     },
+    username: {
+      regex: {
+        message: 'Forbidden character',
+      },
+    },
   },
 };
