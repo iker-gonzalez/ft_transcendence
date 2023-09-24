@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import MainButton from '../components/UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from './UI/CenteredLayout';
 import ContrastPanel from './UI/ContrastPanel';
+import { useUserData } from '../context/UserDataContext';
+import UserDataContextData from '../interfaces/user-data-context-data.interface';
 
 const WrapperDiv = styled.div`
   .user-info-container {
@@ -31,10 +33,17 @@ const WrapperDiv = styled.div`
 
 export default function GameIndex() {
   const navigate = useNavigate();
+  const { userData }: UserDataContextData = useUserData();
 
   const onGoToGameQueue = () => {
     navigate('queue');
   };
+
+  useEffect(() => {
+    if (!userData) {
+      navigate('/');
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <WrapperDiv>
