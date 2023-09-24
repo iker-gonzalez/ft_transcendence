@@ -45,7 +45,9 @@ const Login: React.FC = () => {
           setUserData(data.data); // Set the user data in the global state
 
           // TODO set expiration synched with BE through env var
-          const tokenExpirationDate = moment().add(20, 'minutes').toDate();
+          const tokenExpirationDate = moment()
+            .add(process.env.REACT_APP_JWT_EXPIRATION_MINUTES, 'minutes')
+            .toDate();
           Cookies.set('token', data.access_token, {
             expires: tokenExpirationDate,
           });

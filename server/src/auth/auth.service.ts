@@ -10,7 +10,6 @@ import { IntraUserDataDto } from './dto/intra-user-data.dto';
 import { User } from '@prisma/client';
 import { SigninResponseDto } from './dto/signin-response';
 import { JwtService } from '@nestjs/jwt';
-import { jwtConfig } from '../../config/jwt.config';
 import { TwoFactorAuthService } from '../two-factor-auth/two-factor-auth.service';
 import { testUser2Data, testUserData } from '../../config/app.constants';
 
@@ -118,8 +117,11 @@ export class AuthService {
       sub: userId,
     };
 
+    const jwtExipirationMinutes: string = this.configService.get(
+      'JWT_EXPIRATION_MINUTES',
+    );
     return this.jwtService.signAsync(payload, {
-      expiresIn: jwtConfig.expiration,
+      expiresIn: `${jwtExipirationMinutes}m`,
       secret: this.configService.get('JWT_SECRET'),
     });
   }
