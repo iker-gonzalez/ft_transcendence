@@ -30,23 +30,28 @@ export class UserService {
       throw new BadRequestException();
     }
 
-    const newUserData = await this.prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        username,
-      },
-    });
+    try {
+      const newUserData = await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          username,
+        },
+      });
 
-    return {
-      updated: 1,
-      data: {
-        id: newUserData.id,
-        intraId: newUserData.intraId,
-        username: newUserData.username,
-      },
-    };
+      return {
+        updated: 1,
+        data: {
+          id: newUserData.id,
+          intraId: newUserData.intraId,
+          username: newUserData.username,
+        },
+      };
+    } catch (e) {
+      if (e.code === 'P2002')
+        throw new BadRequestException('Username already taken');
+    }
   }
 
   async updateAvatar(

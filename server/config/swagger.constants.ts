@@ -61,7 +61,7 @@ export const swaggerConstants = {
       },
       bad: {
         description:
-          'Username is not valid or provided id does not match current user.',
+          'Username is not valid, provided id does not match current user, or username was already taken.',
       },
     },
     avatar: {

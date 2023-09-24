@@ -117,9 +117,8 @@ export class AuthService {
       sub: userId,
     };
 
-    const jwtExipirationMinutes: string = this.configService.get(
-      'JWT_EXPIRATION_MINUTES',
-    );
+    const jwtExipirationMinutes: string =
+      this.configService.get('JWT_EXPIRATION_MINUTES') ?? '20'; // Default value is used in testing
     return this.jwtService.signAsync(payload, {
       expiresIn: `${jwtExipirationMinutes}m`,
       secret: this.configService.get('JWT_SECRET'),
