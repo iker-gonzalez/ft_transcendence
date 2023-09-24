@@ -82,6 +82,7 @@ export default function GameQueue() {
   const [isSocketConnected, setIsSocketConnected] = useState<boolean>(false);
 
   const { sessionDataState } = useGameRouteContext();
+  // TODO refactor matchmaking socket in a custom hook
   const matchmakingSocketRef = useRef<Socket>(
     io(`${getBaseUrl()}/matchmaking`, {
       transports: ['websocket'],
@@ -89,7 +90,8 @@ export default function GameQueue() {
   );
 
   useEffect(() => {
-    if (!userData!.intraId) {
+    if (!userData) {
+      matchmakingSocketRef.current.disconnect();
       navigate('/');
     }
 
@@ -110,37 +112,39 @@ export default function GameQueue() {
       console.info('Matchmaking socket connected');
     });
 
-    matchmakingSocketRef.current.on(
-      `userJoined/${userData!.intraId}`,
-      (userJoinedRes: GameQueueRes) => {
-        if (userJoinedRes.queued) {
-          setIsQueued(true);
-        }
-      },
-    );
+    if (userData) {
+      matchmakingSocketRef.current.on(
+        `userJoined/${userData.intraId}`,
+        (userJoinedRes: GameQueueRes) => {
+          if (userJoinedRes.queued) {
+            setIsQueued(true);
+          }
+        },
+      );
 
-    matchmakingSocketRef.current.on(
-      `newSession/${userData!.intraId}`,
-      (newSessionRes: GameSessionRes) => {
-        if (newSessionRes.success) {
-          const setSessionData = sessionDataState[1];
-          setSessionData(newSessionRes.data);
+      matchmakingSocketRef.current.on(
+        `newSession/${userData.intraId}`,
+        (newSessionRes: GameSessionRes) => {
+          if (newSessionRes.success) {
+            const setSessionData = sessionDataState[1];
+            setSessionData(newSessionRes.data);
 
-          setIsSessionCreated(true);
-        } else {
-          console.warn('error creating session');
-        }
-      },
-    );
+            setIsSessionCreated(true);
+          } else {
+            console.warn('error creating session');
+          }
+        },
+      );
 
-    matchmakingSocketRef.current.on(
-      `unqueuedUser/${userData!.intraId}`,
-      (unqueuedUserRes: GameQueueRes) => {
-        if (!unqueuedUserRes.queued) {
-          setIsQueued(false);
-        }
-      },
-    );
+      matchmakingSocketRef.current.on(
+        `unqueuedUser/${userData.intraId}`,
+        (unqueuedUserRes: GameQueueRes) => {
+          if (!unqueuedUserRes.queued) {
+            setIsQueued(false);
+          }
+        },
+      );
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoinQueue = () => {
@@ -180,7 +184,7 @@ export default function GameQueue() {
       <CenteredLayout>
         <h1>
           Game queue for user with intradId{' '}
-          <span className="highlighted">{userData!.intraId}</span>
+          <span className="highlighted">{userData?.intraId}</span>
         </h1>
         <p>
           This is the page that is shown when users decide to join the queue.

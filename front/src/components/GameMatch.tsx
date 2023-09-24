@@ -60,7 +60,7 @@ export default function GameMatch() {
   );
 
   useEffect(() => {
-    if (!sessionId) {
+    if (!sessionId || !userData) {
       navigate('/game');
     }
 
