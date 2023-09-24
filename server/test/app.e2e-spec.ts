@@ -531,6 +531,35 @@ describe('App e2e', () => {
         expect(updatedUser.username).toBe(user.username);
       });
 
+      it('should return 400 if username contains forbidden characters', async () => {
+        const newUsername = 'username!';
+
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/username`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            username: newUsername,
+          })
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.username).toBe(user.username);
+      });
+
       it('should return 400 if username is not unique', async () => {
         const newUsername = 'new-username';
 
