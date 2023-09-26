@@ -1,0 +1,107 @@
+import {
+  IBallData,
+  INewSessionPayload,
+  IUserData,
+  RenderColor,
+} from './game_pong.interfaces';
+
+export async function initializeSessionInDb(
+  ball: IBallData,
+  user1: IUserData,
+  user2: IUserData,
+): Promise<INewSessionPayload | void> {
+  try {
+    let response: Response = await fetch(
+      'http://localhost:3000/game/sessions/new',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          ball: JSON.stringify(ball),
+          player1: JSON.stringify(user1),
+          player2: JSON.stringify(user2),
+        }),
+        headers: { 'Content-type': 'application/json; charset=UTF-8' },
+      },
+    );
+
+    let json: Promise<INewSessionPayload> = response.json();
+
+    return json;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export function drawRect(
+  canvas: HTMLCanvasElement,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  color: RenderColor,
+): void {
+  const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
+
+  if (!ctx) return;
+
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
+}
+
+export function drawArc(canvas: any, x: any, y: any, r: any, color: any) {
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2, true);
+  ctx.closePath();
+  ctx.fill();
+}
+
+export function drawDashedLine(canvas: any, net: any) {
+  for (let i = 0; i <= canvas.height; i += 20) {
+    drawRect(canvas, net.x, net.y + i, net.width, net.height, net.color);
+  }
+}
+
+export function drawText(
+  canvas: any,
+  text: any,
+  x: any,
+  y: any,
+  font: any,
+  align: any,
+  color: any,
+) {
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.font = font;
+  ctx.fillText(text, x, y);
+}
+
+export function checkCollision(b: any, p: any) {
+  p.top = p.y;
+  p.bottom = p.y + p.height;
+  p.left = p.x;
+  p.right = p.x + p.width;
+
+  b.top = b.y - b.radius;
+  b.bottom = b.y + b.radius;
+  b.left = b.x - b.radius;
+  b.right = b.x + b.radius;
+
+  return (
+    p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top
+  );
+}
+
+export function initializeSounds() {
+  let hit = new Audio('sounds/hit.wav');
+  let wall = new Audio('sounds/punch.wav');
+  let userScore = new Audio('sounds/strike.wav');
+  let botScore = new Audio('sounds/goal.wav');
+
+  return { hit, wall, userScore, botScore };
+}
