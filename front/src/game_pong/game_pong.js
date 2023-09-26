@@ -3,7 +3,7 @@ import {
   user1Init,
   botInit,
   netInit,
-} from './game_pong.constants.js';
+} from './game_pong.constants.ts';
 import {
   checkCollision,
   drawArc,
@@ -11,7 +11,7 @@ import {
   drawRect,
   drawText,
   initializeSounds,
-} from './game_pong.functions.js';
+} from './game_pong.functions.ts';
 
 const fps = 60;
 const computedFps = 1000 / fps;
