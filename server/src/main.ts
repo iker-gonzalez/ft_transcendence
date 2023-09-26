@@ -46,7 +46,9 @@ async function bootstrap() {
       })
       .build(),
   );
-  await AsyncApiModule.setup(swaggerAsyncConfig.slug, app, asyncapiDocument);
+
+  // TODO investigate how to fix this
+  // await AsyncApiModule.setup(swaggerAsyncConfig.slug, app, asyncapiDocument);
 
   app.useGlobalPipes(
     new ValidationPipe({
