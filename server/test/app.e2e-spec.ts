@@ -600,7 +600,7 @@ describe('App e2e', () => {
           })
           .expectStatus(400)
           .expectJsonLike({
-            message: ['Username already taken'],
+            message: ['Username already exists'],
             error: 'Bad Request',
             statusCode: 400,
           });
