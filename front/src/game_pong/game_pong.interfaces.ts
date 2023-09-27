@@ -1,11 +1,7 @@
 interface ICommonData {
   x: number;
   y: number;
-  color: Color;
-}
-
-export enum Color {
-  White = 'WHITE',
+  color: RenderColor;
 }
 
 export enum RenderColor {
