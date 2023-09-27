@@ -45,6 +45,10 @@ export class AuthService {
       userData = await this.intraService.getIntraUserInfo(token);
     }
 
+    if (!userData) {
+      throw new BadRequestException('Invalid user data');
+    }
+
     const user: User = await this.prisma.user.findUnique({
       where: { intraId: userData.intraId },
     });
