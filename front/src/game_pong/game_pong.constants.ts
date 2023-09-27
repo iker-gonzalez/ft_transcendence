@@ -1,4 +1,4 @@
-import { IBallData, Color, IUserData, INetData } from './game_pong.interfaces';
+import { IBallData, IUserData, INetData, RenderColor } from './game_pong.interfaces';
 
 export const thickness: number = 10;
 export const slit: number = 3;
@@ -10,7 +10,7 @@ export const ballDataInit: IBallData = {
   velocityX: 8,
   velocityY: 8,
   speed: userSpeedInput,
-  color: Color.White,
+  color: RenderColor.White,
   reset: false,
 };
 
@@ -20,7 +20,7 @@ export const user1Init: IUserData = {
   width: 10,
   height: 100,
   score: 0,
-  color: Color.White,
+  color: RenderColor.White,
 };
 
 export const user2Init: IUserData = {
@@ -29,7 +29,7 @@ export const user2Init: IUserData = {
   width: 10,
   height: 100,
   score: 0,
-  color: Color.White,
+  color: RenderColor.White,
 };
 
 export const botInit: IUserData = {
@@ -38,7 +38,7 @@ export const botInit: IUserData = {
   width: 10,
   height: 100,
   score: 0,
-  color: Color.White,
+  color: RenderColor.White,
 };
 
 export const netInit: INetData = {
@@ -46,5 +46,5 @@ export const netInit: INetData = {
   y: 0,
   height: 10,
   width: 10,
-  color: Color.White,
+  color: RenderColor.White,
 };
