@@ -3,10 +3,11 @@ import styled from 'styled-components';
 import MainButton from './UI/MainButton';
 import SecondaryButton from './UI/SecondaryButton';
 import MainInput from './UI/MainInput';
-import { errorColor, successColor } from '../constants/color-tokens';
 import Cookies from 'js-cookie';
 import { capitalizeFirstLetter, getBaseUrl } from '../utils/utils';
 import { useUserData } from '../context/UserDataContext';
+import FlashMessage from './UI/FlashMessage';
+import FlashMessageLevel from '../interfaces/flash-message-color.interface';
 
 const WrapperDiv = styled.div`
   .username-change-container {
@@ -16,12 +17,6 @@ const WrapperDiv = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-
-    .error-message {
-      color: ${errorColor};
-      margin-top: 5px;
-      font-weight: bold;
-    }
 
     .username-change-form {
       display: flex;
@@ -34,20 +29,6 @@ const WrapperDiv = styled.div`
       margin-top: 5px;
       text-align: right;
     }
-  }
-
-  .success-message {
-    color: ${successColor};
-    margin-top: 5px;
-    font-weight: bold;
-  }
-
-  .error-message,
-  .success-message {
-    position: absolute;
-    white-space: nowrap;
-    bottom: -17px;
-    right: 0;
   }
 `;
 
@@ -134,16 +115,18 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
               ✗
             </SecondaryButton>
           </form>
-          {usernameError ? (
-            <p className="small error-message">
-              {capitalizeFirstLetter(usernameError[0])}
-            </p>
-          ) : (
-            <p className="small hint">
-              <span>*Username must be between 5 and 12 characters</span>
-              <br />
-              <span>Only letters, numbers, hyphen, and underscore are allowed</span>
-            </p>
+          <p className="small hint">
+            <span>*Username must be between 5 and 12 characters</span>
+            <br />
+            <span>
+              Only letters, numbers, hyphen, and underscore are allowed
+            </span>
+          </p>
+          {usernameError && (
+            <FlashMessage
+              text={capitalizeFirstLetter(usernameError[0])}
+              level={FlashMessageLevel.ERROR}
+            />
           )}
         </div>
       ) : (
@@ -156,7 +139,10 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
             Change
           </MainButton>
           {usernameSuccessMessage && (
-            <p className="small success-message">{usernameSuccessMessage}</p>
+            <FlashMessage
+              text={usernameSuccessMessage}
+              level={FlashMessageLevel.SUCCESS}
+            />
           )}
         </div>
       )}
