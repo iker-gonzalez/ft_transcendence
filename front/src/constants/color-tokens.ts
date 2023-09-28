@@ -5,3 +5,4 @@ export const darkBgColor = '#393e46';
 export const primaryAccentColor = '#00adb5';
 export const errorColor = '#ee3b2b';
 export const successColor = '#b1e052';
+export const blackColor = '#000000';

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './styles/normalize.css'; // Keep this first
 import './styles/globals.css';
 import './styles/typography.css';
+import 'animate.css';
 import './index.css'; // Keep this last
 import App from './App';
 import { StrictMode } from 'react';

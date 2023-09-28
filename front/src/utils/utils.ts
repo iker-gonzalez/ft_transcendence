@@ -28,6 +28,5 @@ export function getRedirectUri() {
  * @returns The capitalized string.
  */
 export function capitalizeFirstLetter(string: string): string {
-  console.log('string', string);
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
