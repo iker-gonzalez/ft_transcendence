@@ -1,13 +1,13 @@
 import React, { FormEvent, useState } from 'react';
 import styled from 'styled-components';
-import MainButton from './UI/MainButton';
-import SecondaryButton from './UI/SecondaryButton';
-import MainInput from './UI/MainInput';
+import MainButton from '../UI/MainButton';
+import SecondaryButton from '../UI/SecondaryButton';
+import MainInput from '../UI/MainInput';
 import Cookies from 'js-cookie';
-import { capitalizeFirstLetter, getBaseUrl } from '../utils/utils';
-import { useUserData } from '../context/UserDataContext';
-import FlashMessage from './UI/FlashMessage';
-import FlashMessageLevel from '../interfaces/flash-message-color.interface';
+import { capitalizeFirstLetter, getBaseUrl } from '../../utils/utils';
+import { useUserData } from '../../context/UserDataContext';
+import FlashMessage from '../UI/FlashMessage';
+import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 
 const WrapperDiv = styled.div`
   .username-change-container {
