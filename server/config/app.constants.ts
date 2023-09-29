@@ -1,7 +1,7 @@
 import { IntraUserDataDto } from 'src/auth/dto/intra-user-data.dto';
 
 export const testUserData: IntraUserDataDto = {
-  avatar: 'http://placekitten.com/500/500',
+  avatar: 'https://i.pravatar.cc/600?img=8',
   email: 'test@42urduliz.com',
   intraId: 666,
   isTwoFactorAuthEnabled: false,
@@ -9,7 +9,7 @@ export const testUserData: IntraUserDataDto = {
 };
 
 export const testUser2Data: IntraUserDataDto = {
-  avatar: 'http://placekitten.com/600/600',
+  avatar: 'https://i.pravatar.cc/600?img=10',
   email: 'test2@42urduliz.com',
   intraId: 667,
   isTwoFactorAuthEnabled: false,
