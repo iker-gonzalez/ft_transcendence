@@ -3,6 +3,7 @@ interface ICommonData {
   y: number;
   color: RenderColor;
 }
+
 interface IPositionData {
   top: number;
   bottom: number;
