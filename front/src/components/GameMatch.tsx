@@ -95,7 +95,7 @@ export default function GameMatch() {
     socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
       setShowGame(true);
 
-      const canvas: HTMLElement = document.getElementById(
+      const canvas: HTMLCanvasElement = document.getElementById(
         'gamePong',
       ) as HTMLCanvasElement;
       gameLoop(canvas, socketRef.current, isPlayer1, sessionId);
