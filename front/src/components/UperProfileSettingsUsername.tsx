@@ -37,7 +37,7 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
 }) => {
   const { setUserData: setContextUserData } = useUserData();
   const [showUsernameForm, setShowUsernameForm] = useState<boolean>(false);
-  const [usernameError, setUsernameError] = useState<string>();
+  const [usernameError, setUsernameError] = useState<string>('');
   const [usernameSuccessMessage, setUsernameSuccessMessage] =
     useState<string>('');
 
@@ -50,7 +50,9 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
 
     try {
       const formData = new FormData(e.target as HTMLFormElement);
+
       const newUsername: string = formData.get('username') as string;
+      const trimmedNewUsername: string = newUsername.trim();
 
       const res = await fetch(`${getBaseUrl()}/users/username`, {
         method: 'PATCH',
@@ -59,14 +61,14 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-          username: newUsername.trim(),
+          username: trimmedNewUsername,
         }),
       });
 
       const data = await res.json();
 
       if (data.statusCode === 400) {
-        setUsernameError(data.message);
+        setUsernameError(data.message[0]);
         return;
       }
 
@@ -124,7 +126,7 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
           </p>
           {usernameError && (
             <FlashMessage
-              text={capitalizeFirstLetter(usernameError[0])}
+              text={capitalizeFirstLetter(usernameError)}
               level={FlashMessageLevel.ERROR}
             />
           )}

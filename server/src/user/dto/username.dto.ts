@@ -8,10 +8,10 @@ export class UsernameDto {
     example: swaggerConstants.dto.intraUserSignin.username.example,
   })
   @IsString()
-  @MinLength(5)
-  @MaxLength(12)
   @Matches(/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/, {
     message: swaggerConstants.dto.username.regex.message,
   })
+  @MinLength(5)
+  @MaxLength(12)
   username: string;
 }
