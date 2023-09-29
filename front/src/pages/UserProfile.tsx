@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import UserProfileHero from '../components/UserProfileHero';
+import UserProfileHero from '../components/UserProfile/UserProfileHero';
 import CenteredLayout from '../components/UI/CenteredLayout';
-import UserProfileSettings from '../components/UserProfileSettings';
+import UserProfileSettings from '../components/UserProfile/UserProfileSettings';
 import styled from 'styled-components';
 import { useUserData } from '../context/UserDataContext';
 import { useNavigate } from 'react-router-dom';

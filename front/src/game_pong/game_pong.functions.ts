@@ -42,9 +42,7 @@ export function drawRect(
   h: number,
   color: RenderColor,
 ): void {
-  const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
-
-  if (!ctx) return;
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
   ctx.fillStyle = color;
   ctx.fillRect(x, y, w, h);

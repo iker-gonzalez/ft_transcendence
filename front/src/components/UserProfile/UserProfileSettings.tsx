@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import ContrastPanel from './UI/ContrastPanel';
-import MainButton from './UI/MainButton';
-import { primaryLightColor } from '../constants/color-tokens';
-import UserData from '../interfaces/user-data.interface';
-import UserProfileSettingsUsername from './UperProfileSettingsUsername';
+import ContrastPanel from '../UI/ContrastPanel';
+import MainButton from '../UI/MainButton';
+import { primaryLightColor } from '../../constants/color-tokens';
+import UserData from '../../interfaces/user-data.interface';
+import UserProfileSettingsUsername from './UserProfileSettingsUsername';
 
 const WrapperDiv = styled.div`
   width: 650px;
