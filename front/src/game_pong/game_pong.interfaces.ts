@@ -3,6 +3,19 @@ interface ICommonData {
   y: number;
   color: RenderColor;
 }
+interface IPositionData {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
+export interface ISounds {
+  hit: HTMLAudioElement;
+  wall: HTMLAudioElement;
+  userScore: HTMLAudioElement;
+  botScore: HTMLAudioElement;
+}
 
 export enum RenderColor {
   White = 'white',
@@ -13,7 +26,7 @@ export enum RenderColor {
   Grey = 'grey',
 }
 
-export interface IBallData extends ICommonData {
+export interface IBallData extends ICommonData, IPositionData {
   radius: number;
   velocityX: number;
   velocityY: number;
@@ -21,7 +34,7 @@ export interface IBallData extends ICommonData {
   reset: boolean;
 }
 
-export interface IUserData extends ICommonData {
+export interface IUserData extends ICommonData, IPositionData {
   width: number;
   height: number;
   score: number;
