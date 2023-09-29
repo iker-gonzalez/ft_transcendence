@@ -1,9 +1,11 @@
+import { DefaultEventsMap } from '@socket.io/component-emitter';
+import { Socket } from 'socket.io-client';
 import {
   ballDataInit,
   user1Init,
   botInit,
   netInit,
-} from './game_pong.constants.ts';
+} from './game_pong.constants';
 import {
   checkCollision,
   drawArc,
@@ -11,7 +13,14 @@ import {
   drawRect,
   drawText,
   initializeSounds,
-} from './game_pong.functions.ts';
+} from './game_pong.functions';
+import {
+  IBallData,
+  INetData,
+  ISounds,
+  IUserData,
+  RenderColor,
+} from './game_pong.interfaces';
 
 const fps = 60;
 const computedFps = 1000 / fps;
@@ -20,17 +29,17 @@ const slit = 3;
 const userSpeedInput = 10;
 
 function game(
-  canvas,
-  socket,
-  isPlayer1,
-  ballData,
-  user1,
-  bot,
-  net,
-  match_finish,
-  match_points,
-  sounds,
-  sessionId,
+  canvas: any,
+  socket: { emit: (arg0: string, arg1: string) => void },
+  isPlayer1: boolean,
+  ballData: IBallData,
+  user1: IUserData,
+  bot: IUserData,
+  net: INetData,
+  match_finish: boolean,
+  match_points: number,
+  sounds: ISounds,
+  sessionId: any,
 ) {
   if (!match_finish) {
     if (isPlayer1) {
@@ -71,7 +80,13 @@ function game(
   }
 }
 
-function matchUser1(canvas, ballData, user1, bot, sounds) {
+function matchUser1(
+  canvas: { height: number; width: number },
+  ballData: IBallData,
+  user1: IUserData,
+  bot: IUserData,
+  sounds: ISounds,
+) {
   ballData.x += ballData.velocityX;
   ballData.y += ballData.velocityY;
 
@@ -89,7 +104,7 @@ function matchUser1(canvas, ballData, user1, bot, sounds) {
     ballData.y + ballData.radius + thickness > canvas.height
   ) {
     ballData.velocityY = -ballData.velocityY;
-    sounds.wall.play().catch(function (error) {
+    sounds.wall.play().catch(function (error: any) {
       // console.log("Chrome cannot play sound without user interaction first");
     });
   }
@@ -100,7 +115,7 @@ function matchUser1(canvas, ballData, user1, bot, sounds) {
     user1 = newUserData;
   } else if (ballData.x - ballData.radius > canvas.width && !ballData.reset) {
     user1.score++;
-    sounds.userScore.play().catch(function (error) {
+    sounds.userScore.play().catch(function (error: any) {
       // console.log("Chrome cannot play sound without user interaction first");
     });
     let { newBallData, newUserData } = resetBall(canvas, ballData, user1);
@@ -108,10 +123,11 @@ function matchUser1(canvas, ballData, user1, bot, sounds) {
     user1 = newUserData;
   }
 
-  let player = ballData.x + ballData.radius < canvas.width / 2 ? user1 : bot;
+  let player: IUserData =
+    ballData.x + ballData.radius < canvas.width / 2 ? user1 : bot;
 
   if (checkCollision(ballData, player)) {
-    sounds.hit.play().catch(function (error) {
+    sounds.hit.play().catch(function (error: any) {
       // console.log("Chrome cannot play sound without user interaction first");
     });
     let collidePoint = ballData.y - (player.y + player.height / 2);
@@ -128,7 +144,13 @@ function matchUser1(canvas, ballData, user1, bot, sounds) {
   }
 }
 
-function matchUser2(canvas, ballData, user1, bot, sounds) {
+function matchUser2(
+  canvas: { height: number; width: number },
+  ballData: IBallData,
+  user1: IUserData,
+  bot: IUserData,
+  sounds: ISounds,
+) {
   ballData.x += ballData.velocityX;
   ballData.y += ballData.velocityY;
 
@@ -151,7 +173,7 @@ function matchUser2(canvas, ballData, user1, bot, sounds) {
 
   if (ballData.x + ballData.radius < 0 && !ballData.reset) {
     bot.score++;
-    sounds.botScore.play().catch(function (error) {
+    sounds.botScore.play().catch(function (error: any) {
       // console.log("Chrome cannot play sound without user interaction first");
     });
     let { newBallData } = resetBall(canvas, ballData, user1);
@@ -164,7 +186,7 @@ function matchUser2(canvas, ballData, user1, bot, sounds) {
   let player = ballData.x + ballData.radius < canvas.width / 2 ? user1 : bot;
 
   if (checkCollision(ballData, player)) {
-    sounds.hit.play().catch(function (error) {
+    sounds.hit.play().catch(function (error: any) {
       // console.log("Chrome cannot play sound without user interaction first");
     });
     let collidePoint = ballData.y - (player.y + player.height / 2);
@@ -180,7 +202,11 @@ function matchUser2(canvas, ballData, user1, bot, sounds) {
   }
 }
 
-function resetBall(canvas, ballData, user1) {
+function resetBall(
+  canvas: { width: number; height: number },
+  ballData: any,
+  user1: any,
+) {
   const newBallData = ballData;
   const newUserData = user1;
   newBallData.reset = true;
@@ -188,8 +214,9 @@ function resetBall(canvas, ballData, user1) {
   setTimeout(() => {
     newBallData.x = canvas.width / 2;
     newBallData.y = canvas.height / 2;
+    // eslint-disable-next-line no-self-assign
     newBallData.velocityX = newBallData.velocityX;
-    newBallData.velocityY = -newBallData.velocityY * Math.random(1);
+    newBallData.velocityY = -newBallData.velocityY * Math.random();
     newBallData.speed = userSpeedInput;
     newUserData.height = 100;
     newBallData.reset = false;
@@ -198,8 +225,51 @@ function resetBall(canvas, ballData, user1) {
   return { newBallData, newUserData };
 }
 
-function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
-  drawRect(canvas, 0, 0, canvas.width, canvas.height, 'Black');
+function render(
+  canvas: HTMLCanvasElement,
+  ballData: {
+    x: any;
+    y: any;
+    radius: any;
+    velocityX?: number;
+    velocityY?: number;
+    speed: any;
+    reset?: boolean;
+    color: any;
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+  },
+  user1: {
+    y: any;
+    width: any;
+    height: any;
+    score: any;
+    x: any;
+    color: any;
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+  },
+  bot: {
+    x: any;
+    y: any;
+    width: any;
+    height: any;
+    score: any;
+    color: any;
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+  },
+  net: INetData,
+  match_finish: boolean,
+  match_points: number,
+) {
+  drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
 
   drawText(
     canvas,
@@ -208,7 +278,7 @@ function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
     canvas.height / 10,
     '10px Arial',
     'right',
-    'yellow',
+    RenderColor.Yellow,
   );
   drawText(
     canvas,
@@ -217,7 +287,7 @@ function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
     canvas.height / 6,
     '40px Arial',
     'right',
-    'red',
+    RenderColor.Red,
   );
   if (user1.score >= match_points) {
     match_finish = true;
@@ -228,7 +298,7 @@ function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
       canvas.height / 4.5,
       '30px Arial',
       'right',
-      'green',
+      RenderColor.Green,
     );
     setTimeout(() => {
       alert('⭐️ USER 1 WINS ⭐️');
@@ -242,7 +312,7 @@ function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
     canvas.height / 10,
     '10px Arial',
     'left',
-    'yellow',
+    RenderColor.Yellow,
   );
   drawText(
     canvas,
@@ -251,7 +321,7 @@ function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
     canvas.height / 6,
     '40px Arial',
     'left',
-    'red',
+    RenderColor.Red,
   );
   if (bot.score >= match_points) {
     match_finish = true;
@@ -262,7 +332,7 @@ function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
       canvas.height / 4.5,
       '30px Arial',
       'left',
-      'green',
+      RenderColor.Green,
     );
     setTimeout(() => {
       alert('⭐️ COMPUTER BOT WINS ⭐️');
@@ -276,7 +346,7 @@ function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
     (canvas.height / 20) * 17,
     '15px Arial',
     'left',
-    'grey',
+    RenderColor.Grey,
   );
   drawText(
     canvas,
@@ -285,17 +355,17 @@ function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
     (canvas.height / 20) * 18,
     '15px Arial',
     'left',
-    'grey',
+    RenderColor.Grey,
   );
 
-  drawRect(canvas, 0, 0, canvas.width, thickness, 'White');
+  drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
   drawRect(
     canvas,
     0,
     canvas.height - thickness,
     canvas.width,
     thickness,
-    'White',
+    RenderColor.White,
   );
   drawDashedLine(canvas, net);
 
@@ -306,7 +376,12 @@ function render(canvas, ballData, user1, bot, net, match_finish, match_points) {
   drawArc(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
 }
 
-export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
+export async function gameLoop(
+  canvas: HTMLCanvasElement,
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>,
+  isPlayer1: boolean,
+  sessionId: string | null,
+) {
   // Update initial data
   let ballData = {
     ...ballDataInit,
@@ -367,7 +442,7 @@ export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
     }
   });
 
-  canvas.addEventListener('mousemove', function (event) {
+  canvas.addEventListener('mousemove', function (event: { clientY: number }) {
     let rect = canvas.getBoundingClientRect();
     user1.y = event.clientY - rect.top - user1.height / 2;
     if (user1.y < thickness + ballData.radius * slit) {
@@ -381,8 +456,9 @@ export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
     }
   });
 
-  canvas.addEventListener('touchstart', function (event) {
-    user1.y = event.clientY - user1.height / 2;
+  canvas.addEventListener('touchstart', function (event: TouchEvent) {
+    const touch = event.touches[0];
+    user1.y = touch.clientY - user1.height / 2;
     if (user1.y < thickness + ballData.radius * slit) {
       user1.y = thickness + ballData.radius * slit;
     } else if (
@@ -395,7 +471,7 @@ export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
   });
 
   if (isPlayer1) {
-    socket.on(`downloaded/user1/${sessionId}`, (data) => {
+    socket.on(`downloaded/user1/${sessionId}`, (data: string) => {
       const downloadedData = JSON.parse(data);
       bot = downloadedData.user2;
 
@@ -414,7 +490,7 @@ export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
       );
     });
   } else {
-    socket.on(`downloaded/user2/${sessionId}`, (data) => {
+    socket.on(`downloaded/user2/${sessionId}`, (data: string) => {
       const downloadedData = JSON.parse(data);
       ballData = downloadedData.ball;
       user1 = downloadedData.user1;
@@ -444,5 +520,5 @@ export async function gameLoop(canvas, socket, isPlayer1, sessionId) {
       sounds,
       sessionId,
     );
-  }, [1000]);
+  }, 1000);
 }
