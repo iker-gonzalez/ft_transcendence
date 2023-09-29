@@ -12,6 +12,10 @@ export const ballDataInit: IBallData = {
   speed: userSpeedInput,
   color: RenderColor.White,
   reset: false,
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
 };
 
 export const user1Init: IUserData = {
@@ -21,6 +25,10 @@ export const user1Init: IUserData = {
   height: 100,
   score: 0,
   color: RenderColor.White,
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
 };
 
 export const user2Init: IUserData = {
@@ -30,6 +38,10 @@ export const user2Init: IUserData = {
   height: 100,
   score: 0,
   color: RenderColor.White,
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
 };
 
 export const botInit: IUserData = {
@@ -39,6 +51,10 @@ export const botInit: IUserData = {
   height: 100,
   score: 0,
   color: RenderColor.White,
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
 };
 
 export const netInit: INetData = {
