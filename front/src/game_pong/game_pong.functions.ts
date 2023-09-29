@@ -2,6 +2,7 @@ import {
   IBallData,
   INetData,
   INewSessionPayload,
+  ISounds,
   IUserData,
   RenderColor,
 } from './game_pong.interfaces';
@@ -92,7 +93,7 @@ export function drawText(
   ctx.fillText(text, x, y);
 }
 
-export function checkCollision(b: any, p: any): boolean {
+export function checkCollision(b: IBallData, p: IUserData): boolean {
   b.top = b.y - b.radius;
   b.bottom = b.y + b.radius;
   b.left = b.x - b.radius;
@@ -108,7 +109,7 @@ export function checkCollision(b: any, p: any): boolean {
   );
 }
 
-export function initializeSounds() {
+export function initializeSounds(): ISounds {
   let hit = new Audio('sounds/hit.wav');
   let wall = new Audio('sounds/punch.wav');
   let userScore = new Audio('sounds/strike.wav');
