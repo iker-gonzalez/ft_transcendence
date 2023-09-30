@@ -2,31 +2,34 @@ import React from 'react';
 import styled from 'styled-components';
 import ContrastPanel from '../UI/ContrastPanel';
 import UserData from '../../interfaces/user-data.interface';
+import UserProfileSettingsAvatar from './userProfileSettingsAvatar';
 
 const WrapperDiv = styled.div`
-  .avatar {
-    width: 250px;
-    height: 250px;
-    object-fit: cover;
-    object-position: center;
-    border-radius: 50%;
-
+  .avatar-container {
+    position: relative;
     margin-bottom: 20px;
-  }
 
-  .username {
-    font-weight: bold;
-    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    margin-bottom: 15px;
+    .avatar {
+      width: 250px;
+      height: 250px;
+
+      object-fit: cover;
+      object-position: center;
+      border-radius: 50%;
+    }
+
+    .avatar-change-btn {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+    }
   }
 
   .email {
-    opacity: 0.8;
-    margin-bottom: 30px;
-  }
-
-  .intra-id {
     opacity: 0.8;
   }
 `;
@@ -35,10 +38,17 @@ const UserProfileHero: React.FC<{ userData: UserData }> = ({ userData }) => {
   return (
     <ContrastPanel>
       <WrapperDiv>
-        <img className="avatar" src={userData.avatar} alt="" />
-        <p className="username">Hello, {userData.username}!</p>
-        <p className="email">{userData.email}</p>
-        <p className="intra-id">IntraId: {userData.intraId}</p>
+        <h2 className="sr-only">Personal info</h2>
+        <div className="avatar-container">
+          <img className="avatar" src={userData.avatar} alt="" />
+          <UserProfileSettingsAvatar
+            className="settings-item avatar-change-btn"
+            userData={userData}
+          />
+        </div>
+        <h3 className="title-1 mb-16">Hello, {userData.username}!</h3>
+        <p className="email mb-24">{userData.email}</p>
+        <p className="small">IntraId: {userData.intraId}</p>
         {/* TODO delete intraId, users don't really care about it */}
       </WrapperDiv>
     </ContrastPanel>
