@@ -20,7 +20,7 @@ export class UserService {
     user: User,
     username: string,
   ): Promise<UpdateUsernameResponseDto> {
-    const userData = await this.prisma.user.findUnique({
+    const userData: User = await this.prisma.user.findUnique({
       where: {
         id: user.id,
       },
@@ -31,7 +31,7 @@ export class UserService {
     }
 
     try {
-      const newUserData = await this.prisma.user.update({
+      const newUserData: User = await this.prisma.user.update({
         where: {
           id: user.id,
         },
