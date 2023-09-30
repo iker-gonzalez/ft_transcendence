@@ -65,10 +65,14 @@ export class UserService {
     const { mimetype, size }: { mimetype: string; size: number } = file;
 
     const isImage: boolean = mimetype.startsWith('image/');
+    if (!isImage) {
+      throw new BadRequestException('File is not an image');
+    }
+
     const isSizeValid: boolean = size >= 5_000 && size <= 2_500_000;
 
-    if (!isImage || !isSizeValid) {
-      throw new BadRequestException();
+    if (!isSizeValid) {
+      throw new BadRequestException('File should be between 5KB and 2.5MB');
     }
 
     const avatarsFolderPath: string = path.join('uploads', 'avatars');
@@ -77,7 +81,11 @@ export class UserService {
       avatarsFolderPath,
     );
     const newAvatarName: string =
-      user.username.toLowerCase() + '.' + file.originalname.split('.').pop();
+      user.username.toLowerCase() +
+      '_' +
+      new Date().valueOf().toString() +
+      '.' +
+      file.originalname.split('.').pop();
 
     if (!fs.existsSync(avatarsFolderPublicPath)) {
       fs.mkdirSync(avatarsFolderPublicPath);
