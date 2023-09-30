@@ -62,40 +62,39 @@ export class UserService {
       throw new BadRequestException();
     }
 
-    const { mimetype, size } = file;
+    const { mimetype, size }: { mimetype: string; size: number } = file;
 
-    const userData = await this.prisma.user.findUnique({
-      where: {
-        id: user.id,
-      },
-    });
-    const isImage = mimetype.startsWith('image/');
-    const isSizeValid = size >= 50_000 && size <= 2_500_000;
+    const isImage: boolean = mimetype.startsWith('image/');
+    const isSizeValid: boolean = size >= 5_000 && size <= 2_500_000;
 
     if (!isImage || !isSizeValid) {
       throw new BadRequestException();
     }
 
-    const avatarsFolderPath = path.join('uploads', 'avatars');
-    const avatarsFolderPublicPath = path.join('public', avatarsFolderPath);
-    const newAvatarName =
-      user.username + '.' + file.originalname.split('.').pop();
+    const avatarsFolderPath: string = path.join('uploads', 'avatars');
+    const avatarsFolderPublicPath: string = path.join(
+      'public',
+      avatarsFolderPath,
+    );
+    const newAvatarName: string =
+      user.username.toLowerCase() + '.' + file.originalname.split('.').pop();
 
     if (!fs.existsSync(avatarsFolderPublicPath)) {
       fs.mkdirSync(avatarsFolderPublicPath);
     }
-    const ws = createWriteStream(
+    const ws: fs.WriteStream = createWriteStream(
       path.join(avatarsFolderPublicPath, newAvatarName),
     );
     ws.write(file.buffer);
 
-    const avatarUrl = path.join(
-      `http://localhost:${this.configService.get('API_PORT')}`,
-      avatarsFolderPath,
-      newAvatarName,
+    const avatarUrl: string = encodeURI(
+      `http://localhost:${this.configService.get('API_PORT')}/${path.join(
+        avatarsFolderPath,
+        newAvatarName,
+      )}`,
     );
 
-    const newUserData = await this.prisma.user.update({
+    const newUserData: User = await this.prisma.user.update({
       where: {
         id: user.id,
       },
