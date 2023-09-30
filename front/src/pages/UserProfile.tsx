@@ -25,12 +25,15 @@ const UserProfile: React.FC = () => {
 
   return (
     <CenteredLayout>
-      {userData && (
-        <WrapperDiv>
-          <UserProfileHero userData={userData} />
-          <UserProfileSettings userData={userData} />
-        </WrapperDiv>
-      )}
+      <div>
+        <h1 className="title-1 mb-24">Profile</h1>
+        {userData && (
+          <WrapperDiv>
+            <UserProfileHero userData={userData} />
+            <UserProfileSettings userData={userData} />
+          </WrapperDiv>
+        )}
+      </div>
     </CenteredLayout>
   );
 };
