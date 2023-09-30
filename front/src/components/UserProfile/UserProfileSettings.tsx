@@ -32,8 +32,10 @@ const UserProfileSettings: React.FC<{ userData: UserData }> = ({
   return (
     <ContrastPanel>
       <WrapperDiv>
+        <h2 className="title-2 mb-24">Settings</h2>
         <div className="settings-item">
-          <p className="title-3">OTP</p>
+          {/* TODO create component for OTP */}
+          <h3 className="title-3">OTP</h3>
           {userData.isTwoFactorAuthEnabled ? (
             <p>On</p>
           ) : (
