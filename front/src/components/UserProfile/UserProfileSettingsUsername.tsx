@@ -93,7 +93,7 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
 
   return (
     <WrapperDiv className={className}>
-      <p className="title-3">Username</p>
+      <h3 className="title-3">Username</h3>
       {showUsernameForm ? (
         <div className="username-change-container">
           <form

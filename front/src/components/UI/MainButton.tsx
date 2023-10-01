@@ -1,11 +1,11 @@
 import { styled } from 'styled-components';
 
-import { primaryColor } from '../../constants/color-tokens';
+import { blackColor, primaryColor } from '../../constants/color-tokens';
 
 const Button = styled.button`
   padding: 10px 25px;
   background-color: ${primaryColor};
-  color: black;
+  color: ${blackColor};
   border-radius: 5px;
   border: none;
   cursor: pointer;
