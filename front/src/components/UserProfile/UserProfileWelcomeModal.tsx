@@ -5,7 +5,7 @@ import MainButton from '../UI/MainButton';
 const UserProfileWelcomeModal: React.FC<{
   setShowNewUserModal: (arg0: boolean) => void;
   username: string | undefined;
-}> = ({ setShowNewUserModal, username }) => {
+}> = ({ setShowNewUserModal, username }): JSX.Element => {
   return (
     <Modal
       dismissModalAction={() => {

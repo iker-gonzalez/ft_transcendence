@@ -40,7 +40,7 @@ const WrapperDiv = styled.div`
   }
 `;
 
-export default function GameMatch() {
+export default function GameMatch(): JSX.Element {
   const navigate = useNavigate();
   const { sessionDataState } = useGameRouteContext();
 

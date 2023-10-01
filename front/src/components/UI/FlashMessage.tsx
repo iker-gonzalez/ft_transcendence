@@ -61,7 +61,7 @@ const WrapperDiv = styled.div`
 const FlashMessage: React.FC<{ text: string; level?: FlashMessageLevel }> = ({
   text,
   level = FlashMessageLevel.INFO,
-}) => {
+}): JSX.Element => {
   const [isSlideOutClass, setIsSlideOutClass] = useState<boolean>(false);
 
   const destroyFlashMessage = (): void => {
