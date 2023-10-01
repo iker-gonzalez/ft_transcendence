@@ -11,34 +11,28 @@ import GameQueue from './components/GameQueue';
 import LoadingPage from './pages/LoadingPage';
 import Login from './components/Login';
 import { UserDataProvider } from './context/UserDataContext';
-import { ModalProvider } from './context/ModalContext';
 
 function App() {
   return (
-    <ModalProvider>
-      <UserDataProvider>
-        <Router>
-          <div>
-            <Navigation />
-            <Routes>
-              <Route path="/" element={<SignIn />} />
-              <Route path="/set-profile" element={<SetProfile />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/loading"
-                element={<LoadingPage targetPath={''} />}
-              />
-              <Route path="game" element={<Game />}>
-                <Route index element={<GameIndex />} />
-                <Route path="queue" element={<GameQueue />} />
-                <Route path="match" element={<GameMatch />} />
-              </Route>
-            </Routes>
-          </div>
-        </Router>
-      </UserDataProvider>
-    </ModalProvider>
+    <UserDataProvider>
+      <Router>
+        <div>
+          <Navigation />
+          <Routes>
+            <Route path="/" element={<SignIn />} />
+            <Route path="/set-profile" element={<SetProfile />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/loading" element={<LoadingPage targetPath={''} />} />
+            <Route path="game" element={<Game />}>
+              <Route index element={<GameIndex />} />
+              <Route path="queue" element={<GameQueue />} />
+              <Route path="match" element={<GameMatch />} />
+            </Route>
+          </Routes>
+        </div>
+      </Router>
+    </UserDataProvider>
   );
 }
 

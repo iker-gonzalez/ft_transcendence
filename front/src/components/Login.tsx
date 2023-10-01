@@ -52,7 +52,12 @@ const Login: React.FC = () => {
             expires: tokenExpirationDate,
           });
 
-          navigate('/profile'); // Redirect to the "/profile" route
+          const isNewUser: boolean = data.created === 1;
+          if (isNewUser) {
+            navigate('/profile?welcome');
+          } else {
+            navigate('/game');
+          }
         })
         .catch((error) => {
           console.error('An error occurred:', error);
