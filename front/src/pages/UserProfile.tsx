@@ -48,7 +48,7 @@ const UserProfile: React.FC = () => {
               <UserProfileHero userData={userData} />
               <div className="blocks-container">
                 <UserProfileSettings userData={userData} />
-                <UserProfileFriends friendsList={[]} />
+                <UserProfileFriends />
               </div>
             </WrapperDiv>
           )}
