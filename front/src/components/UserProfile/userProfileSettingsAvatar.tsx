@@ -84,7 +84,7 @@ const AvatarFormWrapper = styled.div`
 const UserProfileSettingsAvatar: React.FC<{
   className: string;
   userData: UserData;
-}> = ({ className, userData }) => {
+}> = ({ className, userData }): JSX.Element => {
   const { setUserData } = useUserData();
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false);

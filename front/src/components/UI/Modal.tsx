@@ -26,8 +26,8 @@ const WrapperDiv = styled.div`
     position: relative;
 
     width: fit-content;
-    min-width: 300px;
-    max-width: 450px;
+    min-width: 450px;
+    max-width: 500px;
     min-height: 250px;
 
     background-color: ${darkerBgColor};
@@ -64,7 +64,7 @@ const WrapperDiv = styled.div`
 const Modal: React.FC<{
   dismissModalAction: () => void;
   children: ReactNode;
-}> = ({ dismissModalAction, children }) => {
+}> = ({ dismissModalAction, children }): JSX.Element => {
   const onModalDismissal = (e: React.MouseEvent<HTMLElement>) => {
     // Prevents the modal from closing when clicking on the modal itself
     if (e.target !== e.currentTarget) return;

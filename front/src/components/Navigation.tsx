@@ -38,7 +38,7 @@ const NavLink = styled(Link)`
   }
 `;
 
-const Navbar = () => {
+const Navbar = (): JSX.Element => {
   return (
     <NavbarContainer>
       <NavList>

@@ -72,7 +72,7 @@ const WrapperDiv = styled.div`
   }
 `;
 
-export default function GameQueue() {
+export default function GameQueue(): JSX.Element {
   const navigate = useNavigate();
 
   const { userData } = useUserData();
