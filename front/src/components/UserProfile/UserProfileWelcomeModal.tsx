@@ -2,10 +2,15 @@ import React from 'react';
 import Modal from '../UI/Modal';
 import MainButton from '../UI/MainButton';
 
-const UserProfileWelcomeModal: React.FC<{
+type WelcomeModalProps = {
   setShowNewUserModal: (arg0: boolean) => void;
   username: string | undefined;
-}> = ({ setShowNewUserModal, username }): JSX.Element => {
+};
+
+const UserProfileWelcomeModal: React.FC<WelcomeModalProps> = ({
+  setShowNewUserModal,
+  username,
+}): JSX.Element => {
   return (
     <Modal
       dismissModalAction={() => {

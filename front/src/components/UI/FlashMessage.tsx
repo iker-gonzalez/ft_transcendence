@@ -9,6 +9,11 @@ import {
 } from '../../constants/color-tokens';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 
+type FlashMessageProps = {
+  text: string;
+  level?: FlashMessageLevel;
+};
+
 const WrapperDiv = styled.div`
   position: absolute;
   bottom: 80px;
@@ -58,7 +63,7 @@ const WrapperDiv = styled.div`
   }
 `;
 
-const FlashMessage: React.FC<{ text: string; level?: FlashMessageLevel }> = ({
+const FlashMessage: React.FC<FlashMessageProps> = ({
   text,
   level = FlashMessageLevel.INFO,
 }): JSX.Element => {
