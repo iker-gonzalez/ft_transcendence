@@ -7,11 +7,18 @@ import { useUserData } from '../context/UserDataContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
 import UserProfileWelcomeModal from '../components/UserProfile/UserProfileWelcomeModal';
+import UserProfileFriends from '../components/UserProfile/UserProfileFriends';
 
 const WrapperDiv = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 60px;
+
+  .blocks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
 `;
 
 const UserProfile: React.FC = () => {
@@ -39,7 +46,10 @@ const UserProfile: React.FC = () => {
           {userData && (
             <WrapperDiv>
               <UserProfileHero userData={userData} />
-              <UserProfileSettings userData={userData} />
+              <div className="blocks-container">
+                <UserProfileSettings userData={userData} />
+                <UserProfileFriends friendsList={[]} />
+              </div>
             </WrapperDiv>
           )}
         </div>

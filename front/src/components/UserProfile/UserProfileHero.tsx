@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import ContrastPanel from '../UI/ContrastPanel';
 import UserData from '../../interfaces/user-data.interface';
-import UserProfileSettingsAvatar from './userProfileSettingsAvatar';
+import UserProfileSettingsAvatar from './UserProfileSettingsAvatar';
 
 const WrapperDiv = styled.div`
   .avatar-container {
