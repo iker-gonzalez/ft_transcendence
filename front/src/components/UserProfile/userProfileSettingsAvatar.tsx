@@ -4,7 +4,6 @@ import MainButton from '../UI/MainButton';
 import SecondaryButton from '../UI/SecondaryButton';
 import Modal from '../UI/Modal';
 import { blackColor, primaryAccentColor } from '../../constants/color-tokens';
-import { useModalContext } from '../../context/ModalContext';
 import { capitalizeFirstLetter, getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import { useUserData } from '../../context/UserDataContext';
@@ -87,7 +86,7 @@ const UserProfileSettingsAvatar: React.FC<{
   userData: UserData;
 }> = ({ className, userData }) => {
   const { setUserData } = useUserData();
-  const { setShowModal } = useModalContext();
+  const [showModal, setShowModal] = useState<boolean>(false);
   const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false);
   const [avatarSrc, setAvatarSrc] = useState<string>(userData.avatar);
   const uploadedFileContent = useRef<any>(null);
@@ -171,50 +170,60 @@ const UserProfileSettingsAvatar: React.FC<{
       <WrapperDiv className={className}>
         <MainButton
           onClick={() => {
-            setShowModal((prev) => !prev);
+            setShowModal(true);
           }}
           aria-label="Change avatar"
           className="edit-avatar-btn"
         >
           ✎
         </MainButton>
-        <Modal dismissModalCleanup={cleanupAvatarState}>
-          <h1 className="title-2 mb-24">Choose a new avatar</h1>
-          <p>Your profile picture will be public.</p>
-          <p className="mb-16">Upload your best selfie 🤩</p>
-          <AvatarFormWrapper>
-            <img src={avatarSrc} alt="" className="avatar-preview" />
-            <form
-              encType="multipart/form-data"
-              onChange={onUploadAvatar}
-              onSubmit={onSubmitAvatar}
-            >
-              <label
-                htmlFor="avatar"
-                className={`avatar-label ${isFileUploaded && 'sr-only'}`}
+        {showModal && (
+          <Modal
+            dismissModalAction={() => {
+              cleanupAvatarState();
+              setShowModal(false);
+            }}
+          >
+            <h1 className="title-2 mb-24">Choose a new avatar</h1>
+            <p>Your profile picture will be public.</p>
+            <p className="mb-16">Upload your best selfie 🤩</p>
+            <AvatarFormWrapper>
+              <img src={avatarSrc} alt="" className="avatar-preview" />
+              <form
+                encType="multipart/form-data"
+                onChange={onUploadAvatar}
+                onSubmit={onSubmitAvatar}
               >
-                Upload new avatar
-                <input
-                  id="avatar"
-                  name="avatar"
-                  type="file"
-                  className="sr-only"
-                  accept="image/*"
-                />
-              </label>
-              {isFileUploaded && (
-                <div className="submit-container">
-                  <div className="actions-container">
-                    <SecondaryButton type="button" onClick={cleanupAvatarState}>
-                      Cancel
-                    </SecondaryButton>
-                    <MainButton type="submit">Confirm</MainButton>
+                <label
+                  htmlFor="avatar"
+                  className={`avatar-label ${isFileUploaded && 'sr-only'}`}
+                >
+                  Upload new avatar
+                  <input
+                    id="avatar"
+                    name="avatar"
+                    type="file"
+                    className="sr-only"
+                    accept="image/*"
+                  />
+                </label>
+                {isFileUploaded && (
+                  <div className="submit-container">
+                    <div className="actions-container">
+                      <SecondaryButton
+                        type="button"
+                        onClick={cleanupAvatarState}
+                      >
+                        Cancel
+                      </SecondaryButton>
+                      <MainButton type="submit">Confirm</MainButton>
+                    </div>
                   </div>
-                </div>
-              )}
-            </form>
-          </AvatarFormWrapper>
-        </Modal>
+                )}
+              </form>
+            </AvatarFormWrapper>
+          </Modal>
+        )}
       </WrapperDiv>
       {showErrorMessage && (
         <FlashMessage
