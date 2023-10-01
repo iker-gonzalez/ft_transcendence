@@ -1,12 +1,11 @@
-import React, { ReactNode } from 'react';
+import React, { PropsWithChildren } from 'react';
 import ReactDom from 'react-dom';
 import styled from 'styled-components';
 import { darkerBgColor, primaryLightColor } from '../../constants/color-tokens';
 
-type ModalProps = {
+type ModalProps = PropsWithChildren<{
   dismissModalAction: () => void;
-  children: ReactNode;
-};
+}>;
 
 const WrapperDiv = styled.div`
   position: absolute;
