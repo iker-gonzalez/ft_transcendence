@@ -58,9 +58,16 @@ export class FriendsService {
                 return {
                   intraId: friend.intraId,
                   avatar: friend.avatar,
+                  username: friend.username,
+                  email: friend.email,
                 };
               }),
-              { intraId: friend.intraId, avatar: friend.avatar },
+              {
+                intraId: friend.intraId,
+                avatar: friend.avatar,
+                username: friend.username,
+                email: friend.email,
+              },
             ],
           },
         },
