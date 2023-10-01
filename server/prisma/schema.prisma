@@ -51,7 +51,9 @@ model Friend {
   User   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String?
 
-  avatar String
+  avatar   String
+  username String
+  email    String
 }
 
 model GameSession {
