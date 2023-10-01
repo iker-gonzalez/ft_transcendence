@@ -1,4 +1,9 @@
-import React, { ReactNode, useContext, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  ReactNode,
+  useContext,
+  useState,
+} from 'react';
 import UserData from '../interfaces/user-data.interface';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
 import { getBaseUrl } from '../utils/utils';
@@ -59,11 +64,7 @@ export function useRefetchUserData(): RefetchUserDataFunction {
  * @param children The child components to render.
  * @returns The user data context provider.
  */
-export function UserDataProvider({
-  children,
-}: {
-  children: ReactNode;
-}): ReactNode {
+export function UserDataProvider({ children }: PropsWithChildren): ReactNode {
   const [userData, setUserData] = useState<UserData | null>(null);
 
   return (

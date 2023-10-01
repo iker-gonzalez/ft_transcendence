@@ -31,7 +31,7 @@ const WrapperDiv = styled.div`
   }
 `;
 
-export default function GameIndex() {
+export default function GameIndex(): JSX.Element {
   const navigate = useNavigate();
   const { userData }: UserDataContextData = useUserData();
 
