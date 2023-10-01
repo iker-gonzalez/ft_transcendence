@@ -3,6 +3,11 @@ import ReactDom from 'react-dom';
 import styled from 'styled-components';
 import { darkerBgColor, primaryLightColor } from '../../constants/color-tokens';
 
+type ModalProps = {
+  dismissModalAction: () => void;
+  children: ReactNode;
+};
+
 const WrapperDiv = styled.div`
   position: absolute;
   left: 50%;
@@ -61,10 +66,10 @@ const WrapperDiv = styled.div`
   }
 `;
 
-const Modal: React.FC<{
-  dismissModalAction: () => void;
-  children: ReactNode;
-}> = ({ dismissModalAction, children }): JSX.Element => {
+const Modal: React.FC<ModalProps> = ({
+  dismissModalAction,
+  children,
+}): JSX.Element => {
   const onModalDismissal = (e: React.MouseEvent<HTMLElement>) => {
     // Prevents the modal from closing when clicking on the modal itself
     if (e.target !== e.currentTarget) return;
