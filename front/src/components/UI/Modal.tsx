@@ -2,8 +2,6 @@ import React, { ReactNode } from 'react';
 import ReactDom from 'react-dom';
 import styled from 'styled-components';
 import { darkerBgColor, primaryLightColor } from '../../constants/color-tokens';
-import { useModalContext } from '../../context/ModalContext';
-import ModalContextData from '../../interfaces/modal-context-data';
 
 const WrapperDiv = styled.div`
   position: absolute;
@@ -28,13 +26,16 @@ const WrapperDiv = styled.div`
     position: relative;
 
     width: fit-content;
-    min-width: 400px;
+    min-width: 300px;
+    max-width: 450px;
     min-height: 250px;
 
     background-color: ${darkerBgColor};
 
     padding: 35px;
     border-radius: 20px;
+
+    text-align: center;
 
     display: flex;
     flex-direction: column;
@@ -61,38 +62,27 @@ const WrapperDiv = styled.div`
 `;
 
 const Modal: React.FC<{
-  dismissModalCleanup?: () => void;
+  dismissModalAction: () => void;
   children: ReactNode;
-}> = ({ dismissModalCleanup, children }) => {
-  const { showModal, setShowModal }: ModalContextData = useModalContext();
-
+}> = ({ dismissModalAction, children }) => {
   const onModalDismissal = (e: React.MouseEvent<HTMLElement>) => {
     // Prevents the modal from closing when clicking on the modal itself
     if (e.target !== e.currentTarget) return;
 
-    // If the modal has a cleanup function, call it
-    if (dismissModalCleanup) dismissModalCleanup();
-
-    setShowModal(false);
+    dismissModalAction();
   };
 
-  if (showModal) {
-    return ReactDom.createPortal(
-      <WrapperDiv onClick={onModalDismissal}>
-        <div className="modal">
-          <button
-            type="button"
-            className="close-btn"
-            onClick={onModalDismissal}
-          >
-            ✗
-          </button>
-          {children}
-        </div>
-      </WrapperDiv>,
-      document.getElementById('modal') as HTMLElement,
-    );
-  }
+  return ReactDom.createPortal(
+    <WrapperDiv onClick={onModalDismissal}>
+      <div className="modal">
+        <button type="button" className="close-btn" onClick={onModalDismissal}>
+          ✗
+        </button>
+        {children}
+      </div>
+    </WrapperDiv>,
+    document.getElementById('modal') as HTMLElement,
+  );
 };
 
 export default Modal;
