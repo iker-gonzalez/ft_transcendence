@@ -11,6 +11,11 @@ import UserData from '../../interfaces/user-data.interface';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import FlashMessage from '../UI/FlashMessage';
 
+type SettingsAvatarProps = {
+  className: string;
+  userData: UserData;
+};
+
 const WrapperDiv = styled.div`
   .edit-avatar-btn {
     width: 50px;
@@ -81,10 +86,10 @@ const AvatarFormWrapper = styled.div`
   }
 `;
 
-const UserProfileSettingsAvatar: React.FC<{
-  className: string;
-  userData: UserData;
-}> = ({ className, userData }) => {
+const UserProfileSettingsAvatar: React.FC<SettingsAvatarProps> = ({
+  className,
+  userData,
+}): JSX.Element => {
   const { setUserData } = useUserData();
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false);

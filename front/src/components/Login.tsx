@@ -7,7 +7,7 @@ import { useUserData } from '../context/UserDataContext';
 import moment from 'moment';
 import Cookies from 'js-cookie';
 
-const Login: React.FC = () => {
+const Login: React.FC = (): JSX.Element => {
   const { setUserData } = useUserData();
   const navigate = useNavigate();
   const location = useLocation();

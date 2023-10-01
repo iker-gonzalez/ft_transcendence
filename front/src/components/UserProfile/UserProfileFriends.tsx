@@ -37,7 +37,7 @@ const WrapperDiv = styled.div`
   }
 `;
 
-const UserProfileFriends: React.FC = () => {
+const UserProfileFriends: React.FC = (): JSX.Element => {
   const [friendsList, setFriendsList] = useState<any[]>([]);
   const [areFriendsLoaded, setAreFriendsLoaded] = useState<boolean>(false);
 

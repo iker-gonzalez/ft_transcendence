@@ -34,7 +34,7 @@ const WrapperDiv = styled.div`
 
 const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
   className,
-}) => {
+}): JSX.Element => {
   const { setUserData: setContextUserData } = useUserData();
   const [showUsernameForm, setShowUsernameForm] = useState<boolean>(false);
   const [usernameError, setUsernameError] = useState<string>('');

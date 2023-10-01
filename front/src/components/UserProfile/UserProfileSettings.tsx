@@ -28,7 +28,7 @@ const WrapperDiv = styled.div`
 
 const UserProfileSettings: React.FC<{ userData: UserData }> = ({
   userData,
-}) => {
+}): JSX.Element => {
   return (
     <ContrastPanel>
       <WrapperDiv>
