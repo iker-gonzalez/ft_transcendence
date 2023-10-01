@@ -6,8 +6,7 @@ import styled from 'styled-components';
 import { useUserData } from '../context/UserDataContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
-import Modal from '../components/UI/Modal';
-import MainButton from '../components/UI/MainButton';
+import UserProfileWelcomeModal from '../components/UserProfile/UserProfileWelcomeModal';
 
 const WrapperDiv = styled.div`
   display: flex;
@@ -46,28 +45,10 @@ const UserProfile: React.FC = () => {
         </div>
       </CenteredLayout>
       {showNewUserModal && (
-        <Modal
-          dismissModalAction={() => {
-            setShowNewUserModal(false);
-          }}
-        >
-          <h2 className="title-1 mb-24">
-            Hello, {userData?.username ?? 'stranger'}!
-          </h2>
-          <p className="mb-16">We're happy to see you here 😍</p>
-          <p className="mb-24">
-            This is your profile page. We grabbed your profile picture and
-            username from the 42 Intra API, but feel free to change them if you
-            prefer.
-          </p>
-          <MainButton
-            onClick={() => {
-              setShowNewUserModal(false);
-            }}
-          >
-            Continue
-          </MainButton>
-        </Modal>
+        <UserProfileWelcomeModal
+          setShowNewUserModal={setShowNewUserModal}
+          username={userData?.username}
+        />
       )}
     </>
   );
