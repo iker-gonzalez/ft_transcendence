@@ -25,7 +25,7 @@ export const userData3 = {
   isTwoFactorAuthEnabled: false,
 };
 
-export const testAvatarPath = `public/uploads/avatars/${userData.username}.png`;
+export const testAvatarPath = 'public/uploads/avatars/';
 
 export const intraUserToken =
   'de08a5e57571452221f95fc44d0073d2a383178d7d893d99c29ad955103b3981';
