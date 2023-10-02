@@ -9,6 +9,7 @@ clean:
 	docker rm test-db -f
 	docker rm prisma-studio -f
 	docker rm backend-e2e -f
+	rm -rf server/public/uploads/avatars/*
 
 stop:
 	docker stop backend || true
