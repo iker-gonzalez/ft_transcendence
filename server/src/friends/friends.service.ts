@@ -3,15 +3,26 @@ import {
   ConflictException,
   Injectable,
 } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { Friend, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { GetFriendsResponseDto } from './dto/get-friends-response.dto';
+import { AddFriendResponseDto } from './dto/add-friend-response.dto';
+
+type FriendInfo = {
+  intraId: number;
+  avatar: string;
+  username: string;
+  email: string;
+};
 
 @Injectable()
 export class FriendsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async addFriend(friendIntraId: number, user: User): Promise<any> {
+  async addFriend(
+    friendIntraId: number,
+    user: User,
+  ): Promise<AddFriendResponseDto> {
     if (friendIntraId === user.intraId) {
       throw new BadRequestException('You cannot add yourself as a friend');
     }
@@ -29,72 +40,72 @@ export class FriendsService {
       throw new BadRequestException('Friend not found');
     }
 
-    const { friends: userFriends } = await this.prisma.user.findUnique({
+    const { friends: userFriends }: { friends: Friend[] } =
+      await this.prisma.user.findUnique({
+        where: {
+          id: user.id,
+        },
+        include: {
+          friends: true,
+        },
+      });
+
+    if (userFriends.some((friend) => friend.intraId === friendIntraId)) {
+      throw new ConflictException('Friend already added');
+    }
+
+    // Delete all user friends
+    if (userFriends.length > 0) {
+      await this.prisma.friend.deleteMany({
+        where: {
+          userId: user.id,
+        },
+      });
+    }
+
+    let updatedUser = await this.prisma.user.update({
       where: {
         id: user.id,
+      },
+      data: {
+        friends: {
+          create: this._computeFriends(userFriends, friend),
+        },
       },
       include: {
         friends: true,
       },
     });
 
-    // Delete all user friends
-    await this.prisma.friend.deleteMany({
-      where: {
-        userId: user.id,
-      },
-    });
-
-    let updatedUser;
-    try {
-      updatedUser = await this.prisma.user.update({
+    // Delete all friend's friends
+    if (friend.friends.length > 0) {
+      await this.prisma.friend.deleteMany({
         where: {
-          id: user.id,
-        },
-        data: {
-          friends: {
-            create: [
-              ...userFriends.map((friend) => {
-                return {
-                  intraId: friend.intraId,
-                  avatar: friend.avatar,
-                  username: friend.username,
-                  email: friend.email,
-                };
-              }),
-              {
-                intraId: friend.intraId,
-                avatar: friend.avatar,
-                username: friend.username,
-                email: friend.email,
-              },
-            ],
-          },
-        },
-        include: {
-          friends: true,
+          userId: friend.id,
         },
       });
-    } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === 'P2002'
-      )
-        throw new ConflictException('Friend already added');
-      throw e;
     }
+
+    await this.prisma.user.update({
+      where: {
+        id: friend.id,
+      },
+      data: {
+        friends: {
+          create: this._computeFriends(friend.friends, updatedUser),
+        },
+      },
+      include: {
+        friends: true,
+      },
+    });
 
     return {
       created: 1,
       data: {
         id: user.id,
         intraId: user.intraId,
-        friends: updatedUser.friends.map((friend) => {
-          return {
-            intraId: friend.intraId,
-            avatar: friend.avatar,
-          };
-        }),
+        friends: updatedUser.friends,
       },
     };
   }
@@ -181,5 +192,24 @@ export class FriendsService {
         friends: updatedUser.friends,
       },
     };
+  }
+
+  _computeFriends(currentFriends: Friend[], newFriend: User): FriendInfo[] {
+    return [
+      ...currentFriends.map((friend) => {
+        return {
+          intraId: friend.intraId,
+          avatar: friend.avatar,
+          username: friend.username,
+          email: friend.email,
+        };
+      }),
+      {
+        intraId: newFriend.intraId,
+        avatar: newFriend.avatar,
+        username: newFriend.username,
+        email: newFriend.email,
+      },
+    ];
   }
 }
