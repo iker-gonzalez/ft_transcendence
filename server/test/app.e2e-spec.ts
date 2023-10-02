@@ -908,8 +908,15 @@ describe('App e2e', () => {
             friends: true,
           },
         });
-
         expect(updatedUserFriends).toHaveLength(1);
+
+        const { friends: friendUserFriends } = await prisma.user.findUnique({
+          where: { id: user2.id },
+          include: {
+            friends: true,
+          },
+        });
+        expect(friendUserFriends).toHaveLength(1);
       });
 
       test('it should add a friend when user has already one', async () => {
@@ -966,8 +973,20 @@ describe('App e2e', () => {
               id: user1.id,
               intraId: user1.intraId,
               friends: [
-                { intraId: user2.intraId, avatar: user2.avatar },
-                { intraId: user3.intraId, avatar: user3.avatar },
+                {
+                  userId: uuidRegex,
+                  intraId: user2.intraId,
+                  avatar: user2.avatar,
+                  email: user2.email,
+                  username: user2.username,
+                },
+                {
+                  userId: uuidRegex,
+                  intraId: user3.intraId,
+                  avatar: user3.avatar,
+                  email: user3.email,
+                  username: user3.username,
+                },
               ],
             },
           });
@@ -1057,10 +1076,10 @@ describe('App e2e', () => {
             friends: {
               create: [
                 {
-                  intraId: userData2.intraId,
-                  avatar: userData2.avatar,
-                  email: userData2.email,
-                  username: userData2.username,
+                  intraId: user2.intraId,
+                  avatar: user2.avatar,
+                  email: user2.email,
+                  username: user2.username,
                 },
               ],
             },
@@ -1069,17 +1088,22 @@ describe('App e2e', () => {
 
         await pactum
           .spec()
-          .post(`/friends/${user2}`)
+          .post(`/friends/${user2.intraId}`)
           .withHeaders({ Authorization: 'Bearer $S{userAt}' })
-          .expectStatus(400);
+          .expectStatus(409)
+          .expectBody({
+            message: 'Friend already added',
+            error: 'Conflict',
+            statusCode: 409,
+          });
 
+        // User has 1 friend
         const { friends: updatedUserFriends } = await prisma.user.findUnique({
           where: { id: user1.id },
           include: {
             friends: true,
           },
         });
-
         expect(updatedUserFriends).toHaveLength(1);
       });
 
