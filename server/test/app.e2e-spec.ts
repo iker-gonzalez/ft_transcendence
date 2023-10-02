@@ -28,6 +28,7 @@ import {
   intraUserToken,
   uuidRegex,
 } from './test.constants';
+import path = require('path');
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -65,7 +66,21 @@ describe('App e2e', () => {
   afterEach(async () => {
     jest.resetAllMocks();
 
-    if (fs.existsSync(testAvatarPath)) fs.unlinkSync(testAvatarPath);
+    if (fs.existsSync(testAvatarPath)) {
+      fs.readdir(testAvatarPath, (err, files) => {
+        if (err) {
+          console.error(err);
+        }
+
+        files.forEach((file) => {
+          const fileDir = path.join(testAvatarPath, file);
+
+          if (file !== '.gitkeep') {
+            fs.unlinkSync(fileDir);
+          }
+        });
+      });
+    }
   });
 
   afterAll(async () => {
@@ -659,6 +674,10 @@ describe('App e2e', () => {
           filename: 'avatar.png',
         });
 
+        const avatarRegex = new RegExp(
+          `^.*${user.username.toLowerCase()}\_\\d+\.png$`,
+        );
+
         await pactum
           .spec()
           .patch(`/users/avatar`)
@@ -672,7 +691,7 @@ describe('App e2e', () => {
             data: {
               id: user.id,
               intraId: user.intraId,
-              avatar: new RegExp(`^.*${user.username}.png$`),
+              avatar: avatarRegex,
             },
           });
 
@@ -680,11 +699,11 @@ describe('App e2e', () => {
           where: { id: user.id },
         });
 
-        expect(updatedUser.avatar).toMatch(
-          new RegExp(`^.*${user.username}.png$`),
-        );
+        expect(updatedUser.avatar).toMatch(avatarRegex);
 
-        const filesExists = fs.existsSync(testAvatarPath);
+        const filesExists = fs
+          .readdirSync(testAvatarPath)
+          .some((file) => file.match(avatarRegex));
         expect(filesExists).toBe(true);
       });
 
@@ -716,7 +735,12 @@ describe('App e2e', () => {
         });
 
         expect(updatedUser.avatar).toBe(userData.avatar);
-        const filesExists = fs.existsSync(testAvatarPath);
+        const avatarRegex = new RegExp(
+          `^.*${userData.username.toLowerCase()}\_\\d+\.png$`,
+        );
+        const filesExists = fs
+          .readdirSync(testAvatarPath)
+          .some((file) => file.match(avatarRegex));
         expect(filesExists).toBe(false);
       });
 
@@ -749,7 +773,12 @@ describe('App e2e', () => {
         });
 
         expect(updatedUser.avatar).toBe(userData.avatar);
-        const filesExists = fs.existsSync(testAvatarPath);
+        const avatarRegex = new RegExp(
+          `^.*${userData.username.toLowerCase()}\_\\d+\.png$`,
+        );
+        const filesExists = fs
+          .readdirSync(testAvatarPath)
+          .some((file) => file.match(avatarRegex));
         expect(filesExists).toBe(false);
       });
 
@@ -786,7 +815,12 @@ describe('App e2e', () => {
         });
 
         expect(updatedUser.avatar).toBe(userData.avatar);
-        const filesExists = fs.existsSync(testAvatarPath);
+        const avatarRegex = new RegExp(
+          `^.*${userData.username.toLowerCase()}\_\\d+\.png$`,
+        );
+        const filesExists = fs
+          .readdirSync(testAvatarPath)
+          .some((file) => file.match(avatarRegex));
         expect(filesExists).toBe(false);
       });
 
@@ -823,7 +857,12 @@ describe('App e2e', () => {
         });
 
         expect(updatedUser.avatar).toBe(userData.avatar);
-        const filesExists = fs.existsSync(testAvatarPath);
+        const avatarRegex = new RegExp(
+          `^.*${updatedUser.username.toLowerCase()}\_\\d+\.png$`,
+        );
+        const filesExists = fs
+          .readdirSync(testAvatarPath)
+          .some((file) => file.match(avatarRegex));
         expect(filesExists).toBe(false);
       });
     });
@@ -904,7 +943,14 @@ describe('App e2e', () => {
           where: { id: user1.id },
           data: {
             friends: {
-              create: [{ intraId: user2.intraId, avatar: user2.avatar }],
+              create: [
+                {
+                  intraId: userData2.intraId,
+                  avatar: userData2.avatar,
+                  email: userData2.email,
+                  username: userData2.username,
+                },
+              ],
             },
           },
         });
@@ -1009,7 +1055,14 @@ describe('App e2e', () => {
           where: { id: user1.id },
           data: {
             friends: {
-              create: [{ intraId: user2.intraId, avatar: user2.avatar }],
+              create: [
+                {
+                  intraId: userData2.intraId,
+                  avatar: userData2.avatar,
+                  email: userData2.email,
+                  username: userData2.username,
+                },
+              ],
             },
           },
         });
