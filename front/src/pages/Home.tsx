@@ -60,6 +60,7 @@ function SignIn() {
   const handleUserLogOut = () => {
     Cookies.remove('token');
     setUserData(null);
+    window.location.reload();
   };
 
   return (
