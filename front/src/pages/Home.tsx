@@ -33,21 +33,29 @@ function SignIn() {
   const refetchUserData = useRefetchUserData();
 
   useEffect(() => {
-    const token: string = Cookies.get('token') || '';
-    // User data is not set, but section is still active
-    if (!userData && token.length) {
-      refetchUserData(token)
-        .then((userData: UserData | null) => {
-          setUserData(userData);
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error on Home page:', error);
-          setIsLoading(false);
-          setIsError(true);
-        });
-    } else {
+    const token: string | undefined = Cookies.get('token');
+
+    if (!token) {
       setIsLoading(false);
+      setUserData(null);
+    }
+
+    if (token) {
+      // User data is not set, but section is still active
+      if (!userData && token.length) {
+        refetchUserData(token)
+          .then((userData: UserData | null) => {
+            setUserData(userData);
+            setIsLoading(false);
+          })
+          .catch((error) => {
+            console.error('Error on Home page:', error);
+            setIsLoading(false);
+            setIsError(true);
+          });
+      } else {
+        setIsLoading(false);
+      }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

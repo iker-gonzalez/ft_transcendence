@@ -81,6 +81,15 @@ export const swaggerConstants = {
         description: 'Provide binary file to be uploaded as avatar.',
       },
     },
+    search: {
+      summary: 'Retrieve users that match the provided query.',
+      ok: {
+        description: 'Returns users that match the provided query.',
+      },
+      unauthorized: {
+        description: 'JWT token is invalid or expired.',
+      },
+    },
   },
   friends: {
     add: {
@@ -460,6 +469,33 @@ export const swaggerConstants = {
       regex: {
         message: 'Forbidden character',
       },
+    },
+    userSearchResponse: {
+      found: {
+        description: 'Number of found users',
+        example: 2,
+      },
+      data: {
+        description: 'Data of found users',
+        example: [
+          {
+            id: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+            intraId: 12345,
+            username: 'jdoe',
+            avatar: 'https://cdn.intra.42.fr/users/jdoe.jpg',
+          },
+          {
+            id: 'c024ef2-fb79-400c-8f97-ce0e49d7dc69',
+            intraId: 12347,
+            username: 'jdoe2',
+            avatar: 'https://cdn.intra.42.fr/users/jdoe2.jpg',
+          },
+        ],
+      },
+    },
+    userSearchQuery: {
+      description: 'String to match against username',
+      example: 'jdoe',
     },
   },
 };
