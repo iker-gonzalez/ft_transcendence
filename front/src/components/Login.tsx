@@ -70,12 +70,7 @@ const Login: React.FC = (): JSX.Element => {
     }
   }, [navigate, location]);
 
-  return (
-    // Render either the loading page or user profile content based on isLoading state
-    <div>
-      {isLoading ? <LoadingPage targetPath="/profile" /> : <UserProfile />}
-    </div>
-  );
+  return <>{isLoading && <LoadingPage />}</>;
 };
 
 export default Login;
