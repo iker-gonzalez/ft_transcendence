@@ -6,9 +6,9 @@ export const userSpeedInput: number = 10;
 export const ballDataInit: IBallData = {
   x: 0,
   y: 0,
-  radius: 10,
-  velocityX: 8,
-  velocityY: 8,
+  radius: 15,
+  velocityX: 5,
+  velocityY: 5,
   speed: userSpeedInput,
   color: RenderColor.White,
   reset: false,
