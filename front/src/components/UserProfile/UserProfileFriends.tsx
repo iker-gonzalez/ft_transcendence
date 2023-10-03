@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ContrastPanel from '../UI/ContrastPanel';
-import Lottie from 'lottie-react';
-import emptyGhostAnimation from '../../assets/lotties/empty-ghost.json';
 import { getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import RoundImg from '../UI/RoundImage';
 import { PrimaryLink } from '../UI/PrimaryLink';
+import MainButton from '../UI/MainButton';
+import FriendsSearchModal from '../FriendsSearch/FriendsSearchModal';
 
 const WrapperDiv = styled.div`
   position: relative;
   width: 650px;
 
   .empty-state {
-    max-width: 380px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 75px;
 
-    .empty-animation {
-      width: 100px;
-      position: absolute;
-      top: 50%;
-      right: 50px;
-      transform: translateY(-50%);
+    .friend-search-cta {
+      white-space: nowrap;
     }
   }
 
@@ -40,6 +39,8 @@ const WrapperDiv = styled.div`
 const UserProfileFriends: React.FC = (): JSX.Element => {
   const [friendsList, setFriendsList] = useState<any[]>([]);
   const [areFriendsLoaded, setAreFriendsLoaded] = useState<boolean>(false);
+  const [showFriendsSearchModal, setShowFriendsSearchModal] =
+    useState<boolean>(false);
 
   useEffect(() => {
     // TODO move this to context
@@ -97,20 +98,31 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                 </div>
               ) : (
                 <div className="empty-state">
-                  <p className="mb-16">It looks like you're a bit lonely 😿</p>
-                  <p>
-                    It's easy to make new friends. Just search for a user to add
-                    them to your friends list.
-                  </p>
-                  <Lottie
-                    animationData={emptyGhostAnimation}
-                    loop={true}
-                    className="empty-animation"
-                    aria-hidden="true"
-                  />
+                  <div>
+                    <p className="mb-16">
+                      It looks like you're a bit lonely 😿
+                    </p>
+                    <p>
+                      It's easy to make new friends. Just search for a user to
+                      add them to your friends list.
+                    </p>
+                  </div>
+                  <MainButton
+                    className="friend-search-cta"
+                    onClick={() => {
+                      setShowFriendsSearchModal(true);
+                    }}
+                  >
+                    Start searching
+                  </MainButton>
                 </div>
               )}
             </div>
+            {showFriendsSearchModal && (
+              <FriendsSearchModal
+                setShowFriendsSearchModal={setShowFriendsSearchModal}
+              />
+            )}
           </>
         )}
       </WrapperDiv>
