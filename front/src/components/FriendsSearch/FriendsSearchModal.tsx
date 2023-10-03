@@ -96,7 +96,7 @@ const FriendsSearchModal: React.FC<FriendsSearchModalProps> = ({
     }, 500);
 
     return () => clearTimeout(debounceTimeout);
-  }, [searchValue]);
+  }, [searchValue, navigate]);
 
   return (
     <Modal
@@ -149,6 +149,8 @@ const FriendsSearchModal: React.FC<FriendsSearchModalProps> = ({
                     headingLevel={3}
                   />
                 );
+
+              return <></>;
             })}
           </div>
         )}
