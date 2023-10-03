@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import { UpdateUsernameResponseDto } from './dto/update-username-response.dto';
 import { UpdateAvatarResponseDto } from './dto/update-avatar-response.dto';
 import { ConfigService } from '@nestjs/config';
+import UserCoreData from 'src/types/user-core-data.type';
 
 @Injectable()
 export class UserService {
@@ -117,6 +118,29 @@ export class UserService {
         id: user.id,
         intraId: user.intraId,
         avatar: newUserData.avatar,
+      },
+    };
+  }
+
+  async getUsersByName(query: string): Promise<any> {
+    const friends: UserCoreData[] = await this.prisma.user.findMany({
+      where: {
+        username: {
+          contains: query,
+        },
+      },
+      select: {
+        intraId: true,
+        username: true,
+        avatar: true,
+        email: true,
+      },
+    });
+
+    return {
+      found: friends.length,
+      data: {
+        friends,
       },
     };
   }
