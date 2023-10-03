@@ -23,7 +23,6 @@ function App() {
             <Route path="/set-profile" element={<SetProfile />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/loading" element={<LoadingPage targetPath={''} />} />
             <Route path="game" element={<Game />}>
               <Route index element={<GameIndex />} />
               <Route path="queue" element={<GameQueue />} />
