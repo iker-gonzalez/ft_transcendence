@@ -53,7 +53,7 @@ export class FriendsController {
   })
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtGuard)
-  async addFriend(
+  addFriend(
     @GetUser() user: User,
     @Param() params: FriendsParamsDto,
   ): Promise<any> {
@@ -79,7 +79,7 @@ export class FriendsController {
     description: swaggerConstants.friends.get.unauthorized.description,
   })
   @UseGuards(JwtGuard)
-  async getFriends(
+  getFriends(
     @GetUser() user: User,
     @Param() params: GetFriendsParamsDto,
   ): Promise<GetFriendsResponseDto> {
@@ -101,7 +101,7 @@ export class FriendsController {
     description: swaggerConstants.friends.delete.unauthorized.description,
   })
   @UseGuards(JwtGuard)
-  async deleteFriend(
+  deleteFriend(
     @GetUser() user: User,
     @Param() params: FriendsParamsDto,
   ): Promise<any> {
