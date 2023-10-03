@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Patch,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -26,6 +27,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterFileDto } from './dto/multer-file.dto';
 import { UpdateUsernameResponseDto } from './dto/update-username-response.dto';
 import { UpdateAvatarResponseDto } from './dto/update-avatar-response.dto';
+import { UserSearchResponseDto } from './dto/user-search-response.dto';
+import { UserSearchParamsDto } from './dto/user-search-params.dto';
 
 @ApiTags('Users')
 @UseGuards(JwtGuard)
@@ -119,5 +122,22 @@ export class UserController {
     @UploadedFile() file: MulterFileDto,
   ): Promise<UpdateAvatarResponseDto> {
     return this.userService.updateAvatar(user, file);
+  }
+
+  @ApiOperation({
+    summary: swaggerConstants.users.search.summary,
+  })
+  @ApiOkResponse({
+    description: swaggerConstants.users.search.ok.description,
+    type: UserSearchResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: swaggerConstants.users.search.unauthorized.description,
+  })
+  @Get('/search')
+  getUsersByName(
+    @Query() params: UserSearchParamsDto,
+  ): Promise<UserSearchResponseDto> {
+    return this.userService.getUsersByName(params.query);
   }
 }
