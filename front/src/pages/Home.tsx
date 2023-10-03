@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { getRedirectUri } from '../utils/utils';
 import MainButton from '../components/UI/MainButton';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -54,12 +53,13 @@ function SignIn() {
 
   const handleSignInClick = () => {
     // Redirect the user to the intranet URL
-    window.location.href = getRedirectUri();
+    window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code`;
   };
 
   const handleUserLogOut = () => {
     Cookies.remove('token');
     setUserData(null);
+    window.location.reload();
   };
 
   return (
