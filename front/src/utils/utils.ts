@@ -12,16 +12,6 @@ export function getBaseUrl(): string {
     : `https://${window.location.hostname.replace(clientPort, apiPort)}`;
 }
 
-export function getRedirectUri() {
-  const endpoint = 'https://api.intra.42.fr/oauth/authorize';
-  const redirectUri =
-    window.location.hostname === 'localhost'
-      ? `${endpoint}?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Flogin&response_type=code`
-      : `${endpoint}?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code`;
-
-  return redirectUri;
-}
-
 /**
  * Capitalizes the first letter of a string.
  * @param string The string to capitalize.
