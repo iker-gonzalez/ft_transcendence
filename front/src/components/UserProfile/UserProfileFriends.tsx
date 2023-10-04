@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import RoundImg from '../UI/RoundImage';
 import { PrimaryLink } from '../UI/PrimaryLink';
 import MainButton from '../UI/MainButton';
-import AddNewFriendFlow from '../FriendsSearch/AddNewFriendFlow';
+import AddNewFriendFlow from '../Friends/AddNewFriendFlow';
 
 const WrapperDiv = styled.div`
   position: relative;
