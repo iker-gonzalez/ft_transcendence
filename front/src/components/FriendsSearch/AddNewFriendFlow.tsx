@@ -39,12 +39,12 @@ const WrapperDiv = styled.div`
   }
 `;
 
-type FriendsSearchModalProps = {
-  setShowFriendsSearchModal: (arg0: boolean) => void;
+type AddNewFriendFlowProps = {
+  setShowAddNewFriendFlow: (arg0: boolean) => void;
 };
 
-const FriendsSearchModal: React.FC<FriendsSearchModalProps> = ({
-  setShowFriendsSearchModal,
+const AddNewFriendFlow: React.FC<AddNewFriendFlowProps> = ({
+  setShowAddNewFriendFlow,
 }): JSX.Element => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -101,7 +101,7 @@ const FriendsSearchModal: React.FC<FriendsSearchModalProps> = ({
   return (
     <Modal
       dismissModalAction={() => {
-        setShowFriendsSearchModal(false);
+        setShowAddNewFriendFlow(false);
       }}
     >
       <WrapperDiv>
@@ -159,4 +159,4 @@ const FriendsSearchModal: React.FC<FriendsSearchModalProps> = ({
   );
 };
 
-export default FriendsSearchModal;
+export default AddNewFriendFlow;
