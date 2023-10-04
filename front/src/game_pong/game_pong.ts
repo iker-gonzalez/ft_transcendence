@@ -269,6 +269,11 @@ function render(
   match_finish: boolean,
   match_points: number,
 ) {
+  if (match_finish)
+  {
+    alert("Hello");
+  }
+  
   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
 
   drawText(
@@ -280,6 +285,7 @@ function render(
     'right',
     RenderColor.Yellow,
   );
+
   drawText(
     canvas,
     user1.score,
@@ -289,6 +295,27 @@ function render(
     'right',
     RenderColor.Red,
   );
+
+  drawText(
+    canvas,
+    'COMPUTER_BOT',
+    (canvas.width / 10) * 6,
+    canvas.height / 10,
+    '10px Arial',
+    'left',
+    RenderColor.Yellow,
+  );
+
+  drawText(
+    canvas,
+    user2.score,
+    (canvas.width / 10) * 6,
+    canvas.height / 6,
+    '40px Arial',
+    'left',
+    RenderColor.Red,
+  );
+
   if (user1.score >= match_points) {
     match_finish = true;
     drawText(
@@ -300,29 +327,11 @@ function render(
       'right',
       RenderColor.Green,
     );
-    setTimeout(() => {
-      alert('⭐️ USER 1 WINS ⭐️');
-    }, 10);
+    // setTimeout(() => {
+    //   alert('⭐️ USER 1 WINS ⭐️');
+    // }, 10);
   }
 
-  drawText(
-    canvas,
-    'COMPUTER_BOT',
-    (canvas.width / 10) * 6,
-    canvas.height / 10,
-    '10px Arial',
-    'left',
-    RenderColor.Yellow,
-  );
-  drawText(
-    canvas,
-    user2.score,
-    (canvas.width / 10) * 6,
-    canvas.height / 6,
-    '40px Arial',
-    'left',
-    RenderColor.Red,
-  );
   if (user2.score >= match_points) {
     match_finish = true;
     drawText(
@@ -334,9 +343,9 @@ function render(
       'left',
       RenderColor.Green,
     );
-    setTimeout(() => {
-      alert('⭐️ USER 2 WINS ⭐️');
-    }, 10);
+    // setTimeout(() => {
+    //   alert('⭐️ USER 2 WINS ⭐️');
+    // }, 10);
   }
 
   drawText(
