@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import RoundImg from '../UI/RoundImage';
 import { PrimaryLink } from '../UI/PrimaryLink';
 import MainButton from '../UI/MainButton';
-import FriendsSearchModal from '../FriendsSearch/FriendsSearchModal';
+import AddNewFriendFlow from '../FriendsSearch/AddNewFriendFlow';
 
 const WrapperDiv = styled.div`
   position: relative;
@@ -39,7 +39,7 @@ const WrapperDiv = styled.div`
 const UserProfileFriends: React.FC = (): JSX.Element => {
   const [friendsList, setFriendsList] = useState<any[]>([]);
   const [areFriendsLoaded, setAreFriendsLoaded] = useState<boolean>(false);
-  const [showFriendsSearchModal, setShowFriendsSearchModal] =
+  const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
 
   useEffect(() => {
@@ -110,7 +110,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                   <MainButton
                     className="friend-search-cta"
                     onClick={() => {
-                      setShowFriendsSearchModal(true);
+                      setShowAddNewFriendFlow(true);
                     }}
                   >
                     Start searching
@@ -118,9 +118,9 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                 </div>
               )}
             </div>
-            {showFriendsSearchModal && (
-              <FriendsSearchModal
-                setShowFriendsSearchModal={setShowFriendsSearchModal}
+            {showAddNewFriendFlow && (
+              <AddNewFriendFlow
+                setShowAddNewFriendFlow={setShowAddNewFriendFlow}
               />
             )}
           </>
