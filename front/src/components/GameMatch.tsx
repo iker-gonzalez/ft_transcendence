@@ -53,6 +53,7 @@ export default function GameMatch(): JSX.Element {
   );
   const sessionId: string | null = useSearchParams()[0]!.get('sessionId');
   const [showGame, setShowGame] = useState<boolean>(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const socketRef = useRef<Socket>(
     io(`${getBaseUrl()}/game-data`, {
       transports: ['websocket'],
@@ -95,10 +96,9 @@ export default function GameMatch(): JSX.Element {
     socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
       setShowGame(true);
 
-      const canvas: HTMLCanvasElement = document.getElementById(
-        'gamePong',
-      ) as HTMLCanvasElement;
-      gameLoop(canvas, socketRef.current, isPlayer1, sessionId);
+      // TODO change this to a ref
+      if (canvasRef.current)
+        gameLoop(canvasRef.current, socketRef.current, isPlayer1, sessionId);
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -130,7 +130,12 @@ export default function GameMatch(): JSX.Element {
               )}
             </div>
           )}
-          <canvas id="gamePong" width="900" height="600"></canvas>
+          <canvas
+            id="gamePong"
+            width="900"
+            height="600"
+            ref={canvasRef}
+          ></canvas>
         </div>
       </CenteredLayout>
     </WrapperDiv>
