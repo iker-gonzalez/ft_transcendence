@@ -65,6 +65,7 @@ const Login: React.FC = (): JSX.Element => {
           // Handle the error and set a message if needed
         })
         .finally(() => {
+          if (isLoading === true) navigate('/'); // Redirect to the home page if the request is done
           setIsLoading(false); // Set loading state to false when the request is done
         });
     }
