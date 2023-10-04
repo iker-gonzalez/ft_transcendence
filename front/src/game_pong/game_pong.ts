@@ -3,7 +3,7 @@ import { Socket } from 'socket.io-client';
 import {
   ballDataInit,
   user1Init,
-  botInit,
+  user2Init,
   netInit,
 } from './game_pong.constants';
 import {
@@ -34,7 +34,7 @@ function game(
   isPlayer1: boolean,
   ballData: IBallData,
   user1: IUserData,
-  bot: IUserData,
+  user2: IUserData,
   net: INetData,
   match_finish: boolean,
   match_points: number,
@@ -68,7 +68,7 @@ function game(
           isPlayer1,
           ballData,
           user1,
-          bot,
+          user2,
           net,
           match_finish,
           match_points,
@@ -84,7 +84,7 @@ function matchUser1(
   canvas: { height: number; width: number },
   ballData: IBallData,
   user1: IUserData,
-  bot: IUserData,
+  user2: IUserData,
   sounds: ISounds,
 ) {
   ballData.x += ballData.velocityX;
@@ -124,7 +124,7 @@ function matchUser1(
   }
 
   let player: IUserData =
-    ballData.x + ballData.radius < canvas.width / 2 ? user1 : bot;
+    ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
 
   if (checkCollision(ballData, player)) {
     sounds.hit.play().catch(function (error: any) {
@@ -148,20 +148,20 @@ function matchUser2(
   canvas: { height: number; width: number },
   ballData: IBallData,
   user1: IUserData,
-  bot: IUserData,
+  user2: IUserData,
   sounds: ISounds,
 ) {
   ballData.x += ballData.velocityX;
   ballData.y += ballData.velocityY;
 
-  bot.y += (ballData.y - (bot.y + bot.height / 2)) * 0.1;
-  if (bot.y < thickness + ballData.radius * slit) {
-    bot.y = thickness + ballData.radius * slit;
+  user2.y += (ballData.y - (user2.y + user2.height / 2)) * 0.1;
+  if (user2.y < thickness + ballData.radius * slit) {
+    user2.y = thickness + ballData.radius * slit;
   } else if (
-    bot.y >
-    canvas.height - thickness - bot.height - ballData.radius * slit
+    user2.y >
+    canvas.height - thickness - user2.height - ballData.radius * slit
   ) {
-    bot.y = canvas.height - thickness - bot.height - ballData.radius * slit;
+    user2.y = canvas.height - thickness - user2.height - ballData.radius * slit;
   }
 
   if (
@@ -172,8 +172,8 @@ function matchUser2(
   }
 
   if (ballData.x + ballData.radius < 0 && !ballData.reset) {
-    bot.score++;
-    sounds.botScore.play().catch(function (error: any) {
+    user2.score++;
+    sounds.userScore.play().catch(function (error: any) {
       // console.log("Chrome cannot play sound without user interaction first");
     });
     let { newBallData } = resetBall(canvas, ballData, user1);
@@ -183,7 +183,7 @@ function matchUser2(
     ballData = newBallData;
   }
 
-  let player = ballData.x + ballData.radius < canvas.width / 2 ? user1 : bot;
+  let player = ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
 
   if (checkCollision(ballData, player)) {
     sounds.hit.play().catch(function (error: any) {
@@ -253,7 +253,7 @@ function render(
     left?: number;
     right?: number;
   },
-  bot: {
+  user2: {
     x: any;
     y: any;
     width: any;
@@ -316,14 +316,14 @@ function render(
   );
   drawText(
     canvas,
-    bot.score,
+    user2.score,
     (canvas.width / 10) * 6,
     canvas.height / 6,
     '40px Arial',
     'left',
     RenderColor.Red,
   );
-  if (bot.score >= match_points) {
+  if (user2.score >= match_points) {
     match_finish = true;
     drawText(
       canvas,
@@ -335,7 +335,7 @@ function render(
       RenderColor.Green,
     );
     setTimeout(() => {
-      alert('⭐️ COMPUTER BOT WINS ⭐️');
+      alert('⭐️ USER 2 WINS ⭐️');
     }, 10);
   }
 
@@ -348,6 +348,7 @@ function render(
     'left',
     RenderColor.Grey,
   );
+
   drawText(
     canvas,
     'Paddle Height: ' + user1.height,
@@ -359,6 +360,7 @@ function render(
   );
 
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
+
   drawRect(
     canvas,
     0,
@@ -367,11 +369,12 @@ function render(
     thickness,
     RenderColor.White,
   );
+
   drawDashedLine(canvas, net);
 
   drawRect(canvas, user1.x, user1.y, user1.width, user1.height, user1.color);
 
-  drawRect(canvas, bot.x, bot.y, bot.width, bot.height, bot.color);
+  drawRect(canvas, user2.x, user2.y, user2.width, user2.height, user2.color);
 
   drawArc(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
 }
@@ -388,12 +391,15 @@ export async function gameLoop(
     x: canvas.width / 2,
     y: canvas.height / 2,
   };
+
   let user1 = { ...user1Init, y: canvas.height / 2 - 100 / 2 };
-  let bot = {
-    ...botInit,
+
+  let user2 = {
+    ...user2Init,
     x: canvas.width - 40,
     y: canvas.height / 2 - 100 / 2,
   };
+
   let net = { ...netInit, x: canvas.width / 2 - 5 };
 
   if (isPlayer1) {
@@ -404,7 +410,7 @@ export async function gameLoop(
         gameDataId: sessionId,
         ball: ballData,
         user1,
-        user2: bot,
+        user2,
       }),
     );
   } else {
@@ -415,13 +421,13 @@ export async function gameLoop(
         gameDataId: sessionId,
         ball: ballData,
         user1,
-        user2: bot,
+        user2,
       }),
     );
   }
 
   // Logic
-  let match_points = 500;
+  let match_points = 5;
   let match_finish = false;
 
   const { hit, wall, userScore, botScore } = initializeSounds();
@@ -433,26 +439,52 @@ export async function gameLoop(
   };
 
   document.addEventListener('keydown', function (event) {
-    if (event.keyCode === 38) {
-      // UP ARROW key
-      user1.y -= userSpeedInput * 5;
-    } else if (event.keyCode === 40) {
-      // DOWN ARROW key
-      user1.y += userSpeedInput * 5;
+    if (isPlayer1) {
+      if (event.keyCode === 38) {
+        // UP ARROW key
+        user1.y -= userSpeedInput * 5;
+      } else if (event.keyCode === 40) {
+        // DOWN ARROW key
+        user1.y += userSpeedInput * 5;
+      }
+    }
+    if (!isPlayer1) {
+      if (event.keyCode === 38) {
+        // UP ARROW key
+        user2.y -= userSpeedInput * 5;
+      } else if (event.keyCode === 40) {
+        // DOWN ARROW key
+        user2.y += userSpeedInput * 5;
+      }
     }
   });
 
   canvas.addEventListener('mousemove', function (event: { clientY: number }) {
-    let rect = canvas.getBoundingClientRect();
-    user1.y = event.clientY - rect.top - user1.height / 2;
-    if (user1.y < thickness + ballData.radius * slit) {
-      user1.y = thickness + ballData.radius * slit;
-    } else if (
-      user1.y >
-      canvas.height - thickness - user1.height - ballData.radius * slit
-    ) {
-      user1.y =
-        canvas.height - thickness - user1.height - ballData.radius * slit;
+    if (isPlayer1) {
+      let rect = canvas.getBoundingClientRect();
+      user1.y = event.clientY - rect.top - user1.height / 2;
+      if (user1.y < thickness + ballData.radius * slit) {
+        user1.y = thickness + ballData.radius * slit;
+      } else if (
+        user1.y >
+        canvas.height - thickness - user1.height - ballData.radius * slit
+      ) {
+        user1.y =
+          canvas.height - thickness - user1.height - ballData.radius * slit;
+      }
+    }
+    if (!isPlayer1) {
+      let rect = canvas.getBoundingClientRect();
+      user2.y = event.clientY - rect.top - user2.height / 2;
+      if (user2.y < thickness + ballData.radius * slit) {
+        user2.y = thickness + ballData.radius * slit;
+      } else if (
+        user2.y >
+        canvas.height - thickness - user1.height - ballData.radius * slit
+      ) {
+        user2.y =
+          canvas.height - thickness - user1.height - ballData.radius * slit;
+      }
     }
   });
 
@@ -473,11 +505,11 @@ export async function gameLoop(
   if (isPlayer1) {
     socket.on(`downloaded/user1/${sessionId}`, (data: string) => {
       const downloadedData = JSON.parse(data);
-      bot = downloadedData.user2;
+      user2 = downloadedData.user2;
 
-      matchUser1(canvas, ballData, user1, bot, sounds);
+      matchUser1(canvas, ballData, user1, user2, sounds);
 
-      render(canvas, ballData, user1, bot, net, match_finish, match_points);
+      render(canvas, ballData, user1, user2, net, match_finish, match_points);
 
       socket.emit(
         'upload',
@@ -495,13 +527,13 @@ export async function gameLoop(
       ballData = downloadedData.ball;
       user1 = downloadedData.user1;
 
-      matchUser2(canvas, ballData, user1, bot, sounds);
+      matchUser2(canvas, ballData, user1, user2, sounds);
 
-      render(canvas, ballData, user1, bot, net, match_finish, match_points);
+      render(canvas, ballData, user1, user2, net, match_finish, match_points);
 
       socket.emit(
         'upload',
-        JSON.stringify({ isUser1: false, gameDataId: sessionId, user2: bot }),
+        JSON.stringify({ isUser1: false, gameDataId: sessionId, user2 }),
       );
     });
   }
@@ -513,7 +545,7 @@ export async function gameLoop(
       isPlayer1,
       ballData,
       user1,
-      bot,
+      user2,
       net,
       match_finish,
       match_points,
