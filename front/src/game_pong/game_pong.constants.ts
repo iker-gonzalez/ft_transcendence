@@ -44,19 +44,6 @@ export const user2Init: IUserData = {
   right: 0,
 };
 
-export const botInit: IUserData = {
-  x: 0,
-  y: 0,
-  width: 10,
-  height: 100,
-  score: 0,
-  color: RenderColor.White,
-  top: 0,
-  bottom: 0,
-  left: 0,
-  right: 0,
-};
-
 export const netInit: INetData = {
   x: 0,
   y: 0,
