@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import UserCoreData from '../../interfaces/user-core-data.interface';
 import RoundImg from '../UI/RoundImage';
 import styled from 'styled-components';
@@ -21,29 +21,39 @@ const WrapperDiv = styled(ContrastPanel)`
   }
 
   .text-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     text-align: left;
   }
 `;
 
 type UserItemProps = {
   userData: UserCoreData;
-  key?: string;
   headingLevel: number;
 };
 
-const UserItem: React.FC<UserItemProps> = ({
-  userData,
-  key,
+const UserItem: React.FC<PropsWithChildren<UserItemProps>> = ({
+  children,
   headingLevel,
+  userData,
 }): JSX.Element => {
   return (
-    <WrapperDiv key={key}>
+    <WrapperDiv>
       <RoundImg src={userData.avatar} alt="" className="image" />
       <div className="text-container">
-        <div role="heading" aria-level={headingLevel} className="title-3 mb-8">
-          {userData.username}
+        <div>
+          <div
+            role="heading"
+            aria-level={headingLevel}
+            className="title-3 mb-8"
+          >
+            {userData.username}
+          </div>
+          <p className="small">{userData.email}</p>
         </div>
-        <p>{userData.email}</p>
+        <div>{children}</div>
       </div>
     </WrapperDiv>
   );
