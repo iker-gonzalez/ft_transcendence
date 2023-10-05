@@ -154,7 +154,7 @@ function matchUser2(
   ballData.x += ballData.velocityX;
   ballData.y += ballData.velocityY;
 
-  user2.y += (ballData.y - (user2.y + user2.height / 2)) * 0.1;
+  //user2.y += (ballData.y - (user2.y + user2.height / 2)) * 0.1;
   if (user2.y < thickness + ballData.radius * slit) {
     user2.y = thickness + ballData.radius * slit;
   } else if (
@@ -183,7 +183,8 @@ function matchUser2(
     ballData = newBallData;
   }
 
-  let player = ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
+  let player: IUserData =
+    ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
 
   if (checkCollision(ballData, player)) {
     sounds.hit.play().catch(function (error: any) {
@@ -269,11 +270,10 @@ function render(
   match_finish: boolean,
   match_points: number,
 ) {
-  if (match_finish)
-  {
-    alert("Hello");
+  if (match_finish) {
+    alert('Hello');
   }
-  
+
   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
 
   drawText(
