@@ -4,9 +4,10 @@ import ContrastPanel from '../UI/ContrastPanel';
 import { getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import RoundImg from '../UI/RoundImage';
-import { PrimaryLink } from '../UI/PrimaryLink';
 import MainButton from '../UI/MainButton';
-import FriendsSearchModal from '../FriendsSearch/FriendsSearchModal';
+import AddNewFriendFlow from '../Friends/AddNewFriendFlow';
+import ViewNewUserProfile from '../Friends/ViewNewUserProfile';
+import Modal from '../UI/Modal';
 
 const WrapperDiv = styled.div`
   position: relative;
@@ -25,13 +26,19 @@ const WrapperDiv = styled.div`
 
   .user-item {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     gap: 20px;
 
-    .avatar {
-      width: 75px;
-      height: auto;
+    .user-info {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 20px;
+      .avatar {
+        width: 75px;
+        height: auto;
+      }
     }
   }
 `;
@@ -39,7 +46,8 @@ const WrapperDiv = styled.div`
 const UserProfileFriends: React.FC = (): JSX.Element => {
   const [friendsList, setFriendsList] = useState<any[]>([]);
   const [areFriendsLoaded, setAreFriendsLoaded] = useState<boolean>(false);
-  const [showFriendsSearchModal, setShowFriendsSearchModal] =
+  const [showFriendProfile, setShowFriendProfile] = useState<boolean>(false);
+  const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
 
   useEffect(() => {
@@ -79,18 +87,36 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                       console.log(friend);
                       return (
                         <li key={friend.intraId} className="user-item">
-                          <RoundImg
-                            src={friend.avatar}
-                            alt=""
-                            className="avatar"
-                          />
-                          <div>
-                            <h3 className="title-2 mb-8">{friend.username}</h3>
-                            <p className="small mb-8">{friend.email}</p>
-                            <PrimaryLink to="/" className="link">
-                              See profile
-                            </PrimaryLink>
+                          <div className="user-info">
+                            <RoundImg
+                              src={friend.avatar}
+                              alt=""
+                              className="avatar"
+                            />
+                            <div>
+                              <h3 className="title-2 mb-8">
+                                {friend.username}
+                              </h3>
+                              <p className="small mb-8">{friend.email}</p>
+                            </div>
                           </div>
+                          <MainButton
+                            onClick={() => setShowFriendProfile(true)}
+                          >
+                            See profile
+                          </MainButton>
+                          {showFriendProfile && (
+                            <Modal
+                              dismissModalAction={() => {
+                                setShowFriendProfile(false);
+                              }}
+                            >
+                              <ViewNewUserProfile
+                                foundUserData={friend}
+                                isAlreadyFriend={true}
+                              />
+                            </Modal>
+                          )}
                         </li>
                       );
                     })}
@@ -110,7 +136,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                   <MainButton
                     className="friend-search-cta"
                     onClick={() => {
-                      setShowFriendsSearchModal(true);
+                      setShowAddNewFriendFlow(true);
                     }}
                   >
                     Start searching
@@ -118,9 +144,9 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                 </div>
               )}
             </div>
-            {showFriendsSearchModal && (
-              <FriendsSearchModal
-                setShowFriendsSearchModal={setShowFriendsSearchModal}
+            {showAddNewFriendFlow && (
+              <AddNewFriendFlow
+                setShowAddNewFriendFlow={setShowAddNewFriendFlow}
               />
             )}
           </>

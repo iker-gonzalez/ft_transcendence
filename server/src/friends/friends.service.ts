@@ -184,6 +184,38 @@ export class FriendsService {
       },
     });
 
+    // TODO improve this logic
+    const deletedFriendData = await this.prisma.user.findUnique({
+      where: {
+        intraId: friendIntraId,
+      },
+      include: {
+        friends: true,
+      },
+    });
+
+    await this.prisma.friend.deleteMany({
+      where: {
+        userId: deletedFriendData.id,
+      },
+    });
+
+    await this.prisma.user.update({
+      where: {
+        id: deletedFriendData.id,
+      },
+      data: {
+        friends: {
+          create: deletedFriendData.friends.filter(
+            (friend) => friend.intraId !== user.intraId,
+          ),
+        },
+      },
+      include: {
+        friends: true,
+      },
+    });
+
     return {
       deleted: 1,
       data: {

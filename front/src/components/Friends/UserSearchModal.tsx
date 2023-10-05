@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Modal from '../UI/Modal';
 import SearchBar from '../UI/SearchBar';
 import Lottie from 'lottie-react';
 import emptyAnimationData from '../../assets/lotties/empty-ghost.json';
@@ -10,6 +9,8 @@ import UserCoreData from '../../interfaces/user-core-data.interface';
 import Cookies from 'js-cookie';
 import UserItem from '../shared/UserItem';
 import { useNavigate } from 'react-router-dom';
+import MainButton from '../UI/MainButton';
+import UserData from '../../interfaces/user-data.interface';
 
 const WrapperDiv = styled.div`
   .empty-state {
@@ -39,12 +40,15 @@ const WrapperDiv = styled.div`
   }
 `;
 
-type FriendsSearchModalProps = {
-  setShowFriendsSearchModal: (arg0: boolean) => void;
+type UserSearchModalProps = {
+  proceedToNextStep: () => void;
+  setChosenUser: (chosenUser: UserCoreData) => void;
+  userData: UserData;
 };
-
-const FriendsSearchModal: React.FC<FriendsSearchModalProps> = ({
-  setShowFriendsSearchModal,
+const UserSearchModal: React.FC<UserSearchModalProps> = ({
+  proceedToNextStep,
+  setChosenUser,
+  userData,
 }): JSX.Element => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -79,7 +83,10 @@ const FriendsSearchModal: React.FC<FriendsSearchModalProps> = ({
         console.log(data);
 
         users = data.data.friends;
-        setFoundUsers(users);
+        const usersMeExcluded: UserCoreData[] = users.filter(
+          (user) => user.intraId !== userData?.intraId,
+        );
+        setFoundUsers(usersMeExcluded);
       } catch (error: any) {
         console.error(error);
       } finally {
@@ -99,64 +106,65 @@ const FriendsSearchModal: React.FC<FriendsSearchModalProps> = ({
   }, [searchValue, navigate]);
 
   return (
-    <Modal
-      dismissModalAction={() => {
-        setShowFriendsSearchModal(false);
-      }}
-    >
-      <WrapperDiv>
-        <h2 className="title-2 mb-24">Find a new game friends 👥</h2>
-        <p className="mb-16">
-          Use the search bar below to find players and add them to your friends
-          list.
-        </p>
-        <SearchBar
-          type="text"
-          placeholder="Search... 🔍"
-          value={searchValue}
-          className="mb-24"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setSearchValue(_formatSearchValue(e.target.value) as string);
-          }}
-        />
-        {!Boolean(foundUsers.length) && (
-          <div className="empty-state">
-            {isLoading ? (
-              <Lottie
-                animationData={loadingAnimationData}
-                loop={true}
-                aria-hidden="true"
-                className="loading-animation"
-              />
-            ) : (
-              <Lottie
-                animationData={emptyAnimationData}
-                loop={true}
-                aria-hidden="true"
-                className="empty-animation"
-              />
-            )}
-          </div>
-        )}
-        {Boolean(foundUsers.length) && (
-          <div className="users-container">
-            {foundUsers.map((user, index) => {
-              if (index <= 3)
-                return (
-                  <UserItem
-                    userData={user}
-                    key={user.intraId.toString()}
-                    headingLevel={3}
-                  />
-                );
+    <WrapperDiv>
+      <h2 className="title-2 mb-24">Find a new game friends 👥</h2>
+      <p className="mb-16">
+        Use the search bar below to find players and add them to your friends
+        list.
+      </p>
+      <SearchBar
+        type="text"
+        placeholder="Search... 🔍"
+        value={searchValue}
+        className="mb-24"
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setSearchValue(_formatSearchValue(e.target.value) as string);
+        }}
+      />
+      {!Boolean(foundUsers.length) && (
+        <div className="empty-state">
+          {isLoading ? (
+            <Lottie
+              animationData={loadingAnimationData}
+              loop={true}
+              aria-hidden="true"
+              className="loading-animation"
+            />
+          ) : (
+            <Lottie
+              animationData={emptyAnimationData}
+              loop={true}
+              aria-hidden="true"
+              className="empty-animation"
+            />
+          )}
+        </div>
+      )}
+      {Boolean(foundUsers.length) && (
+        <div className="users-container">
+          {foundUsers.map((user, index) => {
+            if (index <= 3)
+              return (
+                <div key={user.intraId.toString()}>
+                  <UserItem userData={user} headingLevel={3}>
+                    <MainButton
+                      onClick={() => {
+                        setChosenUser(user);
+                        proceedToNextStep();
+                      }}
+                    >
+                      View
+                    </MainButton>
+                  </UserItem>
+                </div>
+              );
 
-              return <></>;
-            })}
-          </div>
-        )}
-      </WrapperDiv>
-    </Modal>
+            return <></>;
+          })}
+        </div>
+      )}
+    </WrapperDiv>
   );
 };
 
-export default FriendsSearchModal;
+export default UserSearchModal;
