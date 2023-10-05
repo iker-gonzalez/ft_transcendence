@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import UserCoreData from '../../interfaces/user-core-data.interface';
 import RoundImg from '../UI/RoundImage';
@@ -6,8 +6,7 @@ import MainButton from '../UI/MainButton';
 import SecondaryButton from '../UI/SecondaryButton';
 import { getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
-import FlashMessage from '../UI/FlashMessage';
-import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import FriendData from '../../interfaces/friend-data.interface';
 
 const WrapperDiv = styled.div`
   .user-info-container {
@@ -34,14 +33,22 @@ const WrapperDiv = styled.div`
 type ViewNewUserProfileProps = {
   foundUserData: UserCoreData;
   isAlreadyFriend?: boolean;
+  onRemoveAFriendFromList?: (
+    friendsList: FriendData[],
+    successMessage: string,
+  ) => void;
+  onAddAFriendToList?: (
+    friendsList: FriendData[],
+    successMessage: string,
+  ) => void;
 };
 
 const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
   foundUserData,
   isAlreadyFriend,
+  onRemoveAFriendFromList,
+  onAddAFriendToList,
 }): JSX.Element => {
-  const [successMessage, setSuccessMessage] = useState<string>('');
-
   const addUserToFriend = async () => {
     const res: Response = await fetch(
       `${getBaseUrl()}/friends/${foundUserData.intraId}`,
@@ -59,10 +66,12 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
     } = await res.json();
 
     if (data.created === 1) {
-      setSuccessMessage(`${foundUserData!.username} was added to friends!`);
+      const friendsList: FriendData[] = data.data.friends;
+      const successMessage = foundUserData!.username + 'was added to friends!';
+      onAddAFriendToList!(friendsList, successMessage);
+    } else {
+      // TODO Set some error state here
     }
-
-    console.log('data', data);
   };
 
   const removeUserFromFriends = async () => {
@@ -84,9 +93,12 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
     console.log('data', data);
 
     if (data.deleted === 1) {
-      setSuccessMessage(
-        `${foundUserData!.username} was removed from your friends!`,
-      );
+      const successMessage: string = `${
+        foundUserData!.username
+      } was removed from your friends!`;
+      onRemoveAFriendFromList!(data.data.friends, successMessage);
+    } else {
+      // TODO Set some error state here
     }
   };
 
@@ -110,9 +122,6 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
           )}
         </div>
       </WrapperDiv>
-      {!!successMessage.length && (
-        <FlashMessage text={successMessage} level={FlashMessageLevel.SUCCESS} />
-      )}
     </>
   );
 };
