@@ -5,12 +5,14 @@ import { getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import RoundImg from '../UI/RoundImage';
 import MainButton from '../UI/MainButton';
+import SecondaryButton from '../UI/SecondaryButton';
 import AddNewFriendFlow from '../Friends/AddNewFriendFlow';
 import ViewNewUserProfile from '../Friends/ViewNewUserProfile';
 import Modal from '../UI/Modal';
 import FriendData from '../../interfaces/friend-data.interface';
 import FlashMessage from '../UI/FlashMessage';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import { primaryLightColor } from '../../constants/color-tokens';
 
 const WrapperDiv = styled.div`
   position: relative;
@@ -43,6 +45,22 @@ const WrapperDiv = styled.div`
         height: auto;
       }
     }
+  }
+
+  .friends-list {
+    > * {
+      margin-bottom: 16px;
+    }
+
+    border-bottom: 1px ${primaryLightColor} solid;
+  }
+
+  .search-friends-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 25px;
   }
 `;
 
@@ -115,9 +133,8 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
               <div>
                 {friendsList.length ? (
                   <div>
-                    <ul>
+                    <ul className="friends-list">
                       {friendsList.map((friend) => {
-                        console.log(friend);
                         return (
                           <li key={friend.intraId} className="user-item">
                             <div className="user-info">
@@ -157,6 +174,18 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                         );
                       })}
                     </ul>
+                    <div className="search-friends-container">
+                      <h3 className="title-3">
+                        On the look for new game mates?
+                      </h3>
+                      <SecondaryButton
+                        onClick={() => {
+                          setShowAddNewFriendFlow(true);
+                        }}
+                      >
+                        Search now
+                      </SecondaryButton>
+                    </div>
                   </div>
                 ) : (
                   <div className="empty-state">
