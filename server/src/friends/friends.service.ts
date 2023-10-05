@@ -7,6 +7,12 @@ import { Friend, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { GetFriendsResponseDto } from './dto/get-friends-response.dto';
 import { AddFriendResponseDto } from './dto/add-friend-response.dto';
+import { DeleteFriendResponseDto } from './dto/delete-friend-response.dto';
+import UserCoreData from 'src/types/user-core-data.type';
+
+interface UserWithFriends extends User {
+  friends: Friend[];
+}
 
 type FriendInfo = {
   intraId: number;
@@ -27,7 +33,7 @@ export class FriendsService {
       throw new BadRequestException('You cannot add yourself as a friend');
     }
 
-    const friend = await this.prisma.user.findUnique({
+    const friend: UserWithFriends = await this.prisma.user.findUnique({
       where: {
         intraId: friendIntraId,
       },
@@ -63,7 +69,7 @@ export class FriendsService {
       });
     }
 
-    let updatedUser = await this.prisma.user.update({
+    let updatedUser: UserWithFriends = await this.prisma.user.update({
       where: {
         id: user.id,
       },
@@ -114,7 +120,7 @@ export class FriendsService {
     intraId: number,
     user: User,
   ): Promise<GetFriendsResponseDto> {
-    const userWithFriends = await this.prisma.user.findUnique({
+    const userWithFriends: UserWithFriends = await this.prisma.user.findUnique({
       where: {
         intraId: intraId ? intraId : user.intraId,
       },
@@ -137,8 +143,11 @@ export class FriendsService {
     };
   }
 
-  async deleteFriend(friendIntraId: number, user: User): Promise<any> {
-    const userData = await this.prisma.user.findUnique({
+  async deleteFriend(
+    friendIntraId: number,
+    user: User,
+  ): Promise<DeleteFriendResponseDto> {
+    const userData: UserWithFriends = await this.prisma.user.findUnique({
       where: {
         id: user.id,
       },
@@ -147,7 +156,7 @@ export class FriendsService {
       },
     });
 
-    const isValidFriend = userData.friends.some(
+    const isValidFriend: boolean = userData.friends.some(
       (friend) => friend.intraId === friendIntraId,
     );
 
@@ -155,10 +164,42 @@ export class FriendsService {
       throw new BadRequestException('Friend not found');
     }
 
-    const updatedFriends = userData.friends.filter(
+    const updatedFriends: UserCoreData[] = userData.friends.filter(
       (friend) => friend.intraId !== friendIntraId,
     );
 
+    const updatedUser: UserWithFriends = await this._deleteFriendFromDb(
+      user.id,
+      updatedFriends,
+    );
+
+    const toBeDeletedFriendData: UserWithFriends =
+      await this.prisma.user.findUnique({
+        where: {
+          intraId: friendIntraId,
+        },
+        include: {
+          friends: true,
+        },
+      });
+
+    const otherUserUpdatedFriends: Friend[] =
+      toBeDeletedFriendData.friends.filter(
+        (friend) => friend.intraId !== user.intraId,
+      );
+    this._deleteFriendFromDb(toBeDeletedFriendData.id, otherUserUpdatedFriends);
+
+    return {
+      deleted: 1,
+      data: {
+        id: updatedUser.id,
+        intraId: updatedUser.intraId,
+        friends: updatedUser.friends,
+      },
+    };
+  }
+
+  _deleteFriendFromDb = async (userId: string, updatedFriends: any[]) => {
     // To avoid errors with prisma, we need to delete the userId field
     updatedFriends.forEach((friend) => {
       delete friend.userId;
@@ -166,13 +207,13 @@ export class FriendsService {
 
     await this.prisma.friend.deleteMany({
       where: {
-        userId: user.id,
+        userId,
       },
     });
 
-    const updatedUser = await this.prisma.user.update({
+    const updatedUser: UserWithFriends = await this.prisma.user.update({
       where: {
-        id: user.id,
+        id: userId,
       },
       data: {
         friends: {
@@ -184,47 +225,8 @@ export class FriendsService {
       },
     });
 
-    // TODO improve this logic
-    const deletedFriendData = await this.prisma.user.findUnique({
-      where: {
-        intraId: friendIntraId,
-      },
-      include: {
-        friends: true,
-      },
-    });
-
-    await this.prisma.friend.deleteMany({
-      where: {
-        userId: deletedFriendData.id,
-      },
-    });
-
-    await this.prisma.user.update({
-      where: {
-        id: deletedFriendData.id,
-      },
-      data: {
-        friends: {
-          create: deletedFriendData.friends.filter(
-            (friend) => friend.intraId !== user.intraId,
-          ),
-        },
-      },
-      include: {
-        friends: true,
-      },
-    });
-
-    return {
-      deleted: 1,
-      data: {
-        id: updatedUser.id,
-        intraId: updatedUser.intraId,
-        friends: updatedUser.friends,
-      },
-    };
-  }
+    return updatedUser;
+  };
 
   _computeFriends(currentFriends: Friend[], newFriend: User): FriendInfo[] {
     return [

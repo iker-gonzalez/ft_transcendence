@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
-import { swaggerConstants } from 'config/swagger.constants';
+import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class UserSearchParamsDto {
   @ApiProperty({
