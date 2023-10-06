@@ -576,6 +576,37 @@ describe('App e2e', () => {
       });
 
       it('should return 400 if username is not unique', async () => {
+        // Create user first
+        const user1 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await pactum
+          .spec()
+          .patch(`/users/username`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            username: user1.username,
+          })
+          .expectStatus(400)
+          .expectJsonLike({
+            message: ['Provide a new username'],
+            error: 'Bad Request',
+            statusCode: 400,
+          });
+
+        const notUpdatedUser1 = await prisma.user.findUnique({
+          where: { id: user1.id },
+        });
+        expect(notUpdatedUser1.username).toBe(user1.username);
+      });
+
+      it('should return 400 if username is not unique', async () => {
         const newUsername = 'new-username';
 
         // Create user first
