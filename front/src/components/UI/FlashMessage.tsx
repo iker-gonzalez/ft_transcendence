@@ -8,6 +8,7 @@ import {
   successColor,
 } from '../../constants/color-tokens';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
 
 type FlashMessageProps = {
   text: string;
@@ -68,39 +69,23 @@ const FlashMessage: React.FC<FlashMessageProps> = ({
   level = FlashMessageLevel.INFO,
 }): JSX.Element => {
   const [isSlideOutClass, setIsSlideOutClass] = useState<boolean>(false);
+  const { setShowFlashMessage } = useFlashMessages();
 
-  const destroyFlashMessage = (): void => {
-    const flashMessagesContainer = document.getElementById(
-      'flash-messages-container',
-    ) as HTMLElement;
-    const flashMessage = document.getElementById(
-      'flash-message',
-    ) as HTMLElement;
-
-    if (flashMessage) {
-      setIsSlideOutClass(true);
-      flashMessage.remove();
-
-      const newFlashMessage: HTMLElement = document.createElement(
-        'div',
-      ) as HTMLElement;
-      newFlashMessage.id = 'flash-message';
-
-      flashMessagesContainer.appendChild(newFlashMessage);
-    }
+  const hideFlashMessage = (): void => {
+    setShowFlashMessage(false);
   };
 
   useEffect(() => {
     setIsSlideOutClass(false);
 
     const timer = setTimeout(() => {
-      destroyFlashMessage();
+      hideFlashMessage();
     }, 3000);
 
     return () => {
       clearTimeout(timer);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return ReactDom.createPortal(
     <WrapperDiv
@@ -113,7 +98,7 @@ const FlashMessage: React.FC<FlashMessageProps> = ({
         aria-label="Dismiss"
         className="close-btn"
         onClick={() => {
-          destroyFlashMessage();
+          hideFlashMessage();
         }}
       >
         ✗
