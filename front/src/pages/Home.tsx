@@ -63,7 +63,6 @@ const SignIn: React.FC = (): JSX.Element => {
   const handleLogOut = () => {
     Cookies.remove('token');
     setUserData(null);
-    window.location.reload();
   };
 
   return (
