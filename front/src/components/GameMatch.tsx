@@ -38,6 +38,13 @@ const WrapperDiv = styled.div`
     top: 50%;
     transform: translateY(-50%);
   }
+
+  .canvas {
+    border: 1px dotted red;
+    transform: translateY(+10px);
+    max-width: 90vw;
+    max-height: 50vh;
+  }
 `;
 
 export default function GameMatch(): JSX.Element {
@@ -131,6 +138,7 @@ export default function GameMatch(): JSX.Element {
             </div>
           )}
           <canvas
+            className="canvas"
             id="gamePong"
             width="900"
             height="600"
