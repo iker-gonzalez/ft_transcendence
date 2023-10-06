@@ -46,7 +46,8 @@ model UserIntraData {
 }
 
 model Friend {
-  intraId Int @unique
+  id      String @id @unique @default(uuid())
+  intraId Int
 
   User   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String?
