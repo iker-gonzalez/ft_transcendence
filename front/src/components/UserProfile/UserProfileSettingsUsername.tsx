@@ -6,8 +6,8 @@ import MainInput from '../UI/MainInput';
 import Cookies from 'js-cookie';
 import { capitalizeFirstLetter, getBaseUrl } from '../../utils/utils';
 import { useUserData } from '../../context/UserDataContext';
-import FlashMessage from '../UI/FlashMessage';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
 
 const WrapperDiv = styled.div`
   .username-change-container {
@@ -37,16 +37,12 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
 }): JSX.Element => {
   const { setUserData: setContextUserData } = useUserData();
   const [showUsernameForm, setShowUsernameForm] = useState<boolean>(false);
-  const [usernameError, setUsernameError] = useState<string>('');
-  const [usernameSuccessMessage, setUsernameSuccessMessage] =
-    useState<string>('');
+  const { launchFlashMessage } = useFlashMessages();
 
   const handleEditUsernameSubmit = async (
     e: FormEvent<HTMLFormElement>,
   ): Promise<void> => {
     e.preventDefault();
-    setUsernameError('');
-    setUsernameSuccessMessage('');
 
     try {
       const formData = new FormData(e.target as HTMLFormElement);
@@ -68,12 +64,16 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
       const data = await res.json();
 
       if (data.statusCode === 400) {
-        setUsernameError(data.message[0]);
+        launchFlashMessage(
+          capitalizeFirstLetter(data.message[0]),
+          FlashMessageLevel.ERROR,
+        );
         return;
       }
 
       if (data.updated) {
-        setUsernameSuccessMessage('Username updated!');
+        launchFlashMessage('Username updated!', FlashMessageLevel.SUCCESS);
+
         setContextUserData((prev: any) => {
           return { ...prev, username: data.data.username };
         });
@@ -81,14 +81,15 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
         setShowUsernameForm(false);
       }
     } catch (err: any) {
-      setUsernameError('An error occurred. Try again later.');
+      launchFlashMessage(
+        'An error occurred. Try again later.',
+        FlashMessageLevel.ERROR,
+      );
     }
   };
 
   const handleCloseEdit = (): void => {
     setShowUsernameForm(false);
-    setUsernameError('');
-    setUsernameSuccessMessage('');
   };
 
   return (
@@ -124,12 +125,6 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
               Only letters, numbers, hyphen, and underscore are allowed
             </span>
           </p>
-          {usernameError && (
-            <FlashMessage
-              text={capitalizeFirstLetter(usernameError)}
-              level={FlashMessageLevel.ERROR}
-            />
-          )}
         </div>
       ) : (
         <div className="username-change-container">
@@ -140,12 +135,6 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
           >
             Change
           </MainButton>
-          {usernameSuccessMessage && (
-            <FlashMessage
-              text={usernameSuccessMessage}
-              level={FlashMessageLevel.SUCCESS}
-            />
-          )}
         </div>
       )}
     </WrapperDiv>

@@ -9,7 +9,7 @@ import FriendData from '../../interfaces/friend-data.interface';
 
 type AddNewFriendFlowProps = {
   setShowAddNewFriendFlow: (arg0: boolean) => void;
-  onAddAFriendToList: (
+  onUpdateFriendsList: (
     friendsList: FriendData[],
     successMessage: string,
   ) => void;
@@ -17,7 +17,7 @@ type AddNewFriendFlowProps = {
 
 const AddNewFriendFlow: React.FC<AddNewFriendFlowProps> = ({
   setShowAddNewFriendFlow,
-  onAddAFriendToList,
+  onUpdateFriendsList,
 }): JSX.Element => {
   const [showUserSearchModal, setShowUserSearchModal] = useState<boolean>(true);
   const [foundUserData, setFoundUserData] = useState<UserCoreData | null>(null);
@@ -32,26 +32,24 @@ const AddNewFriendFlow: React.FC<AddNewFriendFlowProps> = ({
   };
 
   return (
-    <>
-      <Modal
-        dismissModalAction={() => {
-          setShowAddNewFriendFlow(false);
-        }}
-      >
-        {showUserSearchModal ? (
-          <UserSearchModal
-            userData={userData!}
-            setChosenUser={setChosenUser}
-            proceedToNextStep={proceedToNextStep}
-          />
-        ) : (
-          <ViewNewUserProfile
-            foundUserData={foundUserData!}
-            onAddAFriendToList={onAddAFriendToList}
-          />
-        )}
-      </Modal>
-    </>
+    <Modal
+      dismissModalAction={() => {
+        setShowAddNewFriendFlow(false);
+      }}
+    >
+      {showUserSearchModal ? (
+        <UserSearchModal
+          userData={userData!}
+          setChosenUser={setChosenUser}
+          proceedToNextStep={proceedToNextStep}
+        />
+      ) : (
+        <ViewNewUserProfile
+          foundUserData={foundUserData!}
+          onUpdateFriendsList={onUpdateFriendsList}
+        />
+      )}
+    </Modal>
   );
 };
 

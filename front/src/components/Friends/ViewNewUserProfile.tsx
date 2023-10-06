@@ -33,11 +33,7 @@ const WrapperDiv = styled.div`
 type ViewNewUserProfileProps = {
   foundUserData: UserCoreData;
   isAlreadyFriend?: boolean;
-  onRemoveAFriendFromList?: (
-    friendsList: FriendData[],
-    successMessage: string,
-  ) => void;
-  onAddAFriendToList?: (
+  onUpdateFriendsList: (
     friendsList: FriendData[],
     successMessage: string,
   ) => void;
@@ -46,8 +42,7 @@ type ViewNewUserProfileProps = {
 const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
   foundUserData,
   isAlreadyFriend,
-  onRemoveAFriendFromList,
-  onAddAFriendToList,
+  onUpdateFriendsList,
 }): JSX.Element => {
   const addUserToFriend = async () => {
     const res: Response = await fetch(
@@ -68,7 +63,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
     if (data.created === 1) {
       const friendsList: FriendData[] = data.data.friends;
       const successMessage = foundUserData!.username + 'was added to friends!';
-      onAddAFriendToList!(friendsList, successMessage);
+      onUpdateFriendsList(friendsList, successMessage);
     } else {
       // TODO Set some error state here
     }
@@ -96,33 +91,31 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
       const successMessage: string = `${
         foundUserData!.username
       } was removed from your friends!`;
-      onRemoveAFriendFromList!(data.data.friends, successMessage);
+      onUpdateFriendsList(data.data.friends, successMessage);
     } else {
       // TODO Set some error state here
     }
   };
 
   return (
-    <>
-      <WrapperDiv>
-        <div className="user-info-container">
-          <RoundImg src={foundUserData.avatar} alt="" className="avatar" />
-          <div>
-            <h2 className="title-2 mb-8">{foundUserData.username}</h2>
-            <p className="small">{foundUserData.email}</p>
-          </div>
+    <WrapperDiv>
+      <div className="user-info-container">
+        <RoundImg src={foundUserData.avatar} alt="" className="avatar" />
+        <div>
+          <h2 className="title-2 mb-8">{foundUserData.username}</h2>
+          <p className="small">{foundUserData.email}</p>
         </div>
-        <div className="actions-container">
-          {isAlreadyFriend ? (
-            <SecondaryButton onClick={removeUserFromFriends}>
-              Unfriend 💔
-            </SecondaryButton>
-          ) : (
-            <MainButton onClick={addUserToFriend}>Add to friends</MainButton>
-          )}
-        </div>
-      </WrapperDiv>
-    </>
+      </div>
+      <div className="actions-container">
+        {isAlreadyFriend ? (
+          <SecondaryButton onClick={removeUserFromFriends}>
+            Unfriend 💔
+          </SecondaryButton>
+        ) : (
+          <MainButton onClick={addUserToFriend}>Add to friends</MainButton>
+        )}
+      </div>
+    </WrapperDiv>
   );
 };
 

@@ -8,11 +8,11 @@ import AddNewFriendFlow from '../Friends/AddNewFriendFlow';
 import ViewNewUserProfile from '../Friends/ViewNewUserProfile';
 import Modal from '../UI/Modal';
 import FriendData from '../../interfaces/friend-data.interface';
-import FlashMessage from '../UI/FlashMessage';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { primaryLightColor } from '../../constants/color-tokens';
 import { useUserFriends } from '../../context/UserDataContext';
 import UserProfileFriendsEmptyState from './UserProfileFriendsEmptyState';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
 
 const WrapperDiv = styled.div`
   position: relative;
@@ -58,136 +58,102 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
   const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
 
-  const [newFriendSuccessMessage, setNewFriendSuccessMessage] =
-    useState<string>('');
-  const [removeFriendSuccessMessage, setRemoveFriendSuccessMessage] =
-    useState<string>('');
-
   const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
     useUserFriends();
+  const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
     fetchFriendsList();
-
-    return () => {
-      setNewFriendSuccessMessage('');
-      setRemoveFriendSuccessMessage('');
-    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const onRemoveAFriendFromList = (
+  const onUpdateFriendsList = (
     newFriendsList: FriendData[],
     successMessage: string,
   ): void => {
     setUserFriends(newFriendsList);
     setShowFriendProfile(false);
-    setRemoveFriendSuccessMessage(successMessage);
-  };
-
-  const onAddAFriendToList = (
-    newFriendsList: FriendData[],
-    successMessage: string,
-  ): void => {
-    setUserFriends(newFriendsList);
     setShowAddNewFriendFlow(false);
-    setNewFriendSuccessMessage(successMessage);
+
+    launchFlashMessage(successMessage, FlashMessageLevel.SUCCESS);
   };
 
   return (
-    <>
-      <ContrastPanel>
-        <WrapperDiv>
-          {isFetchingFriends ? (
-            <p>Loading...</p>
-          ) : (
-            <>
-              <h2 className="title-2 mb-24">Friends</h2>
-              <div>
-                {userFriends.length ? (
-                  <div>
-                    <ul className="friends-list">
-                      {userFriends.map((friend) => {
-                        return (
-                          <li key={friend.intraId} className="user-item">
-                            <div className="user-info">
-                              <RoundImg
-                                src={friend.avatar}
-                                alt=""
-                                className="avatar"
-                              />
-                              <div>
-                                <h3 className="title-2 mb-8">
-                                  {friend.username}
-                                </h3>
-                                <p className="small mb-8">{friend.email}</p>
-                              </div>
+    <ContrastPanel>
+      <WrapperDiv>
+        {isFetchingFriends ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <h2 className="title-2 mb-24">Friends</h2>
+            <div>
+              {userFriends.length ? (
+                <div>
+                  <ul className="friends-list">
+                    {userFriends.map((friend) => {
+                      return (
+                        <li key={friend.intraId} className="user-item">
+                          <div className="user-info">
+                            <RoundImg
+                              src={friend.avatar}
+                              alt=""
+                              className="avatar"
+                            />
+                            <div>
+                              <h3 className="title-2 mb-8">
+                                {friend.username}
+                              </h3>
+                              <p className="small mb-8">{friend.email}</p>
                             </div>
-                            <MainButton
-                              onClick={() => setShowFriendProfile(true)}
+                          </div>
+                          <MainButton
+                            onClick={() => setShowFriendProfile(true)}
+                          >
+                            See profile
+                          </MainButton>
+                          {showFriendProfile && (
+                            <Modal
+                              dismissModalAction={() => {
+                                setShowFriendProfile(false);
+                              }}
                             >
-                              See profile
-                            </MainButton>
-                            {showFriendProfile && (
-                              <Modal
-                                dismissModalAction={() => {
-                                  setShowFriendProfile(false);
-                                }}
-                              >
-                                <ViewNewUserProfile
-                                  foundUserData={friend}
-                                  isAlreadyFriend={true}
-                                  onRemoveAFriendFromList={
-                                    onRemoveAFriendFromList
-                                  }
-                                />
-                              </Modal>
-                            )}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                    <div className="search-friends-container">
-                      <h3 className="title-3">
-                        On the look for new game mates?
-                      </h3>
-                      <SecondaryButton
-                        onClick={() => {
-                          setShowAddNewFriendFlow(true);
-                        }}
-                      >
-                        Search now
-                      </SecondaryButton>
-                    </div>
+                              <ViewNewUserProfile
+                                foundUserData={friend}
+                                isAlreadyFriend={true}
+                                onUpdateFriendsList={onUpdateFriendsList}
+                              />
+                            </Modal>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <div className="search-friends-container">
+                    <h3 className="title-3">On the look for new game mates?</h3>
+                    <SecondaryButton
+                      onClick={() => {
+                        setShowAddNewFriendFlow(true);
+                      }}
+                    >
+                      Search now
+                    </SecondaryButton>
                   </div>
-                ) : (
-                  <UserProfileFriendsEmptyState
-                    setShowAddNewFriendFlow={setShowAddNewFriendFlow}
-                  />
-                )}
-              </div>
-              {showAddNewFriendFlow && (
-                <AddNewFriendFlow
+                </div>
+              ) : (
+                <UserProfileFriendsEmptyState
                   setShowAddNewFriendFlow={setShowAddNewFriendFlow}
-                  onAddAFriendToList={onAddAFriendToList}
                 />
               )}
-            </>
-          )}
-        </WrapperDiv>
-      </ContrastPanel>
-      {!!removeFriendSuccessMessage.length && (
-        <FlashMessage
-          text={removeFriendSuccessMessage}
-          level={FlashMessageLevel.SUCCESS}
-        />
-      )}
-      {!!newFriendSuccessMessage.length && (
-        <FlashMessage
-          text={newFriendSuccessMessage}
-          level={FlashMessageLevel.SUCCESS}
-        />
-      )}
-    </>
+            </div>
+            {showAddNewFriendFlow && (
+              <AddNewFriendFlow
+                setShowAddNewFriendFlow={setShowAddNewFriendFlow}
+                onUpdateFriendsList={onUpdateFriendsList}
+              />
+            )}
+          </>
+        )}
+      </WrapperDiv>
+    </ContrastPanel>
   );
 };
 
