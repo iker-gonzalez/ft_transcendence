@@ -1,47 +1,26 @@
 import React, {
   PropsWithChildren,
   ReactNode,
+  useCallback,
   useContext,
   useState,
 } from 'react';
 import UserData from '../interfaces/user-data.interface';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
 import { getBaseUrl } from '../utils/utils';
-
-interface RefetchUserDataFunction {
-  (token: string): Promise<UserData | null>;
-}
+import FriendData from '../interfaces/friend-data.interface';
+import Cookies from 'js-cookie';
+import UserFriendsContextData from '../interfaces/user-friends-context-data.interface';
 
 /**
  * Context object for user data.
  */
 const UserDataContext = React.createContext<UserDataContextData>({
-  userData: null,
+  fetchUserData: () => {},
+  isUserDataFetching: false,
   setUserData: () => {},
+  userData: null,
 });
-
-/**
- * Asynchronously fetches the user data from the server.
- * @param token The user's access token.
- * @returns The user data or null if the request fails.
- */
-async function fetchUserData(token: string): Promise<UserData> {
-  const response: Response = await fetch(`${getBaseUrl()}/users/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const fetchedUserData = await response.json();
-
-  const userData: UserData = fetchedUserData.data;
-  return userData;
-}
-
-/**
- * Context object for the refetch user data function.
- */
-const RefetchUserDataContext =
-  React.createContext<RefetchUserDataFunction>(fetchUserData);
 
 /**
  * Hook to access user data from the context.
@@ -51,12 +30,19 @@ export function useUserData(): UserDataContextData {
   return useContext(UserDataContext);
 }
 
+const UserFriendsContext = React.createContext<UserFriendsContextData>({
+  fetchFriendsList: () => {},
+  isFetchingFriends: false,
+  setUserFriends: () => {},
+  userFriends: [],
+});
+
 /**
- * Hook to access the refetch user data function from the context.
- * @returns The refetch user data function.
+ * Hook to access the user friends data from the context.
+ * @returns An object containing the user friends data and a function to update it.
  */
-export function useRefetchUserData(): RefetchUserDataFunction {
-  return useContext(RefetchUserDataContext);
+export function useUserFriends(): UserFriendsContextData {
+  return useContext(UserFriendsContext);
 }
 
 /**
@@ -66,17 +52,63 @@ export function useRefetchUserData(): RefetchUserDataFunction {
  */
 export function UserDataProvider({ children }: PropsWithChildren): ReactNode {
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [isUserDataFetching, setIsUserDataFetching] = useState<boolean>(false);
+
+  const [userFriends, setUserFriends] = useState<FriendData[]>([]);
+  const [isFetchingFriends, setIsFetchingFriends] = useState<boolean>(false);
+
+  const fetchFriendsList = useCallback(async () => {
+    setIsFetchingFriends(true);
+
+    const response: Response = await fetch(`${getBaseUrl()}/friends`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+    });
+
+    const data = await response.json();
+
+    const friendsData: FriendData[] = data.data.friends;
+
+    setUserFriends(friendsData);
+    setIsFetchingFriends(false);
+  }, []);
+
+  const fetchUserData = useCallback(async (token: string) => {
+    setIsUserDataFetching(true);
+
+    const response: Response = await fetch(`${getBaseUrl()}/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const fetchedUserData = await response.json();
+
+    const userData: UserData = fetchedUserData.data;
+
+    setIsUserDataFetching(false);
+    setUserData(userData);
+  }, []);
 
   return (
     <UserDataContext.Provider
       value={{
-        userData,
+        fetchUserData,
+        isUserDataFetching,
         setUserData,
+        userData,
       }}
     >
-      <RefetchUserDataContext.Provider value={fetchUserData}>
+      <UserFriendsContext.Provider
+        value={{
+          fetchFriendsList,
+          isFetchingFriends,
+          setUserFriends,
+          userFriends,
+        }}
+      >
         {children}
-      </RefetchUserDataContext.Provider>
+      </UserFriendsContext.Provider>
     </UserDataContext.Provider>
   );
 }
