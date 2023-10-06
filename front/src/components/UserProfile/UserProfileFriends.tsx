@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ContrastPanel from '../UI/ContrastPanel';
-import { getBaseUrl } from '../../utils/utils';
-import Cookies from 'js-cookie';
 import RoundImg from '../UI/RoundImage';
 import MainButton from '../UI/MainButton';
 import SecondaryButton from '../UI/SecondaryButton';
@@ -13,6 +11,7 @@ import FriendData from '../../interfaces/friend-data.interface';
 import FlashMessage from '../UI/FlashMessage';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { primaryLightColor } from '../../constants/color-tokens';
+import { useUserFriends } from '../../context/UserDataContext';
 
 const WrapperDiv = styled.div`
   position: relative;
@@ -65,9 +64,6 @@ const WrapperDiv = styled.div`
 `;
 
 const UserProfileFriends: React.FC = (): JSX.Element => {
-  const [friendsList, setFriendsList] = useState<FriendData[]>([]);
-  const [areFriendsLoaded, setAreFriendsLoaded] = useState<boolean>(false);
-
   const [showFriendProfile, setShowFriendProfile] = useState<boolean>(false);
   const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
@@ -77,25 +73,10 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
   const [removeFriendSuccessMessage, setRemoveFriendSuccessMessage] =
     useState<string>('');
 
+  const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
+    useUserFriends();
+
   useEffect(() => {
-    // TODO move this to context ?
-    const fetchFriendsList = async (): Promise<void> => {
-      const response: Response = await fetch(`${getBaseUrl()}/friends`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      });
-
-      const data = await response.json();
-
-      setAreFriendsLoaded(true);
-
-      const friendsList: FriendData[] = data.data.friends;
-      if (friendsList.length) {
-        setFriendsList(friendsList);
-      }
-    };
-
     fetchFriendsList();
 
     return () => {
@@ -108,7 +89,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
     newFriendsList: FriendData[],
     successMessage: string,
   ): void => {
-    setFriendsList(newFriendsList);
+    setUserFriends(newFriendsList);
     setShowFriendProfile(false);
     setRemoveFriendSuccessMessage(successMessage);
   };
@@ -117,7 +98,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
     newFriendsList: FriendData[],
     successMessage: string,
   ): void => {
-    setFriendsList(newFriendsList);
+    setUserFriends(newFriendsList);
     setShowAddNewFriendFlow(false);
     setNewFriendSuccessMessage(successMessage);
   };
@@ -126,15 +107,16 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
     <>
       <ContrastPanel>
         <WrapperDiv>
-          {!areFriendsLoaded && <p>Loading...</p>}
-          {areFriendsLoaded && (
+          {isFetchingFriends ? (
+            <p>Loading...</p>
+          ) : (
             <>
               <h2 className="title-2 mb-24">Friends</h2>
               <div>
-                {friendsList.length ? (
+                {userFriends.length ? (
                   <div>
                     <ul className="friends-list">
-                      {friendsList.map((friend) => {
+                      {userFriends.map((friend) => {
                         return (
                           <li key={friend.intraId} className="user-item">
                             <div className="user-info">

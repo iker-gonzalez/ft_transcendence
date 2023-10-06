@@ -1,12 +1,16 @@
 import React, {
   PropsWithChildren,
   ReactNode,
+  useCallback,
   useContext,
   useState,
 } from 'react';
 import UserData from '../interfaces/user-data.interface';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
 import { getBaseUrl } from '../utils/utils';
+import FriendData from '../interfaces/friend-data.interface';
+import Cookies from 'js-cookie';
+import UserFriendsContextData from '../interfaces/user-friends-context-data.interface';
 
 interface RefetchUserDataFunction {
   (token: string): Promise<UserData | null>;
@@ -59,6 +63,21 @@ export function useRefetchUserData(): RefetchUserDataFunction {
   return useContext(RefetchUserDataContext);
 }
 
+const UserFriendsContext = React.createContext<UserFriendsContextData>({
+  userFriends: [],
+  setUserFriends: () => {},
+  isFetchingFriends: false,
+  fetchFriendsList: () => {},
+});
+
+/**
+ * Hook to access the user friends data from the context.
+ * @returns An object containing the user friends data and a function to update it.
+ */
+export function useUserFriends(): UserFriendsContextData {
+  return useContext(UserFriendsContext);
+}
+
 /**
  * Provider component for user data context.
  * @param children The child components to render.
@@ -66,6 +85,24 @@ export function useRefetchUserData(): RefetchUserDataFunction {
  */
 export function UserDataProvider({ children }: PropsWithChildren): ReactNode {
   const [userData, setUserData] = useState<UserData | null>(null);
+
+  const [userFriends, setUserFriends] = useState<FriendData[]>([]);
+  const [isFetchingFriends, setIsFetchingFriends] = useState<boolean>(false);
+
+  const fetchFriendsList = useCallback(async () => {
+    setIsFetchingFriends(true);
+
+    const response: Response = await fetch(`${getBaseUrl()}/friends`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+    });
+
+    const data = await response.json();
+
+    setUserFriends(data.data.friends);
+    setIsFetchingFriends(false);
+  }, []);
 
   return (
     <UserDataContext.Provider
@@ -75,7 +112,16 @@ export function UserDataProvider({ children }: PropsWithChildren): ReactNode {
       }}
     >
       <RefetchUserDataContext.Provider value={fetchUserData}>
-        {children}
+        <UserFriendsContext.Provider
+          value={{
+            userFriends,
+            setUserFriends,
+            isFetchingFriends,
+            fetchFriendsList,
+          }}
+        >
+          {children}
+        </UserFriendsContext.Provider>
       </RefetchUserDataContext.Provider>
     </UserDataContext.Provider>
   );
