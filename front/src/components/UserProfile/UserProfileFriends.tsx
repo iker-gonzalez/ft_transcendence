@@ -12,21 +12,11 @@ import FlashMessage from '../UI/FlashMessage';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { primaryLightColor } from '../../constants/color-tokens';
 import { useUserFriends } from '../../context/UserDataContext';
+import UserProfileFriendsEmptyState from './UserProfileFriendsEmptyState';
 
 const WrapperDiv = styled.div`
   position: relative;
   width: 650px;
-
-  .empty-state {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 75px;
-
-    .friend-search-cta {
-      white-space: nowrap;
-    }
-  }
 
   .user-item {
     display: flex;
@@ -170,25 +160,9 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                     </div>
                   </div>
                 ) : (
-                  <div className="empty-state">
-                    <div>
-                      <p className="mb-16">
-                        It looks like you're a bit lonely 😿
-                      </p>
-                      <p>
-                        It's easy to make new friends. Just search for a user to
-                        add them to your friends list.
-                      </p>
-                    </div>
-                    <MainButton
-                      className="friend-search-cta"
-                      onClick={() => {
-                        setShowAddNewFriendFlow(true);
-                      }}
-                    >
-                      Start searching
-                    </MainButton>
-                  </div>
+                  <UserProfileFriendsEmptyState
+                    setShowAddNewFriendFlow={setShowAddNewFriendFlow}
+                  />
                 )}
               </div>
               {showAddNewFriendFlow && (
