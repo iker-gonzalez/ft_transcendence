@@ -1,33 +1,29 @@
 import React, { useState } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
-import { Socket } from 'socket.io-client';
 import SessionData from '../interfaces/game-session-data.interface';
 
 type GameContextType = {
-  matchmakingSocket: Socket;
   sessionDataState: [
     sessionData: SessionData,
-    setSessionData: (arg0: SessionData) => void,
+    setSessionData: React.Dispatch<React.SetStateAction<SessionData>>,
   ];
 };
 
-export default function Game() {
+const Game: React.FC = (): JSX.Element => {
   const [sessionData, setSessionData] = useState<SessionData>();
 
   return (
     <main>
-      {(() => {
-        return (
-          <Outlet
-            context={{
-              sessionDataState: [sessionData, setSessionData],
-            }}
-          />
-        );
-      })()}
+      <Outlet
+        context={{
+          sessionDataState: [sessionData, setSessionData],
+        }}
+      />
     </main>
   );
-}
+};
+
+export default Game;
 
 export function useGameRouteContext() {
   return useOutletContext<GameContextType>();

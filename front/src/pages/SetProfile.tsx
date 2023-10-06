@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-// Styled components
 const FormContainer = styled.div`
   position: fixed;
   top: 50%;
@@ -116,10 +115,7 @@ function SetProfile() {
           onChange={handleAvatarChange}
         />
         {avatar && (
-          <img
-            src={URL.createObjectURL(avatar)}
-            alt="Selected Avatar"
-          />
+          <img src={URL.createObjectURL(avatar)} alt="Selected Avatar" />
         )}
         {avatar ? 'Change Avatar' : 'Upload Avatar'}
       </AvatarLabel>

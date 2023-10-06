@@ -23,7 +23,7 @@ function App() {
             <Navigation />
             <Routes>
               <Route path="/" element={<SignIn />} />
-              <Route path="/set-profile" element={<SetProfile />} />
+              {/* <Route path="/set-profile" element={<SetProfile />} /> */}
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/login" element={<Login />} />
               <Route path="game" element={<Game />}>
