@@ -31,6 +31,10 @@ export class UserService {
       throw new BadRequestException();
     }
 
+    if (userData.username === username) {
+      throw new BadRequestException(['Provide a new username']);
+    }
+
     try {
       const newUserData: User = await this.prisma.user.update({
         where: {
