@@ -9,7 +9,7 @@ import Cookies from 'js-cookie';
 import { useUserData } from '../../context/UserDataContext';
 import UserData from '../../interfaces/user-data.interface';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
-import FlashMessage from '../UI/FlashMessage';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
 
 type SettingsAvatarProps = {
   className: string;
@@ -95,14 +95,9 @@ const UserProfileSettingsAvatar: React.FC<SettingsAvatarProps> = ({
   const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false);
   const [avatarSrc, setAvatarSrc] = useState<string>(userData.avatar);
   const uploadedFileContent = useRef<any>(null);
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string>('');
+  const { launchFlashMessage } = useFlashMessages();
 
   const cleanupAvatarState = (): void => {
-    setShowErrorMessage(false);
-    setErrorMessage('');
-    setSuccessMessage('');
     setIsFileUploaded(false);
     setAvatarSrc(userData.avatar);
   };
@@ -152,97 +147,89 @@ const UserProfileSettingsAvatar: React.FC<SettingsAvatarProps> = ({
         setShowModal(false);
         cleanupAvatarState();
         setAvatarSrc(newAvatarSrc);
-        setSuccessMessage('Avatar successfully updated!');
-        setShowErrorMessage(true);
+
+        launchFlashMessage(
+          'Avatar successfully updated!',
+          FlashMessageLevel.SUCCESS,
+        );
       } else {
         const errorMessage: string | null = data.message;
         if (errorMessage?.length) {
           cleanupAvatarState();
-          setErrorMessage(errorMessage);
-          setShowErrorMessage(true);
+
+          launchFlashMessage(
+            capitalizeFirstLetter(errorMessage),
+            FlashMessageLevel.ERROR,
+          );
         }
       }
     } catch (err) {
       console.error(err);
-      setErrorMessage('An error occurred. Try again later.');
-      setShowErrorMessage(true);
+
+      launchFlashMessage(
+        'An error occurred. Try again later.',
+        FlashMessageLevel.ERROR,
+      );
       setShowModal(false);
     }
   };
 
   return (
-    <>
-      <WrapperDiv className={className}>
-        <MainButton
-          onClick={() => {
-            setShowModal(true);
+    <WrapperDiv className={className}>
+      <MainButton
+        onClick={() => {
+          setShowModal(true);
+        }}
+        aria-label="Change avatar"
+        className="edit-avatar-btn"
+      >
+        ✎
+      </MainButton>
+      {showModal && (
+        <Modal
+          dismissModalAction={() => {
+            cleanupAvatarState();
+            setShowModal(false);
           }}
-          aria-label="Change avatar"
-          className="edit-avatar-btn"
         >
-          ✎
-        </MainButton>
-        {showModal && (
-          <Modal
-            dismissModalAction={() => {
-              cleanupAvatarState();
-              setShowModal(false);
-            }}
-          >
-            <h1 className="title-2 mb-24">Choose a new avatar</h1>
-            <p>Your profile picture will be public.</p>
-            <p className="mb-16">Upload your best selfie 🤩</p>
-            <AvatarFormWrapper>
-              <img src={avatarSrc} alt="" className="avatar-preview" />
-              <form
-                encType="multipart/form-data"
-                onChange={onUploadAvatar}
-                onSubmit={onSubmitAvatar}
+          <h1 className="title-2 mb-24">Choose a new avatar</h1>
+          <p>Your profile picture will be public.</p>
+          <p className="mb-16">Upload your best selfie 🤩</p>
+          <AvatarFormWrapper>
+            <img src={avatarSrc} alt="" className="avatar-preview" />
+            <form
+              encType="multipart/form-data"
+              onChange={onUploadAvatar}
+              onSubmit={onSubmitAvatar}
+            >
+              <label
+                htmlFor="avatar"
+                className={`avatar-label ${isFileUploaded && 'sr-only'}`}
               >
-                <label
-                  htmlFor="avatar"
-                  className={`avatar-label ${isFileUploaded && 'sr-only'}`}
-                >
-                  Upload new avatar
-                  <input
-                    id="avatar"
-                    name="avatar"
-                    type="file"
-                    className="sr-only"
-                    accept="image/*"
-                  />
-                </label>
-                {isFileUploaded && (
-                  <div className="submit-container">
-                    <div className="actions-container">
-                      <SecondaryButton
-                        type="button"
-                        onClick={cleanupAvatarState}
-                      >
-                        Cancel
-                      </SecondaryButton>
-                      <MainButton type="submit">Confirm</MainButton>
-                    </div>
+                Upload new avatar
+                <input
+                  id="avatar"
+                  name="avatar"
+                  type="file"
+                  className="sr-only"
+                  accept="image/*"
+                />
+              </label>
+              {isFileUploaded && (
+                <div className="submit-container">
+                  <div className="actions-container">
+                    <SecondaryButton type="button" onClick={cleanupAvatarState}>
+                      Cancel
+                    </SecondaryButton>
+                    <MainButton type="submit">Confirm</MainButton>
                   </div>
-                )}
-              </form>
-            </AvatarFormWrapper>
-          </Modal>
-        )}
-      </WrapperDiv>
-      {showErrorMessage && (
-        <FlashMessage
-          text={capitalizeFirstLetter(errorMessage)}
-          level={FlashMessageLevel.ERROR}
-        />
+                </div>
+              )}
+            </form>
+          </AvatarFormWrapper>
+        </Modal>
       )}
-      {!!successMessage.length && (
-        <FlashMessage
-          text={capitalizeFirstLetter(successMessage)}
-          level={FlashMessageLevel.SUCCESS}
-        />
-      )}
-    </>
+    </WrapperDiv>
   );
 };
 
