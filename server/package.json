@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "primsa:dev:migrate": "prisma migrate dev",
+    "prisma:dev:migrate": "prisma migrate dev",
     "prisma:dev:deploy": "prisma migrate deploy",
     "prisma:test:deploy": "prisma migrate deploy",
     "db:test:restart": "npm run prisma:test:deploy",
