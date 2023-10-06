@@ -96,7 +96,6 @@ export default function GameMatch(): JSX.Element {
     socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
       setShowGame(true);
 
-      // TODO change this to a ref
       if (canvasRef.current)
         gameLoop(canvasRef.current, socketRef.current, isPlayer1, sessionId);
     });
