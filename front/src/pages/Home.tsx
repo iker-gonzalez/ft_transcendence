@@ -1,105 +1,87 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import MainButton from '../components/UI/MainButton';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { primaryLightColor } from '../constants/color-tokens';
-import { useRefetchUserData, useUserData } from '../context/UserDataContext';
-import UserData from '../interfaces/user-data.interface';
+import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
+import LoadingPage from './LoadingPage';
 
 const PageWrapperDiv = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  .signin-link {
-    color: ${primaryLightColor};
-    text-decoration: underline;
-    cursor: pointer;
+  .logo {
+    width: 150px;
+    margin-bottom: 12px;
+  }
+
+  .links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .signin-link {
+      color: ${primaryLightColor};
+      text-decoration: underline;
+      cursor: pointer;
+    }
   }
 `;
 
-function SignIn() {
-  const { userData, setUserData }: UserDataContextData = useUserData();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isError, setIsError] = useState<boolean>(false);
-
-  const refetchUserData = useRefetchUserData();
+const SignIn: React.FC = (): JSX.Element => {
+  const {
+    userData,
+    setUserData,
+    fetchUserData,
+    isUserDataFetching,
+  }: UserDataContextData = useUserData();
 
   useEffect(() => {
     const token: string | undefined = Cookies.get('token');
 
     if (!token) {
-      setIsLoading(false);
+      // If there is no token, the user is not logged in
       setUserData(null);
-    }
-
-    if (token) {
-      // User data is not set, but section is still active
-      if (!userData && token.length) {
-        refetchUserData(token)
-          .then((userData: UserData | null) => {
-            setUserData(userData);
-            setIsLoading(false);
-          })
-          .catch((error) => {
-            console.error('Error on Home page:', error);
-            setIsLoading(false);
-            setIsError(true);
-          });
-      } else {
-        setIsLoading(false);
+    } else {
+      // User data is not set, but session is still active
+      if (!userData) {
+        fetchUserData(token);
       }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSignInClick = () => {
+  const handleSignIn = () => {
     // Redirect the user to the intranet URL
     window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code`;
   };
 
-  const handleUserLogOut = () => {
+  const handleLogOut = () => {
     Cookies.remove('token');
     setUserData(null);
-    window.location.reload();
   };
 
   return (
     <PageWrapperDiv>
       {(() => {
-        if (isError) return <p>An error occurred...</p>;
-
-        if (isLoading) return <p>Loading...</p>;
+        if (isUserDataFetching) return <LoadingPage />;
 
         return (
           <>
             <h1 className="title-1">Pong Game</h1>
-            <img
-              src="/assets/school_42.png"
-              alt="42 logo"
-              style={{ width: '150px', marginBottom: '12px' }}
-            />
+            <img src="/assets/school_42.png" alt="" className="logo" />
             {userData ? (
               <>
                 <h2 className="title-2">Hello, {userData.username}!</h2>
-                <MainButton onClick={handleUserLogOut}>Log out</MainButton>
+                <MainButton onClick={handleLogOut}>Log out</MainButton>
               </>
             ) : (
-              <form
-                onSubmit={(e) => e.preventDefault()} // Prevent form submission
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '20px',
-                }}
-              >
-                <MainButton type="button" onClick={handleSignInClick}>
+              <div className="links-container">
+                <MainButton type="button" onClick={handleSignIn}>
                   Sign In with 42
                 </MainButton>
                 <Link
@@ -114,13 +96,13 @@ function SignIn() {
                 >
                   Sign in with test user 2
                 </Link>
-              </form>
+              </div>
             )}
           </>
         );
       })()}
     </PageWrapperDiv>
   );
-}
+};
 
 export default SignIn;
