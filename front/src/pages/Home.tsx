@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import MainButton from '../components/UI/MainButton';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { primaryLightColor } from '../constants/color-tokens';
-import { useRefetchUserData, useUserData } from '../context/UserDataContext';
-import UserData from '../interfaces/user-data.interface';
+import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
+import LoadingPage from './LoadingPage';
 
 const PageWrapperDiv = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -26,35 +23,24 @@ const PageWrapperDiv = styled.div`
 `;
 
 function SignIn() {
-  const { userData, setUserData }: UserDataContextData = useUserData();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isError, setIsError] = useState<boolean>(false);
-
-  const refetchUserData = useRefetchUserData();
+  const {
+    userData,
+    setUserData,
+    fetchUserData,
+    isUserDataFetching,
+  }: UserDataContextData = useUserData();
 
   useEffect(() => {
     const token: string | undefined = Cookies.get('token');
 
     if (!token) {
-      setIsLoading(false);
       setUserData(null);
     }
 
     if (token) {
-      // User data is not set, but section is still active
+      // User data is not set, but session is still active
       if (!userData && token.length) {
-        refetchUserData(token)
-          .then((userData: UserData | null) => {
-            setUserData(userData);
-            setIsLoading(false);
-          })
-          .catch((error) => {
-            console.error('Error on Home page:', error);
-            setIsLoading(false);
-            setIsError(true);
-          });
-      } else {
-        setIsLoading(false);
+        fetchUserData(token);
       }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -73,9 +59,7 @@ function SignIn() {
   return (
     <PageWrapperDiv>
       {(() => {
-        if (isError) return <p>An error occurred...</p>;
-
-        if (isLoading) return <p>Loading...</p>;
+        if (isUserDataFetching) return <LoadingPage />;
 
         return (
           <>
