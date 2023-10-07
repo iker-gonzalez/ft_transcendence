@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { gameLoop } from '../game_pong/game_pong';
+import { gameLoop } from '../../game_pong/game_pong';
 import { Socket, io } from 'socket.io-client';
-import { getBaseUrl } from '../utils/utils';
+import { getBaseUrl } from '../../utils/utils';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useGameRouteContext } from '../pages/Game';
-import MainButton from './UI/MainButton';
+import { useGameRouteContext } from '../../pages/Game';
+import MainButton from '../UI/MainButton';
 import { styled } from 'styled-components';
-import CenteredLayout from './UI/CenteredLayout';
-import { primaryAccentColor } from '../constants/color-tokens';
-import SessionData from '../interfaces/game-session-data.interface';
+import CenteredLayout from '../UI/CenteredLayout';
+import { primaryAccentColor } from '../../constants/color-tokens';
+import SessionData from '../../interfaces/game-session-data.interface';
 
 const getIsPlayer1 = (sessionData: SessionData, userId: number): boolean => {
   const playerIndex: number = sessionData?.players?.findIndex(

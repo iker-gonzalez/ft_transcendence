@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useGameRouteContext } from '../pages/Game';
+import { useGameRouteContext } from '../../pages/Game';
 import { createSearchParams, useNavigate } from 'react-router-dom';
-import MainButton from './UI/MainButton';
+import MainButton from '../UI/MainButton';
 import { styled } from 'styled-components';
-import CenteredLayout from './UI/CenteredLayout';
-import RoundImg from './UI/RoundImage';
+import CenteredLayout from '../UI/CenteredLayout';
+import RoundImg from '../UI/RoundImage';
 import { Socket, io } from 'socket.io-client';
-import { getBaseUrl } from '../utils/utils';
+import { getBaseUrl } from '../../utils/utils';
 import {
   primaryAccentColor,
   primaryLightColor,
-} from '../constants/color-tokens';
-import SessionData from '../interfaces/game-session-data.interface';
-import GameSessionUser from '../interfaces/game-session-user.interface';
+} from '../../constants/color-tokens';
+import SessionData from '../../interfaces/game-session-data.interface';
+import GameSessionUser from '../../interfaces/game-session-user.interface';
 
 type GameQueueRes = {
   queued: boolean;

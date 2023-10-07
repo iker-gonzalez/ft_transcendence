@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import MainButton from '../components/UI/MainButton';
+import MainButton from '../UI/MainButton';
 import { styled } from 'styled-components';
-import CenteredLayout from './UI/CenteredLayout';
-import ContrastPanel from './UI/ContrastPanel';
+import CenteredLayout from '../UI/CenteredLayout';
+import ContrastPanel from '../UI/ContrastPanel';
 
 const WrapperDiv = styled.div`
   .user-info-container {
