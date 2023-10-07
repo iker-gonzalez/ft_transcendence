@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { NewQueuedUserDto } from './dto/new-queued-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { Server } from 'socket.io';
 import { NewQueuedUserResponseDto } from './dto/new-queued-user-response.dto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 type QueueUser = {
   id: string;
@@ -12,9 +14,10 @@ type QueueUser = {
 
 @Injectable()
 export class MatchmakingService {
-  constructor(private readonly prisma: PrismaService) {}
-
-  queue: QueueUser[] = [];
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   async addUserToQueue(
     server: Server,
@@ -48,7 +51,8 @@ export class MatchmakingService {
       return;
     }
 
-    const isAlreadyQueued = this.queue.some((user: QueueUser) => {
+    const queue: QueueUser[] = (await this.cacheManager.get('queue')) || [];
+    const isAlreadyQueued = queue.some((user: QueueUser) => {
       return user.data.intraId === userData.intraId;
     });
 
@@ -60,16 +64,22 @@ export class MatchmakingService {
       return;
     }
 
-    this.queue = [...this.queue, { id: clientId, data: userData }];
+    await this.cacheManager.set('queue', [
+      ...queue,
+      { id: clientId, data: userData },
+    ]);
     server.emit(`userJoined/${intraId}`, {
       queued: true,
     });
 
-    if (this.queue.length >= 2) {
+    const updatedQueue: QueueUser[] = await this.cacheManager.get('queue');
+    if (updatedQueue.length >= 2) {
       const sessionUsers: QueueUser[] = [];
 
-      sessionUsers.push(this.queue.shift());
-      sessionUsers.push(this.queue.shift());
+      sessionUsers.push(updatedQueue.shift());
+      sessionUsers.push(updatedQueue.shift());
+
+      await this.cacheManager.set('queue', updatedQueue);
 
       const session = await this.prisma.userGameSession.create({
         data: {
@@ -102,7 +112,7 @@ export class MatchmakingService {
         return;
       }
 
-      for (let user of session.players) {
+      for (const user of session.players) {
         const newSessionPayload: NewQueuedUserResponseDto = {
           success: true,
           data: session,
@@ -114,9 +124,12 @@ export class MatchmakingService {
   }
 
   async onRemoveUser(clientId: string): Promise<void> {
-    this.queue = this.queue.filter((user) => {
+    const queue: QueueUser[] = (await this.cacheManager.get('queue')) || [];
+
+    const updatedQueue: QueueUser[] = queue.filter((user) => {
       return user.id !== clientId;
     });
+    await this.cacheManager.set('queue', updatedQueue);
   }
 
   async removeUserFromQueue(
@@ -135,9 +148,12 @@ export class MatchmakingService {
       return;
     }
 
-    this.queue = [
-      ...this.queue.filter((user: QueueUser) => user.id !== clientId),
-    ];
+    const queue: QueueUser[] = (await this.cacheManager.get('queue')) || [];
+
+    const updatedQueue: QueueUser[] = queue.filter(
+      (user: QueueUser) => user.id !== clientId,
+    );
+    await this.cacheManager.set('queue', updatedQueue);
 
     server.emit(`unqueuedUser/${parsedBody.intraId}`, {
       queued: false,

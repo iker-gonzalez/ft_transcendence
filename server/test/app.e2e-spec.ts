@@ -29,6 +29,7 @@ import {
   uuidRegex,
 } from './test.constants';
 import path = require('path');
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -36,6 +37,7 @@ describe('App e2e', () => {
   let intraService: IntraService;
   let twoFactorAuthService: TwoFactorAuthService;
   let gameDataService: GameDataService;
+  let cacheManagerService: any;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -55,7 +57,7 @@ describe('App e2e', () => {
     intraService = app.get(IntraService);
     twoFactorAuthService = app.get(TwoFactorAuthService);
     gameDataService = app.get(GameDataService);
-
+    cacheManagerService = app.get(CACHE_MANAGER);
     pactum.request.setBaseUrl(baseUrl);
   });
 
@@ -1677,10 +1679,11 @@ describe('App e2e', () => {
           intraUserToken,
           userData3,
         );
+        cacheManagerService.reset();
       });
 
       it('should emit userJoined event on newUser', (done) => {
-        expect.assertions(2);
+        expect.assertions(3);
 
         createUser(prisma, intraService, intraUserToken, userData).then(
           (user: User) => {
@@ -1697,9 +1700,13 @@ describe('App e2e', () => {
 
               socket.disconnect();
 
-              prisma.userGameSession.findMany().then((userGameSessions) => {
-                expect(userGameSessions).toHaveLength(0);
-                done();
+              cacheManagerService.get('queue').then((queue) => {
+                expect(queue).toHaveLength(1);
+
+                prisma.userGameSession.findMany().then((userGameSessions) => {
+                  expect(userGameSessions).toHaveLength(0);
+                  done();
+                });
               });
             });
           },
@@ -1707,7 +1714,7 @@ describe('App e2e', () => {
       });
 
       it('should create 1 game session when 2 users are queued', (done) => {
-        expect.assertions(9);
+        expect.assertions(10);
 
         Promise.allSettled([
           createUser(prisma, intraService, intraUserToken, userData),
@@ -1755,9 +1762,13 @@ describe('App e2e', () => {
               if (allUsers[i].intraId === userData2.intraId) {
                 disconnectSockets(allSockets);
 
-                prisma.userGameSession.findMany().then((userGameSessions) => {
-                  expect(userGameSessions).toHaveLength(1);
-                  done();
+                cacheManagerService.get('queue').then((queue) => {
+                  expect(queue).toHaveLength(0);
+
+                  prisma.userGameSession.findMany().then((userGameSessions) => {
+                    expect(userGameSessions).toHaveLength(1);
+                    done();
+                  });
                 });
               }
             });
@@ -1766,7 +1777,7 @@ describe('App e2e', () => {
       });
 
       it('should remove user from queue when they disconnect', (done) => {
-        expect.assertions(10);
+        expect.assertions(11);
 
         // Create and disconnect first user
         new Promise((resolve) => {
@@ -1837,9 +1848,15 @@ describe('App e2e', () => {
                 if (user.intraId === user3.intraId) {
                   disconnectSockets(allSockets);
 
-                  prisma.userGameSession.findMany().then((userGameSessions) => {
-                    expect(userGameSessions).toHaveLength(1);
-                    done();
+                  cacheManagerService.get('queue').then((queue) => {
+                    expect(queue).toHaveLength(0);
+
+                    prisma.userGameSession
+                      .findMany()
+                      .then((userGameSessions) => {
+                        expect(userGameSessions).toHaveLength(1);
+                        done();
+                      });
                   });
                 }
               });
@@ -1849,7 +1866,7 @@ describe('App e2e', () => {
       });
 
       it('should emit unqueuedUser and remove user from queue on unqueueUser', (done) => {
-        expect.assertions(3);
+        expect.assertions(4);
 
         createUser(prisma, intraService, intraUserToken, userData).then(
           (user: User) => {
@@ -1866,9 +1883,13 @@ describe('App e2e', () => {
 
               socket.disconnect();
 
-              prisma.userGameSession.findMany().then((userGameSessions) => {
-                expect(userGameSessions).toHaveLength(0);
-                done();
+              cacheManagerService.get('queue').then((queue) => {
+                expect(queue).toHaveLength(0);
+
+                prisma.userGameSession.findMany().then((userGameSessions) => {
+                  expect(userGameSessions).toHaveLength(0);
+                  done();
+                });
               });
             });
 
@@ -1887,7 +1908,7 @@ describe('App e2e', () => {
       });
 
       it('should emit error if intraId is not valid number', (done) => {
-        expect.assertions(2);
+        expect.assertions(3);
 
         const invalidIntraId = 'invalid';
         const socket = createSocketClient(app, MATCHMAKING_ENDPOINT);
@@ -1904,15 +1925,19 @@ describe('App e2e', () => {
 
           socket.disconnect();
 
-          prisma.userGameSession.findMany().then((userGameSessions) => {
-            expect(userGameSessions).toHaveLength(0);
-            done();
+          cacheManagerService.get('queue').then((queue) => {
+            expect(queue).toBe(undefined);
+
+            prisma.userGameSession.findMany().then((userGameSessions) => {
+              expect(userGameSessions).toHaveLength(0);
+              done();
+            });
           });
         });
       });
 
       it('should emit error if user is not found', (done) => {
-        expect.assertions(2);
+        expect.assertions(3);
 
         const unsignedUserIntraId = 6666;
         const socket = createSocketClient(app, MATCHMAKING_ENDPOINT);
@@ -1932,15 +1957,19 @@ describe('App e2e', () => {
 
           socket.disconnect();
 
-          prisma.userGameSession.findMany().then((userGameSessions) => {
-            expect(userGameSessions).toHaveLength(0);
-            done();
+          cacheManagerService.get('queue').then((queue) => {
+            expect(queue).toBe(undefined);
+
+            prisma.userGameSession.findMany().then((userGameSessions) => {
+              expect(userGameSessions).toHaveLength(0);
+              done();
+            });
           });
         });
       });
 
       it('should emit error if user is already queued', (done) => {
-        expect.assertions(3);
+        expect.assertions(4);
 
         createUser(prisma, intraService, intraUserToken, userData).then(
           (user) => {
@@ -1970,9 +1999,13 @@ describe('App e2e', () => {
 
                 socket.disconnect();
 
-                prisma.userGameSession.findMany().then((userGameSessions) => {
-                  expect(userGameSessions).toHaveLength(0);
-                  done();
+                cacheManagerService.get('queue').then((queue) => {
+                  expect(queue).toHaveLength(1);
+
+                  prisma.userGameSession.findMany().then((userGameSessions) => {
+                    expect(userGameSessions).toHaveLength(0);
+                    done();
+                  });
                 });
               }
             });
