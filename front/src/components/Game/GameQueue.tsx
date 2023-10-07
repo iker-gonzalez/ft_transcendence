@@ -1,18 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useGameRouteContext } from '../pages/Game';
+import React, { useEffect, useState } from 'react';
+import { useGameRouteContext } from '../../pages/Game';
 import { createSearchParams, useNavigate } from 'react-router-dom';
-import MainButton from './UI/MainButton';
+import MainButton from '../UI/MainButton';
 import { styled } from 'styled-components';
-import CenteredLayout from './UI/CenteredLayout';
-import RoundImg from './UI/RoundImage';
-import { Socket, io } from 'socket.io-client';
-import { getBaseUrl } from '../utils/utils';
+import CenteredLayout from '../UI/CenteredLayout';
+import RoundImg from '../UI/RoundImage';
 import {
   primaryAccentColor,
   primaryLightColor,
-} from '../constants/color-tokens';
-import SessionData from '../interfaces/game-session-data.interface';
-import GameSessionUser from '../interfaces/game-session-user.interface';
+} from '../../constants/color-tokens';
+import SessionData from '../../interfaces/game-session-data.interface';
+import GameSessionUser from '../../interfaces/game-session-user.interface';
+import useMatchmakingSocket, {
+  UseMatchmakingSocket,
+} from './useMatchmakingSocket';
 
 type GameQueueRes = {
   queued: boolean;
@@ -73,42 +74,21 @@ const WrapperDiv = styled.div`
 
 export default function GameQueue(): JSX.Element {
   const navigate = useNavigate();
+  const { sessionDataState, userData } = useGameRouteContext();
 
-  const { userData } = useGameRouteContext();
-  const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
   const [isQueued, setIsQueued] = useState<boolean>(false);
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
-  const [isSocketConnected, setIsSocketConnected] = useState<boolean>(false);
 
-  const { sessionDataState } = useGameRouteContext();
-  // TODO refactor matchmaking socket in a custom hook
-  const matchmakingSocketRef = useRef<Socket>(
-    io(`${getBaseUrl()}/matchmaking`, {
-      transports: ['websocket'],
-    }),
-  );
+  const {
+    matchmakingSocketRef,
+    isConnectionError,
+    isSocketConnected,
+  }: UseMatchmakingSocket = useMatchmakingSocket();
 
   useEffect(() => {
     if (!userData) {
       matchmakingSocketRef.current.disconnect();
     }
-
-    matchmakingSocketRef.current.on('connect_error', (error) => {
-      setIsSocketConnected(false);
-      setIsConnectionError(true);
-      console.warn('Matchmaking socket connection error: ', error);
-    });
-
-    matchmakingSocketRef.current.on('disconnect', () => {
-      setIsSocketConnected(false);
-      console.warn('matchmaking socket disconnected');
-    });
-
-    matchmakingSocketRef.current.on('connect', async () => {
-      setIsSocketConnected(true);
-      setIsConnectionError(false);
-      console.info('Matchmaking socket connected');
-    });
 
     if (userData) {
       matchmakingSocketRef.current.on(
