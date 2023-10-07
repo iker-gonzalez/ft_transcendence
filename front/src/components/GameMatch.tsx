@@ -8,11 +8,10 @@ import MainButton from './UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from './UI/CenteredLayout';
 import { primaryAccentColor } from '../constants/color-tokens';
-import { useUserData } from '../context/UserDataContext';
 import SessionData from '../interfaces/game-session-data.interface';
 
 const getIsPlayer1 = (sessionData: SessionData, userId: number): boolean => {
-  const playerIndex: number = sessionData!.players!.findIndex(
+  const playerIndex: number = sessionData?.players?.findIndex(
     (player: any) => player.intraId === userId,
   );
 
@@ -48,13 +47,12 @@ const WrapperDiv = styled.div`
 
 export default function GameMatch(): JSX.Element {
   const navigate = useNavigate();
-  const { sessionDataState } = useGameRouteContext();
-  const { userData } = useUserData();
+  const { sessionDataState, userData } = useGameRouteContext();
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
   const [isAwaitingOpponent, setIsAwaitingOpponent] = useState<boolean>(false);
   const isPlayer1: boolean = getIsPlayer1(
     sessionDataState[0],
-    userData!.intraId,
+    userData?.intraId,
   );
   const sessionId: string | null = useSearchParams()[0]!.get('sessionId');
   const [showGame, setShowGame] = useState<boolean>(false);
@@ -66,7 +64,7 @@ export default function GameMatch(): JSX.Element {
   );
 
   useEffect(() => {
-    if (!sessionId || !userData) {
+    if (!sessionId) {
       navigate('/game');
     }
 
@@ -103,8 +101,17 @@ export default function GameMatch(): JSX.Element {
 
       if (canvasRef.current) {
         const { players } = sessionDataState[0];
-        const usernames = { username1 : players[0].username, username2 : players[1].username}
-        gameLoop(canvasRef.current, socketRef.current, isPlayer1, sessionId, usernames);
+        const usernames = {
+          username1: players[0].username,
+          username2: players[1].username,
+        };
+        gameLoop(
+          canvasRef.current,
+          socketRef.current,
+          isPlayer1,
+          sessionId,
+          usernames,
+        );
       }
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
