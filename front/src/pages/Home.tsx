@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
 import LoadingPage from './LoadingPage';
 import teamImage from '../assets/images/team.png';
+import logo42 from '../assets/svg/logo_42.svg';
 
 const PageWrapperDiv = styled.div`
   min-height: 100vh;
@@ -17,8 +18,8 @@ const PageWrapperDiv = styled.div`
   align-items: center;
 
   .logo {
-    width: 150px;
-    margin-bottom: 12px;
+    width: 100px;
+    margin-bottom: 30px;
   }
 
   .links-container {
@@ -84,7 +85,7 @@ const SignIn: React.FC = (): JSX.Element => {
 
         return (
           <>
-            <img src="/assets/school_42.png" alt="" className="logo" />
+            <img src={logo42} alt="" className="logo" />
             {userData ? (
               <>
                 <h2 className="title-1 mb-24">Hello, {userData.username}!</h2>
