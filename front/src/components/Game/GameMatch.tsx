@@ -10,9 +10,11 @@ import SessionData from '../../interfaces/game-session-data.interface';
 import useGameDataSocket, { UseGameDataSocket } from './useGameDataSocket';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import GameSessionUser from '../../interfaces/game-session-user.interface';
 
-const getIsPlayer1 = (sessionData: SessionData, userId: number): boolean => {
-  const playerIndex: number = sessionData?.players?.findIndex(
+const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
+  console.log('sessionData', players);
+  const playerIndex: number = players?.findIndex(
     (player: any) => player.intraId === userId,
   );
 
@@ -51,7 +53,7 @@ export default function GameMatch(): JSX.Element {
   const { sessionDataState, userData } = useGameRouteContext();
   const [isAwaitingOpponent, setIsAwaitingOpponent] = useState<boolean>(false);
   const isPlayer1: boolean = getIsPlayer1(
-    sessionDataState[0],
+    sessionDataState[0]?.players,
     userData?.intraId,
   );
   const sessionId: string | null = useSearchParams()[0]!.get('sessionId');
@@ -109,10 +111,6 @@ export default function GameMatch(): JSX.Element {
         <h2>
           Hello, player <span className="highlighted">{isPlayer1 ? 1 : 2}</span>
         </h2>
-        <p>
-          This is the page the is shown when two users are matched in a session
-          and the game can begin.
-        </p>
         <div className="game-container">
           {!showGame && (
             <div className="cta-container">
