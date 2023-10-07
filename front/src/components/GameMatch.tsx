@@ -37,13 +37,12 @@ const WrapperDiv = styled.div`
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 1;
   }
 
   .canvas {
     border: 1px dotted red;
-    transform: translateY(+10px);
-    max-width: 90vw;
-    max-height: 50vh;
+    margin-top: 24px;
   }
 `;
 
