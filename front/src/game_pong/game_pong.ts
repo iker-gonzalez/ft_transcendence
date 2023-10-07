@@ -269,6 +269,8 @@ function render(
   net: INetData,
   match_finish: boolean,
   match_points: number,
+  usernames: { username1: string; username2: string },
+  isPlayer1: boolean,
 ) {
   if (match_finish) {
     alert('Hello');
@@ -278,10 +280,10 @@ function render(
 
   drawText(
     canvas,
-    'USER_1',
+    usernames.username1,
     (canvas.width / 10) * 4,
     canvas.height / 10,
-    '10px Arial',
+    '20px Arial',
     'right',
     RenderColor.Yellow,
   );
@@ -298,10 +300,10 @@ function render(
 
   drawText(
     canvas,
-    'COMPUTER_BOT',
+    usernames.username2,
     (canvas.width / 10) * 6,
     canvas.height / 10,
-    '10px Arial',
+    '20px Arial',
     'left',
     RenderColor.Yellow,
   );
@@ -393,6 +395,7 @@ export async function gameLoop(
   socket: Socket<DefaultEventsMap, DefaultEventsMap>,
   isPlayer1: boolean,
   sessionId: string | null,
+  usernames: { username1: string; username2: string },
 ) {
   // Update initial data
   let ballData = {
@@ -518,7 +521,17 @@ export async function gameLoop(
 
       matchUser1(canvas, ballData, user1, user2, sounds);
 
-      render(canvas, ballData, user1, user2, net, match_finish, match_points);
+      render(
+        canvas,
+        ballData,
+        user1,
+        user2,
+        net,
+        match_finish,
+        match_points,
+        usernames,
+        isPlayer1,
+      );
 
       socket.emit(
         'upload',
@@ -538,7 +551,17 @@ export async function gameLoop(
 
       matchUser2(canvas, ballData, user1, user2, sounds);
 
-      render(canvas, ballData, user1, user2, net, match_finish, match_points);
+      render(
+        canvas,
+        ballData,
+        user1,
+        user2,
+        net,
+        match_finish,
+        match_points,
+        usernames,
+        isPlayer1,
+      );
 
       socket.emit(
         'upload',

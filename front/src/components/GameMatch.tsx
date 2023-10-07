@@ -49,7 +49,6 @@ const WrapperDiv = styled.div`
 export default function GameMatch(): JSX.Element {
   const navigate = useNavigate();
   const { sessionDataState } = useGameRouteContext();
-
   const { userData } = useUserData();
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
   const [isAwaitingOpponent, setIsAwaitingOpponent] = useState<boolean>(false);
@@ -102,8 +101,11 @@ export default function GameMatch(): JSX.Element {
     socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
       setShowGame(true);
 
-      if (canvasRef.current)
-        gameLoop(canvasRef.current, socketRef.current, isPlayer1, sessionId);
+      if (canvasRef.current) {
+        const { players } = sessionDataState[0];
+        const usernames = { username1 : players[0].username, username2 : players[1].username}
+        gameLoop(canvasRef.current, socketRef.current, isPlayer1, sessionId, usernames);
+      }
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
