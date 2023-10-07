@@ -93,13 +93,13 @@ describe('App e2e', () => {
       it('should sign up user', async () => {
         jest
           .spyOn(intraService, 'getIntraUserToken')
-          .mockImplementation(async (code: string): Promise<string> => {
+          .mockImplementation(async (): Promise<string> => {
             return Promise.resolve(intraUserToken);
           });
 
         jest
           .spyOn(intraService, 'getIntraUserInfo')
-          .mockImplementation(async (token: string): Promise<any> => {
+          .mockImplementation(async (): Promise<any> => {
             return Promise.resolve(userData);
           });
 
@@ -127,12 +127,7 @@ describe('App e2e', () => {
 
       it('should sign in user', async () => {
         // Create user first
-        const user = await createUser(
-          prisma,
-          intraService,
-          intraUserToken,
-          userData,
-        );
+        await createUser(prisma, intraService, intraUserToken, userData);
 
         jest
           .spyOn(intraService, 'getIntraUserToken')
@@ -307,12 +302,7 @@ describe('App e2e', () => {
 
       it('should sign in user', async () => {
         // Create user first
-        const user = await createUser(
-          prisma,
-          intraService,
-          intraUserToken,
-          testUserData,
-        );
+        await createUser(prisma, intraService, intraUserToken, testUserData);
 
         const reqBody = {
           code: testUserCode,
@@ -333,12 +323,7 @@ describe('App e2e', () => {
 
       it('should sign in user with OTP', async () => {
         // Create user first
-        const user = await createUser(
-          prisma,
-          intraService,
-          intraUserToken,
-          testUserData,
-        );
+        await createUser(prisma, intraService, intraUserToken, testUserData);
 
         const reqBody = {
           code: testUserCode,
@@ -610,12 +595,7 @@ describe('App e2e', () => {
         const newUsername = 'new-username';
 
         // Create user first
-        const user1 = await createUser(
-          prisma,
-          intraService,
-          intraUserToken,
-          userData,
-        );
+        await createUser(prisma, intraService, intraUserToken, userData);
 
         await pactum
           .spec()
@@ -969,29 +949,13 @@ describe('App e2e', () => {
 
         // Create user first
         // Must be done after user2 is created for correct bearer token
-        const user1 = await createUser(
+        const user1 = await createUserWithFriends(
           prisma,
           intraService,
           intraUserToken,
           userData,
+          [userData2],
         );
-
-        // Add user2 as friend of user1
-        await prisma.user.update({
-          where: { id: user1.id },
-          data: {
-            friends: {
-              create: [
-                {
-                  intraId: userData2.intraId,
-                  avatar: userData2.avatar,
-                  email: userData2.email,
-                  username: userData2.username,
-                },
-              ],
-            },
-          },
-        });
 
         await pactum
           .spec()
@@ -1022,14 +986,32 @@ describe('App e2e', () => {
             },
           });
 
+        // User has 2 friends
         const { friends: updatedUserFriends } = await prisma.user.findUnique({
           where: { id: user1.id },
           include: {
             friends: true,
           },
         });
-
         expect(updatedUserFriends).toHaveLength(2);
+
+        // User 2 has 1 friend
+        const { friends: user2Friends } = await prisma.user.findUnique({
+          where: { id: user2.id },
+          include: {
+            friends: true,
+          },
+        });
+        expect(user2Friends).toHaveLength(1);
+
+        // User 3 has 1 friend
+        const { friends: user3Friends } = await prisma.user.findUnique({
+          where: { id: user2.id },
+          include: {
+            friends: true,
+          },
+        });
+        expect(user3Friends).toHaveLength(1);
       });
 
       test('it should return 400 if friend is not found', async () => {
@@ -1224,7 +1206,7 @@ describe('App e2e', () => {
       });
 
       test('it should return 400 if specified user does not exist', async () => {
-        const user = await createUserWithFriends(
+        await createUserWithFriends(
           prisma,
           intraService,
           intraUserToken,
@@ -1240,7 +1222,7 @@ describe('App e2e', () => {
       });
 
       test('it should return 400 if user ID is not valid', async () => {
-        const user = await createUserWithFriends(
+        await createUserWithFriends(
           prisma,
           intraService,
           intraUserToken,
@@ -1262,6 +1244,13 @@ describe('App e2e', () => {
 
     describe('delete', () => {
       test('it should delete a friend', async () => {
+        const user2 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData2,
+        );
+
         const user = await createUserWithFriends(
           prisma,
           intraService,
@@ -1280,9 +1269,7 @@ describe('App e2e', () => {
             data: {
               id: user.id,
               intraId: user.intraId,
-              friends: [
-                { intraId: userData3.intraId, avatar: userData3.avatar },
-              ],
+              friends: [{ intraId: userData3.intraId }],
             },
           });
 
@@ -1292,8 +1279,93 @@ describe('App e2e', () => {
             friends: true,
           },
         });
-
         expect(remainingFriends.length).toEqual(1);
+
+        const { friends: unfriendedUserFriends } = await prisma.user.findUnique(
+          {
+            where: { id: user2.id },
+            include: {
+              friends: true,
+            },
+          },
+        );
+        expect(unfriendedUserFriends.length).toEqual(0);
+      });
+
+      test('it should delete two friends', async () => {
+        const user2 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData2,
+        );
+
+        const user3 = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData3,
+        );
+
+        const user = await createUserWithFriends(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+          [userData2, userData3],
+        );
+
+        await pactum
+          .spec()
+          .delete(`/friends/${userData2.intraId}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(200)
+          .expectJsonLike({
+            deleted: 1,
+            data: {
+              id: user.id,
+              intraId: user.intraId,
+              friends: [{ intraId: userData3.intraId }],
+            },
+          });
+
+        await pactum
+          .spec()
+          .delete(`/friends/${userData3.intraId}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(200)
+          .expectJsonLike({
+            deleted: 1,
+            data: {
+              id: user.id,
+              intraId: user.intraId,
+              friends: [],
+            },
+          });
+
+        const { friends: remainingFriends } = await prisma.user.findUnique({
+          where: { id: user.id },
+          include: {
+            friends: true,
+          },
+        });
+        expect(remainingFriends.length).toEqual(0);
+
+        const { friends: user2Friends } = await prisma.user.findUnique({
+          where: { id: user2.id },
+          include: {
+            friends: true,
+          },
+        });
+        expect(user2Friends.length).toEqual(0);
+
+        const { friends: user3Friends } = await prisma.user.findUnique({
+          where: { id: user3.id },
+          include: {
+            friends: true,
+          },
+        });
+        expect(user3Friends.length).toEqual(0);
       });
 
       test('it should return 400 if friendId is not valid', async () => {
@@ -1578,6 +1650,7 @@ describe('App e2e', () => {
   });
 
   describe('Sockets', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let user1: User, user2: User, user3: User;
 
     describe('matchmaking', () => {
@@ -1915,11 +1988,6 @@ describe('App e2e', () => {
         gameDataId: 1111,
         ball: {},
         user1: {},
-      };
-
-      const dataSetUser2 = {
-        gameDataId: 1111,
-        user2: {},
       };
 
       const dataSetInitial = {
