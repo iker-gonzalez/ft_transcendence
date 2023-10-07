@@ -8,7 +8,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { GetFriendsResponseDto } from './dto/get-friends-response.dto';
 import { AddFriendResponseDto } from './dto/add-friend-response.dto';
 import { DeleteFriendResponseDto } from './dto/delete-friend-response.dto';
-import UserCoreData from 'src/types/user-core-data.type';
 
 interface UserWithFriends extends User {
   friends: Friend[];
@@ -33,19 +32,7 @@ export class FriendsService {
       throw new BadRequestException('You cannot add yourself as a friend');
     }
 
-    const friend: UserWithFriends = await this.prisma.user.findUnique({
-      where: {
-        intraId: friendIntraId,
-      },
-      include: {
-        friends: true,
-      },
-    });
-
-    if (!friend) {
-      throw new BadRequestException('Friend not found');
-    }
-
+    // Fetch user friends
     const { friends: userFriends }: { friends: Friend[] } =
       await this.prisma.user.findUnique({
         where: {
@@ -56,55 +43,29 @@ export class FriendsService {
         },
       });
 
+    // Friend is already added
     if (userFriends.some((friend) => friend.intraId === friendIntraId)) {
       throw new ConflictException('Friend already added');
     }
 
-    // Delete all user friends
-    if (userFriends.length > 0) {
-      await this.prisma.friend.deleteMany({
-        where: {
-          userId: user.id,
-        },
-      });
-    }
-
-    let updatedUser: UserWithFriends = await this.prisma.user.update({
+    // Fetch friend data
+    const friend: UserWithFriends = await this.prisma.user.findUnique({
       where: {
-        id: user.id,
-      },
-      data: {
-        friends: {
-          create: this._computeFriends(userFriends, friend),
-        },
+        intraId: friendIntraId,
       },
       include: {
         friends: true,
       },
     });
 
-    // Delete all friend's friends
-    if (friend.friends.length > 0) {
-      await this.prisma.friend.deleteMany({
-        where: {
-          userId: friend.id,
-        },
-      });
+    // Friend does not exist
+    if (!friend) {
+      throw new BadRequestException('Friend not found');
     }
 
-    await this.prisma.user.update({
-      where: {
-        id: friend.id,
-      },
-      data: {
-        friends: {
-          create: this._computeFriends(friend.friends, updatedUser),
-        },
-      },
-      include: {
-        friends: true,
-      },
-    });
+    const updatedUser = await this._addFriendToDb(user.id, userFriends, friend);
+
+    await this._addFriendToDb(friend.id, friend.friends, updatedUser);
 
     return {
       created: 1,
@@ -164,7 +125,7 @@ export class FriendsService {
       throw new BadRequestException('Friend not found');
     }
 
-    const updatedFriends: UserCoreData[] = userData.friends.filter(
+    const updatedFriends: Friend[] = userData.friends.filter(
       (friend) => friend.intraId !== friendIntraId,
     );
 
@@ -199,7 +160,38 @@ export class FriendsService {
     };
   }
 
-  _deleteFriendFromDb = async (userId: string, updatedFriends: any[]) => {
+  _addFriendToDb = async (
+    userId: string,
+    userFriends: Friend[],
+    friend,
+  ): Promise<UserWithFriends> => {
+    // Delete all user friends
+    if (userFriends.length > 0) {
+      await this.prisma.friend.deleteMany({
+        where: {
+          userId: userId,
+        },
+      });
+    }
+
+    const updatedUser: UserWithFriends = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        friends: {
+          create: this._computeFriends(userFriends, friend),
+        },
+      },
+      include: {
+        friends: true,
+      },
+    });
+
+    return updatedUser;
+  };
+
+  _deleteFriendFromDb = async (userId: string, updatedFriends: Friend[]) => {
     // To avoid errors with prisma, we need to delete the userId field
     updatedFriends.forEach((friend) => {
       delete friend.userId;
@@ -228,7 +220,10 @@ export class FriendsService {
     return updatedUser;
   };
 
-  _computeFriends(currentFriends: Friend[], newFriend: User): FriendInfo[] {
+  _computeFriends(
+    currentFriends: Friend[],
+    newFriend: UserWithFriends,
+  ): FriendInfo[] {
     return [
       ...currentFriends.map((friend) => {
         return {
