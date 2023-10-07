@@ -129,7 +129,7 @@ export default function GameMatch(): JSX.Element {
             width="900"
             height="600"
             ref={canvasRef}
-          ></canvas>
+          />
         </div>
       </CenteredLayout>
     </WrapperDiv>
