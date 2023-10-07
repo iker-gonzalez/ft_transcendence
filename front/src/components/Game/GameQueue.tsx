@@ -157,6 +157,11 @@ export default function GameQueue(): JSX.Element {
     );
   };
 
+  const showMeFirst = (user: GameSessionUser) => {
+    if (user.intraId === userData.intraId) return -1;
+    return 1;
+  };
+
   return (
     <WrapperDiv>
       <CenteredLayout>
@@ -185,16 +190,16 @@ export default function GameQueue(): JSX.Element {
               <div className="session-box">
                 <h2>This is your new session</h2>
                 <div className="users-box">
-                  {sessionDataState[0].players.map(
-                    (player: GameSessionUser) => {
+                  {sessionDataState[0].players
+                    .sort(showMeFirst)
+                    .map((player: GameSessionUser) => {
                       return (
                         <div className="user-box" key={player.id}>
                           <p>{player.username}</p>
                           <RoundImg alt="" src={player.avatar} />
                         </div>
                       );
-                    },
-                  )}
+                    })}
                 </div>
                 <MainButton className="game-cta" onClick={onGoToMatch}>
                   Go to match
