@@ -11,11 +11,15 @@ import { GameModule } from './game/game.module';
 import { FriendsModule } from './friends/friends.module';
 import { MatchmakingModule } from './matchmaking/matchmaking.module';
 import { GameDataModule } from './game-data/game-data.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot(configModuleOptions),
     PrismaModule,
+    CacheModule.register({
+      isGlobal: true,
+    }),
     AuthModule,
     IntraModule,
     UserModule,
