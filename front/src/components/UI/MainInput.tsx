@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import {
-  darkBgColor,
   darkerBgColor,
   primaryColor,
   primaryLightColor,

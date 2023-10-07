@@ -85,7 +85,7 @@ const FlashMessage: React.FC<FlashMessageProps> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return ReactDom.createPortal(
     <WrapperDiv
