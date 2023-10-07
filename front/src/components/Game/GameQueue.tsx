@@ -5,15 +5,14 @@ import MainButton from '../UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from '../UI/CenteredLayout';
 import RoundImg from '../UI/RoundImage';
-import {
-  primaryAccentColor,
-  primaryLightColor,
-} from '../../constants/color-tokens';
+import { primaryAccentColor } from '../../constants/color-tokens';
 import SessionData from '../../interfaces/game-session-data.interface';
 import GameSessionUser from '../../interfaces/game-session-user.interface';
 import useMatchmakingSocket, {
   UseMatchmakingSocket,
 } from './useMatchmakingSocket';
+import ContrastPanel from '../UI/ContrastPanel';
+import versusSvg from '../../assets/svg/battle.svg';
 
 type GameQueueRes = {
   queued: boolean;
@@ -39,35 +38,36 @@ const WrapperDiv = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: ${primaryLightColor};
-    width: fit-content;
-    color: black;
-    border-radius: 25px;
-    padding: 15px 30px;
-    margin: 10px;
+    min-width: 450px;
+
+    .users-box {
+      display: flex;
+      gap: 20px;
+
+      .user-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        p {
+          font-weight: bold;
+        }
+
+        img {
+          width: 150px;
+        }
+      }
+    }
+
+    .versus-icon {
+      width: 60px;
+      height: auto;
+      transform: translateY(20px);
+    }
 
     .game-cta {
-      margin-top: 20px;
-    }
-  }
-
-  .users-box {
-    display: flex;
-    gap: 30px;
-
-    .user-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      p {
-        font-weight: bold;
-      }
-
-      img {
-        width: 150px;
-      }
+      margin-top: 30px;
     }
   }
 `;
@@ -165,17 +165,6 @@ export default function GameQueue(): JSX.Element {
   return (
     <WrapperDiv>
       <CenteredLayout>
-        <h1>
-          Game queue for user with intradId{' '}
-          <span className="highlighted">{userData?.intraId}</span>
-        </h1>
-        <p>
-          This is the page that is shown when users decide to join the queue.
-        </p>
-        <p>
-          The user joins the queue and stays there until they're joined by
-          another user.
-        </p>
         {(function () {
           if (isConnectionError) {
             return (
@@ -187,24 +176,39 @@ export default function GameQueue(): JSX.Element {
 
           if (isSessionCreated) {
             return (
-              <div className="session-box">
-                <h2>This is your new session</h2>
-                <div className="users-box">
-                  {sessionDataState[0].players
-                    .sort(showMeFirst)
-                    .map((player: GameSessionUser) => {
-                      return (
-                        <div className="user-box" key={player.id}>
-                          <p>{player.username}</p>
-                          <RoundImg alt="" src={player.avatar} />
-                        </div>
-                      );
-                    })}
-                </div>
-                <MainButton className="game-cta" onClick={onGoToMatch}>
-                  Go to match
-                </MainButton>
-              </div>
+              <>
+                <h2 className="title-2 mb-16">This is your new session</h2>
+                <ContrastPanel className="session-box">
+                  <div className="users-box">
+                    {sessionDataState[0].players
+                      .sort(showMeFirst)
+                      .map((player: GameSessionUser, index: number) => {
+                        return (
+                          <>
+                            <div className="user-box" key={player.id}>
+                              <p className="title-3 mb-8">{player.username}</p>
+                              <RoundImg alt="" src={player.avatar} />
+                            </div>
+                            {(() => {
+                              if (index === 0) {
+                                return (
+                                  <img
+                                    src={versusSvg}
+                                    alt=""
+                                    className="versus-icon"
+                                  />
+                                );
+                              }
+                            })()}
+                          </>
+                        );
+                      })}
+                  </div>
+                  <MainButton className="game-cta" onClick={onGoToMatch}>
+                    Go to match
+                  </MainButton>
+                </ContrastPanel>
+              </>
             );
           } else {
             if (isQueued) {
@@ -227,6 +231,10 @@ export default function GameQueue(): JSX.Element {
             }
           }
         })()}
+        <p className="mb-16">
+          Game queue for user with intradId{' '}
+          <span className="highlighted">{userData?.intraId}</span>
+        </p>
       </CenteredLayout>
     </WrapperDiv>
   );
