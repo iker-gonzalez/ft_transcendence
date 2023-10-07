@@ -12,7 +12,8 @@ import useMatchmakingSocket, {
   UseMatchmakingSocket,
 } from './useMatchmakingSocket';
 import ContrastPanel from '../UI/ContrastPanel';
-import versusSvg from '../../assets/svg/battle.svg';
+import waitingAnimationData from '../../assets/lotties/playing.json';
+import Lottie from 'lottie-react';
 
 type GameQueueRes = {
   queued: boolean;
@@ -55,7 +56,7 @@ const WrapperDiv = styled.div`
         }
 
         img {
-          width: 150px;
+          width: 130px;
         }
       }
     }
@@ -63,12 +64,12 @@ const WrapperDiv = styled.div`
     .versus-icon {
       width: 60px;
       height: auto;
-      transform: translateY(20px);
+      transform: translateY(-20px);
     }
+  }
 
-    .game-cta {
-      margin-top: 30px;
-    }
+  .waiting-animation {
+    width: 600px;
   }
 `;
 
@@ -157,11 +158,6 @@ export default function GameQueue(): JSX.Element {
     );
   };
 
-  const showMeFirst = (user: GameSessionUser) => {
-    if (user.intraId === userData.intraId) return -1;
-    return 1;
-  };
-
   return (
     <WrapperDiv>
       <CenteredLayout>
@@ -177,36 +173,27 @@ export default function GameQueue(): JSX.Element {
           if (isSessionCreated) {
             return (
               <>
-                <h2 className="title-2 mb-16">This is your new session</h2>
-                <ContrastPanel className="session-box">
-                  <div className="users-box">
-                    {sessionDataState[0].players
-                      .sort(showMeFirst)
-                      .map((player: GameSessionUser, index: number) => {
+                <h2 className="title-2 mb-24">This is your new session</h2>
+                <ContrastPanel className="session-box mb-16">
+                  <div className="users-box mb-24">
+                    {sessionDataState[0].players.map(
+                      (player: GameSessionUser) => {
                         return (
-                          <>
-                            <div className="user-box" key={player.id}>
-                              <p className="title-3 mb-8">{player.username}</p>
-                              <RoundImg alt="" src={player.avatar} />
+                          <div key={player.id}>
+                            <div className="user-box">
+                              <RoundImg
+                                alt=""
+                                src={player.avatar}
+                                className="mb-8"
+                              />
+                              <p className="title-3">{player.username}</p>
                             </div>
-                            {(() => {
-                              if (index === 0) {
-                                return (
-                                  <img
-                                    src={versusSvg}
-                                    alt=""
-                                    className="versus-icon"
-                                  />
-                                );
-                              }
-                            })()}
-                          </>
+                          </div>
                         );
-                      })}
+                      },
+                    )}
                   </div>
-                  <MainButton className="game-cta" onClick={onGoToMatch}>
-                    Go to match
-                  </MainButton>
+                  <MainButton onClick={onGoToMatch}>Go to match</MainButton>
                 </ContrastPanel>
               </>
             );
@@ -214,9 +201,14 @@ export default function GameQueue(): JSX.Element {
             if (isQueued) {
               return (
                 <>
-                  <p className="highlighted">
-                    Queue joined. Waiting for another player to join...
+                  <h1 className="title-1 mb-16">Your opponent is on the way</h1>
+                  <p className="mb-16">
+                    Queue joined. Be patient, your moment will come...
                   </p>
+                  <Lottie
+                    animationData={waitingAnimationData}
+                    className="waiting-animation mb-24"
+                  />
                   <MainButton onClick={onRemoveFromQueue}>
                     Remove from queue
                   </MainButton>
@@ -224,9 +216,15 @@ export default function GameQueue(): JSX.Element {
               );
             } else {
               return (
-                <MainButton onClick={onJoinQueue} disabled={!isSocketConnected}>
-                  Join game
-                </MainButton>
+                <>
+                  <h1 className="title-1 mb-16">Find a peer to challenge</h1>
+                  <MainButton
+                    onClick={onJoinQueue}
+                    disabled={!isSocketConnected}
+                  >
+                    Join game
+                  </MainButton>
+                </>
               );
             }
           }
