@@ -1,6 +1,5 @@
 import React from 'react';
 import SignIn from './pages/Home';
-import SetProfile from './pages/SetProfile';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import UserProfile from './pages/UserProfile';

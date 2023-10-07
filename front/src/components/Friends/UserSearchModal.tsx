@@ -103,7 +103,7 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
     }, 500);
 
     return () => clearTimeout(debounceTimeout);
-  }, [searchValue, navigate]);
+  }, [searchValue, navigate, userData]);
 
   return (
     <WrapperDiv>
