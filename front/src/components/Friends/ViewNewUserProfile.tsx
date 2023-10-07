@@ -7,6 +7,20 @@ import SecondaryButton from '../UI/SecondaryButton';
 import { getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import FriendData from '../../interfaces/friend-data.interface';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
+import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+
+type AddNewFriendResponse = {
+  created?: number;
+  data?: any;
+  message?: string;
+};
+
+type DeleteFriendResponse = {
+  deleted?: number;
+  data?: any;
+  message?: string;
+};
 
 const WrapperDiv = styled.div`
   .user-info-container {
@@ -44,6 +58,8 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
   isAlreadyFriend,
   onUpdateFriendsList,
 }): JSX.Element => {
+  const { launchFlashMessage } = useFlashMessages();
+
   const addUserToFriend = async () => {
     const res: Response = await fetch(
       `${getBaseUrl()}/friends/${foundUserData.intraId}`,
@@ -55,17 +71,16 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
       },
     );
 
-    const data: {
-      created: number;
-      data: any;
-    } = await res.json();
+    const data: AddNewFriendResponse = await res.json();
 
     if (data.created === 1) {
       const friendsList: FriendData[] = data.data.friends;
       const successMessage = foundUserData!.username + 'was added to friends!';
       onUpdateFriendsList(friendsList, successMessage);
     } else {
-      // TODO Set some error state here
+      const errorMessage = data.message!;
+      console.warn('Error adding a new friend:', errorMessage);
+      launchFlashMessage(errorMessage, FlashMessageLevel.ERROR);
     }
   };
 
@@ -80,12 +95,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
       },
     );
 
-    const data: {
-      deleted: number;
-      data: any;
-    } = await res.json();
-
-    console.log('data', data);
+    const data: DeleteFriendResponse = await res.json();
 
     if (data.deleted === 1) {
       const successMessage: string = `${
@@ -93,7 +103,9 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
       } was removed from your friends!`;
       onUpdateFriendsList(data.data.friends, successMessage);
     } else {
-      // TODO Set some error state here
+      const errorMessage = data.message!;
+      console.warn('Error adding a new friend:', errorMessage);
+      launchFlashMessage(errorMessage, FlashMessageLevel.ERROR);
     }
   };
 
