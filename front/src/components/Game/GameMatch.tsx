@@ -6,14 +6,14 @@ import MainButton from '../UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from '../UI/CenteredLayout';
 import { primaryAccentColor } from '../../constants/color-tokens';
-import SessionData from '../../interfaces/game-session-data.interface';
 import useGameDataSocket, { UseGameDataSocket } from './useGameDataSocket';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import GameSessionUser from '../../interfaces/game-session-user.interface';
+import Lottie from 'lottie-react';
+import waitingAnimationData from '../../assets/lotties/waiting.json';
 
 const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
-  console.log('sessionData', players);
   const playerIndex: number = players?.findIndex(
     (player: any) => player.intraId === userId,
   );
@@ -40,6 +40,17 @@ const WrapperDiv = styled.div`
     top: 50%;
     transform: translateY(-50%);
     z-index: 1;
+
+    .waiting-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .waiting-animation {
+        width: 200px;
+      }
+    }
   }
 
   .canvas {
@@ -115,7 +126,13 @@ export default function GameMatch(): JSX.Element {
           {!showGame && (
             <div className="cta-container">
               {isAwaitingOpponent ? (
-                <p>Awaiting opponent...</p>
+                <div className="waiting-container">
+                  <Lottie
+                    animationData={waitingAnimationData}
+                    className="waiting-animation"
+                  />
+                  <p>Awaiting opponent...</p>
+                </div>
               ) : (
                 <MainButton onClick={onReadyToPlay}>Play</MainButton>
               )}

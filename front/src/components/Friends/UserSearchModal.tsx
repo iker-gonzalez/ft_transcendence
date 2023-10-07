@@ -80,7 +80,6 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
         }
 
         const data = await response.json();
-        console.log(data);
 
         users = data.data.friends;
         const usersMeExcluded: UserCoreData[] = users.filter(
