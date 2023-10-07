@@ -11,7 +11,6 @@ import {
   primaryAccentColor,
   primaryLightColor,
 } from '../constants/color-tokens';
-import { useUserData } from '../context/UserDataContext';
 import SessionData from '../interfaces/game-session-data.interface';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 
@@ -75,7 +74,7 @@ const WrapperDiv = styled.div`
 export default function GameQueue(): JSX.Element {
   const navigate = useNavigate();
 
-  const { userData } = useUserData();
+  const { userData } = useGameRouteContext();
   const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
   const [isQueued, setIsQueued] = useState<boolean>(false);
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
@@ -92,7 +91,6 @@ export default function GameQueue(): JSX.Element {
   useEffect(() => {
     if (!userData) {
       matchmakingSocketRef.current.disconnect();
-      navigate('/');
     }
 
     matchmakingSocketRef.current.on('connect_error', (error) => {
