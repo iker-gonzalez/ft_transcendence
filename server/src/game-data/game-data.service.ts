@@ -136,6 +136,12 @@ export class GameDataService {
     }
   }
 
+  async onGameEnd(server: Server, data: string): Promise<void> {
+    const { player, gameDataId } = JSON.parse(data);
+
+    server.emit(`gameEnded/${player.intraId}/${gameDataId}`, data);
+  }
+
   async deleteGameDataSet(server: Server, data: string): Promise<void> {
     const { gameDataId } = JSON.parse(data);
 

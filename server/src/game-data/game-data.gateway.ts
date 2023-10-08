@@ -7,10 +7,10 @@ import {
 import { Server } from 'socket.io';
 import { GameDataService } from './game-data.service';
 // import { AsyncApiPub, AsyncApiSub } from 'nestjs-asyncapi';
-import { swaggerAsyncConstants } from '../../config/swagger-async.constants';
-import { StartGameDto } from './dto/start-game.dto';
-import { EmptyDto } from './dto/empty.dto';
-import { ReadyPlayerDto } from './dto/ready-player.dto';
+// import { swaggerAsyncConstants } from '../../config/swagger-async.constants';
+// import { StartGameDto } from './dto/start-game.dto';
+// import { EmptyDto } from './dto/empty.dto';
+// import { ReadyPlayerDto } from './dto/ready-player.dto';
 
 @WebSocketGateway({
   namespace: 'game-data',
@@ -89,6 +89,12 @@ export class GameDataGateway {
   @SubscribeMessage('download')
   onDownloadGameDataUser(@MessageBody() data: string): Promise<void> {
     return this.gameDataService.downloadGameData(this.server, data);
+  }
+
+  // TODO create documentation for this
+  @SubscribeMessage('endGame')
+  onGameEnd(@MessageBody() data: string): Promise<void> {
+    return this.gameDataService.onGameEnd(this.server, data);
   }
 
   // TODO create documentation for this
