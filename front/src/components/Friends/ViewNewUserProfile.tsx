@@ -75,7 +75,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
 
     if (data.created === 1) {
       const friendsList: FriendData[] = data.data.friends;
-      const successMessage = foundUserData!.username + 'was added to friends!';
+      const successMessage = foundUserData!.username + ' was added to friends!';
       onUpdateFriendsList(friendsList, successMessage);
     } else {
       const errorMessage = data.message!;
