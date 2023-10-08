@@ -2473,6 +2473,54 @@ describe('App e2e', () => {
           });
         });
       });
+
+      describe('endGame', () => {
+        test('should emit gameEnded/intraId/gameDataId when endGame message is sent', (done) => {
+          const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+          const gameDataId = 'f7c9c8d0-0e1f-11ec-9a03-0242ac130003';
+
+          const payloadPlayer1 = {
+            gameDataId,
+            date: new Date().toString(),
+            player: {
+              intraId: userData.intraId,
+              isWinner: true,
+            },
+          };
+
+          const payloadPlayer2 = {
+            gameDataId,
+            date: new Date().toString(),
+            player: {
+              intraId: userData2.intraId,
+              isWinner: false,
+            },
+          };
+
+          socket.on('connect', () => {
+            // Player 1 is ending game
+            socket.emit('endGame', JSON.stringify(payloadPlayer1));
+          });
+
+          socket.on(`gameEnded/${userData.intraId}/${gameDataId}`, (data) => {
+            const parsedData = JSON.parse(data);
+            expect(parsedData).toMatchObject(payloadPlayer1);
+
+            // Player 2 is ending game
+            socket.emit('endGame', JSON.stringify(payloadPlayer2));
+          });
+
+          socket.on(`gameEnded/${userData2.intraId}/${gameDataId}`, (data) => {
+            const parsedData = JSON.parse(data);
+            expect(parsedData).toMatchObject(payloadPlayer2);
+
+            socket.disconnect();
+
+            done();
+          });
+        });
+      });
     });
   });
 });
