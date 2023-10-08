@@ -29,7 +29,7 @@ const slit = 3;
 const userSpeedInput = 10;
 
 function game(
-  canvas: any,
+  canvas: { width: number; height: number },
   socket: { emit: (arg0: string, arg1: string) => void },
   isPlayer1: boolean,
   ballData: IBallData,
@@ -39,7 +39,7 @@ function game(
   match_finish: boolean,
   match_points: number,
   sounds: ISounds,
-  sessionId: any,
+  sessionId: string | null,
 ) {
   if (!match_finish) {
     if (isPlayer1) {
@@ -205,8 +205,8 @@ function matchUser2(
 
 function resetBall(
   canvas: { width: number; height: number },
-  ballData: any,
-  user1: any,
+  ballData: IBallData,
+  user1: IUserData,
 ) {
   const newBallData = ballData;
   const newUserData = user1;
@@ -229,38 +229,38 @@ function resetBall(
 function render(
   canvas: HTMLCanvasElement,
   ballData: {
-    x: any;
-    y: any;
-    radius: any;
+    x: number;
+    y: number;
+    radius: number;
     velocityX?: number;
     velocityY?: number;
-    speed: any;
+    speed: number;
     reset?: boolean;
-    color: any;
+    color: RenderColor;
     top?: number;
     bottom?: number;
     left?: number;
     right?: number;
   },
   user1: {
-    y: any;
-    width: any;
-    height: any;
-    score: any;
-    x: any;
-    color: any;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    score: number;
+    color: RenderColor;
     top?: number;
     bottom?: number;
     left?: number;
     right?: number;
   },
   user2: {
-    x: any;
-    y: any;
-    width: any;
-    height: any;
-    score: any;
-    color: any;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    score: number;
+    color: RenderColor;
     top?: number;
     bottom?: number;
     left?: number;
@@ -290,7 +290,7 @@ function render(
 
   drawText(
     canvas,
-    user1.score,
+    String(user1.score),
     (canvas.width / 10) * 4,
     canvas.height / 6,
     '40px Arial',
@@ -310,7 +310,7 @@ function render(
 
   drawText(
     canvas,
-    user2.score,
+    String(user2.score),
     (canvas.width / 10) * 6,
     canvas.height / 6,
     '40px Arial',
