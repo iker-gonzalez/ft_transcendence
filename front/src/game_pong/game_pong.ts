@@ -110,17 +110,19 @@ function matchUser1(
   }
 
   if (ballData.x + ballData.radius < 0 && !ballData.reset) {
-    let { newBallData, newUserData } = resetBall(canvas, ballData, user1);
+    let { newBallData, newUserData1, newUserData2 } = resetBall(canvas, ballData, user1, user2);
     ballData = newBallData;
-    user1 = newUserData;
+    user1 = newUserData1;
+    user2 = newUserData2;
   } else if (ballData.x - ballData.radius > canvas.width && !ballData.reset) {
     user1.score++;
     sounds.userScore.play().catch(function (error: any) {
       // console.log("Chrome cannot play sound without user interaction first");
     });
-    let { newBallData, newUserData } = resetBall(canvas, ballData, user1);
+    let { newBallData, newUserData1, newUserData2 } = resetBall(canvas, ballData, user1, user2);
     ballData = newBallData;
-    user1 = newUserData;
+    user1 = newUserData1;
+    user2 = newUserData2;
   }
 
   let player: IUserData =
@@ -141,6 +143,7 @@ function matchUser1(
 
     ballData.speed += 0.1;
     user1.height -= 2;
+    user2.height -= 2;
   }
 }
 
@@ -176,10 +179,10 @@ function matchUser2(
     sounds.userScore.play().catch(function (error: any) {
       // console.log("Chrome cannot play sound without user interaction first");
     });
-    let { newBallData } = resetBall(canvas, ballData, user1);
+    let { newBallData } = resetBall(canvas, ballData, user1, user2);
     ballData = newBallData;
   } else if (ballData.x - ballData.radius > canvas.width && !ballData.reset) {
-    let { newBallData } = resetBall(canvas, ballData, user1);
+    let { newBallData } = resetBall(canvas, ballData, user1, user2);
     ballData = newBallData;
   }
 
@@ -200,6 +203,8 @@ function matchUser2(
     ballData.velocityY = ballData.speed * Math.sin(angleRad);
 
     ballData.speed += 0.1;
+    user1.height -= 2;
+    user2.height -= 2;
   }
 }
 
@@ -207,9 +212,11 @@ function resetBall(
   canvas: { width: number; height: number },
   ballData: IBallData,
   user1: IUserData,
+  user2: IUserData,
 ) {
-  const newBallData = ballData;
-  const newUserData = user1;
+  const newBallData: IBallData = ballData;
+  const newUserData1 : IUserData = user1;
+  const newUserData2 : IUserData = user2;
   newBallData.reset = true;
 
   setTimeout(() => {
@@ -219,11 +226,12 @@ function resetBall(
     newBallData.velocityX = newBallData.velocityX;
     newBallData.velocityY = -newBallData.velocityY * Math.random();
     newBallData.speed = userSpeedInput;
-    newUserData.height = 100;
+    newUserData1.height = 100;
+    newUserData2.height = 100;
     newBallData.reset = false;
   }, 1500);
 
-  return { newBallData, newUserData };
+  return { newBallData, newUserData1, newUserData2 };
 }
 
 function render(
@@ -364,7 +372,7 @@ function render(
 
   drawText(
     canvas,
-    'Paddle Height: ' + user1.height,
+    'Paddle Height: ' + user1.height + '%',
     (canvas.width / 10) * 5.5,
     (canvas.height / 20) * 19,
     '15px Arial',
