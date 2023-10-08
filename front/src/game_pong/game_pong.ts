@@ -22,11 +22,11 @@ import {
   RenderColor,
 } from './game_pong.interfaces';
 
-const fps = 60;
-const computedFps = 1000 / fps;
-const thickness = 10;
-const slit = 3;
-const userSpeedInput = 10;
+const fps: number = 60;
+const computedFps: number = 1000 / fps;
+const thickness: number = 10;
+const slit: number = 3;
+const userSpeedInput: number = 10;
 
 function game(
   canvas: { width: number; height: number },
@@ -41,6 +41,7 @@ function game(
   sounds: ISounds,
   sessionId: string | null,
 ) {
+  console.log('Match finished? ' + match_finish);
   if (!match_finish) {
     if (isPlayer1) {
       socket.emit(
@@ -110,7 +111,12 @@ function matchUser1(
   }
 
   if (ballData.x + ballData.radius < 0 && !ballData.reset) {
-    let { newBallData, newUserData1, newUserData2 } = resetBall(canvas, ballData, user1, user2);
+    let { newBallData, newUserData1, newUserData2 } = resetBall(
+      canvas,
+      ballData,
+      user1,
+      user2,
+    );
     ballData = newBallData;
     user1 = newUserData1;
     user2 = newUserData2;
@@ -119,7 +125,12 @@ function matchUser1(
     sounds.userScore.play().catch(function (error: any) {
       // console.log("Chrome cannot play sound without user interaction first");
     });
-    let { newBallData, newUserData1, newUserData2 } = resetBall(canvas, ballData, user1, user2);
+    let { newBallData, newUserData1, newUserData2 } = resetBall(
+      canvas,
+      ballData,
+      user1,
+      user2,
+    );
     ballData = newBallData;
     user1 = newUserData1;
     user2 = newUserData2;
@@ -215,8 +226,8 @@ function resetBall(
   user2: IUserData,
 ) {
   const newBallData: IBallData = ballData;
-  const newUserData1 : IUserData = user1;
-  const newUserData2 : IUserData = user2;
+  const newUserData1: IUserData = user1;
+  const newUserData2: IUserData = user2;
   newBallData.reset = true;
 
   setTimeout(() => {
@@ -280,10 +291,6 @@ function render(
   usernames: { username1: string; username2: string },
   isPlayer1: boolean,
 ) {
-  if (match_finish) {
-    alert('Hello');
-  }
-
   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
 
   drawText(
@@ -353,6 +360,7 @@ function render(
       'left',
       RenderColor.Green,
     );
+    console.log('Match finished in render' + match_finish)
     // setTimeout(() => {
     //   alert('⭐️ USER 2 WINS ⭐️');
     // }, 10);
@@ -362,7 +370,7 @@ function render(
 
   drawText(
     canvas,
-    'Ball Speed: X' + (speedRender.toFixed(2)),
+    'Ball Speed: X' + speedRender.toFixed(2),
     (canvas.width / 10) * 4.5,
     (canvas.height / 20) * 19,
     '15px Arial',
@@ -449,9 +457,8 @@ export async function gameLoop(
   }
 
   // Logic
-  let match_points = 5;
-  let match_finish = false;
-
+  const match_points: number = 5;
+  const match_finish: boolean = false;
   const { hit, wall, userScore, botScore } = initializeSounds();
   const sounds = {
     hit,
