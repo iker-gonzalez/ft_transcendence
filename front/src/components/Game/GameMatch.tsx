@@ -116,11 +116,17 @@ export default function GameMatch(): JSX.Element {
     setIsAwaitingOpponent(true);
   };
 
+  const { players } = sessionDataState[0];
+  const usernames = {
+    username1: players[0].username,
+    username2: players[1].username,
+  }
+
   return (
     <WrapperDiv>
       <CenteredLayout>
         <h2>
-          Hello, player <span className="highlighted">{isPlayer1 ? 1 : 2}</span>
+          Hello, <span className="highlighted">{isPlayer1 ? usernames.username1 : usernames.username2 }</span>
         </h2>
         <div className="game-container">
           {!showGame && (
