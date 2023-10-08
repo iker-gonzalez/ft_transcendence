@@ -350,21 +350,23 @@ function render(
     // }, 10);
   }
 
+  const speedRender: number = ballData.speed * 0.1;
+
   drawText(
     canvas,
-    'Ball Speed: ' + ballData.speed?.toFixed(2),
-    (canvas.width / 10) * 7,
-    (canvas.height / 20) * 17,
+    'Ball Speed: X' + (speedRender.toFixed(2)),
+    (canvas.width / 10) * 4.5,
+    (canvas.height / 20) * 19,
     '15px Arial',
-    'left',
+    'right',
     RenderColor.Grey,
   );
 
   drawText(
     canvas,
     'Paddle Height: ' + user1.height,
-    (canvas.width / 10) * 7,
-    (canvas.height / 20) * 18,
+    (canvas.width / 10) * 5.5,
+    (canvas.height / 20) * 19,
     '15px Arial',
     'left',
     RenderColor.Grey,
