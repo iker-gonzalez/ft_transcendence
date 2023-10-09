@@ -139,10 +139,6 @@ const SignIn: React.FC = (): JSX.Element => {
                     students of the 42Urduliz campus in Bilbao, Spain
                   </p>
                   <p className="mb-8">Go ahead and explore our project 🤠</p>
-                  <p>
-                    You can use one of our ready-made test users or log in with
-                    your own 42 Intra credentials.
-                  </p>
                 </div>
                 <div className="links-container">
                   <MainButton type="button" onClick={handleSignIn}>
