@@ -69,20 +69,21 @@ export default function GameMatch(): JSX.Element {
   );
   const sessionId: string | null = useSearchParams()[0]!.get('sessionId');
   const [showGame, setShowGame] = useState<boolean>(false);
+  const [players] = useState<GameSessionUser[]>(sessionDataState[0]?.players);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { socketRef, isConnectionError }: UseGameDataSocket =
     useGameDataSocket(sessionId);
   const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
-    if (!sessionId) {
+    if (!sessionId || !players) {
       navigate('/game');
     }
+
     socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
       setShowGame(true);
 
       if (canvasRef.current) {
-        const { players } = sessionDataState[0];
         const usernames = {
           username1: players[0].username,
           username2: players[1].username,
@@ -116,17 +117,15 @@ export default function GameMatch(): JSX.Element {
     setIsAwaitingOpponent(true);
   };
 
-  const { players } = sessionDataState[0];
-  const usernames = {
-    username1: players[0].username,
-    username2: players[1].username,
-  }
-
+  if (!players) return <></>;
   return (
     <WrapperDiv>
       <CenteredLayout>
         <h2>
-          Hello, <span className="highlighted">{isPlayer1 ? usernames.username1 : usernames.username2 }</span>
+          Hello,{' '}
+          <span className="highlighted">
+            {isPlayer1 ? players[0].username : players[1].username}
+          </span>
         </h2>
         <div className="game-container">
           {!showGame && (
