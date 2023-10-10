@@ -16,11 +16,13 @@ import {
 } from './game_pong.functions';
 import {
   IBallData,
+  IEndGamePayload,
   INetData,
   ISounds,
   IUserData,
   RenderColor,
 } from './game_pong.interfaces';
+import GameSessionUser from '../interfaces/game-session-user.interface';
 
 const fps: number = 60;
 const computedFps: number = 1000 / fps;
@@ -28,6 +30,8 @@ const thickness: number = 10;
 const slit: number = 3;
 const userSpeedInput: number = 10;
 let match_finish: boolean = false;
+const match_points: number = 5;
+const startedAt: Date = new Date();
 
 function game(
   socket: Socket,
@@ -258,14 +262,14 @@ function render(
   },
   net: INetData,
   match_points: number,
-  usernames: { username1: string; username2: string },
+  usersData: { user1: GameSessionUser; user2: GameSessionUser },
   isPlayer1: boolean,
 ) {
   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
 
   drawText(
     canvas,
-    usernames.username1,
+    usersData.user1.username,
     (canvas.width / 10) * 4,
     canvas.height / 10,
     '20px Arial',
@@ -285,7 +289,7 @@ function render(
 
   drawText(
     canvas,
-    usernames.username2,
+    usersData.user2.username,
     (canvas.width / 10) * 6,
     canvas.height / 10,
     '20px Arial',
@@ -381,19 +385,25 @@ function onGameEnd(
   socket: Socket,
   sessionId: string,
   player: IUserData,
+  intraId: number,
 ) {
   // TODO check this, looks like it's not working
   eventList.forEach(function ({ typeEvent, handler }) {
     canvas.removeEventListener(typeEvent, handler);
   });
 
-  socket.emit(
-    'endGame',
-    JSON.stringify({
-      gameDataId: sessionId,
-      player,
-    }),
-  );
+  let endGamePayload: IEndGamePayload = {
+    gameDataId: sessionId,
+    startedAt,
+    elapsedTime: new Date().getTime() - startedAt.getTime(),
+    player: {
+      intraId,
+      score: player.score,
+      isWinner: player.score >= match_points,
+    },
+  };
+
+  socket.emit('endGame', JSON.stringify(endGamePayload));
 }
 
 export async function gameLoop(
@@ -401,7 +411,7 @@ export async function gameLoop(
   socket: Socket<DefaultEventsMap, DefaultEventsMap>,
   isPlayer1: boolean,
   sessionId: string | null,
-  usernames: { username1: string; username2: string },
+  usersData: { user1: GameSessionUser; user2: GameSessionUser },
 ) {
   // Update initial data
   let ballData = {
@@ -445,7 +455,6 @@ export async function gameLoop(
   }
 
   // Logic
-  const match_points: number = 5;
   const { hit, wall, userScore, botScore } = initializeSounds();
   const sounds = {
     hit,
@@ -533,8 +542,17 @@ export async function gameLoop(
       user2 = downloadedData.user2;
 
       if (user2.score >= match_points || user1.score >= match_points) {
+        if (!match_finish)
+          onGameEnd(
+            canvas,
+            eventList,
+            socket,
+            sessionId!,
+            user1,
+            usersData.user1.intraId,
+          );
         match_finish = true;
-        onGameEnd(canvas, eventList, socket, sessionId!, user2);
+        return;
       }
 
       matchUser1(canvas, ballData, user1, user2, sounds);
@@ -546,7 +564,7 @@ export async function gameLoop(
         user2,
         net,
         match_points,
-        usernames,
+        usersData,
         isPlayer1,
       );
 
@@ -567,8 +585,17 @@ export async function gameLoop(
       user1 = downloadedData.user1;
 
       if (user1.score >= match_points || user2.score >= match_points) {
+        if (!match_finish)
+          onGameEnd(
+            canvas,
+            eventList,
+            socket,
+            sessionId!,
+            user2,
+            usersData.user2.intraId,
+          );
         match_finish = true;
-        onGameEnd(canvas, eventList, socket, sessionId!, user2);
+        return;
       }
 
       matchUser2(canvas, ballData, user1, user2, sounds);
@@ -580,7 +607,7 @@ export async function gameLoop(
         user2,
         net,
         match_points,
-        usernames,
+        usersData,
         isPlayer1,
       );
 
