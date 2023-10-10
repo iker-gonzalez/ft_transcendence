@@ -267,6 +267,25 @@ function render(
 ) {
   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
 
+  drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
+
+  drawRect(
+    canvas,
+    0,
+    canvas.height - thickness,
+    canvas.width,
+    thickness,
+    RenderColor.White,
+  );
+
+  drawDashedLine(canvas, net);
+
+  drawRect(canvas, user1.x, user1.y, user1.width, user1.height, user1.color);
+
+  drawRect(canvas, user2.x, user2.y, user2.width, user2.height, user2.color);
+
+  drawArc(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
+
   drawText(
     canvas,
     usersData.user1.username,
@@ -310,31 +329,87 @@ function render(
   if (user1.score >= match_points) {
     drawText(
       canvas,
-      '🏆 WINNER',
+      '🏆',
       (canvas.width / 10) * 4,
       canvas.height / 4.5,
       '30px Arial',
       'right',
       RenderColor.Green,
     );
-    // setTimeout(() => {
-    //   alert('⭐️ USER 1 WINS ⭐️');
-    // }, 10);
+
+    drawRect(canvas, 200, 200, 500, 150, RenderColor.Grey);
+
+    drawText(
+      canvas,
+      'GAME OVER',
+      450,
+      300,
+      '60px Verdana',
+      'center',
+      RenderColor.Red,
+    );
+
+    drawRect(canvas, 200, 360, 500, 80, RenderColor.White);
+
+    drawText(
+      canvas,
+      usersData.user1.username + ' wins',
+      450,
+      410,
+      '40px Verdana',
+      'center',
+      RenderColor.Green,
+    );
   }
 
   if (user2.score >= match_points) {
     drawText(
       canvas,
-      '🏆 WINNER',
+      '🏆',
       (canvas.width / 10) * 6,
       canvas.height / 4.5,
       '30px Arial',
       'left',
       RenderColor.Green,
     );
-    // setTimeout(() => {
-    //   alert('⭐️ USER 2 WINS ⭐️');
-    // }, 10);
+
+    if (user1.score >= match_points || user2.score >= match_points) {
+      drawRect(canvas, 200, 200, 500, 150, RenderColor.Grey);
+
+      drawText(
+        canvas,
+        'GAME OVER',
+        450,
+        300,
+        '60px Verdana',
+        'center',
+        RenderColor.Red,
+      );
+
+      drawRect(canvas, 200, 360, 500, 80, RenderColor.White);
+
+      if (user1.score >= match_points) {
+        drawText(
+          canvas,
+          usersData.user1.username + ' wins',
+          450,
+          410,
+          '40px Verdana',
+          'center',
+          RenderColor.Green,
+        );
+      } else {
+        drawText(
+          canvas,
+          usersData.user2.username + ' wins',
+          450,
+          410,
+          '40px Verdana',
+          'center',
+          RenderColor.Green,
+        );
+      }
+    }
   }
 
   const speedRender: number = ballData.speed * 0.1;
@@ -358,25 +433,6 @@ function render(
     'left',
     RenderColor.Grey,
   );
-
-  drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
-
-  drawRect(
-    canvas,
-    0,
-    canvas.height - thickness,
-    canvas.width,
-    thickness,
-    RenderColor.White,
-  );
-
-  drawDashedLine(canvas, net);
-
-  drawRect(canvas, user1.x, user1.y, user1.width, user1.height, user1.color);
-
-  drawRect(canvas, user2.x, user2.y, user2.width, user2.height, user2.color);
-
-  drawArc(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
 }
 
 function onGameEnd(
