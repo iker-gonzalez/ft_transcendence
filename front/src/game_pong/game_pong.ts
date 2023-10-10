@@ -30,30 +30,20 @@ const userSpeedInput: number = 10;
 let match_finish: boolean = false;
 
 function game(
-  socket: { emit: (arg0: string, arg1: string) => void },
+  socket: Socket,
   isPlayer1: boolean,
   match_points: number,
   sessionId: string | null,
 ) {
   if (!match_finish) {
     setTimeout(() => {
-      if (isPlayer1) {
-        socket.emit(
-          'download',
-          JSON.stringify({
-            isUser1: true,
-            gameDataId: sessionId,
-          }),
-        );
-      } else {
-        socket.emit(
-          'download',
-          JSON.stringify({
-            isUser1: false,
-            gameDataId: sessionId,
-          }),
-        );
-      }
+      socket.emit(
+        'download',
+        JSON.stringify({
+          isUser1: isPlayer1,
+          gameDataId: sessionId,
+        }),
+      );
 
       requestAnimationFrame(function () {
         game(socket, isPlayer1, match_points, sessionId);
