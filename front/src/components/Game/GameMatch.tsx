@@ -12,6 +12,7 @@ import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import GameSessionUser from '../../interfaces/game-session-user.interface';
 import Lottie from 'lottie-react';
 import waitingAnimationData from '../../assets/lotties/waiting.json';
+import { IEndGamePayload } from '../../game_pong/game_pong.interfaces';
 
 const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
   const playerIndex: number = players?.findIndex(
@@ -84,19 +85,29 @@ export default function GameMatch(): JSX.Element {
       setShowGame(true);
 
       if (canvasRef.current) {
-        const usernames = {
-          username1: players[0].username,
-          username2: players[1].username,
+        const usersData: { user1: GameSessionUser; user2: GameSessionUser } = {
+          user1: players[0],
+          user2: players[1],
         };
+
         gameLoop(
           canvasRef.current,
           socketRef.current,
           isPlayer1,
           sessionId,
-          usernames,
+          usersData,
         );
       }
     });
+
+    socketRef.current.on(
+      `gameEnded/${userData.intraId}/${sessionId}`,
+      (data: string) => {
+        const parsedData: IEndGamePayload = JSON.parse(data);
+        console.log('data is', parsedData);
+        // TODO hit endpoint to store game data
+      },
+    );
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
