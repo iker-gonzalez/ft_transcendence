@@ -54,3 +54,14 @@ export interface INewSessionPayload {
     players: IUserData[];
   };
 }
+
+export interface IEndGamePayload {
+  elapsedTime: number;
+  gameDataId: string;
+  player: {
+    intraId: number;
+    isWinner: boolean;
+    score: number;
+  };
+  startedAt: Date;
+}
