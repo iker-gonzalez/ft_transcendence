@@ -21,71 +21,45 @@ import {
   IUserData,
   RenderColor,
 } from './game_pong.interfaces';
-import { KeyboardEvent } from 'react';
 
 const fps: number = 60;
 const computedFps: number = 1000 / fps;
 const thickness: number = 10;
 const slit: number = 3;
 const userSpeedInput: number = 10;
+let match_finish: boolean = false;
 
 function game(
-  canvas: HTMLCanvasElement,
   socket: { emit: (arg0: string, arg1: string) => void },
   isPlayer1: boolean,
-  ballData: IBallData,
-  user1: IUserData,
-  user2: IUserData,
-  net: INetData,
-  match_finish: boolean,
   match_points: number,
-  sounds: ISounds,
   sessionId: string | null,
-  eventList: any[],
 ) {
-  if (isPlayer1) {
-    socket.emit(
-      'download',
-      JSON.stringify({
-        isUser1: true,
-        gameDataId: sessionId,
-      }),
-    );
-  } else {
-    socket.emit(
-      'download',
-      JSON.stringify({
-        isUser1: false,
-        gameDataId: sessionId,
-      }),
-    );
-  }
-
-  if (user1.score >= match_points || user2.score >= match_points) {
-    match_finish = true;
-    eventList.forEach(function ({ typeEvent, handler }) { 
-      canvas.removeEventListener(typeEvent, handler);
-    })
-  }
-
+  if (!match_finish) {
     setTimeout(() => {
-      requestAnimationFrame(function () {
-        game(
-          canvas,
-          socket,
-          isPlayer1,
-          ballData,
-          user1,
-          user2,
-          net,
-          match_finish,
-          match_points,
-          sounds,
-          sessionId,
-          eventList,
+      if (isPlayer1) {
+        socket.emit(
+          'download',
+          JSON.stringify({
+            isUser1: true,
+            gameDataId: sessionId,
+          }),
         );
+      } else {
+        socket.emit(
+          'download',
+          JSON.stringify({
+            isUser1: false,
+            gameDataId: sessionId,
+          }),
+        );
+      }
+
+      requestAnimationFrame(function () {
+        game(socket, isPlayer1, match_points, sessionId);
       });
     }, computedFps);
+  }
 }
 
 function matchUser1(
@@ -293,7 +267,6 @@ function render(
     right?: number;
   },
   net: INetData,
-  match_finish: boolean,
   match_points: number,
   usernames: { username1: string; username2: string },
   isPlayer1: boolean,
@@ -412,6 +385,27 @@ function render(
   drawArc(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
 }
 
+function onGameEnd(
+  canvas: HTMLCanvasElement,
+  eventList: any[],
+  socket: Socket,
+  sessionId: string,
+  player: IUserData,
+) {
+  // TODO check this, looks like it's not working
+  eventList.forEach(function ({ typeEvent, handler }) {
+    canvas.removeEventListener(typeEvent, handler);
+  });
+
+  socket.emit(
+    'endGame',
+    JSON.stringify({
+      gameDataId: sessionId,
+      player,
+    }),
+  );
+}
+
 export async function gameLoop(
   canvas: HTMLCanvasElement,
   socket: Socket<DefaultEventsMap, DefaultEventsMap>,
@@ -462,7 +456,6 @@ export async function gameLoop(
 
   // Logic
   const match_points: number = 5;
-  const match_finish: boolean = false;
   const { hit, wall, userScore, botScore } = initializeSounds();
   const sounds = {
     hit,
@@ -471,7 +464,7 @@ export async function gameLoop(
     botScore,
   };
 
-  function onKeyDown(event: any) {
+  function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
       if (event.keyCode === 38) {
         // UP ARROW key
@@ -493,7 +486,7 @@ export async function gameLoop(
   }
   canvas.addEventListener('keydown', onKeyDown);
 
-  function onMouseMove(event: any) {
+  function onMouseMove(event: MouseEvent) {
     if (isPlayer1) {
       let rect = canvas.getBoundingClientRect();
       user1.y = event.clientY - rect.top - user1.height / 2;
@@ -523,7 +516,7 @@ export async function gameLoop(
   }
   canvas.addEventListener('mousemove', onMouseMove);
 
-  function onTouchStart(event: any) {
+  function onTouchStart(event: TouchEvent) {
     const touch = event.touches[0];
     user1.y = touch.clientY - user1.height / 2;
     if (user1.y < thickness + ballData.radius * slit) {
@@ -538,12 +531,21 @@ export async function gameLoop(
   }
   canvas.addEventListener('touchstart', onTouchStart);
 
-  const eventList = [{typeEvent: 'keydown', handler: onKeyDown},{typeEvent: 'mousemove', handler: onMouseMove},{typeEvent: 'touchstart', handler: onTouchStart}]
+  const eventList = [
+    { typeEvent: 'keydown', handler: onKeyDown },
+    { typeEvent: 'mousemove', handler: onMouseMove },
+    { typeEvent: 'touchstart', handler: onTouchStart },
+  ];
 
   if (isPlayer1) {
     socket.on(`downloaded/user1/${sessionId}`, (data: string) => {
       const downloadedData = JSON.parse(data);
       user2 = downloadedData.user2;
+
+      if (user2.score >= match_points || user1.score >= match_points) {
+        match_finish = true;
+        onGameEnd(canvas, eventList, socket, sessionId!, user2);
+      }
 
       matchUser1(canvas, ballData, user1, user2, sounds);
 
@@ -553,7 +555,6 @@ export async function gameLoop(
         user1,
         user2,
         net,
-        match_finish,
         match_points,
         usernames,
         isPlayer1,
@@ -575,6 +576,11 @@ export async function gameLoop(
       ballData = downloadedData.ball;
       user1 = downloadedData.user1;
 
+      if (user1.score >= match_points || user2.score >= match_points) {
+        match_finish = true;
+        onGameEnd(canvas, eventList, socket, sessionId!, user2);
+      }
+
       matchUser2(canvas, ballData, user1, user2, sounds);
 
       render(
@@ -583,7 +589,6 @@ export async function gameLoop(
         user1,
         user2,
         net,
-        match_finish,
         match_points,
         usernames,
         isPlayer1,
@@ -597,19 +602,6 @@ export async function gameLoop(
   }
 
   setTimeout(() => {
-    game(
-      canvas,
-      socket,
-      isPlayer1,
-      ballData,
-      user1,
-      user2,
-      net,
-      match_finish,
-      match_points,
-      sounds,
-      sessionId,
-      eventList,
-    );
+    game(socket, isPlayer1, match_points, sessionId);
   }, 1000);
 }
