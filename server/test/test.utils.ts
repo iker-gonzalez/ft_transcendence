@@ -49,7 +49,7 @@ export async function createGameSession(
 ): Promise<any> {
   await pactum
     .spec()
-    .post('/game/sessions/new')
+    .post('/game/sessions')
     .withBody({
       ball: JSON.stringify(ball),
       player1: JSON.stringify(player1),

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NewGameSessionResponseDto } from './dto/new-game-session-response.dto';
-import { GameBall, GamePlayer, GameSession } from '@prisma/client';
+import { GameBall, GamePlayer } from '@prisma/client';
 import { FoundGameSessionDto } from './dto/found-game-session.dto';
 import { NewGameSessionBodyDto } from './dto/new-game-session-body.dto';
 import { UpdateGameSessionResponseDto } from './dto/update-game-session-response.dto';
