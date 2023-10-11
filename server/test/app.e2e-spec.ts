@@ -1463,7 +1463,7 @@ describe('App e2e', () => {
         it('should create a new session', async () => {
           await pactum
             .spec()
-            .post('/game/sessions/new')
+            .post('/game/sessions')
             .withBody({
               ball: JSON.stringify(ball),
               player1: JSON.stringify(player1),
@@ -1495,7 +1495,7 @@ describe('App e2e', () => {
         it('should return 400 if second player is not provided', async () => {
           await pactum
             .spec()
-            .post('/game/sessions/new')
+            .post('/game/sessions')
             .withBody({
               ball: JSON.stringify(ball),
               player1: JSON.stringify(player1),
@@ -1506,7 +1506,7 @@ describe('App e2e', () => {
         it('should return 400 if session data is not valid JSON', async () => {
           await pactum
             .spec()
-            .post('/game/sessions/new')
+            .post('/game/sessions')
             .withBody({
               ball: ball,
               player1: player1,
