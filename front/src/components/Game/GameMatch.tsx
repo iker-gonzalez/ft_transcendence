@@ -13,10 +13,11 @@ import GameSessionUser from '../../interfaces/game-session-user.interface';
 import Lottie from 'lottie-react';
 import waitingAnimationData from '../../assets/lotties/waiting.json';
 import { IEndGamePayload } from '../../game_pong/game_pong.interfaces';
+import confettiAnimationData from '../../assets/lotties/confetti.json';
 
 const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
   const playerIndex: number = players?.findIndex(
-    (player: any) => player.intraId === userId,
+    (player: any) => player?.intraId === userId,
   );
 
   return playerIndex === 0;
@@ -55,8 +56,20 @@ const WrapperDiv = styled.div`
   }
 
   .canvas {
-    border: 1px dotted red;
     margin-top: 24px;
+  }
+
+  .new-game-button {
+    margin-top: 30px;
+  }
+
+  .end-animation {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: min(100vh, 1000px);
   }
 `;
 
@@ -70,6 +83,8 @@ export default function GameMatch(): JSX.Element {
   );
   const sessionId: string | null = useSearchParams()[0]!.get('sessionId');
   const [showGame, setShowGame] = useState<boolean>(false);
+  const [showAnimation, setShowAnimation] = useState<boolean>(false);
+  const [gameEnd, setGameEnd] = useState<boolean>(false);
   const [players] = useState<GameSessionUser[]>(sessionDataState[0]?.players);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { socketRef, isConnectionError }: UseGameDataSocket =
@@ -101,10 +116,14 @@ export default function GameMatch(): JSX.Element {
     });
 
     socketRef.current.on(
-      `gameEnded/${userData.intraId}/${sessionId}`,
+      `gameEnded/${userData?.intraId}/${sessionId}`,
       (data: string) => {
         const parsedData: IEndGamePayload = JSON.parse(data);
         console.log('data is', parsedData);
+        socketRef.current.disconnect();
+        const { player } = parsedData;
+        setGameEnd(true);
+        if (player.isWinner) setShowAnimation(true);
         // TODO hit endpoint to store game data
       },
     );
@@ -162,7 +181,28 @@ export default function GameMatch(): JSX.Element {
             ref={canvasRef}
           />
         </div>
+        {gameEnd && (
+          <div className="new-game-button">
+            <MainButton
+              onClick={() => {
+                navigate('/game');
+              }}
+            >
+              Start new game
+            </MainButton>
+          </div>
+        )}
       </CenteredLayout>
+      {showAnimation && (
+        <Lottie
+          animationData={confettiAnimationData}
+          loop={false}
+          onComplete={() => {
+            setShowAnimation(false);
+          }}
+          className="end-animation"
+        />
+      )}
     </WrapperDiv>
   );
 }
