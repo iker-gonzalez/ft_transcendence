@@ -608,7 +608,6 @@ export async function gameLoop(
             usersData.user1.intraId,
           );
         match_finish = true;
-        return;
       }
 
       matchUser1(canvas, ballData, user1, user2, sounds);
@@ -651,7 +650,6 @@ export async function gameLoop(
             usersData.user2.intraId,
           );
         match_finish = true;
-        return;
       }
 
       matchUser2(canvas, ballData, user1, user2, sounds);
