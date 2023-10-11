@@ -10,6 +10,7 @@ import {
   checkCollision,
   drawArc,
   drawDashedLine,
+  drawImg,
   drawRect,
   drawText,
   initializeSounds,
@@ -266,6 +267,15 @@ function render(
   isPlayer1: boolean,
 ) {
   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
+ 
+  drawImg(
+    canvas,
+    0,
+    0,
+    canvas.width,
+    canvas.height,
+    './images/Sample-PNG-Image.png',
+  );
 
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
 
