@@ -30,7 +30,7 @@ import { UpdateGameSessionResponseDto } from './dto/update-game-session-response
 export class GameController {
   constructor(private readonly gameService: GameService) {}
 
-  @Post('new')
+  @Post()
   @ApiOperation({
     summary: swaggerConstants.game.sessions.new.summary,
   })

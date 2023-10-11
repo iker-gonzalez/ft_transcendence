@@ -14,7 +14,7 @@ export async function initializeSessionInDb(
 ): Promise<INewSessionPayload | void> {
   try {
     let response: Response = await fetch(
-      'http://localhost:3000/game/sessions/new',
+      'http://localhost:3000/game/sessions',
       {
         method: 'POST',
         body: JSON.stringify({
