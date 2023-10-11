@@ -17,7 +17,7 @@ import confettiAnimationData from '../../assets/lotties/confetti.json';
 
 const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
   const playerIndex: number = players?.findIndex(
-    (player: any) => player.intraId === userId,
+    (player: any) => player?.intraId === userId,
   );
 
   return playerIndex === 0;
@@ -116,7 +116,7 @@ export default function GameMatch(): JSX.Element {
     });
 
     socketRef.current.on(
-      `gameEnded/${userData.intraId}/${sessionId}`,
+      `gameEnded/${userData?.intraId}/${sessionId}`,
       (data: string) => {
         const parsedData: IEndGamePayload = JSON.parse(data);
         console.log('data is', parsedData);
