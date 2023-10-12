@@ -31,6 +31,7 @@ import { FriendsParamsDto } from './dto/friends-params.dto';
 
 @ApiTags('Friends')
 @Controller('friends')
+@UseGuards(JwtGuard)
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
@@ -52,7 +53,6 @@ export class FriendsController {
     description: swaggerConstants.friends.add.unauthorized.description,
   })
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtGuard)
   addFriend(
     @GetUser() user: User,
     @Param() params: FriendsParamsDto,
@@ -78,7 +78,6 @@ export class FriendsController {
   @ApiUnauthorizedResponse({
     description: swaggerConstants.friends.get.unauthorized.description,
   })
-  @UseGuards(JwtGuard)
   getFriends(
     @GetUser() user: User,
     @Param() params: GetFriendsParamsDto,
@@ -100,7 +99,6 @@ export class FriendsController {
   @ApiUnauthorizedResponse({
     description: swaggerConstants.friends.delete.unauthorized.description,
   })
-  @UseGuards(JwtGuard)
   deleteFriend(
     @GetUser() user: User,
     @Param() params: FriendsParamsDto,

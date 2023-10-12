@@ -11,7 +11,6 @@ import { TwoFactorAuthService } from './two-factor-auth.service';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { User } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
 import {
   ApiBadRequestResponse,
   ApiOkResponse,
@@ -25,6 +24,7 @@ import { ActivateOtpResponseDto } from './dto/activate-otp-response.dto';
 
 @ApiTags('2FA')
 @Controller('2fa')
+@UseGuards(JwtGuard)
 export class TwoFactorAuthController {
   constructor(private readonly twoFactorAuthService: TwoFactorAuthService) {}
 
@@ -39,7 +39,6 @@ export class TwoFactorAuthController {
     description: swaggerConstants.twofa.generate.unauthorized.description,
   })
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtGuard)
   async generateQr(
     @Res() response: Response,
     @GetUser() user: User,
@@ -67,7 +66,6 @@ export class TwoFactorAuthController {
     description: swaggerConstants.twofa.activate.bad.description,
   })
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtGuard)
   async turnOnTwoFactorAuthentication(
     @GetUser() user: User,
     @Body() activateOtpDto: ActivateOtpDto,
