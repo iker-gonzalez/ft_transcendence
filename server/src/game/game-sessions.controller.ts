@@ -9,7 +9,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { GameService } from './game.service';
+import { GameSessionsService } from './game-sessions.service';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -25,10 +25,10 @@ import { NewGameSessionBodyDto } from './dto/new-game-session-body.dto';
 import { FoundGameSessionDto } from './dto/found-game-session.dto';
 import { UpdateGameSessionResponseDto } from './dto/update-game-session-response.dto';
 
-@ApiTags('Game')
+@ApiTags('Game sessions')
 @Controller('game/sessions')
-export class GameController {
-  constructor(private readonly gameService: GameService) {}
+export class GameSessionsController {
+  constructor(private readonly gameSessionsService: GameSessionsService) {}
 
   @Post()
   @ApiOperation({
@@ -56,7 +56,7 @@ export class GameController {
       throw new BadRequestException('Invalid data');
     }
 
-    return this.gameService.createNewSession(ball, player1, player2);
+    return this.gameSessionsService.createNewSession(ball, player1, player2);
   }
 
   @Get(':sessionId')
@@ -74,7 +74,7 @@ export class GameController {
   getSession(
     @Param('sessionId') sessionId: string,
   ): Promise<FoundGameSessionDto> {
-    return this.gameService.getSession(sessionId);
+    return this.gameSessionsService.getSession(sessionId);
   }
 
   @Put(':sessionId')
@@ -95,6 +95,6 @@ export class GameController {
     @Param('sessionId') sessionId: string,
     @Body() gameSession: NewGameSessionBodyDto,
   ): Promise<UpdateGameSessionResponseDto> {
-    return this.gameService.putSession(sessionId, gameSession);
+    return this.gameSessionsService.putSession(sessionId, gameSession);
   }
 }
