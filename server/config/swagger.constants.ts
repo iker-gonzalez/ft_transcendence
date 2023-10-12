@@ -157,6 +157,9 @@ export const swaggerConstants = {
         bad: {
           description: 'Data is not valid.',
         },
+        unauthorized: {
+          description: 'JWT token is invalid or expired.',
+        },
       },
       session: {
         summary: 'Retrieve an existing game session.',
@@ -165,6 +168,9 @@ export const swaggerConstants = {
         },
         notFound: {
           description: 'Game session not found.',
+        },
+        unauthorized: {
+          description: 'JWT token is invalid or expired.',
         },
       },
       update: {
@@ -177,6 +183,9 @@ export const swaggerConstants = {
         },
         bad: {
           description: 'Data is not valid.',
+        },
+        unathorized: {
+          description: 'JWT token is invalid or expired.',
         },
       },
     },

@@ -1461,9 +1461,12 @@ describe('App e2e', () => {
     describe('sessions', () => {
       describe('new', () => {
         it('should create a new session', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           await pactum
             .spec()
             .post('/game/sessions')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ball: JSON.stringify(ball),
               player1: JSON.stringify(player1),
@@ -1493,9 +1496,12 @@ describe('App e2e', () => {
         });
 
         it('should return 400 if second player is not provided', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           await pactum
             .spec()
             .post('/game/sessions')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ball: JSON.stringify(ball),
               player1: JSON.stringify(player1),
@@ -1504,6 +1510,21 @@ describe('App e2e', () => {
         });
 
         it('should return 400 if session data is not valid JSON', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          await pactum
+            .spec()
+            .post('/game/sessions')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ball: ball,
+              player1: player1,
+              player2: player2,
+            })
+            .expectStatus(400);
+        });
+
+        it('should return 401 if user is not authenticated', async () => {
           await pactum
             .spec()
             .post('/game/sessions')
@@ -1512,12 +1533,18 @@ describe('App e2e', () => {
               player1: player1,
               player2: player2,
             })
-            .expectStatus(400);
+            .expectStatus(401)
+            .expectJson({
+              message: 'Unauthorized',
+              statusCode: 401,
+            });
         });
       });
 
       describe('get', () => {
         it('should return an existing session', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           const session = await createGameSession(
             prisma,
             ball,
@@ -1528,6 +1555,7 @@ describe('App e2e', () => {
           await pactum
             .spec()
             .get(`/game/sessions/${session.id}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .expectStatus(200)
             .expectJsonLike({
               found: 1,
@@ -1540,10 +1568,24 @@ describe('App e2e', () => {
         });
 
         it("should return 404 if session doesn't exist", async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           await pactum
             .spec()
             .get(`/game/sessions/${Math.random()}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .expectStatus(404);
+        });
+
+        it('should return 401 if user is not authenticated', async () => {
+          await pactum
+            .spec()
+            .get(`/game/sessions/any-session`)
+            .expectStatus(401)
+            .expectJson({
+              message: 'Unauthorized',
+              statusCode: 401,
+            });
         });
       });
 
@@ -1564,6 +1606,8 @@ describe('App e2e', () => {
         };
 
         it('should update an existing session', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           const session = await createGameSession(
             prisma,
             ball,
@@ -1574,6 +1618,7 @@ describe('App e2e', () => {
           await pactum
             .spec()
             .put(`/game/sessions/${session.id}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ball: JSON.stringify(newBall),
               player1: JSON.stringify(newPlayer1),
@@ -1603,9 +1648,12 @@ describe('App e2e', () => {
         });
 
         it("should return 404 if session doesn't exist", async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           await pactum
             .spec()
             .put(`/game/sessions/${Math.random()}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ball: JSON.stringify(ball),
               player1: JSON.stringify(player1),
@@ -1615,6 +1663,8 @@ describe('App e2e', () => {
         });
 
         it('should return 400 if session data is not valid JSON', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           const session = await createGameSession(
             prisma,
             ball,
@@ -1625,6 +1675,7 @@ describe('App e2e', () => {
           await pactum
             .spec()
             .put(`/game/sessions/${session.id}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ball: newBall,
               player1: newPlayer1,
@@ -1643,6 +1694,31 @@ describe('App e2e', () => {
           expect(sessionData.ball).toMatchObject(session.ball);
           expect(sessionData.players[0]).toMatchObject(session.players[0]);
           expect(sessionData.players[1]).toMatchObject(session.players[1]);
+        });
+
+        it('should return 401 if user is not authenticated', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          const session = await createGameSession(
+            prisma,
+            ball,
+            player1,
+            player2,
+          );
+
+          await pactum
+            .spec()
+            .put(`/game/sessions/${session.id}`)
+            .withBody({
+              ball: JSON.stringify(newBall),
+              player1: JSON.stringify(newPlayer1),
+              player2: JSON.stringify(newPlayer2),
+            })
+            .expectStatus(401)
+            .expectJson({
+              message: 'Unauthorized',
+              statusCode: 401,
+            });
         });
       });
     });
