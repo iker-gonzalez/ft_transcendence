@@ -59,9 +59,11 @@ export interface IEndGamePayload {
   elapsedTime: number;
   gameDataId: string;
   player: {
+    avatar: string;
     intraId: number;
     isWinner: boolean;
     score: number;
+    username: string;
   };
   startedAt: Date;
 }
