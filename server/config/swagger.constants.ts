@@ -134,6 +134,17 @@ export const swaggerConstants = {
     },
   },
   game: {
+    data: {
+      new: {
+        summary: 'Create new game data set.',
+        created: {
+          description: 'Returns newly created game data set.',
+        },
+        bad: {
+          description: 'Data is not valid.',
+        },
+      },
+    },
     sessions: {
       new: {
         summary: 'Create new game session.',
@@ -496,6 +507,56 @@ export const swaggerConstants = {
     userSearchQuery: {
       description: 'String to match against username',
       example: 'jdoe',
+    },
+    NewGameDataSetBodyDto: {
+      gameDataId: {
+        description: 'Game data ID',
+        example: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+      },
+      startedAt: {
+        description: 'Date when game started',
+        example: new Date(),
+      },
+      elapsedTime: {
+        description: 'Elapsed time in ms',
+        example: 1000,
+      },
+      player: {
+        description: 'Player data',
+        example: {
+          intraId: 12345,
+          score: 5,
+          avatar: 'https://cdn.intra.42.fr/users/jdoe.jpg',
+          username: 'jdoe',
+          isWinner: true,
+        },
+      },
+    },
+    newGameDataResponseDto: {
+      created: {
+        description: 'Number of created game data',
+        example: 1,
+      },
+      data: {
+        description: 'Game data',
+        example: {
+          sessionId: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+          id: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+          startedAt: '2021-05-06T15:00:00.000Z',
+          elapsedTime: 1000,
+          players: [
+            {
+              id: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+              intraId: 12345,
+              score: 5,
+              avatar: 'https://cdn.intra.42.fr/users/jdoe.jpg',
+              username: 'jdoe',
+              isWinner: true,
+              gameDataSetId: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+            },
+          ],
+        },
+      },
     },
   },
 };

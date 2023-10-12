@@ -11,7 +11,7 @@ import { NewGameSessionBodyDto } from './dto/new-game-session-body.dto';
 import { UpdateGameSessionResponseDto } from './dto/update-game-session-response.dto';
 
 @Injectable()
-export class GameService {
+export class GameSessionsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createNewSession(
