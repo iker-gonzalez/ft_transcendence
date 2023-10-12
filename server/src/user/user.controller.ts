@@ -51,7 +51,7 @@ export class UserController {
     // Do not share secret with client
     delete user.twoFactorAuthSecret;
 
-    let {
+    const {
       avatar,
       createdAt,
       email,
