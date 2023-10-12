@@ -100,3 +100,22 @@ model GamePlayer {
 enum GameBallColor {
   WHITE
 }
+
+model GameDataSetPlayer {
+  id            String       @id @unique @default(uuid())
+  intraId       Int
+  score         Int
+  isWinner      Boolean
+  avatar        String
+  username      String
+  GameDataSet   GameDataSet? @relation(fields: [gameDataSetId], references: [id], onDelete: Cascade)
+  gameDataSetId String?
+}
+
+model GameDataSet {
+  id          String              @id @unique @default(uuid())
+  sessionId   String
+  startedAt   DateTime
+  elapsedTime Int
+  players     GameDataSetPlayer[]
+}
