@@ -1646,6 +1646,123 @@ describe('App e2e', () => {
         });
       });
     });
+
+    describe('game data', () => {
+      describe('new', () => {
+        const baseGameData = {
+          gameDataId: '95130ad8-ffaf-4c7f-84c2-68ae2d020306',
+          startedAt: '2023-10-11T20:32:33.610Z',
+          elapsedTime: 26237,
+        };
+
+        test('should create a new game data set from 2 API calls', async () => {
+          const user1 = await createUser(
+            prisma,
+            intraService,
+            intraUserToken,
+            userData,
+          );
+
+          const user1GameDataSetBaseData = {
+            score: 5,
+            isWinner: true,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withBody({
+              ...baseGameData,
+              player: {
+                intraId: user1.intraId,
+                avatar: user1.avatar,
+                username: user1.username,
+                ...user1GameDataSetBaseData,
+              },
+            })
+            .expectStatus(201)
+            .expectJsonLike({
+              created: 1,
+              data: {
+                sessionId: baseGameData.gameDataId,
+                id: uuidRegex,
+                startedAt: baseGameData.startedAt,
+                elapsedTime: baseGameData.elapsedTime,
+                players: [
+                  {
+                    id: uuidRegex,
+                    intraId: user1.intraId,
+                    avatar: user1.avatar,
+                    username: user1.username,
+                    ...user1GameDataSetBaseData,
+                  },
+                ],
+              },
+            });
+
+          const user2 = await createUser(
+            prisma,
+            intraService,
+            intraUserToken,
+            userData2,
+          );
+
+          const user2GameDataSetBaseData = {
+            score: 4,
+            isWinner: false,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withBody({
+              ...baseGameData,
+              player: {
+                intraId: user2.intraId,
+                avatar: user2.avatar,
+                username: user2.username,
+                ...user2GameDataSetBaseData,
+              },
+            })
+            .expectStatus(201)
+            .expectJsonLike({
+              created: 0,
+              data: {
+                sessionId: baseGameData.gameDataId,
+                id: uuidRegex,
+                startedAt: baseGameData.startedAt,
+                elapsedTime: baseGameData.elapsedTime,
+                players: [
+                  {
+                    id: uuidRegex,
+                    intraId: user1.intraId,
+                    avatar: user1.avatar,
+                    username: user1.username,
+                    ...user1GameDataSetBaseData,
+                  },
+                  {
+                    id: uuidRegex,
+                    intraId: user2.intraId,
+                    avatar: user2.avatar,
+                    username: user2.username,
+                    ...user2GameDataSetBaseData,
+                  },
+                ],
+              },
+            });
+
+          const gameDataSets = await prisma.gameDataSet.findMany({});
+
+          expect(gameDataSets).toHaveLength(1);
+          expect(gameDataSets[0]).toMatchObject({
+            elapsedTime: baseGameData.elapsedTime,
+            id: gameDataSets[0].id,
+            sessionId: baseGameData.gameDataId,
+            startedAt: new Date(baseGameData.startedAt),
+          });
+        });
+      });
+    });
   });
 
   describe('Sockets', () => {

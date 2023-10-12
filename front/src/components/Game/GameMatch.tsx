@@ -14,6 +14,8 @@ import Lottie from 'lottie-react';
 import waitingAnimationData from '../../assets/lotties/waiting.json';
 import { IEndGamePayload } from '../../game_pong/game_pong.interfaces';
 import confettiAnimationData from '../../assets/lotties/confetti.json';
+import { getBaseUrl } from '../../utils/utils';
+import Cookies from 'js-cookie';
 
 const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
   const playerIndex: number = players?.findIndex(
@@ -117,13 +119,34 @@ export default function GameMatch(): JSX.Element {
 
     socketRef.current.on(
       `gameEnded/${userData?.intraId}/${sessionId}`,
-      (data: string) => {
-        const parsedData: IEndGamePayload = JSON.parse(data);
-        console.log('data is', parsedData);
+      (socketData: string) => {
         socketRef.current.disconnect();
-        const { player } = parsedData;
         setGameEnd(true);
+
+        const parsedData: IEndGamePayload = JSON.parse(socketData);
+        const { player } = parsedData;
+
         if (player.isWinner) setShowAnimation(true);
+
+        console.log('parsedData', socketData);
+        fetch(`${getBaseUrl()}/game/data`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+          body: socketData,
+        })
+          .then((res: any) => {
+            console.log(res);
+            return res.json();
+          })
+          .then((data: any) => {
+            console.log(data);
+          })
+          .catch((e: any) => {
+            console.error('Error creating new game data set: ', e);
+          });
         // TODO hit endpoint to store game data
       },
     );
