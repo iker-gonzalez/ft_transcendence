@@ -1671,6 +1671,7 @@ describe('App e2e', () => {
           await pactum
             .spec()
             .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
               player: {
@@ -1715,6 +1716,7 @@ describe('App e2e', () => {
           await pactum
             .spec()
             .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
               player: {
@@ -1760,6 +1762,31 @@ describe('App e2e', () => {
             sessionId: baseGameData.gameDataId,
             startedAt: new Date(baseGameData.startedAt),
           });
+        });
+
+        test('it should return 401 if user is not authenticated', async () => {
+          const user1GameDataSetBaseData = {
+            score: 5,
+            isWinner: true,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withBody({
+              ...baseGameData,
+              player: {
+                intraId: userData.intraId,
+                avatar: userData.avatar,
+                username: userData.username,
+                ...user1GameDataSetBaseData,
+              },
+            })
+            .expectStatus(401)
+            .expectJson({
+              message: 'Unauthorized',
+              statusCode: 401,
+            });
         });
       });
     });

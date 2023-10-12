@@ -143,6 +143,9 @@ export const swaggerConstants = {
         bad: {
           description: 'Data is not valid.',
         },
+        unauthorized: {
+          description: 'JWT token is invalid or expired.',
+        },
       },
     },
     sessions: {
