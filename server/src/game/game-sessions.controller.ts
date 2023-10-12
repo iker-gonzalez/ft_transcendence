@@ -30,6 +30,7 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @ApiTags('Game sessions')
 @Controller('game/sessions')
+@UseGuards(JwtGuard)
 export class GameSessionsController {
   constructor(private readonly gameSessionsService: GameSessionsService) {}
 
@@ -47,7 +48,6 @@ export class GameSessionsController {
   @ApiUnauthorizedResponse({
     description: swaggerConstants.game.sessions.new.unauthorized.description,
   })
-  @UseGuards(JwtGuard)
   createNewSession(
     @Body() newGameSessionDto: NewGameSessionBodyDto,
   ): Promise<NewGameSessionResponseDto> {
@@ -81,7 +81,6 @@ export class GameSessionsController {
     description:
       swaggerConstants.game.sessions.session.unauthorized.description,
   })
-  @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.OK)
   getSession(
     @Param('sessionId') sessionId: string,
@@ -106,7 +105,6 @@ export class GameSessionsController {
   @ApiUnauthorizedResponse({
     description: swaggerConstants.game.sessions.update.unathorized.description,
   })
-  @UseGuards(JwtGuard)
   putSession(
     @Param('sessionId') sessionId: string,
     @Body() gameSession: NewGameSessionBodyDto,

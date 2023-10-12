@@ -34,7 +34,7 @@ export class IntraService {
         ),
     );
 
-    let { access_token: token } = data;
+    const { access_token: token } = data;
     return token;
   }
 

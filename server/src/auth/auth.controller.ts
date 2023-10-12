@@ -39,7 +39,7 @@ export class AuthController {
   signinUser(
     @Body() intraSigninDto: IntraSigninDto,
   ): Promise<SigninResponseDto> {
-    let { code, state, otp } = intraSigninDto;
+    const { code, state, otp } = intraSigninDto;
     return this.authService.signinUser(code, state, otp);
   }
 }

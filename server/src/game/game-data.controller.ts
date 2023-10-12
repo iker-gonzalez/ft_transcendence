@@ -13,6 +13,7 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @ApiTags('Game data')
 @Controller('game/data')
+@UseGuards(JwtGuard)
 export class GameDataController {
   constructor(private readonly gameDataService: GameDataService) {}
 
@@ -27,7 +28,6 @@ export class GameDataController {
   @ApiUnauthorizedResponse({
     description: swaggerConstants.game.data.new.unauthorized.description,
   })
-  @UseGuards(JwtGuard)
   createNewSession(
     @Body() newGameDataSetDto: NewGameDataSetBodyDto,
   ): Promise<any> {
