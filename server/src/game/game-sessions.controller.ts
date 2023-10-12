@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { GameSessionsService } from './game-sessions.service';
 import {
@@ -17,6 +18,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { swaggerConstants } from '../../config/swagger.constants';
 import { NewGameSessionResponseDto } from './dto/new-game-session-response.dto';
@@ -24,6 +26,7 @@ import { GameBall, GamePlayer } from '@prisma/client';
 import { NewGameSessionBodyDto } from './dto/new-game-session-body.dto';
 import { FoundGameSessionDto } from './dto/found-game-session.dto';
 import { UpdateGameSessionResponseDto } from './dto/update-game-session-response.dto';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @ApiTags('Game sessions')
 @Controller('game/sessions')
@@ -41,6 +44,10 @@ export class GameSessionsController {
   @ApiBadRequestResponse({
     description: swaggerConstants.game.sessions.new.bad.description,
   })
+  @ApiUnauthorizedResponse({
+    description: swaggerConstants.game.sessions.new.unauthorized.description,
+  })
+  @UseGuards(JwtGuard)
   createNewSession(
     @Body() newGameSessionDto: NewGameSessionBodyDto,
   ): Promise<NewGameSessionResponseDto> {
@@ -70,6 +77,11 @@ export class GameSessionsController {
   @ApiNotFoundResponse({
     description: swaggerConstants.game.sessions.session.notFound.description,
   })
+  @ApiUnauthorizedResponse({
+    description:
+      swaggerConstants.game.sessions.session.unauthorized.description,
+  })
+  @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.OK)
   getSession(
     @Param('sessionId') sessionId: string,
@@ -91,6 +103,10 @@ export class GameSessionsController {
   @ApiBadRequestResponse({
     description: swaggerConstants.game.sessions.update.bad.description,
   })
+  @ApiUnauthorizedResponse({
+    description: swaggerConstants.game.sessions.update.unathorized.description,
+  })
+  @UseGuards(JwtGuard)
   putSession(
     @Param('sessionId') sessionId: string,
     @Body() gameSession: NewGameSessionBodyDto,

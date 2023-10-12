@@ -880,7 +880,7 @@ describe('App e2e', () => {
 
   describe('Friends', () => {
     describe('new', () => {
-      test('it should add another user as friend', async () => {
+      it('it should add another user as friend', async () => {
         // Create user that will be added as friend
         const user2 = await createUser(
           prisma,
@@ -929,7 +929,7 @@ describe('App e2e', () => {
         expect(friendUserFriends).toHaveLength(1);
       });
 
-      test('it should add a friend when user has already one', async () => {
+      it('it should add a friend when user has already one', async () => {
         // Create user that will be added as friend
         const user2 = await createUser(
           prisma,
@@ -1013,7 +1013,7 @@ describe('App e2e', () => {
         expect(user3Friends).toHaveLength(1);
       });
 
-      test('it should return 400 if friend is not found', async () => {
+      it('it should return 400 if friend is not found', async () => {
         // Create user first
         const user1 = await createUser(
           prisma,
@@ -1038,7 +1038,7 @@ describe('App e2e', () => {
         expect(updatedUserFriends).toHaveLength(0);
       });
 
-      test('it should return 400 if friend is user themselves', async () => {
+      it('it should return 400 if friend is user themselves', async () => {
         // Create user first
         const user1 = await createUser(
           prisma,
@@ -1063,7 +1063,7 @@ describe('App e2e', () => {
         expect(updatedUserFriends).toHaveLength(0);
       });
 
-      test('it should return 409 if friend was already added', async () => {
+      it('it should return 409 if friend was already added', async () => {
         // Create user that will be added as friend
         const user2 = await createUser(
           prisma,
@@ -1119,7 +1119,7 @@ describe('App e2e', () => {
         expect(updatedUserFriends).toHaveLength(1);
       });
 
-      test('it should return 400 if friendId is not a valid number', async () => {
+      it('it should return 400 if friendId is not a valid number', async () => {
         // Create user first
         const user1 = await createUser(
           prisma,
@@ -1144,13 +1144,13 @@ describe('App e2e', () => {
         expect(updatedUserFriends).toHaveLength(0);
       });
 
-      test('it should return 401 if user is not authenticated', async () => {
+      it('it should return 401 if user is not authenticated', async () => {
         await pactum.spec().post(`/friends/123456`).expectStatus(401);
       });
     });
 
     describe('get', () => {
-      test('it should return friends of specified user', async () => {
+      it('it should return friends of specified user', async () => {
         const user = await createUserWithFriends(
           prisma,
           intraService,
@@ -1177,7 +1177,7 @@ describe('App e2e', () => {
           });
       });
 
-      test('it should return friends of current user', async () => {
+      it('it should return friends of current user', async () => {
         const user = await createUserWithFriends(
           prisma,
           intraService,
@@ -1204,7 +1204,7 @@ describe('App e2e', () => {
           });
       });
 
-      test('it should return 400 if specified user does not exist', async () => {
+      it('it should return 400 if specified user does not exist', async () => {
         await createUserWithFriends(
           prisma,
           intraService,
@@ -1220,7 +1220,7 @@ describe('App e2e', () => {
           .expectStatus(400);
       });
 
-      test('it should return 400 if user ID is not valid', async () => {
+      it('it should return 400 if user ID is not valid', async () => {
         await createUserWithFriends(
           prisma,
           intraService,
@@ -1236,13 +1236,13 @@ describe('App e2e', () => {
           .expectStatus(400);
       });
 
-      test('it should return 401 if user is not authenticated', async () => {
+      it('it should return 401 if user is not authenticated', async () => {
         await pactum.spec().get('/friends/').expectStatus(401);
       });
     });
 
     describe('delete', () => {
-      test('it should delete a friend', async () => {
+      it('it should delete a friend', async () => {
         const user2 = await createUser(
           prisma,
           intraService,
@@ -1291,7 +1291,7 @@ describe('App e2e', () => {
         expect(unfriendedUserFriends.length).toEqual(0);
       });
 
-      test('it should delete two friends', async () => {
+      it('it should delete two friends', async () => {
         const user2 = await createUser(
           prisma,
           intraService,
@@ -1367,7 +1367,7 @@ describe('App e2e', () => {
         expect(user3Friends.length).toEqual(0);
       });
 
-      test('it should return 400 if friendId is not valid', async () => {
+      it('it should return 400 if friendId is not valid', async () => {
         const user = await createUserWithFriends(
           prisma,
           intraService,
@@ -1392,7 +1392,7 @@ describe('App e2e', () => {
         expect(remainingFriends.length).toEqual(2);
       });
 
-      test('it should return 400 if friendId is not found', async () => {
+      it('it should return 400 if friendId is not found', async () => {
         const user = await createUserWithFriends(
           prisma,
           intraService,
@@ -1417,7 +1417,7 @@ describe('App e2e', () => {
         expect(remainingFriends.length).toEqual(1);
       });
 
-      test('it should return 401 if user is not authenticated', async () => {
+      it('it should return 401 if user is not authenticated', async () => {
         await pactum
           .spec()
           .delete(`/friends/${userData.intraId}`)
@@ -1461,9 +1461,12 @@ describe('App e2e', () => {
     describe('sessions', () => {
       describe('new', () => {
         it('should create a new session', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           await pactum
             .spec()
             .post('/game/sessions')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ball: JSON.stringify(ball),
               player1: JSON.stringify(player1),
@@ -1493,9 +1496,12 @@ describe('App e2e', () => {
         });
 
         it('should return 400 if second player is not provided', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           await pactum
             .spec()
             .post('/game/sessions')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ball: JSON.stringify(ball),
               player1: JSON.stringify(player1),
@@ -1504,6 +1510,21 @@ describe('App e2e', () => {
         });
 
         it('should return 400 if session data is not valid JSON', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          await pactum
+            .spec()
+            .post('/game/sessions')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ball: ball,
+              player1: player1,
+              player2: player2,
+            })
+            .expectStatus(400);
+        });
+
+        it('should return 401 if user is not authenticated', async () => {
           await pactum
             .spec()
             .post('/game/sessions')
@@ -1512,12 +1533,18 @@ describe('App e2e', () => {
               player1: player1,
               player2: player2,
             })
-            .expectStatus(400);
+            .expectStatus(401)
+            .expectJson({
+              message: 'Unauthorized',
+              statusCode: 401,
+            });
         });
       });
 
       describe('get', () => {
         it('should return an existing session', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           const session = await createGameSession(
             prisma,
             ball,
@@ -1528,6 +1555,7 @@ describe('App e2e', () => {
           await pactum
             .spec()
             .get(`/game/sessions/${session.id}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .expectStatus(200)
             .expectJsonLike({
               found: 1,
@@ -1540,10 +1568,24 @@ describe('App e2e', () => {
         });
 
         it("should return 404 if session doesn't exist", async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           await pactum
             .spec()
             .get(`/game/sessions/${Math.random()}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .expectStatus(404);
+        });
+
+        it('should return 401 if user is not authenticated', async () => {
+          await pactum
+            .spec()
+            .get(`/game/sessions/any-session`)
+            .expectStatus(401)
+            .expectJson({
+              message: 'Unauthorized',
+              statusCode: 401,
+            });
         });
       });
 
@@ -1564,6 +1606,8 @@ describe('App e2e', () => {
         };
 
         it('should update an existing session', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           const session = await createGameSession(
             prisma,
             ball,
@@ -1574,6 +1618,7 @@ describe('App e2e', () => {
           await pactum
             .spec()
             .put(`/game/sessions/${session.id}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ball: JSON.stringify(newBall),
               player1: JSON.stringify(newPlayer1),
@@ -1603,9 +1648,12 @@ describe('App e2e', () => {
         });
 
         it("should return 404 if session doesn't exist", async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           await pactum
             .spec()
             .put(`/game/sessions/${Math.random()}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ball: JSON.stringify(ball),
               player1: JSON.stringify(player1),
@@ -1615,6 +1663,8 @@ describe('App e2e', () => {
         });
 
         it('should return 400 if session data is not valid JSON', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
           const session = await createGameSession(
             prisma,
             ball,
@@ -1625,6 +1675,7 @@ describe('App e2e', () => {
           await pactum
             .spec()
             .put(`/game/sessions/${session.id}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ball: newBall,
               player1: newPlayer1,
@@ -1644,6 +1695,31 @@ describe('App e2e', () => {
           expect(sessionData.players[0]).toMatchObject(session.players[0]);
           expect(sessionData.players[1]).toMatchObject(session.players[1]);
         });
+
+        it('should return 401 if user is not authenticated', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          const session = await createGameSession(
+            prisma,
+            ball,
+            player1,
+            player2,
+          );
+
+          await pactum
+            .spec()
+            .put(`/game/sessions/${session.id}`)
+            .withBody({
+              ball: JSON.stringify(newBall),
+              player1: JSON.stringify(newPlayer1),
+              player2: JSON.stringify(newPlayer2),
+            })
+            .expectStatus(401)
+            .expectJson({
+              message: 'Unauthorized',
+              statusCode: 401,
+            });
+        });
       });
     });
 
@@ -1655,7 +1731,7 @@ describe('App e2e', () => {
           elapsedTime: 26237,
         };
 
-        test('should create a new game data set from 2 API calls', async () => {
+        it('should create a new game data set from 2 API calls', async () => {
           const user1 = await createUser(
             prisma,
             intraService,
@@ -1764,7 +1840,7 @@ describe('App e2e', () => {
           });
         });
 
-        test('it should return 401 if user is not authenticated', async () => {
+        it('it should return 401 if user is not authenticated', async () => {
           const user1GameDataSetBaseData = {
             score: 5,
             isWinner: true,
@@ -2435,7 +2511,7 @@ describe('App e2e', () => {
       });
 
       describe('upload', () => {
-        test('should upload data from user1 and emit uploaded event to user1', (done) => {
+        it('should upload data from user1 and emit uploaded event to user1', (done) => {
           expect.assertions(2);
 
           const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
@@ -2479,7 +2555,7 @@ describe('App e2e', () => {
           });
         });
 
-        test('should upload data from user2 and emit uploaded event to user2', (done) => {
+        it('should upload data from user2 and emit uploaded event to user2', (done) => {
           expect.assertions(2);
 
           const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
@@ -2525,7 +2601,7 @@ describe('App e2e', () => {
       });
 
       describe('download', () => {
-        test('should received data to be downloaded from user1 and emit downloaded event to user1', (done) => {
+        it('should received data to be downloaded from user1 and emit downloaded event to user1', (done) => {
           expect.assertions(3);
 
           const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
@@ -2571,7 +2647,7 @@ describe('App e2e', () => {
           });
         });
 
-        test('should received data to be downloaded from user2 and emit downloaded event to user2', (done) => {
+        it('should received data to be downloaded from user2 and emit downloaded event to user2', (done) => {
           expect.assertions(3);
 
           const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
@@ -2619,7 +2695,7 @@ describe('App e2e', () => {
       });
 
       describe('endGame', () => {
-        test('should emit gameEnded/intraId/gameDataId when endGame message is sent', (done) => {
+        it('should emit gameEnded/intraId/gameDataId when endGame message is sent', (done) => {
           const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
 
           const gameDataId = 'f7c9c8d0-0e1f-11ec-9a03-0242ac130003';
