@@ -50,6 +50,7 @@ export async function createGameSession(
   await pactum
     .spec()
     .post('/game/sessions')
+    .withHeaders({ Authorization: 'Bearer $S{userAt}' })
     .withBody({
       ball: JSON.stringify(ball),
       player1: JSON.stringify(player1),
