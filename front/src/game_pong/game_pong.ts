@@ -441,7 +441,7 @@ function onGameEnd(
   socket: Socket,
   sessionId: string,
   player: IUserData,
-  intraId: number,
+  userData: any,
 ) {
   // TODO check this, looks like it's not working
   eventList.forEach(function ({ typeEvent, handler }) {
@@ -453,9 +453,11 @@ function onGameEnd(
     startedAt,
     elapsedTime: new Date().getTime() - startedAt.getTime(),
     player: {
-      intraId,
-      score: player.score,
+      avatar: userData.avatar,
+      intraId: userData.intraId,
       isWinner: player.score >= match_points,
+      score: player.score,
+      username: userData.username,
     },
   };
 
@@ -605,7 +607,7 @@ export async function gameLoop(
             socket,
             sessionId!,
             user1,
-            usersData.user1.intraId,
+            usersData.user1,
           );
         match_finish = true;
       }
@@ -647,7 +649,7 @@ export async function gameLoop(
             socket,
             sessionId!,
             user2,
-            usersData.user2.intraId,
+            usersData.user2,
           );
         match_finish = true;
       }
