@@ -144,7 +144,12 @@ function matchUser2(
   ballData.x += ballData.velocityX;
   ballData.y += ballData.velocityY;
 
-  //user2.y += (ballData.y - (user2.y + user2.height / 2)) * 0.1;
+  const isOneVsOne: boolean = true;
+
+  if (isOneVsOne) {
+    user2.y += (ballData.y - (user2.y + user2.height / 2)) * 0.1;
+  }
+
   if (user2.y < thickness + ballData.radius * slit) {
     user2.y = thickness + ballData.radius * slit;
   } else if (
@@ -267,7 +272,7 @@ function render(
   isPlayer1: boolean,
 ) {
   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
- 
+
   drawImg(
     canvas,
     0,
@@ -316,15 +321,29 @@ function render(
     RenderColor.Red,
   );
 
-  drawText(
-    canvas,
-    usersData.user2.username,
-    (canvas.width / 10) * 6,
-    canvas.height / 10,
-    '20px Arial',
-    'left',
-    RenderColor.Yellow,
-  );
+  const isOneVsOne: boolean = true;
+
+  if (isOneVsOne) {
+    drawText(
+      canvas,
+      'BOT',
+      (canvas.width / 10) * 6,
+      canvas.height / 10,
+      '20px Arial',
+      'left',
+      RenderColor.Yellow,
+    );
+  } else {
+    drawText(
+      canvas,
+      usersData.user2.username,
+      (canvas.width / 10) * 6,
+      canvas.height / 10,
+      '20px Arial',
+      'left',
+      RenderColor.Yellow,
+    );
+  }
 
   drawText(
     canvas,
@@ -409,15 +428,27 @@ function render(
           RenderColor.Green,
         );
       } else {
-        drawText(
-          canvas,
-          usersData.user2.username + ' wins',
-          450,
-          410,
-          '40px Verdana',
-          'center',
-          RenderColor.Green,
-        );
+        if (isOneVsOne) {
+          drawText(
+            canvas,
+            'BOT wins',
+            450,
+            410,
+            '40px Verdana',
+            'center',
+            RenderColor.Green,
+          );
+        } else {
+          drawText(
+            canvas,
+            usersData.user2.username + ' wins',
+            450,
+            410,
+            '40px Verdana',
+            'center',
+            RenderColor.Green,
+          );
+        }
       }
     }
   }
@@ -531,6 +562,8 @@ export async function gameLoop(
     botScore,
   };
 
+  const isOneVsOne: boolean = true;
+
   function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
       if (event.keyCode === 38) {
@@ -541,7 +574,7 @@ export async function gameLoop(
         user1.y += userSpeedInput * 5;
       }
     }
-    if (!isPlayer1) {
+    if (!isPlayer1 && !isOneVsOne) {
       if (event.keyCode === 38) {
         // UP ARROW key
         user2.y -= userSpeedInput * 5;
@@ -567,7 +600,7 @@ export async function gameLoop(
           canvas.height - thickness - user1.height - ballData.radius * slit;
       }
     }
-    if (!isPlayer1) {
+    if (!isPlayer1 && !isOneVsOne) {
       let rect = canvas.getBoundingClientRect();
       user2.y = event.clientY - rect.top - user2.height / 2;
       if (user2.y < thickness + ballData.radius * slit) {
