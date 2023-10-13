@@ -4,7 +4,11 @@ import MainButton from '../UI/MainButton';
 import SecondaryButton from '../UI/SecondaryButton';
 import MainInput from '../UI/MainInput';
 import Cookies from 'js-cookie';
-import { capitalizeFirstLetter, getBaseUrl } from '../../utils/utils';
+import {
+  capitalizeFirstLetter,
+  fetchAuthorized,
+  getBaseUrl,
+} from '../../utils/utils';
 import { useUserData } from '../../context/UserDataContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
@@ -50,7 +54,7 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
       const newUsername: string = formData.get('username') as string;
       const trimmedNewUsername: string = newUsername.trim();
 
-      const res = await fetch(`${getBaseUrl()}/users/username`, {
+      const res = await fetchAuthorized(`${getBaseUrl()}/users/username`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
