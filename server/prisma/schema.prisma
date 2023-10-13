@@ -41,7 +41,7 @@ model UserIntraData {
   avatar   String
   email    String
 
-  UserGameSession   UserGameSession? @relation(fields: [userGameSessionId], references: [id])
+  UserGameSession   UserGameSession? @relation(fields: [userGameSessionId], references: [id], onDelete: Cascade)
   userGameSessionId String?
 }
 
