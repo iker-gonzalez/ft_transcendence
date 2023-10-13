@@ -101,7 +101,7 @@ export function drawImg(
   if (!ctx) return;
 
   const img = new Image();
-  img.src = './images/Sample-PNG-Image.png';
+  img.src = file;
   drawText(
     canvas,
     file,
@@ -112,7 +112,7 @@ export function drawImg(
     RenderColor.Green,
   );
   img.onload = function () {
-    ctx.drawImage(img, x, y);
+    ctx.drawImage(img, x, y, w, h);
   };
 }
 
