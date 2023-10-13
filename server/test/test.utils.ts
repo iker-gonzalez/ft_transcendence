@@ -41,32 +41,6 @@ export async function createUser(
   return user;
 }
 
-export async function createGameSession(
-  prisma: PrismaService,
-  ball,
-  player1,
-  player2,
-): Promise<any> {
-  await pactum
-    .spec()
-    .post('/game/sessions')
-    .withHeaders({ Authorization: 'Bearer $S{userAt}' })
-    .withBody({
-      ball: JSON.stringify(ball),
-      player1: JSON.stringify(player1),
-      player2: JSON.stringify(player2),
-    });
-
-  const session = await prisma.gameSession.findFirst({
-    include: {
-      ball: true,
-      players: true,
-    },
-  });
-
-  return session;
-}
-
 export async function createUserWithFriends(
   prisma: PrismaService,
   intraService: IntraService,
