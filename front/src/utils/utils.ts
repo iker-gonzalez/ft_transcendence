@@ -2,7 +2,6 @@
  * Returns the base URL in the app depending on whether the current hostname is localhost or not (e.g., a GitHub Codespace),
  * @returns base URL
  */
-
 export function getBaseUrl(): string {
   const apiPort: string = process.env.REACT_APP_API_PORT || '3000';
   const clientPort: string = process.env.REACT_APP_CLIENT_PORT || '4200';
@@ -19,4 +18,23 @@ export function getBaseUrl(): string {
  */
 export function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+/**
+ * Makes an authorized fetch request to the specified URL.
+ * @param input The URL or Request object to fetch data from.
+ * @param init The options to use for the fetch request.
+ * @returns A Promise that resolves to the response object.
+ */
+export async function fetchAuthorized(
+  input: RequestInfo | URL,
+  init?: RequestInit | undefined,
+): Promise<Response> {
+  const res: Response = await fetch(input, init);
+
+  if (res.status === 401) {
+    window.location.replace('/');
+  }
+
+  return res;
 }
