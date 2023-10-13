@@ -4,7 +4,7 @@ import UserCoreData from '../../interfaces/user-core-data.interface';
 import RoundImg from '../UI/RoundImage';
 import MainButton from '../UI/MainButton';
 import SecondaryButton from '../UI/SecondaryButton';
-import { getBaseUrl } from '../../utils/utils';
+import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import FriendData from '../../interfaces/friend-data.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
@@ -61,7 +61,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
   const { launchFlashMessage } = useFlashMessages();
 
   const addUserToFriend = async () => {
-    const res: Response = await fetch(
+    const res: Response = await fetchAuthorized(
       `${getBaseUrl()}/friends/${foundUserData.intraId}`,
       {
         method: 'POST',
@@ -85,7 +85,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
   };
 
   const removeUserFromFriends = async () => {
-    const res: Response = await fetch(
+    const res: Response = await fetchAuthorized(
       `${getBaseUrl()}/friends/${foundUserData.intraId}`,
       {
         method: 'DELETE',

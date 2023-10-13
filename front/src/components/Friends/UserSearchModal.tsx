@@ -4,7 +4,7 @@ import Lottie from 'lottie-react';
 import emptyAnimationData from '../../assets/lotties/empty-ghost.json';
 import loadingAnimationData from '../../assets/lotties/spinner.json';
 import styled from 'styled-components';
-import { getBaseUrl } from '../../utils/utils';
+import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import UserCoreData from '../../interfaces/user-core-data.interface';
 import Cookies from 'js-cookie';
 import UserItem from '../shared/UserItem';
@@ -65,7 +65,7 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
     const fetchUsers = async (formattedSearchValue: string): Promise<void> => {
       let users: UserCoreData[] = [];
       try {
-        const response = await fetch(
+        const response = await fetchAuthorized(
           `${getBaseUrl()}/users/search?query=${formattedSearchValue}`,
           {
             headers: {

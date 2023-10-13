@@ -14,7 +14,7 @@ import Lottie from 'lottie-react';
 import waitingAnimationData from '../../assets/lotties/waiting.json';
 import { IEndGamePayload } from '../../game_pong/game_pong.interfaces';
 import confettiAnimationData from '../../assets/lotties/confetti.json';
-import { getBaseUrl } from '../../utils/utils';
+import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 
 const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
@@ -129,7 +129,7 @@ export default function GameMatch(): JSX.Element {
         if (player.isWinner) setShowAnimation(true);
 
         console.log('parsedData', socketData);
-        fetch(`${getBaseUrl()}/game/data`, {
+        fetchAuthorized(`${getBaseUrl()}/game/data`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
