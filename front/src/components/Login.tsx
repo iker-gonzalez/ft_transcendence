@@ -64,7 +64,7 @@ const Login: React.FC = (): JSX.Element => {
           setIsLoading(false);
         });
     }
-  }, [navigate, location]);
+  }, [navigate, location, setUserData]);
 
   return <>{isLoading && <LoadingPage />}</>;
 };
