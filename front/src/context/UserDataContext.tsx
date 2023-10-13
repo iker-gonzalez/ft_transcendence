@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import UserData from '../interfaces/user-data.interface';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
-import { getBaseUrl } from '../utils/utils';
+import { fetchAuthorized, getBaseUrl } from '../utils/utils';
 import FriendData from '../interfaces/friend-data.interface';
 import Cookies from 'js-cookie';
 import UserFriendsContextData from '../interfaces/user-friends-context-data.interface';
@@ -60,11 +60,14 @@ export function UserDataProvider({ children }: PropsWithChildren): ReactNode {
   const fetchFriendsList = useCallback(async () => {
     setIsFetchingFriends(true);
 
-    const response: Response = await fetch(`${getBaseUrl()}/friends`, {
-      headers: {
-        Authorization: `Bearer ${Cookies.get('token')}`,
+    const response: Response = await fetchAuthorized(
+      `${getBaseUrl()}/friends`,
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
       },
-    });
+    );
 
     const data = await response.json();
 
@@ -77,11 +80,14 @@ export function UserDataProvider({ children }: PropsWithChildren): ReactNode {
   const fetchUserData = useCallback(async (token: string) => {
     setIsUserDataFetching(true);
 
-    const response: Response = await fetch(`${getBaseUrl()}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response: Response = await fetchAuthorized(
+      `${getBaseUrl()}/users/me`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
     const fetchedUserData = await response.json();
 
     const userData: UserData = fetchedUserData.data;

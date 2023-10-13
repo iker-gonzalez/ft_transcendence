@@ -1,3 +1,4 @@
+import { fetchAuthorized } from '../utils/utils';
 import {
   IBallData,
   INetData,
@@ -13,7 +14,7 @@ export async function initializeSessionInDb(
   user2: IUserData,
 ): Promise<INewSessionPayload | void> {
   try {
-    let response: Response = await fetch(
+    let response: Response = await fetchAuthorized(
       'http://localhost:3000/game/sessions',
       {
         method: 'POST',

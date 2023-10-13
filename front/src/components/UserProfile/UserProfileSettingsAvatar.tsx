@@ -4,7 +4,11 @@ import MainButton from '../UI/MainButton';
 import SecondaryButton from '../UI/SecondaryButton';
 import Modal from '../UI/Modal';
 import { blackColor, primaryAccentColor } from '../../constants/color-tokens';
-import { capitalizeFirstLetter, getBaseUrl } from '../../utils/utils';
+import {
+  capitalizeFirstLetter,
+  fetchAuthorized,
+  getBaseUrl,
+} from '../../utils/utils';
 import Cookies from 'js-cookie';
 import { useUserData } from '../../context/UserDataContext';
 import UserData from '../../interfaces/user-data.interface';
@@ -124,13 +128,16 @@ const UserProfileSettingsAvatar: React.FC<SettingsAvatarProps> = ({
       const formData: FormData = new FormData();
       formData.append('avatar', uploadedFileContent.current);
 
-      const res: Response = await fetch(`${getBaseUrl()}/users/avatar`, {
-        method: 'PATCH',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
+      const res: Response = await fetchAuthorized(
+        `${getBaseUrl()}/users/avatar`,
+        {
+          method: 'PATCH',
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
         },
-      });
+      );
 
       const data = await res.json();
 
