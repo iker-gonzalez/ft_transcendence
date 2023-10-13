@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsDateString,
+  IsDefined,
   IsInt,
   IsObject,
   IsPositive,
@@ -14,20 +15,25 @@ import { swaggerConstants } from '../../../config/swagger.constants';
 export class NewGameDataSetBodyPlayerDto {
   @IsInt()
   @IsPositive()
+  @IsDefined()
   intraId: number;
 
   @IsInt()
   @IsPositive()
+  @IsDefined()
   score: number;
 
   @IsString()
   @IsUrl()
+  @IsDefined()
   avatar: string;
 
   @IsString()
+  @IsDefined()
   username: string;
 
   @IsBoolean()
+  @IsDefined()
   isWinner: boolean;
 }
 
@@ -39,6 +45,7 @@ export class NewGameDataSetBodyDto {
   })
   @IsString()
   @IsUUID()
+  @IsDefined()
   gameDataId: string;
 
   @ApiProperty({
@@ -47,6 +54,7 @@ export class NewGameDataSetBodyDto {
     example: swaggerConstants.dto.NewGameDataSetBodyDto.startedAt.example,
   })
   @IsDateString()
+  @IsDefined()
   startedAt: string;
 
   @ApiProperty({
@@ -56,6 +64,7 @@ export class NewGameDataSetBodyDto {
   })
   @IsInt()
   @IsPositive()
+  @IsDefined()
   elapsedTime: number;
 
   @ApiProperty({
@@ -63,5 +72,6 @@ export class NewGameDataSetBodyDto {
     example: swaggerConstants.dto.NewGameDataSetBodyDto.player.example,
   })
   @IsObject()
+  @IsDefined()
   player: NewGameDataSetBodyPlayerDto;
 }

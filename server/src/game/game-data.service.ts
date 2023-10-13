@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NewGameDataSetBodyDto } from './dto/new-game-data-set-body.dto';
 
@@ -11,6 +11,7 @@ export class GameDataService {
   ): Promise<any> {
     const { gameDataId, startedAt, elapsedTime, player } = newGameDataSetDto;
 
+    // If session exists
     try {
       const gameDataSet = await this.prisma.gameDataSet.findFirstOrThrow({
         where: {
@@ -32,6 +33,18 @@ export class GameDataService {
         delete player.gameDataSetId;
         return player;
       });
+
+      if (existingPlayers.length !== 1) {
+        await this.prisma.gameDataSet.delete({
+          where: {
+            id: gameDataSet.id,
+          },
+        });
+
+        throw new UnprocessableEntityException(
+          'Number of players is not correct',
+        );
+      }
 
       const updatedGameDataSet = await this.prisma.gameDataSet.update({
         where: {
@@ -84,6 +97,10 @@ export class GameDataService {
             players: gameDataSet.players,
           },
         };
+      } else if (e instanceof UnprocessableEntityException) {
+        throw e;
+      } else {
+        throw new UnprocessableEntityException('Invalid data');
       }
     }
   }
