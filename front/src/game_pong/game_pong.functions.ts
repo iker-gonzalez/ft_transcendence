@@ -1,39 +1,10 @@
-import { fetchAuthorized } from '../utils/utils';
 import {
   IBallData,
   INetData,
-  INewSessionPayload,
   ISounds,
   IUserData,
   RenderColor,
 } from './game_pong.interfaces';
-
-export async function initializeSessionInDb(
-  ball: IBallData,
-  user1: IUserData,
-  user2: IUserData,
-): Promise<INewSessionPayload | void> {
-  try {
-    let response: Response = await fetchAuthorized(
-      'http://localhost:3000/game/sessions',
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          ball: JSON.stringify(ball),
-          player1: JSON.stringify(user1),
-          player2: JSON.stringify(user2),
-        }),
-        headers: { 'Content-type': 'application/json; charset=UTF-8' },
-      },
-    );
-
-    let json: Promise<INewSessionPayload> = response.json();
-
-    return json;
-  } catch (e) {
-    console.log(e);
-  }
-}
 
 export function drawRect(
   canvas: HTMLCanvasElement,

@@ -148,47 +148,6 @@ export const swaggerConstants = {
         },
       },
     },
-    sessions: {
-      new: {
-        summary: 'Create new game session.',
-        created: {
-          description: 'Returns newly created game session.',
-        },
-        bad: {
-          description: 'Data is not valid.',
-        },
-        unauthorized: {
-          description: 'JWT token is invalid or expired.',
-        },
-      },
-      session: {
-        summary: 'Retrieve an existing game session.',
-        ok: {
-          description: 'Returns game session.',
-        },
-        notFound: {
-          description: 'Game session not found.',
-        },
-        unauthorized: {
-          description: 'JWT token is invalid or expired.',
-        },
-      },
-      update: {
-        summary: 'Update an existing game session.',
-        ok: {
-          description: 'Returns updated game session.',
-        },
-        notFound: {
-          description: 'Game session not found.',
-        },
-        bad: {
-          description: 'Data is not valid.',
-        },
-        unathorized: {
-          description: 'JWT token is invalid or expired.',
-        },
-      },
-    },
   },
   dto: {
     intraSignin: {

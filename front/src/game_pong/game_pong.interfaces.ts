@@ -46,15 +46,6 @@ export interface INetData extends ICommonData {
   height: number;
 }
 
-export interface INewSessionPayload {
-  created: number;
-  data: {
-    id: string;
-    ball: IBallData;
-    players: IUserData[];
-  };
-}
-
 export interface IEndGamePayload {
   elapsedTime: number;
   gameDataId: string;
