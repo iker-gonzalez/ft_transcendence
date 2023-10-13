@@ -1840,6 +1840,214 @@ describe('App e2e', () => {
           });
         });
 
+        it('should return 400 if body of first call is empty', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({})
+            .expectStatus(400);
+
+          const gameDataSets = await prisma.gameDataSet.findMany({});
+          expect(gameDataSets).toHaveLength(0);
+        });
+
+        it('should return 400 if gameDataId is undefined', async () => {
+          const user1 = await createUser(
+            prisma,
+            intraService,
+            intraUserToken,
+            userData,
+          );
+
+          const user1GameDataSetBaseData = {
+            score: 5,
+            isWinner: true,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ...baseGameData,
+              gameDataId: undefined,
+              player: {
+                intraId: user1.intraId,
+                avatar: user1.avatar,
+                username: user1.username,
+                ...user1GameDataSetBaseData,
+              },
+            })
+            .expectStatus(400);
+
+          const gameDataSets = await prisma.gameDataSet.findMany({});
+          expect(gameDataSets).toHaveLength(0);
+        });
+
+        it('should return 400 if elapsedTime is undefined', async () => {
+          const user1 = await createUser(
+            prisma,
+            intraService,
+            intraUserToken,
+            userData,
+          );
+
+          const user1GameDataSetBaseData = {
+            score: 5,
+            isWinner: true,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ...baseGameData,
+              elapsedTime: undefined,
+              player: {
+                intraId: user1.intraId,
+                avatar: user1.avatar,
+                username: user1.username,
+                ...user1GameDataSetBaseData,
+              },
+            })
+            .expectStatus(400);
+
+          const gameDataSets = await prisma.gameDataSet.findMany({});
+          expect(gameDataSets).toHaveLength(0);
+        });
+
+        it('should return 400 if startedAt is undefined', async () => {
+          const user1 = await createUser(
+            prisma,
+            intraService,
+            intraUserToken,
+            userData,
+          );
+
+          const user1GameDataSetBaseData = {
+            score: 5,
+            isWinner: true,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ...baseGameData,
+              startedAt: undefined,
+              player: {
+                intraId: user1.intraId,
+                avatar: user1.avatar,
+                username: user1.username,
+                ...user1GameDataSetBaseData,
+              },
+            })
+            .expectStatus(400);
+
+          const gameDataSets = await prisma.gameDataSet.findMany({});
+          expect(gameDataSets).toHaveLength(0);
+        });
+
+        it('should return 400 if player is undefined', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ...baseGameData,
+              startedAt: undefined,
+              player: undefined,
+            })
+            .expectStatus(400);
+
+          const gameDataSets = await prisma.gameDataSet.findMany({});
+          expect(gameDataSets).toHaveLength(0);
+        });
+
+        it('should return 422 if number of players is not correct', async () => {
+          const user1 = await createUser(
+            prisma,
+            intraService,
+            intraUserToken,
+            userData,
+          );
+
+          const user1GameDataSetBaseData = {
+            score: 5,
+            isWinner: true,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ...baseGameData,
+              player: {
+                intraId: user1.intraId,
+                avatar: user1.avatar,
+                username: user1.username,
+                ...user1GameDataSetBaseData,
+              },
+            })
+            .expectStatus(201);
+
+          // Remove existing player
+          let gameDataSets = await prisma.gameDataSet.findMany({
+            include: {
+              players: true,
+            },
+          });
+          await prisma.gameDataSetPlayer.delete({
+            where: { id: gameDataSets[0].players[0].id },
+          });
+
+          const user2 = await createUser(
+            prisma,
+            intraService,
+            intraUserToken,
+            userData2,
+          );
+
+          const user2GameDataSetBaseData = {
+            score: 4,
+            isWinner: false,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ...baseGameData,
+              player: {
+                intraId: user2.intraId,
+                avatar: user2.avatar,
+                username: user2.username,
+                ...user2GameDataSetBaseData,
+              },
+            })
+            .expectStatus(422)
+            .expectJsonLike({
+              message: 'Number of players is not correct',
+              statusCode: 422,
+            });
+
+          gameDataSets = await prisma.gameDataSet.findMany({
+            include: {
+              players: true,
+            },
+          });
+          expect(gameDataSets).toHaveLength(0);
+        });
+
         it('it should return 401 if user is not authenticated', async () => {
           const user1GameDataSetBaseData = {
             score: 5,
