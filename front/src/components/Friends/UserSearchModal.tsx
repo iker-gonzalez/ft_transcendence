@@ -74,11 +74,6 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
           },
         );
 
-        // TODO abstract this logic everytime we fetch data from the API
-        if (response.status === 401) {
-          navigate('/');
-        }
-
         const data = await response.json();
 
         users = data.data.friends;
