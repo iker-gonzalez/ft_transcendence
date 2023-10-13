@@ -80,14 +80,12 @@ export function UserDataProvider({ children }: PropsWithChildren): ReactNode {
   const fetchUserData = useCallback(async (token: string) => {
     setIsUserDataFetching(true);
 
-    const response: Response = await fetchAuthorized(
-      `${getBaseUrl()}/users/me`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    // Do not use fetchAuthorized here to avoid infinite loop
+    const response: Response = await fetch(`${getBaseUrl()}/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
     const fetchedUserData = await response.json();
 
     const userData: UserData = fetchedUserData.data;
