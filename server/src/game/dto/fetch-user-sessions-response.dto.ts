@@ -6,7 +6,6 @@ import {
   IsInt,
   IsPositive,
   IsString,
-  IsUUID,
   IsUrl,
   Max,
   Min,
@@ -31,10 +30,6 @@ export class FetchUserSessionsResponsePlayerDto {
 
   @IsString()
   username: string;
-
-  @IsString()
-  @IsUUID()
-  gameDataSetId: string;
 }
 
 export class FetchUserSessionsResponseDto {
