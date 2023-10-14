@@ -1427,13 +1427,13 @@ describe('App e2e', () => {
 
   describe('Game', () => {
     describe('game data', () => {
-      describe('new', () => {
-        const baseGameData = {
-          gameDataId: '95130ad8-ffaf-4c7f-84c2-68ae2d020306',
-          startedAt: '2023-10-11T20:32:33.610Z',
-          elapsedTime: 26237,
-        };
+      const baseGameData = {
+        gameDataId: '95130ad8-ffaf-4c7f-84c2-68ae2d020306',
+        startedAt: '2023-10-11T20:32:33.610Z',
+        elapsedTime: 26237,
+      };
 
+      describe('new', () => {
         it('should create a new game data set from 2 API calls', async () => {
           const user1 = await createUser(
             prisma,
@@ -1769,6 +1769,124 @@ describe('App e2e', () => {
                 ...user1GameDataSetBaseData,
               },
             })
+            .expectStatus(401)
+            .expectJson({
+              message: 'Unauthorized',
+              statusCode: 401,
+            });
+        });
+      });
+
+      describe('get', () => {
+        it('should retrieve existing game data sets for specific user', async () => {
+          const user1 = await createUser(
+            prisma,
+            intraService,
+            intraUserToken,
+            userData,
+          );
+
+          const user1GameDataSetBaseData = {
+            score: 5,
+            isWinner: true,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ...baseGameData,
+              player: {
+                intraId: user1.intraId,
+                avatar: user1.avatar,
+                username: user1.username,
+                ...user1GameDataSetBaseData,
+              },
+            })
+            .expectStatus(201);
+
+          const user2 = await createUser(
+            prisma,
+            intraService,
+            intraUserToken,
+            userData2,
+          );
+
+          const user2GameDataSetBaseData = {
+            score: 4,
+            isWinner: false,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/data')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ...baseGameData,
+              player: {
+                intraId: user2.intraId,
+                avatar: user2.avatar,
+                username: user2.username,
+                ...user2GameDataSetBaseData,
+              },
+            })
+            .expectStatus(201);
+
+          const gameDataSets = await prisma.gameDataSet.findMany({});
+          expect(gameDataSets).toHaveLength(1);
+          const createdGameDataSet = gameDataSets[0];
+
+          await pactum
+            .spec()
+            .get(`/game/data/${user2.intraId}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .expectStatus(200)
+            .expectJson({
+              found: 1,
+              data: [
+                {
+                  sessionId: createdGameDataSet.sessionId,
+                  startedAt: createdGameDataSet.startedAt.toISOString(),
+                  elapsedTime: createdGameDataSet.elapsedTime,
+                  players: [
+                    {
+                      intraId: user1.intraId,
+                      avatar: user1.avatar,
+                      username: user1.username,
+                      ...user1GameDataSetBaseData,
+                    },
+                    {
+                      intraId: user2.intraId,
+                      avatar: user2.avatar,
+                      username: user2.username,
+                      ...user2GameDataSetBaseData,
+                    },
+                  ],
+                },
+              ],
+            });
+        });
+
+        it('should return 4222 if user does not exist', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          await pactum
+            .spec()
+            .get('/game/data/666')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .expectStatus(422)
+            .expectJson({
+              error: 'Unprocessable Entity',
+              message: 'User not found',
+              statusCode: 422,
+            });
+        });
+
+        it('should return 401 if user is not authenticated', async () => {
+          await pactum
+            .spec()
+            .get(`/game/data/${undefined}`)
             .expectStatus(401)
             .expectJson({
               message: 'Unauthorized',
