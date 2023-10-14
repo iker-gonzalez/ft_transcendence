@@ -1449,7 +1449,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
@@ -1494,7 +1494,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
@@ -1548,7 +1548,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({})
             .expectStatus(400);
@@ -1572,7 +1572,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
@@ -1605,7 +1605,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
@@ -1638,7 +1638,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
@@ -1661,7 +1661,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
@@ -1689,7 +1689,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
@@ -1726,7 +1726,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
@@ -1759,7 +1759,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withBody({
               ...baseGameData,
               player: {
@@ -1793,7 +1793,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
@@ -1820,7 +1820,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .post('/game/data')
+            .post('/game/sessions')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               ...baseGameData,
@@ -1839,7 +1839,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .get(`/game/data/${user2.intraId}`)
+            .get(`/game/sessions/${user2.intraId}`)
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .expectStatus(200)
             .expectJson({
@@ -1873,7 +1873,7 @@ describe('App e2e', () => {
 
           await pactum
             .spec()
-            .get('/game/data/666')
+            .get('/game/sessions/666')
             .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .expectStatus(422)
             .expectJson({
@@ -1886,7 +1886,7 @@ describe('App e2e', () => {
         it('should return 401 if user is not authenticated', async () => {
           await pactum
             .spec()
-            .get(`/game/data/${undefined}`)
+            .get(`/game/sessions/${undefined}`)
             .expectStatus(401)
             .expectJson({
               message: 'Unauthorized',

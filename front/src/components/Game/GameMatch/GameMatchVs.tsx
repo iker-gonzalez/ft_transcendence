@@ -123,7 +123,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
         if (player.isWinner) setShowAnimation(true);
 
         console.log('parsedData', socketData);
-        fetchAuthorized(`${getBaseUrl()}/game/data`, {
+        fetchAuthorized(`${getBaseUrl()}/game/sessions`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

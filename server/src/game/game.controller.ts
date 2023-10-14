@@ -9,17 +9,17 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { swaggerConstants } from '../../config/swagger.constants';
-import { GameDataService } from './game-data.service';
 import { NewGameDataSetBodyDto } from './dto/new-game-data-set-body.dto';
 import { NewGameDataResponseDto } from './dto/new-game-data-response.dto';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { FetchUserSessionsResponseDto } from './dto/fetch-user-sessions-response.dto';
+import { GameService } from './game.service';
 
-@ApiTags('Game data')
-@Controller('game/data')
+@ApiTags('Game sessions')
+@Controller('game/sessions')
 @UseGuards(JwtGuard)
-export class GameDataController {
-  constructor(private readonly gameDataService: GameDataService) {}
+export class GameController {
+  constructor(private readonly gameService: GameService) {}
 
   @Post()
   @ApiOperation({
@@ -35,7 +35,7 @@ export class GameDataController {
   createNewSession(
     @Body() newGameDataSetDto: NewGameDataSetBodyDto,
   ): Promise<NewGameDataResponseDto> {
-    return this.gameDataService.createNewDataSet(newGameDataSetDto);
+    return this.gameService.createNewDataSet(newGameDataSetDto);
   }
 
   @Get(':userId')
@@ -59,6 +59,6 @@ export class GameDataController {
   fetchUserSessions(
     @Param('userId') userId: number,
   ): Promise<FetchUserSessionsResponseDto> {
-    return this.gameDataService.fetchUserSessions(userId);
+    return this.gameService.fetchUserSessions(userId);
   }
 }

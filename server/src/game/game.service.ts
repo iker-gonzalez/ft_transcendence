@@ -2,14 +2,15 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NewGameDataSetBodyDto } from './dto/new-game-data-set-body.dto';
 import { FetchUserSessionsResponseDto } from './dto/fetch-user-sessions-response.dto';
+import { NewGameDataResponseDto } from './dto/new-game-data-response.dto';
 
 @Injectable()
-export class GameDataService {
+export class GameService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createNewDataSet(
     newGameDataSetDto: NewGameDataSetBodyDto,
-  ): Promise<any> {
+  ): Promise<NewGameDataResponseDto> {
     const { gameDataId, startedAt, elapsedTime, player } = newGameDataSetDto;
 
     // If session exists
@@ -66,7 +67,7 @@ export class GameDataService {
         data: {
           sessionId: updatedGameDataSet.sessionId,
           id: updatedGameDataSet.id,
-          startedAt: updatedGameDataSet.startedAt,
+          startedAt: updatedGameDataSet.startedAt.toISOString(),
           elapsedTime: updatedGameDataSet.elapsedTime,
           players: updatedGameDataSet.players,
         },
@@ -93,7 +94,7 @@ export class GameDataService {
           data: {
             sessionId: gameDataSet.sessionId,
             id: gameDataSet.id,
-            startedAt: gameDataSet.startedAt,
+            startedAt: gameDataSet.startedAt.toISOString(),
             elapsedTime: gameDataSet.elapsedTime,
             players: gameDataSet.players,
           },
