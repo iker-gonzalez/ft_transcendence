@@ -11,6 +11,8 @@ import { fetchAuthorized, getBaseUrl } from '../utils/utils';
 import FriendData from '../interfaces/friend-data.interface';
 import Cookies from 'js-cookie';
 import UserFriendsContextData from '../interfaces/user-friends-context-data.interface';
+import UserGamesContextData from '../interfaces/user-games-context-data.interface';
+import UserGameData from '../interfaces/user-game-data.interface';
 
 /**
  * Context object for user data.
@@ -45,6 +47,18 @@ export function useUserFriends(): UserFriendsContextData {
   return useContext(UserFriendsContext);
 }
 
+const UserGamesContext = React.createContext<UserGamesContextData>({
+  fetchGamesList: () => {},
+  isFetchingGames: false,
+  setUserGames: () => {},
+  userGames: [],
+  isErrorFetchingGames: false,
+});
+
+export function useUserGames(): UserGamesContextData {
+  return useContext(UserGamesContext);
+}
+
 /**
  * Provider component for user data context.
  * @param children The child components to render.
@@ -56,6 +70,11 @@ export function UserDataProvider({ children }: PropsWithChildren): ReactNode {
 
   const [userFriends, setUserFriends] = useState<FriendData[]>([]);
   const [isFetchingFriends, setIsFetchingFriends] = useState<boolean>(false);
+
+  const [userGames, setUserGames] = useState<UserGameData[]>([]);
+  const [isFetchingGames, setIsFetchingGames] = useState<boolean>(false);
+  const [isErrorFetchingGames, setIsErrorFetchingGames] =
+    useState<boolean>(false);
 
   const fetchFriendsList = useCallback(async () => {
     setIsFetchingFriends(true);
@@ -94,6 +113,33 @@ export function UserDataProvider({ children }: PropsWithChildren): ReactNode {
     setUserData(userData);
   }, []);
 
+  const fetchGamesList = useCallback(async (intraId: number) => {
+    setIsFetchingGames(true);
+    setIsErrorFetchingGames(false);
+
+    const response: Response = await fetchAuthorized(
+      `${getBaseUrl()}/game/sessions/${intraId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      setIsErrorFetchingGames(true);
+      setIsFetchingGames(false);
+      return;
+    }
+
+    const data = await response.json();
+
+    const gamesData: any[] = data.data;
+
+    setUserGames(gamesData);
+    setIsFetchingGames(false);
+  }, []);
+
   return (
     <UserDataContext.Provider
       value={{
@@ -111,7 +157,17 @@ export function UserDataProvider({ children }: PropsWithChildren): ReactNode {
           userFriends,
         }}
       >
-        {children}
+        <UserGamesContext.Provider
+          value={{
+            fetchGamesList,
+            isFetchingGames,
+            setUserGames,
+            userGames,
+            isErrorFetchingGames,
+          }}
+        >
+          {children}
+        </UserGamesContext.Provider>
       </UserFriendsContext.Provider>
     </UserDataContext.Provider>
   );
