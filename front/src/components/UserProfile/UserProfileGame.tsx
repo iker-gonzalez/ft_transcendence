@@ -7,6 +7,8 @@ import RoundImg from '../UI/RoundImage';
 import { primaryLightColor } from '../../constants/color-tokens';
 import UserGameData from '../../interfaces/user-game-data.interface';
 import UserGameDataPlayer from '../../interfaces/user-game-data-player.interface';
+import MainButton from '../UI/MainButton';
+import { useNavigate } from 'react-router-dom';
 
 const WrapperDiv = styled.div`
   width: 650px;
@@ -56,6 +58,13 @@ const WrapperDiv = styled.div`
       }
     }
   }
+
+  .empty-state {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
 `;
 
 const UserProfileGame: React.FC<{ userData: UserData }> = ({
@@ -63,6 +72,7 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
 }): JSX.Element => {
   const { userGames, isFetchingGames, fetchGamesList, isErrorFetchingGames } =
     useUserGames();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchGamesList(userData.intraId);
@@ -84,6 +94,21 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
 
           if (isFetchingGames) {
             return <p>Loading...</p>;
+          }
+
+          if (userGames.length === 0) {
+            return (
+              <div className="empty-state">
+                <p>It looks like you haven't played any game yet. </p>
+                <MainButton
+                  onClick={() => {
+                    navigate('/game');
+                  }}
+                >
+                  Start playing now
+                </MainButton>
+              </div>
+            );
           }
 
           return (
