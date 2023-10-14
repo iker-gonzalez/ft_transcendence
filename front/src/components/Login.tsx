@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchAuthorized, getBaseUrl } from '../utils/utils';
+import { getBaseUrl } from '../utils/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LoadingPage from '../pages/LoadingPage';
 import { useUserData } from '../context/UserDataContext';
@@ -21,7 +21,7 @@ const Login: React.FC = (): JSX.Element => {
       setIsLoading(true); // Set loading state to true
 
       // Make the POST request with the captured code
-      fetchAuthorized(`${getBaseUrl()}/auth/intra/signin`, {
+      fetch(`${getBaseUrl()}/auth/intra/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

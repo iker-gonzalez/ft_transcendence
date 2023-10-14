@@ -1,6 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NewGameDataSetBodyDto } from './dto/new-game-data-set-body.dto';
+import { FetchUserSessionsResponseDto } from './dto/fetch-user-sessions-response.dto';
 
 @Injectable()
 export class GameDataService {
@@ -103,5 +104,44 @@ export class GameDataService {
         throw new UnprocessableEntityException('Invalid data');
       }
     }
+  }
+
+  async fetchUserSessions(
+    userId: number,
+  ): Promise<FetchUserSessionsResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        intraId: +userId,
+      },
+    });
+
+    if (!user) {
+      throw new UnprocessableEntityException('User not found');
+    }
+
+    const userGameDataSets = await this.prisma.gameDataSet.findMany({
+      where: {
+        players: {
+          some: {
+            intraId: +userId,
+          },
+        },
+      },
+      include: {
+        players: true,
+      },
+    });
+
+    return {
+      found: userGameDataSets.length,
+      data: userGameDataSets.map((gameDataSet) => {
+        return {
+          sessionId: gameDataSet.sessionId,
+          startedAt: gameDataSet.startedAt,
+          elapsedTime: gameDataSet.elapsedTime,
+          players: gameDataSet.players,
+        };
+      }),
+    };
   }
 }

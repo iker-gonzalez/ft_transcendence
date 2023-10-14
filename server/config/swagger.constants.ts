@@ -147,6 +147,18 @@ export const swaggerConstants = {
           description: 'JWT token is invalid or expired.',
         },
       },
+      fetch: {
+        summary: 'Fetch user sessions.',
+        ok: {
+          description: 'Returns user sessions.',
+        },
+        unauthorized: {
+          description: 'JWT token is invalid or expired.',
+        },
+        unprocessable: {
+          description: 'User does not exist.',
+        },
+      },
     },
   },
   dto: {
@@ -353,98 +365,10 @@ export const swaggerConstants = {
         example: 'avatar.jpg',
       },
     },
-    newSessionResponseDto: {
-      created: {
-        description: 'Number of created sessions',
-        example: 1,
-      },
-      data: {
-        description: 'Session data',
-      },
-    },
-    updatedSessionResponseDto: {
-      updated: {
-        description: 'Number of updated sessions',
-        example: 1,
-      },
-      data: {
-        description: 'Session data',
-      },
-    },
-    newSessionDto: {
-      ball: {
-        description: 'Stringified ball data',
-        example:
-          '{"x":5,"y":5,"radius":10,"velocityX":5,"velocityY":5,"speed":20,"color":"WHITE","reset":false}',
-      },
-      player1: {
-        description: 'Player 1 data',
-        example:
-          '{"x":30,"y":100,"width":10,"height":100,"score":0,"color":"WHITE"}',
-      },
-      player2: {
-        description: 'Player 2 data',
-        example:
-          '{"x":560,"y":100,"width":10,"height":100,"score":0,"color":"WHITE"}',
-      },
-    },
-    foundSessionDto: {
-      found: {
-        description: 'Number of found sessions',
-        example: 1,
-      },
-      data: {
-        description: 'Session data',
-      },
-    },
     newPlayerDto: {
       id: {
         description: 'Player ID',
         example: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
-      },
-    },
-    sessionResponseDto: {
-      id: {
-        description: 'Session ID',
-        example: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
-      },
-      players: {
-        description: 'Players data',
-        example: [
-          {
-            index: 0,
-            x: 5,
-            y: 5,
-            radius: 10,
-            velocityX: 5,
-            velocityY: 5,
-            speed: 20,
-            color: 'WHITE',
-            reset: false,
-          },
-          {
-            index: 1,
-            x: 560,
-            y: 100,
-            width: 10,
-            height: 100,
-            score: 0,
-            color: 'WHITE',
-          },
-        ],
-      },
-      ball: {
-        description: 'Ball data',
-        example: {
-          x: 5,
-          y: 5,
-          radius: 10,
-          velocityX: 5,
-          velocityY: 5,
-          speed: 20,
-          color: 'WHITE',
-          reset: false,
-        },
       },
     },
     username: {
@@ -518,6 +442,30 @@ export const swaggerConstants = {
           players: [
             {
               id: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+              intraId: 12345,
+              score: 5,
+              avatar: 'https://cdn.intra.42.fr/users/jdoe.jpg',
+              username: 'jdoe',
+              isWinner: true,
+              gameDataSetId: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+            },
+          ],
+        },
+      },
+    },
+    fetchUserSessionsResponseDto: {
+      found: {
+        description: 'Number of found sessions',
+        example: 1,
+      },
+      data: {
+        description: 'Sessions data',
+        example: {
+          sessionId: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+          startedAt: '2021-05-06T15:00:00.000Z',
+          elapsedTime: 1000,
+          players: [
+            {
               intraId: 12345,
               score: 5,
               avatar: 'https://cdn.intra.42.fr/users/jdoe.jpg',
