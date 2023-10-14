@@ -139,7 +139,11 @@ export class GameDataService {
           sessionId: gameDataSet.sessionId,
           startedAt: gameDataSet.startedAt,
           elapsedTime: gameDataSet.elapsedTime,
-          players: gameDataSet.players,
+          players: gameDataSet.players.map((player) => {
+            delete player.gameDataSetId;
+            delete player.id;
+            return player;
+          }),
         };
       }),
     };
