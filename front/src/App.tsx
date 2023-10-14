@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import UserProfile from './pages/UserProfile';
 import Game from './pages/Game';
-import GameMatch from './components/Game/GameMatch';
+import GameMatch from './components/Game/GameMatch/GameMatch';
 import GameIndex from './components/Game/GameIndex';
 import GameQueue from './components/Game/GameQueue';
 import Login from './components/Login';
