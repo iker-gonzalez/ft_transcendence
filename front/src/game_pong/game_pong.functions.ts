@@ -80,17 +80,11 @@ export function drawImg(
 
   const img = new Image();
   img.src = file;
-  drawText(
-    canvas,
-    file,
-    x + 30,
-    y + 30,
-    '12px Arial',
-    'left',
-    RenderColor.Green,
-  );
   img.onload = function () {
+    // So that background image is not render over the ball
+    ctx.globalCompositeOperation = 'destination-over';
     ctx.drawImage(img, x, y, w, h);
+    ctx.globalCompositeOperation = 'source-over';
   };
 }
 

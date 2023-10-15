@@ -26,6 +26,7 @@ import {
 } from './game_pong.interfaces';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
+import grassImg from './images/grass.jpg';
 
 const fps: number = 60;
 const computedFps: number = 1000 / fps;
@@ -330,16 +331,12 @@ function render(
     user2?: GameSessionUser | UserData;
   },
 ) {
-  drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  // To clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  drawImg(
-    canvas,
-    0,
-    0,
-    canvas.width,
-    canvas.height,
-    './images/Sample-PNG-Image.png',
-  );
+  // drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
+  drawImg(canvas, 0, 0, canvas.width, canvas.height, grassImg);
 
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
 
