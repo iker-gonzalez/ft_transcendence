@@ -101,13 +101,13 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           user2: players[1],
         };
 
-        gameLoop(
-          canvasRef.current,
-          socketRef.current,
+        gameLoop({
+          canvas: canvasRef.current,
+          socket: socketRef.current,
           isPlayer1,
           sessionId,
           usersData,
-        );
+        });
       }
     });
 
