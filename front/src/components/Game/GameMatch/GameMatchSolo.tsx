@@ -37,7 +37,7 @@ export default function GameMatchSolo(): JSX.Element {
   return (
     <WrapperDiv>
       <CenteredLayout>
-        <h2 className="title-2">Be ready to challenge our AI 💪</h2>
+        <h2 className="title-2 mb-24">Be ready to challenge our AI 💪</h2>
         <GameCanvasWithAction canvasRef={canvasRef}>
           {showMainCta && (
             <MainButton
