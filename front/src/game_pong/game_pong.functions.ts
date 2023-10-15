@@ -1,3 +1,5 @@
+import GameSessionUser from '../interfaces/game-session-user.interface';
+import UserData from '../interfaces/user-data.interface';
 import {
   IBallData,
   INetData,
@@ -5,6 +7,10 @@ import {
   IUserData,
   RenderColor,
 } from './game_pong.interfaces';
+import hitSound from './sounds/hit.wav';
+import wallSound from './sounds/punch.wav';
+import userScoreSound from './sounds/strike.wav';
+import botScoreSound from './sounds/goal.wav';
 
 export function drawRect(
   canvas: HTMLCanvasElement,
@@ -74,17 +80,11 @@ export function drawImg(
 
   const img = new Image();
   img.src = file;
-  drawText(
-    canvas,
-    file,
-    x + 30,
-    y + 30,
-    '12px Arial',
-    'left',
-    RenderColor.Green,
-  );
   img.onload = function () {
+    // So that background image is not render over the ball
+    ctx.globalCompositeOperation = 'destination-over';
     ctx.drawImage(img, x, y, w, h);
+    ctx.globalCompositeOperation = 'source-over';
   };
 }
 
@@ -105,10 +105,17 @@ export function checkCollision(b: IBallData, p: IUserData): boolean {
 }
 
 export function initializeSounds(): ISounds {
-  let hit = new Audio('./sounds/hit.wav');
-  let wall = new Audio('./sounds/punch.wav');
-  let userScore = new Audio('./sounds/strike.wav');
-  let botScore = new Audio('./sounds/goal.wav');
+  let hit = new Audio(hitSound);
+  let wall = new Audio(wallSound);
+  let userScore = new Audio(userScoreSound);
+  let botScore = new Audio(botScoreSound);
 
   return { hit, wall, userScore, botScore };
+}
+
+export function isOneVsOneMode(usersData: {
+  user1: GameSessionUser | UserData;
+  user2?: GameSessionUser | UserData;
+}): boolean {
+  return !Boolean(usersData.user2);
 }
