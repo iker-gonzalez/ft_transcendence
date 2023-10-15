@@ -1868,6 +1868,48 @@ describe('App e2e', () => {
             });
         });
 
+        it('should filter out incomplete sessions', async () => {
+          const user1 = await createUser(
+            prisma,
+            intraService,
+            intraUserToken,
+            userData,
+          );
+
+          const user1GameDataSetBaseData = {
+            score: 5,
+            isWinner: true,
+          };
+
+          await pactum
+            .spec()
+            .post('/game/sessions')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              ...baseGameData,
+              player: {
+                intraId: user1.intraId,
+                avatar: user1.avatar,
+                username: user1.username,
+                ...user1GameDataSetBaseData,
+              },
+            })
+            .expectStatus(201);
+
+          const gameDataSets = await prisma.gameDataSet.findMany({});
+          expect(gameDataSets).toHaveLength(1);
+
+          await pactum
+            .spec()
+            .get(`/game/sessions/${user1.intraId}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .expectStatus(200)
+            .expectJson({
+              found: 0,
+              data: [],
+            });
+        });
+
         it('should return 4222 if user does not exist', async () => {
           await createUser(prisma, intraService, intraUserToken, userData);
 
