@@ -7,6 +7,10 @@ import {
   IUserData,
   RenderColor,
 } from './game_pong.interfaces';
+import hitSound from './sounds/hit.wav';
+import wallSound from './sounds/punch.wav';
+import userScoreSound from './sounds/strike.wav';
+import botScoreSound from './sounds/goal.wav';
 
 export function drawRect(
   canvas: HTMLCanvasElement,
@@ -107,10 +111,10 @@ export function checkCollision(b: IBallData, p: IUserData): boolean {
 }
 
 export function initializeSounds(): ISounds {
-  let hit = new Audio('./sounds/hit.wav');
-  let wall = new Audio('./sounds/punch.wav');
-  let userScore = new Audio('./sounds/strike.wav');
-  let botScore = new Audio('./sounds/goal.wav');
+  let hit = new Audio(hitSound);
+  let wall = new Audio(wallSound);
+  let userScore = new Audio(userScoreSound);
+  let botScore = new Audio(botScoreSound);
 
   return { hit, wall, userScore, botScore };
 }
