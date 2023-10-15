@@ -24,6 +24,24 @@ model User {
   email    String @unique
 
   friends Friend[]
+
+  sentMessages     DirectMessage[] @relation("sentMessages")
+  receivedMessages DirectMessage[] @relation("receivedMessages")
+  connectStatus    Boolean         @default(false)
+}
+
+model DirectMessage {
+  id         String   @id @unique @default(uuid())
+  senderId   String? // ID del remitente del mensaje
+  receiverId String? // ID del destinatario del mensaje
+  content    String // Contenido  del mensaje
+  createdAt  DateTime @default(now()) // Fecha y hora de creación del mensaje
+
+  // Relación con el usuario remitente
+  sender User? @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  // Relación con el usuario destinatario
+  receiver User? @relation("receivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 }
 
 model UserGameSession {
