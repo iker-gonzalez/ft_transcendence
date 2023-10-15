@@ -1,3 +1,5 @@
+import GameSessionUser from '../interfaces/game-session-user.interface';
+import UserData from '../interfaces/user-data.interface';
 import {
   IBallData,
   INetData,
@@ -111,4 +113,11 @@ export function initializeSounds(): ISounds {
   let botScore = new Audio('./sounds/goal.wav');
 
   return { hit, wall, userScore, botScore };
+}
+
+export function isOneVsOneMode(usersData: {
+  user1: GameSessionUser | UserData;
+  user2?: GameSessionUser | UserData;
+}): boolean {
+  return !Boolean(usersData.user2);
 }
