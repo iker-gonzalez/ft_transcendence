@@ -133,9 +133,12 @@ export class GameService {
       },
     });
 
-    return {
-      found: userGameDataSets.length,
-      data: userGameDataSets.map((gameDataSet) => {
+    const filteredUserGameDataSets = userGameDataSets
+      .filter((gameDataSet) => {
+        // If session doesn't have 2 players, it's not a valid session
+        return gameDataSet.players.length === 2;
+      })
+      .map((gameDataSet) => {
         return {
           sessionId: gameDataSet.sessionId,
           startedAt: gameDataSet.startedAt,
@@ -146,7 +149,11 @@ export class GameService {
             return player;
           }),
         };
-      }),
+      });
+
+    return {
+      found: filteredUserGameDataSets.length,
+      data: filteredUserGameDataSets,
     };
   }
 }
