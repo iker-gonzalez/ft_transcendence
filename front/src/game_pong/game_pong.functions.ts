@@ -11,6 +11,7 @@ import hitSound from './sounds/hit.wav';
 import wallSound from './sounds/punch.wav';
 import userScoreSound from './sounds/strike.wav';
 import botScoreSound from './sounds/goal.wav';
+import BgImageGrass from './images/grass.jpg';
 
 export function drawRect(
   canvas: HTMLCanvasElement,
@@ -69,23 +70,19 @@ export function drawText(
 
 export function drawImg(
   canvas: HTMLCanvasElement,
+  img: HTMLImageElement,
   x: number,
   y: number,
   w: number,
   h: number,
-  file: string,
 ): void {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   if (!ctx) return;
 
-  const img = new Image();
-  img.src = file;
-  img.onload = function () {
-    // So that background image is not render over the ball
-    ctx.globalCompositeOperation = 'destination-over';
-    ctx.drawImage(img, x, y, w, h);
-    ctx.globalCompositeOperation = 'source-over';
-  };
+  // So that background image is not render over the ball
+  ctx.globalCompositeOperation = 'destination-over';
+  ctx.drawImage(img, x, y, w, h);
+  ctx.globalCompositeOperation = 'source-over';
 }
 
 export function checkCollision(b: IBallData, p: IUserData): boolean {
@@ -118,4 +115,16 @@ export function isSoloMode(usersData: {
   user2?: GameSessionUser | UserData;
 }): boolean {
   return !Boolean(usersData.user2);
+}
+
+export type InitializeCanvasImages = {
+  canvasBgImage: HTMLImageElement;
+};
+export function initializeCanvasImages(): InitializeCanvasImages {
+  const canvasBgImage: HTMLImageElement = new Image();
+  canvasBgImage.src = BgImageGrass;
+
+  return {
+    canvasBgImage,
+  };
 }
