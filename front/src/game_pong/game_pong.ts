@@ -7,12 +7,14 @@ import {
   netInit,
 } from './game_pong.constants';
 import {
+  InitializeCanvasImages,
   checkCollision,
   drawArc,
   drawDashedLine,
   drawImg,
   drawRect,
   drawText,
+  initializeCanvasImages,
   initializeSounds,
   isSoloMode,
 } from './game_pong.functions';
@@ -26,7 +28,6 @@ import {
 } from './game_pong.interfaces';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
-import grassImg from './images/grass.jpg';
 
 const fps: number = 60;
 const computedFps: number = 1000 / fps;
@@ -53,6 +54,7 @@ type GameFunctionParams = {
   match_points: number;
   sessionId: string;
   eventList: any[];
+  canvasImages: InitializeCanvasImages;
 };
 
 type GameLoopFunctionParams = {
@@ -79,6 +81,7 @@ function game({
   match_points,
   sessionId,
   eventList,
+  canvasImages,
 }: GameFunctionParams) {
   if (match_finish) return;
 
@@ -87,7 +90,16 @@ function game({
       matchUser1(canvas, ballData, user1, user2, sounds);
       matchUser2(canvas, ballData, user1, user2, sounds, true);
 
-      render(canvas, ballData, user1, user2, net, match_points, usersData);
+      render(
+        canvas,
+        ballData,
+        user1,
+        user2,
+        net,
+        match_points,
+        usersData,
+        canvasImages,
+      );
 
       if (user1.score >= match_points || user2.score >= match_points) {
         onGameEnd(canvas, eventList, socket, sessionId, user1, usersData.user1);
@@ -117,6 +129,7 @@ function game({
         match_points,
         sessionId,
         eventList,
+        canvasImages,
       });
     });
   }, computedFps);
@@ -336,13 +349,21 @@ function render(
     user1: GameSessionUser | UserData;
     user2?: GameSessionUser | UserData;
   },
+  canvasImages: InitializeCanvasImages,
 ) {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   // To clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
-  drawImg(canvas, 0, 0, canvas.width, canvas.height, grassImg);
+  drawImg(
+    canvas,
+    canvasImages.canvasBgImage,
+    0,
+    0,
+    canvas.width,
+    canvas.height,
+  );
 
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
 
@@ -601,6 +622,10 @@ export async function gameLoop({
     botScore,
   };
 
+  // Images need to be loaded once before rendering
+  // Otherwise they create a flickering effect
+  const canvasImages = initializeCanvasImages();
+
   function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
       if (event.keyCode === 38) {
@@ -707,7 +732,16 @@ export async function gameLoop({
 
         matchUser1(canvas, ballData, user1, user2, sounds);
 
-        render(canvas, ballData, user1, user2, net, match_points, usersData);
+        render(
+          canvas,
+          ballData,
+          user1,
+          user2,
+          net,
+          match_points,
+          usersData,
+          canvasImages,
+        );
 
         socket.emit(
           'upload',
@@ -740,7 +774,16 @@ export async function gameLoop({
 
         matchUser2(canvas, ballData, user1, user2, sounds);
 
-        render(canvas, ballData, user1, user2, net, match_points, usersData);
+        render(
+          canvas,
+          ballData,
+          user1,
+          user2,
+          net,
+          match_points,
+          usersData,
+          canvasImages,
+        );
 
         socket.emit(
           'upload',
@@ -764,6 +807,7 @@ export async function gameLoop({
       match_points,
       sessionId,
       eventList,
+      canvasImages,
     });
   }, 1000);
 }
