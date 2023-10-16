@@ -5,13 +5,14 @@ import MainButton from '../UI/MainButton';
 import { primaryLightColor } from '../../constants/color-tokens';
 import UserData from '../../interfaces/user-data.interface';
 import UserProfileSettingsUsername from './UserProfileSettingsUsername';
+import UserProfileSettingsOTP from './UserProfileSettingsOTP';
 
 const WrapperDiv = styled.div`
   width: 650px;
 
   .settings-item {
     display: flex;
-    justify-content: space-between;
+    justify-content: space between;
     align-items: center;
 
     &:not(:last-of-type) {
@@ -26,21 +27,13 @@ const WrapperDiv = styled.div`
   }
 `;
 
-const UserProfileSettings: React.FC<{ userData: UserData }> = ({
-  userData,
-}): JSX.Element => {
+const UserProfileSettings: React.FC<{ userData: UserData }> = ({ userData }) => {
   return (
     <ContrastPanel>
       <WrapperDiv>
         <h2 className="title-2 mb-24">Settings</h2>
         <div className="settings-item">
-          {/* TODO create component for OTP */}
-          <h3 className="title-3">OTP</h3>
-          {userData.isTwoFactorAuthEnabled ? (
-            <p>On</p>
-          ) : (
-            <MainButton>Activate</MainButton>
-          )}
+          <UserProfileSettingsOTP userData={userData} />
         </div>
         <UserProfileSettingsUsername className="settings-item" />
       </WrapperDiv>
@@ -49,3 +42,4 @@ const UserProfileSettings: React.FC<{ userData: UserData }> = ({
 };
 
 export default UserProfileSettings;
+
