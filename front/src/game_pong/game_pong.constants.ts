@@ -1,4 +1,11 @@
-import { IBallData, IUserData, INetData, RenderColor } from './game_pong.interfaces';
+import UserData from '../interfaces/user-data.interface';
+import {
+  IBallData,
+  IUserData,
+  INetData,
+  RenderColor,
+} from './game_pong.interfaces';
+import BotAvatar from './images/c3po_avatar.webp';
 
 export const thickness: number = 10;
 export const slit: number = 3;
@@ -50,4 +57,12 @@ export const netInit: INetData = {
   height: 10,
   width: 10,
   color: RenderColor.White,
+};
+
+export const botUserData: UserData = {
+  avatar: BotAvatar,
+  email: 'bot@42urduliz.com',
+  intraId: 42,
+  isTwoFactorAuthEnabled: false,
+  username: 'bot',
 };
