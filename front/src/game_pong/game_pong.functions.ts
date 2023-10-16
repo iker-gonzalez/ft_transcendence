@@ -113,7 +113,7 @@ export function initializeSounds(): ISounds {
   return { hit, wall, userScore, botScore };
 }
 
-export function isOneVsOneMode(usersData: {
+export function isSoloMode(usersData: {
   user1: GameSessionUser | UserData;
   user2?: GameSessionUser | UserData;
 }): boolean {

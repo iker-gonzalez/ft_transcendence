@@ -14,7 +14,7 @@ import {
   drawRect,
   drawText,
   initializeSounds,
-  isOneVsOneMode,
+  isSoloMode,
 } from './game_pong.functions';
 import {
   IBallData,
@@ -80,53 +80,46 @@ function game({
   sessionId,
   eventList,
 }: GameFunctionParams) {
-  if (!match_finish) {
-    setTimeout(() => {
-      if (isOneVsOneMode(usersData)) {
-        matchUser1(canvas, ballData, user1, user2, sounds);
-        matchUser2(canvas, ballData, user1, user2, sounds, true);
+  if (match_finish) return;
 
-        render(canvas, ballData, user1, user2, net, match_points, usersData);
+  setTimeout(() => {
+    if (isSoloMode(usersData)) {
+      matchUser1(canvas, ballData, user1, user2, sounds);
+      matchUser2(canvas, ballData, user1, user2, sounds, true);
 
-        if (user1.score >= match_points || user2.score >= match_points) {
-          onGameEnd(
-            canvas,
-            eventList,
-            socket,
-            sessionId,
-            user1,
-            usersData.user1,
-          );
-          match_finish = true;
-        }
-      } else {
-        socket.emit(
-          'download',
-          JSON.stringify({
-            isUser1: isPlayer1,
-            gameDataId: sessionId,
-          }),
-        );
+      render(canvas, ballData, user1, user2, net, match_points, usersData);
+
+      if (user1.score >= match_points || user2.score >= match_points) {
+        onGameEnd(canvas, eventList, socket, sessionId, user1, usersData.user1);
+        match_finish = true;
       }
+    } else {
+      socket.emit(
+        'download',
+        JSON.stringify({
+          isUser1: isPlayer1,
+          gameDataId: sessionId,
+        }),
+      );
+    }
 
-      requestAnimationFrame(function () {
-        game({
-          canvas,
-          ballData,
-          sounds,
-          user1,
-          user2,
-          usersData,
-          net,
-          socket,
-          isPlayer1,
-          match_points,
-          sessionId,
-          eventList,
-        });
+    requestAnimationFrame(function () {
+      game({
+        canvas,
+        ballData,
+        sounds,
+        user1,
+        user2,
+        usersData,
+        net,
+        socket,
+        isPlayer1,
+        match_points,
+        sessionId,
+        eventList,
       });
-    }, computedFps);
-  }
+    });
+  }, computedFps);
 }
 
 function matchUser1(
@@ -212,12 +205,12 @@ function matchUser2(
   user1: IUserData,
   user2: IUserData,
   sounds: ISounds,
-  isOneVsOne: boolean = false,
+  isSoloMode: boolean = false,
 ) {
   ballData.x += ballData.velocityX;
   ballData.y += ballData.velocityY;
 
-  if (isOneVsOne) {
+  if (isSoloMode) {
     user2.y += (ballData.y - (user2.y + user2.height / 2)) * 0.1;
   }
 
@@ -390,7 +383,7 @@ function render(
     RenderColor.Red,
   );
 
-  if (isOneVsOneMode(usersData)) {
+  if (isSoloMode(usersData)) {
     drawText(
       canvas,
       'BOT',
@@ -495,7 +488,7 @@ function render(
           RenderColor.Green,
         );
       } else {
-        if (isOneVsOneMode(usersData)) {
+        if (isSoloMode(usersData)) {
           drawText(
             canvas,
             'BOT wins',
@@ -619,7 +612,7 @@ export async function gameLoop({
       }
     }
 
-    if (!isPlayer1 && !isOneVsOneMode(usersData)) {
+    if (!isPlayer1 && !isSoloMode(usersData)) {
       if (event.keyCode === 38) {
         // UP ARROW key
         user2.y -= userSpeedInput * 5;
@@ -645,7 +638,7 @@ export async function gameLoop({
           canvas.height - thickness - user1.height - ballData.radius * slit;
       }
     }
-    if (!isPlayer1 && !isOneVsOneMode(usersData)) {
+    if (!isPlayer1 && !isSoloMode(usersData)) {
       let rect = canvas.getBoundingClientRect();
       user2.y = event.clientY - rect.top - user2.height / 2;
       if (user2.y < thickness + ballData.radius * slit) {
@@ -682,11 +675,11 @@ export async function gameLoop({
     { typeEvent: 'touchstart', handler: onTouchStart },
   ];
 
-  if (isPlayer1) {
+  if (!isSoloMode(usersData)) {
     socket.emit(
       'upload',
       JSON.stringify({
-        isUser1: true,
+        isUser1: isPlayer1,
         gameDataId: sessionId,
         ball: ballData,
         user1,
@@ -694,76 +687,67 @@ export async function gameLoop({
       }),
     );
 
-    socket.on(`downloaded/user1/${sessionId}`, (data: string) => {
-      const downloadedData = JSON.parse(data);
-      user2 = downloadedData.user2;
+    if (isPlayer1) {
+      socket.on(`downloaded/user1/${sessionId}`, (data: string) => {
+        const downloadedData = JSON.parse(data);
+        user2 = downloadedData.user2;
 
-      if (user2.score >= match_points || user1.score >= match_points) {
-        if (!match_finish)
-          onGameEnd(
-            canvas,
-            eventList,
-            socket,
-            sessionId,
+        if (user2.score >= match_points || user1.score >= match_points) {
+          if (!match_finish)
+            onGameEnd(
+              canvas,
+              eventList,
+              socket,
+              sessionId,
+              user1,
+              usersData.user1,
+            );
+          match_finish = true;
+        }
+
+        matchUser1(canvas, ballData, user1, user2, sounds);
+
+        render(canvas, ballData, user1, user2, net, match_points, usersData);
+
+        socket.emit(
+          'upload',
+          JSON.stringify({
+            isUser1: true,
+            gameDataId: sessionId,
+            ball: ballData,
             user1,
-            usersData.user1,
-          );
-        match_finish = true;
-      }
+          }),
+        );
+      });
+    } else {
+      socket.on(`downloaded/user2/${sessionId}`, (data: string) => {
+        const downloadedData = JSON.parse(data);
+        ballData = downloadedData.ball;
+        user1 = downloadedData.user1;
 
-      matchUser1(canvas, ballData, user1, user2, sounds);
+        if (user1.score >= match_points || user2.score >= match_points) {
+          if (!match_finish)
+            onGameEnd(
+              canvas,
+              eventList,
+              socket,
+              sessionId,
+              user2,
+              usersData.user2,
+            );
+          match_finish = true;
+        }
 
-      render(canvas, ballData, user1, user2, net, match_points, usersData);
+        matchUser2(canvas, ballData, user1, user2, sounds);
 
-      socket.emit(
-        'upload',
-        JSON.stringify({
-          isUser1: true,
-          gameDataId: sessionId,
-          ball: ballData,
-          user1,
-        }),
-      );
-    });
-  } else {
-    socket.emit(
-      'upload',
-      JSON.stringify({
-        isUser1: false,
-        gameDataId: sessionId,
-        ball: ballData,
-        user1,
-        user2,
-      }),
-    );
+        render(canvas, ballData, user1, user2, net, match_points, usersData);
 
-    socket.on(`downloaded/user2/${sessionId}`, (data: string) => {
-      const downloadedData = JSON.parse(data);
-      ballData = downloadedData.ball;
-      user1 = downloadedData.user1;
-
-      if (user1.score >= match_points || user2.score >= match_points) {
-        if (!match_finish)
-          onGameEnd(
-            canvas,
-            eventList,
-            socket,
-            sessionId,
-            user2,
-            usersData.user2,
-          );
-        match_finish = true;
-      }
-
-      matchUser2(canvas, ballData, user1, user2, sounds);
-
-      render(canvas, ballData, user1, user2, net, match_points, usersData);
-
-      socket.emit(
-        'upload',
-        JSON.stringify({ isUser1: false, gameDataId: sessionId, user2 }),
-      );
-    });
+        socket.emit(
+          'upload',
+          JSON.stringify({ isUser1: false, gameDataId: sessionId, user2 }),
+        );
+      });
+    }
   }
 
   setTimeout(() => {
