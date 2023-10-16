@@ -65,7 +65,7 @@ export default function GameIndex(): JSX.Element {
             </MainButton>
             <MainButton
               onClick={() => {
-                navigate('match/?solo=true');
+                navigate('match?solo=true');
               }}
               className="game-mode-selector"
             >
