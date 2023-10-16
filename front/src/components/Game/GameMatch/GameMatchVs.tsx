@@ -13,11 +13,12 @@ import GameSessionUser from '../../../interfaces/game-session-user.interface';
 import Lottie from 'lottie-react';
 import waitingAnimationData from '../../../assets/lotties/waiting.json';
 import { IEndGamePayload } from '../../../game_pong/game_pong.interfaces';
-import confettiAnimationData from '../../../assets/lotties/confetti.json';
 import { fetchAuthorized, getBaseUrl } from '../../../utils/utils';
 import Cookies from 'js-cookie';
 import UserData from '../../../interfaces/user-data.interface';
 import GameCanvasWithAction from '../GameCanvasWithAction';
+import GameMatchEndGameAction from './GameMatchEndGameAction';
+import GameMatchConfettiAnimation from './GameMatchConfettiAnimation';
 
 const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
   const playerIndex: number = players?.findIndex(
@@ -46,19 +47,6 @@ const WrapperDiv = styled.div`
 
   .canvas {
     margin-top: 24px;
-  }
-
-  .new-game-button {
-    margin-top: 30px;
-  }
-
-  .end-animation {
-    position: fixed;
-    z-index: 1000;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    height: min(100vh, 1000px);
   }
 `;
 
@@ -192,26 +180,13 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
             </div>
           )}
         </GameCanvasWithAction>
-        {gameEnd && (
-          <div className="new-game-button">
-            <MainButton
-              onClick={() => {
-                navigate('/game');
-              }}
-            >
-              Start new game
-            </MainButton>
-          </div>
-        )}
+        {gameEnd && <GameMatchEndGameAction />}
       </CenteredLayout>
       {showAnimation && (
-        <Lottie
-          animationData={confettiAnimationData}
-          loop={false}
+        <GameMatchConfettiAnimation
           onComplete={() => {
             setShowAnimation(false);
           }}
-          className="end-animation"
         />
       )}
     </WrapperDiv>
