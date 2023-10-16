@@ -16,6 +16,7 @@ import { Socket } from 'socket.io-client';
 import { IEndGamePayload } from '../../../game_pong/game_pong.interfaces';
 import GameMatchEndGameAction from './GameMatchEndGameAction';
 import GameMatchConfettiAnimation from './GameMatchConfettiAnimation';
+import { fetchAuthorized, getBaseUrl } from '../../../utils/utils';
 
 const WrapperDiv = styled.div``;
 
@@ -46,11 +47,31 @@ export default function GameMatchSolo(): JSX.Element {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    const saveMatch = (socketData: string): void => {
+      fetchAuthorized(`${getBaseUrl()}/game/sessions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: socketData,
+      })
+        .then((res: any) => {
+          console.log(res);
+          return res.json();
+        })
+        .then((data: any) => {
+          console.log(data);
+        })
+        .catch((e: any) => {
+          console.error('Error creating new game data set: ', e);
+        });
+    };
+
     if (userData && socketRef.current) {
       socketRef.current.on(
         `gameEnded/${userData.intraId}/${sessionId.current}`,
         (socketData: string) => {
-          socketRef.current.disconnect();
           setGameEnd(true);
 
           const parsedData: IEndGamePayload = JSON.parse(socketData);
@@ -58,26 +79,16 @@ export default function GameMatchSolo(): JSX.Element {
 
           if (player.isWinner) setShowAnimation(true);
 
-          console.log('parsedData', socketData);
-          // fetchAuthorized(`${getBaseUrl()}/game/sessions`, {
-          //   method: 'POST',
-          //   headers: {
-          //     'Content-Type': 'application/json',
-          //     Authorization: `Bearer ${Cookies.get('token')}`,
-          //   },
-          //   body: socketData,
-          // })
-          //   .then((res: any) => {
-          //     console.log(res);
-          //     return res.json();
-          //   })
-          //   .then((data: any) => {
-          //     console.log(data);
-          //   })
-          //   .catch((e: any) => {
-          //     console.error('Error creating new game data set: ', e);
-          //   });
-          // // TODO hit endpoint to store game data
+          saveMatch(socketData);
+        },
+      );
+
+      socketRef.current.on(
+        `gameEnded/42/${sessionId.current}`,
+        (socketData: string) => {
+          socketRef.current.disconnect();
+
+          saveMatch(socketData);
         },
       );
     }
