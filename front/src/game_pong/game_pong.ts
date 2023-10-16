@@ -5,6 +5,7 @@ import {
   user1Init,
   user2Init,
   netInit,
+  botUserData,
 } from './game_pong.constants';
 import {
   InitializeCanvasImages,
@@ -103,6 +104,7 @@ function game({
 
       if (user1.score >= match_points || user2.score >= match_points) {
         onGameEnd(canvas, eventList, socket, sessionId, user1, usersData.user1);
+        onGameEnd(canvas, eventList, socket, sessionId, user2, botUserData);
         match_finish = true;
       }
     } else {
