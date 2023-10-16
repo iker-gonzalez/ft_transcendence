@@ -121,6 +121,13 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
                   month: 'long',
                   day: 'numeric',
                 });
+                const formattedTime = new Date(
+                  game.startedAt,
+                ).toLocaleTimeString('en-us', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                });
                 const gameDuration = new Date(game.elapsedTime).getSeconds();
 
                 return (
@@ -128,7 +135,8 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
                     <div className="title-box">
                       <h3 className="title-3">Match #{index + 1}</h3>
                       <p className="small">
-                        Played on {formattedDate} for {gameDuration} seconds.
+                        Played on {formattedDate} at {formattedTime} for{' '}
+                        {gameDuration} seconds.
                       </p>
                     </div>
                     <div className="players-box">
