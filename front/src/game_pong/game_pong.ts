@@ -14,7 +14,7 @@ import {
   drawRect,
   drawText,
   initializeSounds,
-  isOneVsOneMode,
+  isSoloMode,
 } from './game_pong.functions';
 import {
   IBallData,
@@ -82,7 +82,7 @@ function game({
 }: GameFunctionParams) {
   if (!match_finish) {
     setTimeout(() => {
-      if (isOneVsOneMode(usersData)) {
+      if (isSoloMode(usersData)) {
         matchUser1(canvas, ballData, user1, user2, sounds);
         matchUser2(canvas, ballData, user1, user2, sounds, true);
 
@@ -212,12 +212,12 @@ function matchUser2(
   user1: IUserData,
   user2: IUserData,
   sounds: ISounds,
-  isOneVsOne: boolean = false,
+  isSoloMode: boolean = false,
 ) {
   ballData.x += ballData.velocityX;
   ballData.y += ballData.velocityY;
 
-  if (isOneVsOne) {
+  if (isSoloMode) {
     user2.y += (ballData.y - (user2.y + user2.height / 2)) * 0.1;
   }
 
@@ -390,7 +390,7 @@ function render(
     RenderColor.Red,
   );
 
-  if (isOneVsOneMode(usersData)) {
+  if (isSoloMode(usersData)) {
     drawText(
       canvas,
       'BOT',
@@ -495,7 +495,7 @@ function render(
           RenderColor.Green,
         );
       } else {
-        if (isOneVsOneMode(usersData)) {
+        if (isSoloMode(usersData)) {
           drawText(
             canvas,
             'BOT wins',
@@ -619,7 +619,7 @@ export async function gameLoop({
       }
     }
 
-    if (!isPlayer1 && !isOneVsOneMode(usersData)) {
+    if (!isPlayer1 && !isSoloMode(usersData)) {
       if (event.keyCode === 38) {
         // UP ARROW key
         user2.y -= userSpeedInput * 5;
@@ -645,7 +645,7 @@ export async function gameLoop({
           canvas.height - thickness - user1.height - ballData.radius * slit;
       }
     }
-    if (!isPlayer1 && !isOneVsOneMode(usersData)) {
+    if (!isPlayer1 && !isSoloMode(usersData)) {
       let rect = canvas.getBoundingClientRect();
       user2.y = event.clientY - rect.top - user2.height / 2;
       if (user2.y < thickness + ballData.radius * slit) {
