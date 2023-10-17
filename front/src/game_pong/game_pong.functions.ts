@@ -12,8 +12,9 @@ import wallSound from './sounds/punch.wav';
 import userScoreSound from './sounds/strike.wav';
 import botScoreSound from './sounds/goal.wav';
 import BgImageGrass from './images/grass.jpg';
-import { matchUser1, matchUser2, onGameEnd, render } from './game_pong';
+import { matchUser1, matchUser2, onGameEnd } from './game_pong.render';
 import { Socket } from 'socket.io-client';
+import { render } from './game_pong.render';
 
 export function drawRect(
   canvas: HTMLCanvasElement,
@@ -251,6 +252,7 @@ export type InitializeSocketLogicArgs = {
   sounds: ISounds;
   net: INetData;
   canvasImages: InitializeCanvasImages;
+  thickness: number;
 };
 export function initializeSocketLogic({
   socket,
@@ -267,6 +269,7 @@ export function initializeSocketLogic({
   sounds,
   net,
   canvasImages,
+  thickness,
 }: InitializeSocketLogicArgs) {
   socket.emit(
     'upload',
@@ -308,6 +311,7 @@ export function initializeSocketLogic({
         matchPoints,
         usersData,
         canvasImages,
+        thickness,
       );
 
       socket.emit(
@@ -350,6 +354,7 @@ export function initializeSocketLogic({
         matchPoints,
         usersData,
         canvasImages,
+        thickness,
       );
 
       socket.emit(
