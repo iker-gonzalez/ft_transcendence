@@ -124,9 +124,7 @@ export class GameService {
       where: {
         players: {
           some: {
-            intraId: {
-              not: +userId,
-            },
+            intraId: +userId,
           },
         },
       },
