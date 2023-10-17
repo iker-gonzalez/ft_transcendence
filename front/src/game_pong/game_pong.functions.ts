@@ -12,6 +12,8 @@ import wallSound from './sounds/punch.wav';
 import userScoreSound from './sounds/strike.wav';
 import botScoreSound from './sounds/goal.wav';
 import BgImageGrass from './images/grass.jpg';
+import { matchUser1, matchUser2, onGameEnd, render } from './game_pong';
+import { Socket } from 'socket.io-client';
 
 export function drawRect(
   canvas: HTMLCanvasElement,
@@ -229,4 +231,131 @@ export function initializeEventListeners({
   ];
 
   return eventList;
+}
+
+export type InitializeSocketLogicArgs = {
+  socket: Socket;
+  isPlayer1: boolean;
+  sessionId: string;
+  ballData: IBallData;
+  user1: IUserData;
+  user2: IUserData;
+  matchPoints: number;
+  matchFinish: boolean;
+  usersData: {
+    user1: GameSessionUser | UserData;
+    user2?: GameSessionUser | UserData;
+  };
+  canvas: HTMLCanvasElement;
+  eventList: any[];
+  sounds: ISounds;
+  net: INetData;
+  canvasImages: InitializeCanvasImages;
+};
+export function initializeSocketLogic({
+  socket,
+  isPlayer1,
+  sessionId,
+  ballData,
+  user1,
+  user2,
+  matchPoints,
+  matchFinish,
+  usersData,
+  canvas,
+  eventList,
+  sounds,
+  net,
+  canvasImages,
+}: InitializeSocketLogicArgs) {
+  socket.emit(
+    'upload',
+    JSON.stringify({
+      isUser1: isPlayer1,
+      gameDataId: sessionId,
+      ball: ballData,
+      user1,
+      user2,
+    }),
+  );
+
+  if (isPlayer1) {
+    socket.on(`downloaded/user1/${sessionId}`, (data: string) => {
+      const downloadedData = JSON.parse(data);
+      user2 = downloadedData.user2;
+
+      if (user2.score >= matchPoints || user1.score >= matchPoints) {
+        if (!matchFinish)
+          onGameEnd(
+            canvas,
+            eventList,
+            socket,
+            sessionId,
+            user1,
+            usersData.user1,
+          );
+        matchFinish = true;
+      }
+
+      matchUser1(canvas, ballData, user1, user2, sounds);
+
+      render(
+        canvas,
+        ballData,
+        user1,
+        user2,
+        net,
+        matchPoints,
+        usersData,
+        canvasImages,
+      );
+
+      socket.emit(
+        'upload',
+        JSON.stringify({
+          isUser1: true,
+          gameDataId: sessionId,
+          ball: ballData,
+          user1,
+        }),
+      );
+    });
+  } else {
+    socket.on(`downloaded/user2/${sessionId}`, (data: string) => {
+      const downloadedData = JSON.parse(data);
+      ballData = downloadedData.ball;
+      user1 = downloadedData.user1;
+
+      if (user1.score >= matchPoints || user2.score >= matchPoints) {
+        if (!matchFinish)
+          onGameEnd(
+            canvas,
+            eventList,
+            socket,
+            sessionId,
+            user2,
+            usersData.user2,
+          );
+        matchFinish = true;
+      }
+
+      matchUser2(canvas, ballData, user1, user2, sounds);
+
+      render(
+        canvas,
+        ballData,
+        user1,
+        user2,
+        net,
+        matchPoints,
+        usersData,
+        canvasImages,
+      );
+
+      socket.emit(
+        'upload',
+        JSON.stringify({ isUser1: false, gameDataId: sessionId, user2 }),
+      );
+    });
+  }
 }
