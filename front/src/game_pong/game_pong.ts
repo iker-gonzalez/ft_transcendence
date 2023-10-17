@@ -35,8 +35,8 @@ const computedFps: number = 1000 / fps;
 const thickness: number = 10;
 const slit: number = 3;
 const userSpeedInput: number = 10;
-let match_finish: boolean = false;
-const match_points: number = 5;
+let matchFinish: boolean = false;
+const matchPoints: number = 5;
 const startedAt: Date = new Date();
 
 type GameFunctionParams = {
@@ -52,7 +52,7 @@ type GameFunctionParams = {
   net: INetData;
   socket: Socket;
   isPlayer1: boolean;
-  match_points: number;
+  matchPoints: number;
   sessionId: string;
   eventList: any[];
   canvasImages: InitializeCanvasImages;
@@ -79,12 +79,12 @@ function game({
   net,
   socket,
   isPlayer1,
-  match_points,
+  matchPoints,
   sessionId,
   eventList,
   canvasImages,
 }: GameFunctionParams) {
-  if (match_finish) return;
+  if (matchFinish) return;
 
   setTimeout(() => {
     if (isSoloMode(usersData)) {
@@ -97,15 +97,15 @@ function game({
         user1,
         user2,
         net,
-        match_points,
+        matchPoints,
         usersData,
         canvasImages,
       );
 
-      if (user1.score >= match_points || user2.score >= match_points) {
+      if (user1.score >= matchPoints || user2.score >= matchPoints) {
         onGameEnd(canvas, eventList, socket, sessionId, user1, usersData.user1);
         onGameEnd(canvas, eventList, socket, sessionId, user2, botUserData);
-        match_finish = true;
+        matchFinish = true;
       }
     } else {
       socket.emit(
@@ -128,7 +128,7 @@ function game({
         net,
         socket,
         isPlayer1,
-        match_points,
+        matchPoints,
         sessionId,
         eventList,
         canvasImages,
@@ -346,7 +346,7 @@ function render(
     right?: number;
   },
   net: INetData,
-  match_points: number,
+  matchPoints: number,
   usersData: {
     user1: GameSessionUser | UserData;
     user2?: GameSessionUser | UserData;
@@ -438,7 +438,7 @@ function render(
     RenderColor.Red,
   );
 
-  if (user1.score >= match_points) {
+  if (user1.score >= matchPoints) {
     drawText(
       canvas,
       '🏆',
@@ -474,7 +474,7 @@ function render(
     );
   }
 
-  if (user2.score >= match_points) {
+  if (user2.score >= matchPoints) {
     drawText(
       canvas,
       '🏆',
@@ -485,7 +485,7 @@ function render(
       RenderColor.Green,
     );
 
-    if (user1.score >= match_points || user2.score >= match_points) {
+    if (user1.score >= matchPoints || user2.score >= matchPoints) {
       drawRect(canvas, 200, 200, 500, 150, RenderColor.Grey);
 
       drawText(
@@ -500,7 +500,7 @@ function render(
 
       drawRect(canvas, 200, 360, 500, 80, RenderColor.White);
 
-      if (user1.score >= match_points) {
+      if (user1.score >= matchPoints) {
         drawText(
           canvas,
           usersData.user1.username + ' wins',
@@ -579,7 +579,7 @@ function onGameEnd(
     player: {
       avatar: userData.avatar,
       intraId: userData.intraId,
-      isWinner: player.score >= match_points,
+      isWinner: player.score >= matchPoints,
       score: player.score,
       username: userData.username,
     },
@@ -596,7 +596,7 @@ export async function gameLoop({
   usersData,
 }: GameLoopFunctionParams) {
   // Reset state when a new game starts
-  match_finish = false;
+  matchFinish = false;
 
   // Update initial data
   let ballData = {
@@ -719,8 +719,8 @@ export async function gameLoop({
         const downloadedData = JSON.parse(data);
         user2 = downloadedData.user2;
 
-        if (user2.score >= match_points || user1.score >= match_points) {
-          if (!match_finish)
+        if (user2.score >= matchPoints || user1.score >= matchPoints) {
+          if (!matchFinish)
             onGameEnd(
               canvas,
               eventList,
@@ -729,7 +729,7 @@ export async function gameLoop({
               user1,
               usersData.user1,
             );
-          match_finish = true;
+          matchFinish = true;
         }
 
         matchUser1(canvas, ballData, user1, user2, sounds);
@@ -740,7 +740,7 @@ export async function gameLoop({
           user1,
           user2,
           net,
-          match_points,
+          matchPoints,
           usersData,
           canvasImages,
         );
@@ -761,8 +761,8 @@ export async function gameLoop({
         ballData = downloadedData.ball;
         user1 = downloadedData.user1;
 
-        if (user1.score >= match_points || user2.score >= match_points) {
-          if (!match_finish)
+        if (user1.score >= matchPoints || user2.score >= matchPoints) {
+          if (!matchFinish)
             onGameEnd(
               canvas,
               eventList,
@@ -771,7 +771,7 @@ export async function gameLoop({
               user2,
               usersData.user2,
             );
-          match_finish = true;
+          matchFinish = true;
         }
 
         matchUser2(canvas, ballData, user1, user2, sounds);
@@ -782,7 +782,7 @@ export async function gameLoop({
           user1,
           user2,
           net,
-          match_points,
+          matchPoints,
           usersData,
           canvasImages,
         );
@@ -806,7 +806,7 @@ export async function gameLoop({
       net,
       socket,
       isPlayer1,
-      match_points,
+      matchPoints,
       sessionId,
       eventList,
       canvasImages,
