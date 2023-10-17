@@ -34,7 +34,6 @@ let matchFinish: boolean = false;
 export const matchPoints: number = 5;
 export const startedAt: Date = new Date();
 
-
 type GameLoopFunctionParams = {
   canvas: HTMLCanvasElement;
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -86,6 +85,12 @@ export async function gameLoop({
     ballData,
     slit,
   });
+
+  eventList.forEach(
+    ({ typeEvent, handler }: { typeEvent: string; handler: () => void }) => {
+      window.addEventListener(typeEvent, handler);
+    },
+  );
 
   if (!isSoloMode(usersData)) {
     initializeSocketLogic({

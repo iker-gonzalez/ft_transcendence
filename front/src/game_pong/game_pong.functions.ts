@@ -16,6 +16,9 @@ import { matchUser1, matchUser2, onGameEnd } from './game_pong.render';
 import { Socket } from 'socket.io-client';
 import { render } from './game_pong.render';
 
+const ARROW_UP_KEY = 'ArrowUp';
+const ARROW_DOWN_KEY = 'ArrowDown';
+
 export function drawRect(
   canvas: HTMLCanvasElement,
   x: number,
@@ -159,26 +162,21 @@ export function initializeEventListeners({
 }: InitializeEventListenersArgs): any[] {
   function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
-      if (event.keyCode === 38) {
-        // UP ARROW key
-        user1.y -= userSpeedInput * 5;
-      } else if (event.keyCode === 40) {
-        // DOWN ARROW key
-        user1.y += userSpeedInput * 5;
+      if (event.key === ARROW_UP_KEY) {
+          user1.y -= userSpeedInput * 5;
+      } else if (event.key === ARROW_DOWN_KEY) {
+          user1.y += userSpeedInput * 5;
       }
     }
 
     if (!isPlayer1 && !isSoloMode(usersData)) {
-      if (event.keyCode === 38) {
-        // UP ARROW key
-        user2.y -= userSpeedInput * 5;
-      } else if (event.keyCode === 40) {
-        // DOWN ARROW key
-        user2.y += userSpeedInput * 5;
+      if (event.key === ARROW_UP_KEY) {
+          user2.y -= userSpeedInput * 5;
+      } else if (event.key === ARROW_DOWN_KEY) {
+          user2.y += userSpeedInput * 5;
       }
     }
   }
-  canvas.addEventListener('keydown', onKeyDown);
 
   function onMouseMove(event: MouseEvent) {
     if (isPlayer1) {
@@ -208,7 +206,6 @@ export function initializeEventListeners({
       }
     }
   }
-  canvas.addEventListener('mousemove', onMouseMove);
 
   // function onTouchStart(event: TouchEvent) {
   //   const touch = event.touches[0];
@@ -223,7 +220,6 @@ export function initializeEventListeners({
   //       canvas.height - thickness - user1.height - ballData.radius * slit;
   //   }
   // }
-  // canvas.addEventListener('touchstart', onTouchStart);
 
   const eventList = [
     { typeEvent: 'keydown', handler: onKeyDown },
