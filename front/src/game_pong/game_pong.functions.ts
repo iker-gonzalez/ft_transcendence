@@ -51,7 +51,7 @@ export function drawArc(
 }
 
 export function drawDashedLine(canvas: HTMLCanvasElement, net: INetData): void {
-  for (let i = 0; i <= canvas.height; i += 20) {
+  for (let i = 0; i <= canvas.height; i += net.width * 2) {
     drawRect(canvas, net.x, net.y + i, net.width, net.height, net.color);
   }
 }
@@ -163,17 +163,17 @@ export function initializeEventListeners({
   function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
       if (event.key === ARROW_UP_KEY) {
-          user1.y -= userSpeedInput * 5;
+        user1.y -= userSpeedInput * 5;
       } else if (event.key === ARROW_DOWN_KEY) {
-          user1.y += userSpeedInput * 5;
+        user1.y += userSpeedInput * 5;
       }
     }
 
     if (!isPlayer1 && !isSoloMode(usersData)) {
       if (event.key === ARROW_UP_KEY) {
-          user2.y -= userSpeedInput * 5;
+        user2.y -= userSpeedInput * 5;
       } else if (event.key === ARROW_DOWN_KEY) {
-          user2.y += userSpeedInput * 5;
+        user2.y += userSpeedInput * 5;
       }
     }
   }
