@@ -16,6 +16,7 @@ import {
   drawRect,
   drawText,
   initializeCanvasImages,
+  initializeEventListeners,
   initializeSounds,
   isSoloMode,
 } from './game_pong.functions';
@@ -604,103 +605,31 @@ export async function gameLoop({
     x: canvas.width / 2,
     y: canvas.height / 2,
   };
-
   let user1 = { ...user1Init, y: canvas.height / 2 - 100 / 2 };
-
   let user2 = {
     ...user2Init,
     x: canvas.width - 40,
     y: canvas.height / 2 - 100 / 2,
   };
-
   let net = { ...netInit, x: canvas.width / 2 - 5 };
 
-  // Logic
-  const { hit, wall, userScore, botScore } = initializeSounds();
-  const sounds = {
-    hit,
-    wall,
-    userScore,
-    botScore,
-  };
+  const sounds = initializeSounds();
 
   // Images need to be loaded once before rendering
   // Otherwise they create a flickering effect
   const canvasImages = initializeCanvasImages();
 
-  function onKeyDown(event: KeyboardEvent) {
-    if (isPlayer1) {
-      if (event.keyCode === 38) {
-        // UP ARROW key
-        user1.y -= userSpeedInput * 5;
-      } else if (event.keyCode === 40) {
-        // DOWN ARROW key
-        user1.y += userSpeedInput * 5;
-      }
-    }
-
-    if (!isPlayer1 && !isSoloMode(usersData)) {
-      if (event.keyCode === 38) {
-        // UP ARROW key
-        user2.y -= userSpeedInput * 5;
-      } else if (event.keyCode === 40) {
-        // DOWN ARROW key
-        user2.y += userSpeedInput * 5;
-      }
-    }
-  }
-  canvas.addEventListener('keydown', onKeyDown);
-
-  function onMouseMove(event: MouseEvent) {
-    if (isPlayer1) {
-      let rect = canvas.getBoundingClientRect();
-      user1.y = event.clientY - rect.top - user1.height / 2;
-      if (user1.y < thickness + ballData.radius * slit) {
-        user1.y = thickness + ballData.radius * slit;
-      } else if (
-        user1.y >
-        canvas.height - thickness - user1.height - ballData.radius * slit
-      ) {
-        user1.y =
-          canvas.height - thickness - user1.height - ballData.radius * slit;
-      }
-    }
-    if (!isPlayer1 && !isSoloMode(usersData)) {
-      let rect = canvas.getBoundingClientRect();
-      user2.y = event.clientY - rect.top - user2.height / 2;
-      if (user2.y < thickness + ballData.radius * slit) {
-        user2.y = thickness + ballData.radius * slit;
-      } else if (
-        user2.y >
-        canvas.height - thickness - user1.height - ballData.radius * slit
-      ) {
-        user2.y =
-          canvas.height - thickness - user1.height - ballData.radius * slit;
-      }
-    }
-  }
-  canvas.addEventListener('mousemove', onMouseMove);
-
-  function onTouchStart(event: TouchEvent) {
-    const touch = event.touches[0];
-    user1.y = touch.clientY - user1.height / 2;
-    if (user1.y < thickness + ballData.radius * slit) {
-      user1.y = thickness + ballData.radius * slit;
-    } else if (
-      user1.y >
-      canvas.height - thickness - user1.height - ballData.radius * slit
-    ) {
-      user1.y =
-        canvas.height - thickness - user1.height - ballData.radius * slit;
-    }
-  }
-  canvas.addEventListener('touchstart', onTouchStart);
-
-  const eventList = [
-    { typeEvent: 'keydown', handler: onKeyDown },
-    { typeEvent: 'mousemove', handler: onMouseMove },
-    { typeEvent: 'touchstart', handler: onTouchStart },
-  ];
+  const eventList = initializeEventListeners({
+    canvas,
+    isPlayer1,
+    user1,
+    userSpeedInput,
+    usersData,
+    user2,
+    thickness,
+    ballData,
+    slit,
+  });
 
   if (!isSoloMode(usersData)) {
     socket.emit(
