@@ -185,7 +185,10 @@ function game({
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
         onGameEnd(canvas, eventList, socket, sessionId, user1, usersData.user1);
-        onGameEnd(canvas, eventList, socket, sessionId, user2, botUserData);
+        // Delay is required by the server to process the data
+        setTimeout(() => {
+          onGameEnd(canvas, eventList, socket, sessionId, user2, botUserData);
+        }, 500);
         matchFinish = true;
       }
     } else {
