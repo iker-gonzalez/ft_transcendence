@@ -14,6 +14,7 @@ import {
   initializeSocketLogic,
   initializeSounds,
   isSoloMode,
+  onAbortGame,
 } from './game_pong.functions';
 import {
   IBallData,
@@ -91,6 +92,9 @@ export async function gameLoop({
       window.addEventListener(typeEvent, handler);
     },
   );
+
+  // Abort game if the user closes the tab
+  onAbortGame(socket, sessionId, isPlayer1);
 
   if (!isSoloMode(usersData)) {
     initializeSocketLogic({
