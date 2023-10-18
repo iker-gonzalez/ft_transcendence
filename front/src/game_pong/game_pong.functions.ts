@@ -360,3 +360,19 @@ export function initializeSocketLogic({
     });
   }
 }
+
+export function onAbortGame(
+  socket: Socket,
+  sessionId: string,
+  isPlayer1: boolean,
+) {
+  window.onunload = () => {
+    socket.emit(
+      'abort',
+      JSON.stringify({ gameDataId: sessionId, isUser1: isPlayer1 }),
+      () => {
+        socket.disconnect();
+      },
+    );
+  };
+}

@@ -32,6 +32,8 @@ export default function GameMatchSolo(): JSX.Element {
   const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
+    const socketCopy = socketRef.current;
+
     if (!userData) {
       const token = Cookies.get('token');
       fetchUserData(token as string);
@@ -44,6 +46,13 @@ export default function GameMatchSolo(): JSX.Element {
         FlashMessageLevel.ERROR,
       );
     }
+
+    return () => {
+      if (!gameEnd) {
+        socketCopy.disconnect();
+      }
+      // TODO show feedback to user
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

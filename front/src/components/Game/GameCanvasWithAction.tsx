@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 const WrapperDiv = styled.div`
   position: relative;
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,17 +18,18 @@ const WrapperDiv = styled.div`
 
 type GameCanvasWithActionProps = {
   canvasRef: React.RefObject<HTMLCanvasElement>;
+  className?: string;
 };
 
 export default function GameCanvasWithAction({
   canvasRef,
+  className,
   children,
 }: PropsWithChildren<GameCanvasWithActionProps>): JSX.Element {
   return (
-    <WrapperDiv>
+    <WrapperDiv className={className}>
       <div className="children-container">{children}</div>
       <canvas
-        className="canvas"
         id="gamePong"
         width={CANVAS_WIDTH}
         height={CANVAS_HEIGHT}

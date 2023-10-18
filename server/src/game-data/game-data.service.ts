@@ -162,4 +162,34 @@ export class GameDataService {
 
     server.emit(`gameSetDeleted/${gameDataId}`);
   }
+
+  async abortGame(server: Server, data: string): Promise<string> {
+    const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: string } =
+      JSON.parse(data);
+
+    const gameDataSets: GameDataSetDto[] =
+      (await this.cacheManager.get('gameDataSets')) || [];
+
+    const gameDataSet: GameDataSetDto = gameDataSets.find(
+      (gameDataSet) => gameDataSet.gameDataId === gameDataId.toString(),
+    );
+
+    if (!gameDataSet) {
+      return 'KO';
+    }
+
+    if (isUser1) {
+      server.emit(`gameAborted/user1/${gameDataId}`);
+    } else {
+      server.emit(`gameAborted/user2/${gameDataId}`);
+    }
+
+    // Delete gameDataSet from cache
+    const filteredGameDataSets: GameDataSetDto[] = gameDataSets.filter(
+      (gameDataSet: GameDataSetDto) => gameDataSet.gameDataId !== gameDataId,
+    );
+    await this.cacheManager.set('gameDataSets', filteredGameDataSets);
+
+    return 'OK';
+  }
 }
