@@ -102,4 +102,9 @@ export class GameDataGateway {
   onDeleteGameDataSet(@MessageBody() data: string): Promise<void> {
     return this.gameDataService.deleteGameDataSet(this.server, data);
   }
+
+  @SubscribeMessage('abort')
+  onAbortGame(@MessageBody() data: string): Promise<string> {
+    return this.gameDataService.abortGame(this.server, data);
+  }
 }

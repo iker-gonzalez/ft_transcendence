@@ -31,10 +31,17 @@ const WrapperDiv = styled.div`
   }
 
   .players-box {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 36px;
+    gap: 25px;
+
+    .battle-icon {
+      font-size: 40px;
+      position: relative;
+      top: 25px;
+    }
 
     .player-box {
       display: flex;
@@ -121,6 +128,13 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
                   month: 'long',
                   day: 'numeric',
                 });
+                const formattedTime = new Date(
+                  game.startedAt,
+                ).toLocaleTimeString('en-us', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                });
                 const gameDuration = new Date(game.elapsedTime).getSeconds();
 
                 return (
@@ -128,7 +142,8 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
                     <div className="title-box">
                       <h3 className="title-3">Match #{index + 1}</h3>
                       <p className="small">
-                        Played on {formattedDate} for {gameDuration} seconds.
+                        Played on {formattedDate} at {formattedTime} for{' '}
+                        {gameDuration} seconds.
                       </p>
                     </div>
                     <div className="players-box">
@@ -138,23 +153,30 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
                         })
                         .map((player: UserGameDataPlayer, indexPlayer) => {
                           return (
-                            <div className="player-box">
-                              <p className="title-3">
-                                {player.username} {player.isWinner && '🏆'}
-                              </p>
-                              <div
-                                className={`score-box ${
-                                  indexPlayer % 2 !== 0 ? 'right' : 'left'
-                                }`}
-                              >
-                                <p className="title-1">{player.score}</p>
-                                <RoundImg
-                                  src={player.avatar}
-                                  alt=""
-                                  className="avatar"
-                                />
+                            <>
+                              <div className="player-box" key={player.intraId}>
+                                <p className="title-3">
+                                  {player.username} {player.isWinner && '🏆'}
+                                </p>
+                                <div
+                                  className={`score-box ${
+                                    indexPlayer % 2 !== 0 ? 'right' : 'left'
+                                  }`}
+                                >
+                                  <p className="title-1">{player.score}</p>
+                                  <RoundImg
+                                    src={player.avatar}
+                                    alt=""
+                                    className="avatar"
+                                  />
+                                </div>
                               </div>
-                            </div>
+                              {indexPlayer === 0 && (
+                                <span className="battle-icon" aria-label="vs">
+                                  ⚔️
+                                </span>
+                              )}
+                            </>
                           );
                         })}
                     </div>

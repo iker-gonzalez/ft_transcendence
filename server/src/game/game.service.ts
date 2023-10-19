@@ -128,6 +128,9 @@ export class GameService {
           },
         },
       },
+      orderBy: {
+        startedAt: 'desc',
+      },
       include: {
         players: true,
       },
