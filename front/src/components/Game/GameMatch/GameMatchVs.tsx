@@ -13,11 +13,12 @@ import GameSessionUser from '../../../interfaces/game-session-user.interface';
 import Lottie from 'lottie-react';
 import waitingAnimationData from '../../../assets/lotties/waiting.json';
 import { IEndGamePayload } from '../../../game_pong/game_pong.interfaces';
-import confettiAnimationData from '../../../assets/lotties/confetti.json';
 import { fetchAuthorized, getBaseUrl } from '../../../utils/utils';
 import Cookies from 'js-cookie';
 import UserData from '../../../interfaces/user-data.interface';
 import GameCanvasWithAction from '../GameCanvasWithAction';
+import GameMatchEndGameAction from './GameMatchEndGameAction';
+import GameMatchConfettiAnimation from './GameMatchConfettiAnimation';
 
 const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
   const playerIndex: number = players?.findIndex(
@@ -44,21 +45,38 @@ const WrapperDiv = styled.div`
     }
   }
 
-  .canvas {
+  .canvas-container {
     margin-top: 24px;
-  }
+    position: relative;
 
-  .new-game-button {
-    margin-top: 30px;
-  }
+    &.overlay::after {
+      content: ''; // ::before and ::after both require content
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(
+        to right top,
+        #222831,
+        #004352,
+        #006054,
+        #3a7833,
+        #968300
+      );
+      opacity: 0.7;
+    }
 
-  .end-animation {
-    position: fixed;
-    z-index: 1000;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    height: min(100vh, 1000px);
+    .opponent-left-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: min(400px, 50vw);
+      text-shadow: 2px 7px 5px rgba(0, 0, 0, 0.3),
+        0px -4px 10px rgba(255, 255, 255, 0.3);
+    }
   }
 `;
 
@@ -78,9 +96,10 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
     sessionDataState[0]?.players,
     userData.intraId,
   );
-  const [showGame, setShowGame] = useState<boolean>(false);
+  const [showCanvasChildren, setShowCanvasChildren] = useState<boolean>(true);
   const [showAnimation, setShowAnimation] = useState<boolean>(false);
   const [gameEnd, setGameEnd] = useState<boolean>(false);
+  const [opponentLeft, setOpponentLeft] = useState<boolean>(false);
   const [players] = useState<GameSessionUser[]>(sessionDataState[0]?.players);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { socketRef, isConnectionError }: UseGameDataSocket =
@@ -92,8 +111,10 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
       navigate('/game');
     }
 
+    const socketCopy = socketRef.current;
+
     socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
-      setShowGame(true);
+      setShowCanvasChildren(false);
 
       if (canvasRef.current) {
         const usersData: { user1: GameSessionUser; user2: GameSessionUser } = {
@@ -144,6 +165,29 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
         // TODO hit endpoint to store game data
       },
     );
+
+    socketRef.current.on(
+      `gameAborted/user${isPlayer1 ? '2' : '1'}/${sessionId}`,
+      () => {
+        setGameEnd(true);
+        setShowCanvasChildren(true);
+        setOpponentLeft(true);
+        socketRef.current.disconnect();
+      },
+    );
+
+    return () => {
+      if (!gameEnd) {
+        socketCopy.emit(
+          'abort',
+          JSON.stringify({ gameDataId: sessionId, isUser1: isPlayer1 }),
+          () => {
+            socketCopy.disconnect();
+            // TODO show feedback to user
+          },
+        );
+      }
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -175,43 +219,46 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
             {isPlayer1 ? players[0].username : players[1].username}
           </span>
         </h2>
-        <GameCanvasWithAction canvasRef={canvasRef}>
-          {!showGame && (
+        <GameCanvasWithAction
+          canvasRef={canvasRef}
+          className={`${opponentLeft ? 'overlay' : ''} canvas-container`}
+        >
+          {showCanvasChildren && (
             <div className="cta-container">
-              {isAwaitingOpponent ? (
-                <div className="waiting-container">
-                  <Lottie
-                    animationData={waitingAnimationData}
-                    className="waiting-animation"
-                  />
-                  <p>Awaiting opponent...</p>
-                </div>
-              ) : (
-                <MainButton onClick={onReadyToPlay}>Play</MainButton>
-              )}
+              {(() => {
+                if (opponentLeft) {
+                  return (
+                    <p className="title-2 opponent-left-text">
+                      Your opponent couldn't deal with your great mightiness and
+                      left the game 🐇
+                    </p>
+                  );
+                }
+
+                if (isAwaitingOpponent) {
+                  return (
+                    <div className="waiting-container">
+                      <Lottie
+                        animationData={waitingAnimationData}
+                        className="waiting-animation"
+                      />
+                      <p>Awaiting opponent...</p>
+                    </div>
+                  );
+                }
+
+                return <MainButton onClick={onReadyToPlay}>Play</MainButton>;
+              })()}
             </div>
           )}
         </GameCanvasWithAction>
-        {gameEnd && (
-          <div className="new-game-button">
-            <MainButton
-              onClick={() => {
-                navigate('/game');
-              }}
-            >
-              Start new game
-            </MainButton>
-          </div>
-        )}
+        {gameEnd && <GameMatchEndGameAction />}
       </CenteredLayout>
       {showAnimation && (
-        <Lottie
-          animationData={confettiAnimationData}
-          loop={false}
+        <GameMatchConfettiAnimation
           onComplete={() => {
             setShowAnimation(false);
           }}
-          className="end-animation"
         />
       )}
     </WrapperDiv>

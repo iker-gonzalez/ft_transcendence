@@ -1,12 +1,23 @@
-import { IBallData, IUserData, INetData, RenderColor } from './game_pong.interfaces';
+import { CANVAS_WIDTH } from '../constants/canvas';
+import UserData from '../interfaces/user-data.interface';
+import {
+  IBallData,
+  IUserData,
+  INetData,
+  RenderColor,
+} from './game_pong.interfaces';
+import BotAvatar from './images/c3po_avatar.webp';
 
 export const thickness: number = 10;
 export const slit: number = 3;
 export const userSpeedInput: number = 10;
+const BALL_SIZE_RATIO: number = 60;
+const USER_SIZE_RATIO: number = 90;
+export const NET_SIZE_RATIO: number = 90;
 export const ballDataInit: IBallData = {
   x: 0,
   y: 0,
-  radius: 15,
+  radius: +CANVAS_WIDTH / BALL_SIZE_RATIO,
   velocityX: 5,
   velocityY: 5,
   speed: userSpeedInput,
@@ -21,8 +32,8 @@ export const ballDataInit: IBallData = {
 export const user1Init: IUserData = {
   x: 30,
   y: 0,
-  width: 10,
-  height: 100,
+  width: +CANVAS_WIDTH / USER_SIZE_RATIO,
+  height: (+CANVAS_WIDTH / USER_SIZE_RATIO) * 10,
   score: 0,
   color: RenderColor.White,
   top: 0,
@@ -34,8 +45,8 @@ export const user1Init: IUserData = {
 export const user2Init: IUserData = {
   x: 0,
   y: 0,
-  width: 10,
-  height: 100,
+  width: +CANVAS_WIDTH / USER_SIZE_RATIO,
+  height: (+CANVAS_WIDTH / USER_SIZE_RATIO) * 10,
   score: 0,
   color: RenderColor.White,
   top: 0,
@@ -47,7 +58,15 @@ export const user2Init: IUserData = {
 export const netInit: INetData = {
   x: 0,
   y: 0,
-  height: 10,
-  width: 10,
+  height: +CANVAS_WIDTH / NET_SIZE_RATIO,
+  width: +CANVAS_WIDTH / NET_SIZE_RATIO,
   color: RenderColor.White,
+};
+
+export const botUserData: UserData = {
+  avatar: BotAvatar,
+  email: 'bot@42urduliz.com',
+  intraId: 42,
+  isTwoFactorAuthEnabled: false,
+  username: 'bot',
 };
