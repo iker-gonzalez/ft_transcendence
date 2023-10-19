@@ -1,45 +1,36 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { GameDataSetDto } from './dto/game-data-set.dto';
 import { GameDataDto } from './dto/game-data.dto';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 
 @Injectable()
 export class GameDataService {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+  gameDataSets: GameDataSetDto[] = [];
 
-  async onGameStart(server: Server, data: string): Promise<void> {
+  onGameStart(server: Server, data: string): void {
     const { gameDataId } = JSON.parse(data);
 
-    const gameDataSets: GameDataSetDto[] =
-      (await this.cacheManager.get('gameDataSets')) || [];
-    const gameDataSet: GameDataSetDto = gameDataSets.find(
+    const gameDataSet: GameDataSetDto = this.gameDataSets.find(
       (gameDataSet: GameDataSetDto) =>
-        gameDataSet.gameDataId === gameDataId.toString(),
+        gameDataSet.gameDataId === gameDataId.toString(), // TODO remove conversion to string, probably not necessary
     );
 
     if (!gameDataSet) {
-      await this.cacheManager.set('gameDataSets', [
-        ...gameDataSets,
-        {
-          gameDataId: gameDataId.toString(),
-          gameData: data,
-          user1Ready: false,
-          user2Ready: false,
-        },
-      ]);
+      this.gameDataSets.push({
+        gameDataId: gameDataId.toString(),
+        gameData: data,
+        user1Ready: false,
+        user2Ready: false,
+      });
     }
 
     server.emit(`gameDataCreated/${gameDataId}`);
   }
 
-  async onPlayerReady(server: Server, data: string): Promise<void> {
+  onPlayerReady(server: Server, data: string): void {
     const { isUser1, gameDataId } = JSON.parse(data);
 
-    const gameDataSets: GameDataSetDto[] =
-      (await this.cacheManager.get('gameDataSets')) || [];
-    const gameDataIndex: number = gameDataSets.findIndex(
+    const gameDataIndex: number = this.gameDataSets.findIndex(
       (gameDataSet) => gameDataSet.gameDataId === gameDataId.toString(),
     );
 
@@ -48,22 +39,20 @@ export class GameDataService {
     }
 
     if (isUser1) {
-      gameDataSets[gameDataIndex] = {
-        ...gameDataSets[gameDataIndex],
+      this.gameDataSets[gameDataIndex] = {
+        ...this.gameDataSets[gameDataIndex],
         user1Ready: true,
       };
     } else {
-      gameDataSets[gameDataIndex] = {
-        ...gameDataSets[gameDataIndex],
+      this.gameDataSets[gameDataIndex] = {
+        ...this.gameDataSets[gameDataIndex],
         user2Ready: true,
       };
     }
 
-    await this.cacheManager.set('gameDataSets', gameDataSets);
-
     if (
-      gameDataSets[gameDataIndex].user1Ready &&
-      gameDataSets[gameDataIndex].user2Ready
+      this.gameDataSets[gameDataIndex].user1Ready &&
+      this.gameDataSets[gameDataIndex].user2Ready
     ) {
       server.emit(`allOpponentsReady/${gameDataId}`);
     } else {
@@ -71,13 +60,11 @@ export class GameDataService {
     }
   }
 
-  async uploadGameData(server: Server, data: string): Promise<void> {
+  uploadGameData(server: Server, data: string): void {
     const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: number } =
       JSON.parse(data);
 
-    const gameDataSets: GameDataSetDto[] =
-      (await this.cacheManager.get('gameDataSets')) || [];
-    const gameDataIndex: number = gameDataSets.findIndex(
+    const gameDataIndex: number = this.gameDataSets.findIndex(
       (gameDataSet) =>
         gameDataSet.gameDataId.toString() === gameDataId.toString(),
     );
@@ -86,17 +73,15 @@ export class GameDataService {
       return;
     }
 
-    if (gameDataSets[gameDataIndex].gameData !== data) {
+    if (this.gameDataSets[gameDataIndex].gameData !== data) {
       const updatedGameDataPayload: GameDataDto = {
-        ...JSON.parse(gameDataSets[gameDataIndex].gameData),
+        ...JSON.parse(this.gameDataSets[gameDataIndex].gameData),
         ...JSON.parse(data),
       };
 
-      gameDataSets[gameDataIndex].gameData = JSON.stringify(
+      this.gameDataSets[gameDataIndex].gameData = JSON.stringify(
         updatedGameDataPayload,
       );
-
-      await this.cacheManager.set('gameDataSets', gameDataSets);
 
       // Emitting these events is not necessary, but it eases testing
       if (isUser1) {
@@ -107,13 +92,11 @@ export class GameDataService {
     }
   }
 
-  async downloadGameData(server: Server, data: string): Promise<void> {
+  downloadGameData(server: Server, data: string): void {
     const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: number } =
       JSON.parse(data);
 
-    const gameDataSets: GameDataSetDto[] =
-      (await this.cacheManager.get('gameDataSets')) || [];
-    const gameDataSet: GameDataSetDto = gameDataSets.find(
+    const gameDataSet: GameDataSetDto = this.gameDataSets.find(
       (gameDataSet) => gameDataSet.gameDataId === gameDataId.toString(),
     );
 
@@ -136,41 +119,36 @@ export class GameDataService {
     }
   }
 
-  async onGameEnd(server: Server, data: string): Promise<void> {
+  onGameEnd(server: Server, data: string): void {
     const { player, gameDataId } = JSON.parse(data);
 
     server.emit(`gameEnded/${player.intraId}/${gameDataId}`, data);
   }
 
-  async deleteGameDataSet(server: Server, data: string): Promise<void> {
+  deleteGameDataSet(server: Server, data: string): void {
     const { gameDataId } = JSON.parse(data);
 
-    const gameDataSets: GameDataSetDto[] =
-      (await this.cacheManager.get('gameDataSets')) || [];
     // Emit different event if gameDataId is not found
-    const filteredGameDataSets: GameDataSetDto[] = gameDataSets.filter(
+    const filteredGameDataSets: GameDataSetDto[] = this.gameDataSets.filter(
       (gameDataSet: GameDataSetDto) =>
         gameDataSet.gameDataId !== gameDataId.toString(),
     );
 
-    if (filteredGameDataSets.length === gameDataSets.length) {
+    if (filteredGameDataSets.length === this.gameDataSets.length) {
       server.emit(`gameSetNotFound/${gameDataId}`);
       return;
     }
 
-    await this.cacheManager.set('gameDataSets', filteredGameDataSets);
+    this.gameDataSets = filteredGameDataSets;
 
     server.emit(`gameSetDeleted/${gameDataId}`);
   }
 
-  async abortGame(server: Server, data: string): Promise<string> {
+  abortGame(server: Server, data: string): string {
     const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: string } =
       JSON.parse(data);
 
-    const gameDataSets: GameDataSetDto[] =
-      (await this.cacheManager.get('gameDataSets')) || [];
-
-    const gameDataSet: GameDataSetDto = gameDataSets.find(
+    const gameDataSet: GameDataSetDto = this.gameDataSets.find(
       (gameDataSet) => gameDataSet.gameDataId === gameDataId.toString(),
     );
 
@@ -185,10 +163,9 @@ export class GameDataService {
     }
 
     // Delete gameDataSet from cache
-    const filteredGameDataSets: GameDataSetDto[] = gameDataSets.filter(
+    this.gameDataSets = this.gameDataSets.filter(
       (gameDataSet: GameDataSetDto) => gameDataSet.gameDataId !== gameDataId,
     );
-    await this.cacheManager.set('gameDataSets', filteredGameDataSets);
 
     return 'OK';
   }

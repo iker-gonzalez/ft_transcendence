@@ -39,7 +39,7 @@ export class GameDataGateway {
   //   },
   // })
   @SubscribeMessage('startGame')
-  onGameStart(@MessageBody() data: string): Promise<void> {
+  onGameStart(@MessageBody() data: string): void {
     return this.gameDataService.onGameStart(this.server, data);
   }
 
@@ -62,12 +62,12 @@ export class GameDataGateway {
   //   },
   // })
   @SubscribeMessage('ready')
-  onUser1Ready(@MessageBody() data: string): Promise<void> {
+  onUser1Ready(@MessageBody() data: string): void {
     return this.gameDataService.onPlayerReady(this.server, data);
   }
 
   @SubscribeMessage('upload')
-  onUploadGameDataUser(@MessageBody() data: string): Promise<void> {
+  onUploadGameDataUser(@MessageBody() data: string): void {
     return this.gameDataService.uploadGameData(this.server, data);
   }
 
@@ -87,24 +87,24 @@ export class GameDataGateway {
   //   },
   // })
   @SubscribeMessage('download')
-  onDownloadGameDataUser(@MessageBody() data: string): Promise<void> {
+  onDownloadGameDataUser(@MessageBody() data: string): void {
     return this.gameDataService.downloadGameData(this.server, data);
   }
 
   // TODO create documentation for this
   @SubscribeMessage('endGame')
-  onGameEnd(@MessageBody() data: string): Promise<void> {
+  onGameEnd(@MessageBody() data: string): void {
     return this.gameDataService.onGameEnd(this.server, data);
   }
 
   // TODO create documentation for this
   @SubscribeMessage('deleteGameSet')
-  onDeleteGameDataSet(@MessageBody() data: string): Promise<void> {
+  onDeleteGameDataSet(@MessageBody() data: string): void {
     return this.gameDataService.deleteGameDataSet(this.server, data);
   }
 
   @SubscribeMessage('abort')
-  onAbortGame(@MessageBody() data: string): Promise<string> {
+  onAbortGame(@MessageBody() data: string): string {
     return this.gameDataService.abortGame(this.server, data);
   }
 }
