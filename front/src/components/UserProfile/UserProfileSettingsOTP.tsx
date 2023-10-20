@@ -3,6 +3,9 @@ import MainButton from '../UI/MainButton';
 import UserData from '../../interfaces/user-data.interface';
 import Cookies from 'js-cookie';
 import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
+import Modal from '../UI/Modal';
+import { primaryLightColor } from '../../constants/color-tokens';
+import styled from 'styled-components';
 
 interface UserProfileSettingsOTPProps {
   userData: UserData;
@@ -81,7 +84,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
         isGeneratingQR ? (
           <p>Generating QR code...</p>
         ) : isActivating ? (
-          <>
+          <Modal dismissModalAction={() => {setIsActivating(false)}} >
             {qrCode ? (
               <img src={qrCode} alt="QR Code" />
             ) : null}
@@ -97,10 +100,10 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
             >
               Activate
             </MainButton>
-          </>
+          </Modal>
         ) : (
           <MainButton
-            style={{ marginLeft: '0', marginRight: 'auto' }}
+            style={{ marginLeft: 'auto', marginRight: '0' }}
             onClick={handleActivate}
           >
             Activate
