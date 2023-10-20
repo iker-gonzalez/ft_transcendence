@@ -28,12 +28,14 @@ import {
 } from './test.constants';
 import path = require('path');
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { GameDataService } from '../src/game-data/game-data.service';
 
 describe('App e2e', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let intraService: IntraService;
   let twoFactorAuthService: TwoFactorAuthService;
+  let gameDataService: GameDataService;
   let cacheManagerService: any;
 
   beforeAll(async () => {
@@ -53,6 +55,7 @@ describe('App e2e', () => {
     prisma = app.get(PrismaService);
     intraService = app.get(IntraService);
     twoFactorAuthService = app.get(TwoFactorAuthService);
+    gameDataService = app.get(GameDataService);
     cacheManagerService = app.get(CACHE_MANAGER);
     pactum.request.setBaseUrl(baseUrl);
   });
@@ -2325,10 +2328,6 @@ describe('App e2e', () => {
         },
       };
 
-      beforeEach(async () => {
-        await cacheManagerService.reset();
-      });
-
       describe('ready', () => {
         it('should not emit allOpponentsReady when only user1 is ready', (done) => {
           expect.assertions(0);
@@ -2447,24 +2446,20 @@ describe('App e2e', () => {
             const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
 
             socket.on('connect', () => {
-              cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-                expect(gameDataSets).toBe(undefined);
+              expect(gameDataService.gameDataSets).toHaveLength(0);
 
-                socket.emit('startGame', JSON.stringify(dataSetInitial));
-              });
+              socket.emit('startGame', JSON.stringify(dataSetInitial));
             });
 
             socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
-              cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-                expect(gameDataSets).toHaveLength(1);
+              expect(gameDataService.gameDataSets).toHaveLength(1);
 
-                socket.emit('deleteGameSet', JSON.stringify(dataSetInitial));
+              socket.emit('deleteGameSet', JSON.stringify(dataSetInitial));
 
-                socket.on(`gameSetDeleted/${dataSetInitial.gameDataId}`, () => {
-                  socket.disconnect();
+              socket.on(`gameSetDeleted/${dataSetInitial.gameDataId}`, () => {
+                socket.disconnect();
 
-                  done();
-                });
+                done();
               });
             });
           });
@@ -2477,11 +2472,9 @@ describe('App e2e', () => {
             const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
 
             socket.on('connect', () => {
-              cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-                expect(gameDataSets).toBe(undefined);
+              expect(gameDataService.gameDataSets).toHaveLength(0);
 
-                socket.emit('startGame', JSON.stringify(dataSetInitial));
-              });
+              socket.emit('startGame', JSON.stringify(dataSetInitial));
             });
 
             let isFirstTimeTriggered = true;
@@ -2489,25 +2482,18 @@ describe('App e2e', () => {
               if (isFirstTimeTriggered) {
                 isFirstTimeTriggered = false;
 
-                cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-                  expect(gameDataSets).toHaveLength(1);
-                });
+                expect(gameDataService.gameDataSets).toHaveLength(1);
 
                 socket.emit('startGame', JSON.stringify(dataSetInitial));
               } else {
-                cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-                  expect(gameDataSets).toHaveLength(1);
+                expect(gameDataService.gameDataSets).toHaveLength(1);
 
-                  socket.emit('deleteGameSet', JSON.stringify(dataSetInitial));
+                socket.emit('deleteGameSet', JSON.stringify(dataSetInitial));
 
-                  socket.on(
-                    `gameSetDeleted/${dataSetInitial.gameDataId}`,
-                    () => {
-                      socket.disconnect();
+                socket.on(`gameSetDeleted/${dataSetInitial.gameDataId}`, () => {
+                  socket.disconnect();
 
-                      done();
-                    },
-                  );
+                  done();
                 });
               }
             });
@@ -2523,23 +2509,19 @@ describe('App e2e', () => {
             const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
 
             socket.on('connect', () => {
-              cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-                expect(gameDataSets).toBe(undefined);
+              expect(gameDataService.gameDataSets).toHaveLength(0);
 
-                socket.emit(
-                  'deleteGameSet',
-                  JSON.stringify({ gameDataId: dataSetInitial.gameDataId }),
-                );
-              });
+              socket.emit(
+                'deleteGameSet',
+                JSON.stringify({ gameDataId: dataSetInitial.gameDataId }),
+              );
             });
 
             socket.on(`gameSetNotFound/${dataSetInitial.gameDataId}`, () => {
-              cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-                expect(gameDataSets).toBe(undefined);
+              expect(gameDataService.gameDataSets).toHaveLength(0);
 
-                socket.disconnect();
-                done();
-              });
+              socket.disconnect();
+              done();
             });
           });
         });
@@ -2551,31 +2533,25 @@ describe('App e2e', () => {
             const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
 
             socket.on('connect', () => {
-              cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-                expect(gameDataSets).toBe(undefined);
+              expect(gameDataService.gameDataSets).toHaveLength(0);
 
-                socket.emit('startGame', JSON.stringify(dataSetInitial));
-              });
+              socket.emit('startGame', JSON.stringify(dataSetInitial));
             });
 
             socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
-              cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-                expect(gameDataSets).toHaveLength(1);
+              expect(gameDataService.gameDataSets).toHaveLength(1);
 
-                socket.emit(
-                  'deleteGameSet',
-                  JSON.stringify({ gameDataId: dataSetInitial.gameDataId }),
-                );
-              });
+              socket.emit(
+                'deleteGameSet',
+                JSON.stringify({ gameDataId: dataSetInitial.gameDataId }),
+              );
             });
 
             socket.on(`gameSetDeleted/${dataSetInitial.gameDataId}`, () => {
-              cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-                expect(gameDataSets).toHaveLength(0);
+              expect(gameDataService.gameDataSets).toHaveLength(0);
 
-                socket.disconnect();
-                done();
-              });
+              socket.disconnect();
+              done();
             });
           });
         });
@@ -2589,26 +2565,22 @@ describe('App e2e', () => {
 
           // Initialize data set first
           socket.on('connect', () => {
-            cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-              expect(gameDataSets).toBe(undefined);
+            expect(gameDataService.gameDataSets).toHaveLength(0);
 
-              socket.emit('startGame', JSON.stringify(dataSetInitial));
-            });
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
           socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
-            cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-              expect(gameDataSets).toHaveLength(1);
+            expect(gameDataService.gameDataSets).toHaveLength(1);
 
-              // Uploading game data
-              socket.emit(
-                'upload',
-                JSON.stringify({
-                  ...updatedDataSetBothUser,
-                  isUser1: true,
-                }),
-              );
-            });
+            // Uploading game data
+            socket.emit(
+              'upload',
+              JSON.stringify({
+                ...updatedDataSetBothUser,
+                isUser1: true,
+              }),
+            );
           });
 
           socket.on(`uploaded/user2/${dataSetInitial.gameDataId}`, () => {
@@ -2633,26 +2605,22 @@ describe('App e2e', () => {
 
           // Initialize data set first
           socket.on('connect', () => {
-            cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-              expect(gameDataSets).toBe(undefined);
+            expect(gameDataService.gameDataSets).toHaveLength(0);
 
-              socket.emit('startGame', JSON.stringify(dataSetInitial));
-            });
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
           socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
-            cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-              expect(gameDataSets).toHaveLength(1);
+            expect(gameDataService.gameDataSets).toHaveLength(1);
 
-              // Uploading game data
-              socket.emit(
-                'upload',
-                JSON.stringify({
-                  ...updatedDataSetBothUser,
-                  isUser1: false,
-                }),
-              );
-            });
+            // Uploading game data
+            socket.emit(
+              'upload',
+              JSON.stringify({
+                ...updatedDataSetBothUser,
+                isUser1: false,
+              }),
+            );
           });
 
           socket.on(`uploaded/user1/${dataSetInitial.gameDataId}`, () => {
@@ -2679,25 +2647,21 @@ describe('App e2e', () => {
 
           // Initialize data set first
           socket.on('connect', () => {
-            cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-              expect(gameDataSets).toBe(undefined);
+            expect(gameDataService.gameDataSets).toHaveLength(0);
 
-              socket.emit('startGame', JSON.stringify(dataSetInitial));
-            });
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
           socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
-            cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-              expect(gameDataSets).toHaveLength(1);
+            expect(gameDataService.gameDataSets).toHaveLength(1);
 
-              socket.emit(
-                'download',
-                JSON.stringify({
-                  isUser1: true,
-                  gameDataId: dataSetInitial.gameDataId,
-                }),
-              );
-            });
+            socket.emit(
+              'download',
+              JSON.stringify({
+                isUser1: true,
+                gameDataId: dataSetInitial.gameDataId,
+              }),
+            );
           });
 
           socket.on(`downloaded/user2/${dataSetInitial.gameDataId}`, () => {
@@ -2725,25 +2689,21 @@ describe('App e2e', () => {
 
           // Initialize data set first
           socket.on('connect', () => {
-            cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-              expect(gameDataSets).toBe(undefined);
+            expect(gameDataService.gameDataSets).toHaveLength(0);
 
-              socket.emit('startGame', JSON.stringify(dataSetInitial));
-            });
+            socket.emit('startGame', JSON.stringify(dataSetInitial));
           });
 
           socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
-            cacheManagerService.get('gameDataSets').then((gameDataSets) => {
-              expect(gameDataSets).toHaveLength(1);
+            expect(gameDataService.gameDataSets).toHaveLength(1);
 
-              socket.emit(
-                'download',
-                JSON.stringify({
-                  isUser1: false,
-                  gameDataId: dataSetInitial.gameDataId,
-                }),
-              );
-            });
+            socket.emit(
+              'download',
+              JSON.stringify({
+                isUser1: false,
+                gameDataId: dataSetInitial.gameDataId,
+              }),
+            );
           });
 
           socket.on(`downloaded/user1/${dataSetInitial.gameDataId}`, () => {
