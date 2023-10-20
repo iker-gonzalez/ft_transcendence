@@ -6,7 +6,8 @@ import { userSpeedInput } from './game_pong.constants';
 import {
   InitializeCanvasImages,
   checkCollision,
-  drawArc,
+  drawBall,
+  drawBallTrail,
   drawDashedLine,
   drawImg,
   drawRect,
@@ -68,7 +69,9 @@ export function render(
 
   drawRect(canvas, user2.x, user2.y, user2.width, user2.height, user2.color);
 
-  drawArc(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
+  drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
+
+  drawBallTrail(canvas);  
 
   drawText(
     canvas,
