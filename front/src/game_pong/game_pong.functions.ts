@@ -19,6 +19,8 @@ import { render } from './game_pong.render';
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
 
+const ballTrail: any[] = [];
+
 export function drawRect(
   canvas: HTMLCanvasElement,
   x: number,
@@ -33,7 +35,7 @@ export function drawRect(
   ctx.fillRect(x, y, w, h);
 }
 
-export function drawArc(
+export function drawBall(
   canvas: HTMLCanvasElement,
   x: number,
   y: number,
@@ -48,6 +50,29 @@ export function drawArc(
   ctx.arc(x, y, r, 0, Math.PI * 2, true);
   ctx.closePath();
   ctx.fill();
+
+  ballTrail.push({ x: x, y: y, r: r });
+}
+
+export function drawBallTrail(canvas: HTMLCanvasElement): void {
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  if (!ctx) return;
+
+  const lastBalls = ballTrail.slice(-40);
+
+  lastBalls.forEach((ballTrail, index) => {
+    const opacity = (index / lastBalls.length) * 0.4;
+    const size = ballTrail.r * (index / lastBalls.length) * 0.9;
+
+    ctx.beginPath();
+    ctx.fillStyle = 'white';
+    ctx.globalAlpha = opacity;
+    ctx.arc(ballTrail.x, ballTrail.y, size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.closePath();
+  });
+
+  ctx.globalAlpha = 1;
 }
 
 export function drawDashedLine(canvas: HTMLCanvasElement, net: INetData): void {
