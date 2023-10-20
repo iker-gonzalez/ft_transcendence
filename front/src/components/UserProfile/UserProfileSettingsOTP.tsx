@@ -49,20 +49,21 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
   };
 
   const handleActivateWithOTP = async () => {
+    console.log(otpValue);
     try {
       // Make a POST request to the /2fa/activate endpoint with the OTP value.
       const response = await fetchAuthorized(`${getBaseUrl()}/2fa/activate`, {
         method: 'POST',
         headers: {
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          'Authorization': `Bearer ${Cookies.get('token')}`,
         },
         body: JSON.stringify({ otp: otpValue }), // Pass the OTP value from state
       });
 
       if (response.ok) {
-        // Update the user's profile to reflect that 2FA is enabled.
-        // You can also handle any success messages here.
+        console.log('2FA activated');
       } else {
         console.error('Failed to activate 2FA.');
       }
