@@ -58,7 +58,7 @@ const Login: React.FC = (): JSX.Element => {
         .catch((error) => {
           console.error('An error occurred:', error);
           setUserData(null);
-          // Handle the error and set a message if needed
+          // Include OTP modal if error is 2FA related (401)
         })
         .finally(() => {
           setIsLoading(false);
