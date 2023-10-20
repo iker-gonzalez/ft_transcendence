@@ -5,22 +5,30 @@ import LoadingPage from '../pages/LoadingPage';
 import { useUserData } from '../context/UserDataContext';
 import moment from 'moment';
 import Cookies from 'js-cookie';
+import Modal from './UI/Modal'; // Import your Modal component here
+import MainButton from './UI/MainButton';
+
 
 const Login: React.FC = (): JSX.Element => {
   const { setUserData } = useUserData();
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [qrCode, setQrCode] = useState(''); // Define qrCode state
+  const [otpValue, setOtpValue] = useState(''); // Define otpValue state
+
+  const handleActivateWithOTP = () => {
+    // Define the logic for handling OTP activation
+  };
 
   useEffect(() => {
-    // You can directly access the code from the URL query parameter here
     const urlParams = new URLSearchParams(location.search);
     const code = urlParams.get('code');
 
     if (code) {
-      setIsLoading(true); // Set loading state to true
+      setIsLoading(true);
 
-      // Make the POST request with the captured code
       fetch(`${getBaseUrl()}/auth/intra/signin`, {
         method: 'POST',
         headers: {
@@ -39,7 +47,6 @@ const Login: React.FC = (): JSX.Element => {
         .then((data) => {
           setUserData(data.data);
 
-          // Set token in cookies with same expiration date as in the API
           const tokenExpirationDate = moment()
             .add(process.env.REACT_APP_JWT_EXPIRATION_MINUTES, 'minutes')
             .toDate();
@@ -58,7 +65,10 @@ const Login: React.FC = (): JSX.Element => {
         .catch((error) => {
           console.error('An error occurred:', error);
           setUserData(null);
-          // Include OTP modal if error is 2FA related (401)
+
+          //if (error.status === 401) {
+            setShowModal(true);
+          //}
         })
         .finally(() => {
           setIsLoading(false);
@@ -66,7 +76,30 @@ const Login: React.FC = (): JSX.Element => {
     }
   }, [navigate, location, setUserData]);
 
-  return <>{isLoading && <LoadingPage />}</>;
+  return (
+    <>
+      {isLoading && <LoadingPage />}
+      {showModal && (
+        <Modal dismissModalAction={() => setShowModal(false)}>
+          {qrCode ? (
+            <img src={qrCode} alt="QR Code" />
+          ) : null}
+          <input
+            type="text"
+            placeholder="Enter OTP"
+            value={otpValue} // Bind input value to state
+            onChange={(e) => setOtpValue(e.target.value)} // Update state on input change
+          />
+          <MainButton
+            style={{ marginLeft: '0', marginRight: 'auto' }}
+            onClick={handleActivateWithOTP}
+          >
+            Activate
+          </MainButton>
+        </Modal>
+      )}
+    </>
+  );
 };
 
 export default Login;
