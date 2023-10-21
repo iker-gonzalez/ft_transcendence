@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import { primaryAccentColor } from '../constants/color-tokens';
+import { primaryAccentColor } from '../../constants/color-tokens';
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
@@ -30,7 +30,7 @@ const Spinner = styled.div`
   animation: ${spin} 1s linear infinite;
 `;
 
-function LoadingPage(): JSX.Element {
+function LoadingFullscreen(): JSX.Element {
   return (
     <div>
       <LoadingSpinner>
@@ -40,4 +40,4 @@ function LoadingPage(): JSX.Element {
   );
 }
 
-export default LoadingPage;
+export default LoadingFullscreen;
