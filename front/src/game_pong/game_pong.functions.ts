@@ -423,11 +423,13 @@ export function onAbortGame(
 }
 
 export async function countDownToStart(countDown: number) {
-  const countDownInterval = setInterval(() => {
-    countDown--;
-    console.log(countDown);
-    if (countDown === 0) {
-      clearInterval(countDownInterval);
-    }
-  }, 1000);
+  return await new Promise(resolve => {
+    const countDownInterval = setInterval(() => {
+      countDown--;
+      console.log(countDown);
+      if (countDown === 0) {
+        clearInterval(countDownInterval);
+      }
+    }, 1000);
+  });
 }

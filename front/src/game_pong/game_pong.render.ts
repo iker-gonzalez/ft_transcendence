@@ -467,6 +467,6 @@ export function onGameEnd(
       username: userData.username,
     },
   };
-
+  
   socket.emit('endGame', JSON.stringify(endGamePayload));
 }
