@@ -12,6 +12,7 @@ import {
   drawImg,
   drawRect,
   drawText,
+  isBallFrozen,
   isSoloMode,
   sparks,
 } from './game_pong.functions';
@@ -260,6 +261,7 @@ export function resetBall(
   const newUserData2: IUserData = user2;
   newBallData.reset = true;
 
+  // TODO Check setTimeout (async / await)
   setTimeout(() => {
     newBallData.x = canvas.width / 2;
     newBallData.y = canvas.height / 2;
@@ -467,6 +469,6 @@ export function onGameEnd(
       username: userData.username,
     },
   };
-  
+
   socket.emit('endGame', JSON.stringify(endGamePayload));
 }
