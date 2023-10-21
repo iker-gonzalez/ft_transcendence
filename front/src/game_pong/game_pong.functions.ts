@@ -54,9 +54,7 @@ export function drawBall(
   ballTrail.push({ canvas: canvas, x: x, y: y, r: r, color: color });
 }
 
-export function drawBallTrail(
-  canvas: HTMLCanvasElement,
-  ): void {
+export function drawBallTrail(canvas: HTMLCanvasElement): void {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   if (!ctx) return;
 
@@ -170,6 +168,7 @@ export function isSoloMode(usersData: {
 export type InitializeCanvasImages = {
   canvasBgImage: HTMLImageElement;
 };
+
 export function initializeCanvasImages(): InitializeCanvasImages {
   const canvasBgImage: HTMLImageElement = new Image();
   canvasBgImage.src = BgImageGrass;
@@ -193,6 +192,7 @@ export type InitializeEventListenersArgs = {
   ballData: IBallData;
   slit: number;
 };
+
 export function initializeEventListeners({
   canvas,
   isPlayer1,
@@ -294,6 +294,7 @@ export type InitializeSocketLogicArgs = {
   canvasImages: InitializeCanvasImages;
   thickness: number;
 };
+
 export function initializeSocketLogic({
   socket,
   isPlayer1,
@@ -419,4 +420,16 @@ export function onAbortGame(
       },
     );
   };
+}
+
+export async function countDownToStart(countDown: number) {
+  return await new Promise(resolve => {
+    const countDownInterval = setInterval(() => {
+      countDown--;
+      console.log(countDown);
+      if (countDown === 0) {
+        clearInterval(countDownInterval);
+      }
+    }, 1000);
+  });
 }

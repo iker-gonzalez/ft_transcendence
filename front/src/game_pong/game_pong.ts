@@ -9,6 +9,7 @@ import {
 } from './game_pong.constants';
 import {
   InitializeCanvasImages,
+  countDownToStart,
   initializeCanvasImages,
   initializeEventListeners,
   initializeSocketLogic,
@@ -34,6 +35,8 @@ const userSpeedInput: number = 10;
 let matchFinish: boolean = false;
 export const matchPoints: number = 5;
 export const startedAt: Date = new Date();
+let gameRunning: boolean = false;
+let countDown: number = 5;
 
 type GameLoopFunctionParams = {
   canvas: HTMLCanvasElement;
@@ -45,6 +48,7 @@ type GameLoopFunctionParams = {
     user2?: GameSessionUser | UserData;
   };
 };
+
 export async function gameLoop({
   canvas,
   socket,
@@ -153,6 +157,7 @@ type GameFunctionParams = {
   eventList: any[];
   canvasImages: InitializeCanvasImages;
 };
+
 function game({
   canvas,
   ballData,
@@ -169,6 +174,11 @@ function game({
   canvasImages,
 }: GameFunctionParams) {
   if (matchFinish) return;
+
+  if (!gameRunning) {
+    countDownToStart(countDown);
+    gameRunning = true;
+  }
 
   setTimeout(() => {
     if (isSoloMode(usersData)) {
