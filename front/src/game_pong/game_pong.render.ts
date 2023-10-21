@@ -460,4 +460,3 @@ export function onGameEnd(
 
   socket.emit('endGame', JSON.stringify(endGamePayload));
 }
-unnecessary parentheses
