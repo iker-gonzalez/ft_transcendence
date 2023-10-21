@@ -2771,6 +2771,143 @@ describe('App e2e', () => {
             done();
           });
         });
+
+        describe('abort', () => {
+          beforeEach(async () => {
+            gameDataService.gameDataSets = [];
+          });
+
+          test('should return KO if the payload is invalid', (done) => {
+            expect.assertions(1);
+
+            const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+            socket.on('connect', () => {
+              socket.emit('abort', JSON.stringify({}), (ack) => {
+                expect(ack).toStrictEqual('KO');
+
+                socket.disconnect();
+
+                done();
+              });
+            });
+          });
+
+          test('should return KO if GameDataSet does not exist', (done) => {
+            expect.assertions(1);
+
+            const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+            socket.on('connect', () => {
+              socket.emit('startGame', JSON.stringify(dataSetInitial));
+            });
+
+            socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
+              socket.emit(
+                'abort',
+                JSON.stringify({
+                  gameDataId: 'f7c9c8d0-0e1f-11ec-9a03-0242ac130003',
+                  isPlayer1: true,
+                }),
+                (ack) => {
+                  expect(ack).toStrictEqual('KO');
+
+                  socket.disconnect();
+
+                  done();
+                },
+              );
+            });
+          });
+
+          describe('should emit gameAborted and delete the GameDataSet from cache', () => {
+            test('when it is user1', (done) => {
+              const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+              socket.on('connect', () => {
+                expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                socket.emit('startGame', JSON.stringify(dataSetInitial));
+              });
+
+              socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
+                expect(gameDataService.gameDataSets).toHaveLength(1);
+
+                socket.emit(
+                  'abort',
+                  JSON.stringify({
+                    isUser1: true,
+                    gameDataId: dataSetInitial.gameDataId,
+                  }),
+                  (ack) => {
+                    expect(ack).toStrictEqual('OK');
+                  },
+                );
+
+                socket.on(
+                  `gameAborted/user1/${dataSetInitial.gameDataId}`,
+                  () => {
+                    expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                    socket.disconnect();
+
+                    done();
+                  },
+                );
+
+                socket.on(
+                  `gameAborted/user2/${dataSetInitial.gameDataId}`,
+                  () => {
+                    done('gameAbort/user2 should not be emitted');
+                  },
+                );
+              });
+            });
+
+            test('when it is user2', (done) => {
+              const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+              socket.on('connect', () => {
+                expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                socket.emit('startGame', JSON.stringify(dataSetInitial));
+              });
+
+              socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
+                expect(gameDataService.gameDataSets).toHaveLength(1);
+
+                socket.emit(
+                  'abort',
+                  JSON.stringify({
+                    isUser1: false,
+                    gameDataId: dataSetInitial.gameDataId,
+                  }),
+                  (ack) => {
+                    expect(ack).toStrictEqual('OK');
+                  },
+                );
+
+                socket.on(
+                  `gameAborted/user2/${dataSetInitial.gameDataId}`,
+                  () => {
+                    expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                    socket.disconnect();
+
+                    done();
+                  },
+                );
+
+                socket.on(
+                  `gameAborted/user1/${dataSetInitial.gameDataId}`,
+                  () => {
+                    done('gameAbort/user1 should not be emitted');
+                  },
+                );
+              });
+            });
+          });
+        });
       });
     });
   });
