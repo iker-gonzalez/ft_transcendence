@@ -249,7 +249,7 @@ export function render(
 }
 
 export function resetBall(
-  canvas: { width: number; height: number },
+  canvas: HTMLCanvasElement,
   ballData: IBallData,
   user1: IUserData,
   user2: IUserData,
@@ -270,7 +270,17 @@ export function resetBall(
     newUserData1.height = 100;
     newUserData2.height = 100;
     newBallData.reset = false;
-  }, 1500);
+  }, 2000);
+
+  // drawText(
+  //   canvas,
+  //   'reloj',
+  //   canvas.width / 2,
+  //   canvas.height / 2,
+  //   '20px Arial',
+  //   'center',
+  //   RenderColor.White,
+  // );
 
   return { newBallData, newUserData1, newUserData2 };
 }
@@ -457,6 +467,6 @@ export function onGameEnd(
       username: userData.username,
     },
   };
-
+  
   socket.emit('endGame', JSON.stringify(endGamePayload));
 }
