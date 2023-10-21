@@ -9,16 +9,25 @@ import UserDataContextData from '../interfaces/user-data-context-data.interface'
 import UserProfileWelcomeModal from '../components/UserProfile/UserProfileWelcomeModal';
 import UserProfileFriends from '../components/UserProfile/UserProfileFriends';
 import UserProfileGame from '../components/UserProfile/UserProfileGame';
+import UserProfileStats from '../components/UserProfile/UserProfileStats';
 
 const WrapperDiv = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 60px;
+  gap: 40px;
+
+  > :first-child {
+    width: 350px;
+  }
 
   .blocks-container {
     display: flex;
     flex-direction: column;
     gap: 25px;
+
+    > * {
+      width: 100%;
+    }
   }
 `;
 
@@ -46,7 +55,10 @@ const UserProfile: React.FC = () => {
           <h1 className="title-1 mb-24">Profile</h1>
           {userData && (
             <WrapperDiv>
-              <UserProfileHero userData={userData} />
+              <div className="blocks-container">
+                <UserProfileHero userData={userData} />
+                <UserProfileStats />
+              </div>
               <div className="blocks-container">
                 <UserProfileSettings userData={userData} />
                 <UserProfileFriends />
