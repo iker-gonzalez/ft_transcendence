@@ -45,6 +45,7 @@ type GameLoopFunctionParams = {
     user2?: GameSessionUser | UserData;
   };
 };
+
 export async function gameLoop({
   canvas,
   socket,
@@ -153,6 +154,7 @@ type GameFunctionParams = {
   eventList: any[];
   canvasImages: InitializeCanvasImages;
 };
+
 function game({
   canvas,
   ballData,
