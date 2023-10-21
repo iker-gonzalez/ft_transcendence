@@ -148,6 +148,10 @@ export class GameDataService {
     const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: string } =
       JSON.parse(data);
 
+    if (isUser1 === undefined || gameDataId === undefined) {
+      return 'KO';
+    }
+
     const gameDataSet: GameDataSetDto = this.gameDataSets.find(
       (gameDataSet) => gameDataSet.gameDataId === gameDataId.toString(),
     );
@@ -156,16 +160,17 @@ export class GameDataService {
       return 'KO';
     }
 
+    // Delete gameDataSet from cache
+    this.gameDataSets = this.gameDataSets.filter(
+      (gameDataSet: GameDataSetDto) =>
+        gameDataSet.gameDataId !== gameDataId.toString(),
+    );
+
     if (isUser1) {
       server.emit(`gameAborted/user1/${gameDataId}`);
     } else {
       server.emit(`gameAborted/user2/${gameDataId}`);
     }
-
-    // Delete gameDataSet from cache
-    this.gameDataSets = this.gameDataSets.filter(
-      (gameDataSet: GameDataSetDto) => gameDataSet.gameDataId !== gameDataId,
-    );
 
     return 'OK';
   }
