@@ -14,6 +14,7 @@ import {
   initializeEventListeners,
   initializeSocketLogic,
   initializeSounds,
+  isBallFrozen,
   isSoloMode,
   onAbortGame,
 } from './game_pong.functions';
@@ -27,16 +28,16 @@ import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
 import { matchUser1, matchUser2, onGameEnd, render } from './game_pong.render';
 
-const fps: number = 60;
-const computedFps: number = 1000 / fps;
+const fps: number = 120;
+const computedFps: number = 1000 / fps * 2;
 export const thickness: number = 10;
 export const slit: number = 3;
 const userSpeedInput: number = 10;
 let matchFinish: boolean = false;
 export const matchPoints: number = 5;
 export const startedAt: Date = new Date();
-let gameRunning: boolean = false;
 let countDown: number = 5;
+let isFirstRun: boolean = true;
 
 type GameLoopFunctionParams = {
   canvas: HTMLCanvasElement;
@@ -120,23 +121,21 @@ export async function gameLoop({
     });
   }
 
-  setTimeout(() => {
-    game({
-      canvas,
-      ballData,
-      sounds,
-      user1,
-      user2,
-      usersData,
-      net,
-      socket,
-      isPlayer1,
-      matchPoints,
-      sessionId,
-      eventList,
-      canvasImages,
-    });
-  }, 1000);
+  game({
+    canvas,
+    ballData,
+    sounds,
+    user1,
+    user2,
+    usersData,
+    net,
+    socket,
+    isPlayer1,
+    matchPoints,
+    sessionId,
+    eventList,
+    canvasImages,
+  });
 }
 
 type GameFunctionParams = {
@@ -175,11 +174,6 @@ function game({
 }: GameFunctionParams) {
   if (matchFinish) return;
 
-  if (!gameRunning) {
-    countDownToStart(countDown);
-    gameRunning = true;
-  }
-
   setTimeout(() => {
     if (isSoloMode(usersData)) {
       matchUser1(canvas, ballData, user1, user2, sounds);
@@ -213,6 +207,12 @@ function game({
           gameDataId: sessionId,
         }),
       );
+    }
+
+    console.log("Is Ball Frozen? " , isBallFrozen)
+    if (isFirstRun) {
+      countDownToStart(countDown);
+      isFirstRun = false;
     }
 
     requestAnimationFrame(function () {
