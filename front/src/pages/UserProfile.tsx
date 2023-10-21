@@ -8,7 +8,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
 import UserProfileWelcomeModal from '../components/UserProfile/UserProfileWelcomeModal';
 import UserProfileFriends from '../components/UserProfile/UserProfileFriends';
-import UserProfileGame from '../components/UserProfile/UserProfileGame';
+import UserProfileMatchlist from '../components/UserProfile/UserProfileMatchList';
 import UserProfileStats from '../components/UserProfile/UserProfileStats';
 
 const WrapperDiv = styled.div`
@@ -62,7 +62,7 @@ const UserProfile: React.FC = () => {
               <div className="blocks-container">
                 <UserProfileSettings userData={userData} />
                 <UserProfileFriends />
-                <UserProfileGame userData={userData} />
+                <UserProfileMatchlist userData={userData} />
               </div>
             </WrapperDiv>
           )}

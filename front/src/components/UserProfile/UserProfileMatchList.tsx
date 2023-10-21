@@ -10,6 +10,7 @@ import UserGameDataPlayer from '../../interfaces/user-game-data-player.interface
 import MainButton from '../UI/MainButton';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../UI/LoadingSpinner';
+import PaginatedSection from '../UI/PaginatedSection';
 
 const WrapperDiv = styled.div`
   width: 650px;
@@ -81,7 +82,7 @@ const WrapperDiv = styled.div`
   }
 `;
 
-const UserProfileGame: React.FC<{ userData: UserData }> = ({
+const UserProfileMatchlist: React.FC<{ userData: UserData }> = ({
   userData,
 }): JSX.Element => {
   const { userGames, isFetchingGames, fetchGamesList, isErrorFetchingGames } =
@@ -132,7 +133,7 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
           }
 
           return (
-            <div>
+            <PaginatedSection numberOfItems={4}>
               {userGames.map((game: UserGameData, index) => {
                 const formattedDate = new Date(
                   game.startedAt,
@@ -196,7 +197,7 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
                   </div>
                 );
               })}
-            </div>
+            </PaginatedSection>
           );
         })()}
       </WrapperDiv>
@@ -204,4 +205,4 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
   );
 };
 
-export default UserProfileGame;
+export default UserProfileMatchlist;
