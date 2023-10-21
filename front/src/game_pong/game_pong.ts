@@ -35,8 +35,8 @@ const userSpeedInput: number = 10;
 let matchFinish: boolean = false;
 export const matchPoints: number = 5;
 export const startedAt: Date = new Date();
+let gameRunning: boolean = false;
 let countDown: number = 5;
-let gameRunning = false;
 
 type GameLoopFunctionParams = {
   canvas: HTMLCanvasElement;
