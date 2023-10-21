@@ -10,17 +10,18 @@ import BotAvatar from './images/c3po_avatar.webp';
 
 export const thickness: number = 10;
 export const slit: number = 3;
-export const userSpeedInput: number = 10;
+export const userSpeedInput: number = 5;
 const BALL_SIZE_RATIO: number = 60;
 const USER_SIZE_RATIO: number = 90;
 export const NET_SIZE_RATIO: number = 90;
+export const BALL_VELOCITY: number = 5;
 
 export const ballDataInit: IBallData = {
   x: 0,
   y: 0,
   radius: +CANVAS_WIDTH / BALL_SIZE_RATIO,
-  velocityX: 5,
-  velocityY: 5,
+  velocityX: BALL_VELOCITY,
+  velocityY: BALL_VELOCITY,
   speed: userSpeedInput,
   color: RenderColor.White,
   reset: false,
