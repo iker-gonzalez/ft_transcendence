@@ -27,6 +27,7 @@ export const ballDataInit: IBallData = {
   bottom: 0,
   left: 0,
   right: 0,
+  
 };
 
 export const user1Init: IUserData = {
