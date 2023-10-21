@@ -47,14 +47,16 @@ export function drawBall(
 
   ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI * 2, true);
+  ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.closePath();
   ctx.fill();
 
-  ballTrail.push({ x: x, y: y, r: r });
+  ballTrail.push({ canvas: canvas, x: x, y: y, r: r, color: color });
 }
 
-export function drawBallTrail(canvas: HTMLCanvasElement): void {
+export function drawBallTrail(
+  canvas: HTMLCanvasElement,
+  ): void {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   if (!ctx) return;
 
@@ -64,15 +66,32 @@ export function drawBallTrail(canvas: HTMLCanvasElement): void {
     const opacity = (index / lastBalls.length) * 0.4;
     const size = ballTrail.r * (index / lastBalls.length) * 0.9;
 
-    ctx.beginPath();
-    ctx.fillStyle = 'white';
     ctx.globalAlpha = opacity;
+    ctx.fillStyle = ballTrail.color;
+    ctx.beginPath();
     ctx.arc(ballTrail.x, ballTrail.y, size, 0, Math.PI * 2);
-    ctx.fill();
     ctx.closePath();
+    ctx.fill();
   });
 
   ctx.globalAlpha = 1;
+}
+
+export function sparks(
+  canvas: HTMLCanvasElement,
+  x: number,
+  y: number,
+  r: number,
+  color: RenderColor,
+) {
+  const numSparks = 20;
+
+  for (let i = 0; i < numSparks; i++) {
+    const dx = (Math.random() - 0.5) * 10 * r * 0.5;
+    const dy = (Math.random() - 0.5) * 10 * r * 0.5;
+    drawBallTrail(canvas);
+    drawBall(canvas, x + dx, y + dy, r, color);
+  }
 }
 
 export function drawDashedLine(canvas: HTMLCanvasElement, net: INetData): void {
@@ -130,25 +149,6 @@ export function checkCollision(b: IBallData, p: IUserData): boolean {
   return (
     p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top
   );
-}
-
-export function sparks(
-  canvas: HTMLCanvasElement,
-  x: number,
-  y: number,
-  r: number,
-  color: RenderColor,
-) {
-  
-  let chispas = 20;
-
-  for (let i = 0; i < chispas; i++) {
-    let dx = Math.random() * 10 * r;
-    let dy = Math.random() * 10 * r;
-    drawBallTrail(canvas);
-    drawBall(canvas, x + dx, y + dy, r , color);
-    console.log("sparks", dx, dy);
-  }
 }
 
 export function initializeSounds(): ISounds {
