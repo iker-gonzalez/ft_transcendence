@@ -11,12 +11,18 @@ import FriendData from '../../interfaces/friend-data.interface';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { primaryLightColor } from '../../constants/color-tokens';
 import { useUserFriends } from '../../context/UserDataContext';
-import UserProfileFriendsEmptyState from './UserProfileFriendsEmptyState';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
+import LoadingSpinner from '../UI/LoadingSpinner';
 
 const WrapperDiv = styled.div`
   position: relative;
   width: 650px;
+
+  .centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
   .user-item {
     display: flex;
@@ -80,77 +86,75 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
   return (
     <ContrastPanel>
       <WrapperDiv>
-        {isFetchingFriends ? (
-          <p>Loading...</p>
-        ) : (
-          <>
-            <h2 className="title-2 mb-24">Friends</h2>
-            <div>
-              {userFriends.length ? (
-                <div>
-                  <ul className="friends-list">
-                    {userFriends.map((friend) => {
-                      return (
-                        <li key={friend.intraId} className="user-item">
-                          <div className="user-info">
-                            <RoundImg
-                              src={friend.avatar}
-                              alt=""
-                              className="avatar"
-                            />
-                            <div>
-                              <h3 className="title-2 mb-8">
-                                {friend.username}
-                              </h3>
-                              <p className="small mb-8">{friend.email}</p>
-                            </div>
+        <h2 className="title-2 mb-24">Friends</h2>
+        {(() => {
+          if (isFetchingFriends) {
+            return (
+              <div className="centered-container">
+                <LoadingSpinner />
+              </div>
+            );
+          }
+
+          if (userFriends.length) {
+            return (
+              <div>
+                <ul className="friends-list">
+                  {userFriends.map((friend) => {
+                    return (
+                      <li key={friend.intraId} className="user-item">
+                        <div className="user-info">
+                          <RoundImg
+                            src={friend.avatar}
+                            alt=""
+                            className="avatar"
+                          />
+                          <div>
+                            <h3 className="title-2 mb-8">{friend.username}</h3>
+                            <p className="small mb-8">{friend.email}</p>
                           </div>
-                          <MainButton
-                            onClick={() => setShowFriendProfile(true)}
+                        </div>
+                        <MainButton onClick={() => setShowFriendProfile(true)}>
+                          See profile
+                        </MainButton>
+                        {showFriendProfile && (
+                          <Modal
+                            dismissModalAction={() => {
+                              setShowFriendProfile(false);
+                            }}
                           >
-                            See profile
-                          </MainButton>
-                          {showFriendProfile && (
-                            <Modal
-                              dismissModalAction={() => {
-                                setShowFriendProfile(false);
-                              }}
-                            >
-                              <ViewNewUserProfile
-                                foundUserData={friend}
-                                isAlreadyFriend={true}
-                                onUpdateFriendsList={onUpdateFriendsList}
-                              />
-                            </Modal>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                  <div className="search-friends-container">
-                    <h3 className="title-3">On the look for new game mates?</h3>
-                    <SecondaryButton
-                      onClick={() => {
-                        setShowAddNewFriendFlow(true);
-                      }}
-                    >
-                      Search now
-                    </SecondaryButton>
-                  </div>
-                </div>
-              ) : (
-                <UserProfileFriendsEmptyState
-                  setShowAddNewFriendFlow={setShowAddNewFriendFlow}
-                />
-              )}
-            </div>
-            {showAddNewFriendFlow && (
-              <AddNewFriendFlow
-                setShowAddNewFriendFlow={setShowAddNewFriendFlow}
-                onUpdateFriendsList={onUpdateFriendsList}
-              />
-            )}
-          </>
+                            <ViewNewUserProfile
+                              foundUserData={friend}
+                              isAlreadyFriend={true}
+                              onUpdateFriendsList={onUpdateFriendsList}
+                            />
+                          </Modal>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          }
+        })()}
+        <div>
+          <div className="search-friends-container">
+            <h3 className="title-3">On the look for new game mates?</h3>
+            <SecondaryButton
+              onClick={() => {
+                setShowAddNewFriendFlow(true);
+              }}
+            >
+              Search now
+            </SecondaryButton>
+          </div>
+        </div>
+        {showAddNewFriendFlow && (
+          <AddNewFriendFlow
+            setShowAddNewFriendFlow={setShowAddNewFriendFlow}
+            onUpdateFriendsList={onUpdateFriendsList}
+          />
         )}
       </WrapperDiv>
     </ContrastPanel>
