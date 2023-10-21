@@ -13,6 +13,7 @@ import { MatchmakingModule } from './matchmaking/matchmaking.module';
 import { GameDataModule } from './game-data/game-data.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ChatModule } from './chat/chat.module';
+import { GameStatsModule } from './game-stats/game-stats.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { ChatModule } from './chat/chat.module';
     FriendsModule,
     MatchmakingModule,
     GameDataModule,
-    ChatModule
+    ChatModule,
+    GameStatsModule,
   ],
   providers: [IntraService],
 })

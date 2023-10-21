@@ -160,6 +160,21 @@ export const swaggerConstants = {
         },
       },
     },
+    stats: {
+      get: {
+        summary:
+          'Retrieve stats of either specified user or current user if user is not specified.',
+        ok: {
+          description: 'Returns user stats.',
+        },
+        unauthorized: {
+          description: 'JWT token is invalid or expired.',
+        },
+        unprocessable: {
+          description: 'User does not exist.',
+        },
+      },
+    },
   },
   dto: {
     intraSignin: {
