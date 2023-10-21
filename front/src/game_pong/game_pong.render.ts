@@ -44,7 +44,7 @@ export function render(
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
-  
+
   // drawImg(
   //   canvas,
   //   canvasImages.canvasBgImage,
@@ -78,7 +78,7 @@ export function render(
   drawText(
     canvas,
     usersData.user1.username,
-    canvas.width / 10 * 4,
+    (canvas.width / 10) * 4,
     canvas.height / 10,
     '20px Arial',
     'right',
@@ -88,7 +88,7 @@ export function render(
   drawText(
     canvas,
     String(user1.score),
-    canvas.width / 10 * 4,
+    (canvas.width / 10) * 4,
     canvas.height / 6,
     '40px Arial',
     'right',
@@ -99,7 +99,7 @@ export function render(
     drawText(
       canvas,
       'BOT',
-      canvas.width / 10 * 6,
+      (canvas.width / 10) * 6,
       canvas.height / 10,
       '20px Arial',
       'left',
@@ -109,7 +109,7 @@ export function render(
     drawText(
       canvas,
       usersData.user2!.username,
-      canvas.width / 10 * 6,
+      (canvas.width / 10) * 6,
       canvas.height / 10,
       '20px Arial',
       'left',
@@ -120,7 +120,7 @@ export function render(
   drawText(
     canvas,
     String(user2.score),
-    canvas.width / 10 * 6,
+    (canvas.width / 10) * 6,
     canvas.height / 6,
     '40px Arial',
     'left',
@@ -131,7 +131,7 @@ export function render(
     drawText(
       canvas,
       '🏆',
-      canvas.width / 10 * 4,
+      (canvas.width / 10) * 4,
       canvas.height / 4.5,
       '30px Arial',
       'right',
@@ -167,7 +167,7 @@ export function render(
     drawText(
       canvas,
       '🏆',
-      canvas.width / 10 * 6,
+      (canvas.width / 10) * 6,
       canvas.height / 4.5,
       '30px Arial',
       'left',
@@ -230,8 +230,8 @@ export function render(
   drawText(
     canvas,
     'Ball Speed: X' + speedRender.toFixed(2),
-    canvas.width / 10 * 4.5,
-    canvas.height / 20 * 19,
+    (canvas.width / 10) * 4.5,
+    (canvas.height / 20) * 19,
     '15px Arial',
     'right',
     RenderColor.Grey,
@@ -240,8 +240,8 @@ export function render(
   drawText(
     canvas,
     'Paddle Height: ' + user1.height + '%',
-    canvas.width / 10 * 5.5,
-    canvas.height / 20 * 19,
+    (canvas.width / 10) * 5.5,
+    (canvas.height / 20) * 19,
     '15px Arial',
     'left',
     RenderColor.Grey,
