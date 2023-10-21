@@ -9,6 +9,7 @@ import UserGameData from '../../interfaces/user-game-data.interface';
 import UserGameDataPlayer from '../../interfaces/user-game-data-player.interface';
 import MainButton from '../UI/MainButton';
 import { useNavigate } from 'react-router-dom';
+import LoadingSpinner from '../UI/LoadingSpinner';
 
 const WrapperDiv = styled.div`
   width: 650px;
@@ -66,6 +67,12 @@ const WrapperDiv = styled.div`
     }
   }
 
+  .centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .empty-state {
     display: flex;
     justify-content: space-between;
@@ -92,15 +99,21 @@ const UserProfileGame: React.FC<{ userData: UserData }> = ({
         {(() => {
           if (isErrorFetchingGames) {
             return (
-              <p>
-                There was an error fetching your game history. Try reloading the
-                page.
-              </p>
+              <div className="centered-container">
+                <p>
+                  There was an error fetching your game history. Try reloading
+                  the page.
+                </p>
+              </div>
             );
           }
 
           if (isFetchingGames) {
-            return <p>Loading...</p>;
+            return (
+              <div className="centered-container">
+                <LoadingSpinner />
+              </div>
+            );
           }
 
           if (userGames.length === 0) {
