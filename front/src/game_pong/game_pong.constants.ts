@@ -14,6 +14,7 @@ export const userSpeedInput: number = 10;
 const BALL_SIZE_RATIO: number = 60;
 const USER_SIZE_RATIO: number = 90;
 export const NET_SIZE_RATIO: number = 90;
+
 export const ballDataInit: IBallData = {
   x: 0,
   y: 0,

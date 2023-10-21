@@ -170,6 +170,7 @@ export function isSoloMode(usersData: {
 export type InitializeCanvasImages = {
   canvasBgImage: HTMLImageElement;
 };
+
 export function initializeCanvasImages(): InitializeCanvasImages {
   const canvasBgImage: HTMLImageElement = new Image();
   canvasBgImage.src = BgImageGrass;
@@ -193,6 +194,7 @@ export type InitializeEventListenersArgs = {
   ballData: IBallData;
   slit: number;
 };
+
 export function initializeEventListeners({
   canvas,
   isPlayer1,
@@ -294,6 +296,7 @@ export type InitializeSocketLogicArgs = {
   canvasImages: InitializeCanvasImages;
   thickness: number;
 };
+
 export function initializeSocketLogic({
   socket,
   isPlayer1,
