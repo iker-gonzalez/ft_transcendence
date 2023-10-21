@@ -54,9 +54,7 @@ export function drawBall(
   ballTrail.push({ canvas: canvas, x: x, y: y, r: r, color: color });
 }
 
-export function drawBallTrail(
-  canvas: HTMLCanvasElement,
-  ): void {
+export function drawBallTrail(canvas: HTMLCanvasElement): void {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   if (!ctx) return;
 
@@ -422,4 +420,14 @@ export function onAbortGame(
       },
     );
   };
+}
+
+export async function countDownToStart(countDown: number) {
+  const countDownInterval = setInterval(() => {
+    countDown--;
+    console.log(countDown);
+    if (countDown === 0) {
+      clearInterval(countDownInterval);
+    }
+  }, 1000);
 }
