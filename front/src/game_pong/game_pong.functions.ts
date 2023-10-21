@@ -132,6 +132,25 @@ export function checkCollision(b: IBallData, p: IUserData): boolean {
   );
 }
 
+export function sparks(
+  canvas: HTMLCanvasElement,
+  x: number,
+  y: number,
+  r: number,
+  color: RenderColor,
+) {
+  
+  let chispas = 20;
+
+  for (let i = 0; i < chispas; i++) {
+    let dx = Math.random() * 10 * r;
+    let dy = Math.random() * 10 * r;
+    drawBallTrail(canvas);
+    drawBall(canvas, x + dx, y + dy, r , color);
+    console.log("sparks", dx, dy);
+  }
+}
+
 export function initializeSounds(): ISounds {
   let hit = new Audio(hitSound);
   let wall = new Audio(wallSound);

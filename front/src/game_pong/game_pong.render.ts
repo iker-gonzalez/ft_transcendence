@@ -13,6 +13,7 @@ import {
   drawRect,
   drawText,
   isSoloMode,
+  sparks,
 } from './game_pong.functions';
 import {
   IBallData,
@@ -42,15 +43,16 @@ export function render(
   // To clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
-  drawImg(
-    canvas,
-    canvasImages.canvasBgImage,
-    0,
-    0,
-    canvas.width,
-    canvas.height,
-  );
+  drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
+  
+  // drawImg(
+  //   canvas,
+  //   canvasImages.canvasBgImage,
+  //   0,
+  //   0,
+  //   canvas.width,
+  //   canvas.height,
+  // );
 
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
 
@@ -426,6 +428,7 @@ export function matchUser1(
     ballData.speed += 0.1;
     user1.height -= 2;
     user2.height -= 2;
+    sparks(canvas, ballData.x, ballData.y, ballData.radius, RenderColor.Yellow);
   }
 }
 
