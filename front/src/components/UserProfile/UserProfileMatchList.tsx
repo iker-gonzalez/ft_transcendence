@@ -11,6 +11,7 @@ import MainButton from '../UI/MainButton';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import PaginatedSection from '../UI/PaginatedSection';
+import { formatMsToFullTime } from '../../utils/utils';
 
 const WrapperDiv = styled.div`
   width: 650px;
@@ -149,7 +150,6 @@ const UserProfileMatchlist: React.FC<{ userData: UserData }> = ({
                   minute: '2-digit',
                   hour12: false,
                 });
-                const gameDuration = new Date(game.elapsedTime).getSeconds();
 
                 return (
                   <div key={game.sessionId} className="session-box">
@@ -157,7 +157,7 @@ const UserProfileMatchlist: React.FC<{ userData: UserData }> = ({
                       <h3 className="title-3">Match #{index + 1}</h3>
                       <p className="small">
                         Played on {formattedDate} at {formattedTime} for{' '}
-                        {gameDuration} seconds.
+                        {formatMsToFullTime(game.elapsedTime)}.
                       </p>
                     </div>
                     <div className="players-box">
