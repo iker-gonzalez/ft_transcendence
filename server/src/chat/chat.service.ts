@@ -31,13 +31,10 @@ export class ChatService {
 
   async getMessagesByUser(
     intraId: number,
-    ): Promise<GetDirectMessageDto> 
+    ): Promise<any[]> 
   {
     const userWithMessage = await this.prisma.user.findUnique({
-      where: {
-        intraId: intraId,
-      //  intraId: intraId ? intraId : user.intraId,
-      },
+      where: { intraId: intraId},
       include: {
        sentMessages: true,
        receivedMessages: true,
@@ -45,19 +42,16 @@ export class ChatService {
     });
 
     if (!userWithMessage) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException('User with ID ${id} not found');
     }
 
-    return {
-      found: userWithMessage.sentMessages.length + userWithMessage.receivedMessages.length,
-      data: {
-        id: userWithMessage.id,
-        intraId: userWithMessage.intraId,
-        sendMessages: userWithMessage.sentMessages,
-        receivedMessages: userWithMessage.receivedMessages,
-      },
-    };
+    const sentMessages = userWithMessage.sentMessages || [];
+    const receivedMessages = userWithMessage.receivedMessages || [];
 
+    // Join sended and received messages.
+    const allMessages = [...sentMessages, ...receivedMessages];
+
+    return allMessages;
   }
 
   async findUserIdByIntraId(intraId: number): Promise<string>
