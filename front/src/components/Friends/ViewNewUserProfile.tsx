@@ -9,6 +9,7 @@ import Cookies from 'js-cookie';
 import FriendData from '../../interfaces/friend-data.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import UserProfileStats from '../UserProfile/UserProfileStats';
 
 type AddNewFriendResponse = {
   created?: number;
@@ -26,12 +27,12 @@ const WrapperDiv = styled.div`
   .user-info-container {
     width: 100%;
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     gap: 20px;
 
     .avatar {
-      width: 150px;
+      width: 125px;
     }
   }
 
@@ -111,13 +112,14 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
 
   return (
     <WrapperDiv>
-      <div className="user-info-container">
+      <div className="user-info-container mb-24">
         <RoundImg src={foundUserData.avatar} alt="" className="avatar" />
         <div>
           <h2 className="title-2 mb-8">{foundUserData.username}</h2>
           <p className="small">{foundUserData.email}</p>
         </div>
       </div>
+      <UserProfileStats userId={foundUserData.intraId} />
       <div className="actions-container">
         {isAlreadyFriend ? (
           <SecondaryButton onClick={removeUserFromFriends}>
