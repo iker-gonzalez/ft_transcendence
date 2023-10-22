@@ -19,7 +19,7 @@ const WrapperDiv = styled.div`
 
   overflow: hidden;
 
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(115, 115, 115, 0.4);
   backdrop-filter: blur(4px);
 
   display: flex;
