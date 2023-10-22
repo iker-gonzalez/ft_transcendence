@@ -1,5 +1,5 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { FetchGameStatsResponseDto } from './dto/fetch-game-stats-response.dto';
 
 @Injectable()
@@ -7,6 +7,8 @@ export class GameStatsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getUserStats(intraId: number): Promise<FetchGameStatsResponseDto> {
+    if (!intraId) throw new UnprocessableEntityException('User ID is invalid');
+
     const user = await this.prisma.user.findUnique({
       where: {
         intraId,

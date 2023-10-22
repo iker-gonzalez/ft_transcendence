@@ -1,5 +1,5 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/guard/jwt.guard';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 import { GameStatsService } from './game-stats.service';
 import {
   ApiCreatedResponse,
@@ -10,7 +10,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { swaggerConstants } from '../../config/swagger.constants';
-import { GetUser } from 'src/auth/decorator/get-user.decorator';
+import { GetUser } from '../auth/decorator/get-user.decorator';
 import { User } from '@prisma/client';
 import { FetchGameStatsResponseDto } from './dto/fetch-game-stats-response.dto';
 
@@ -39,10 +39,10 @@ export class GameStatsController {
     description: swaggerConstants.game.stats.get.unprocessable.description,
   })
   getUserStats(
-    @Param('userId') intraId: number,
+    @Param('userId') intraId: string,
     @GetUser() user: User,
   ): Promise<FetchGameStatsResponseDto> {
-    const userIntraId = intraId ?? +user.intraId;
-    return this.gameStatsService.getUserStats(userIntraId);
+    const userIntraId = intraId ?? user.intraId;
+    return this.gameStatsService.getUserStats(+userIntraId);
   }
 }

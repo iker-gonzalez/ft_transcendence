@@ -1940,6 +1940,82 @@ describe('App e2e', () => {
         });
       });
     });
+
+    describe('game stats', () => {
+      it('should return 422 if user ID is undefined', async () => {
+        await createUser(prisma, intraService, intraUserToken, userData);
+
+        await pactum
+          .spec()
+          .get(`/game/stats/${undefined}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(422)
+          .expectJson({
+            error: 'Unprocessable Entity',
+            message: 'User ID is invalid',
+            statusCode: 422,
+          });
+      });
+
+      it('should return 422 if user does not exist', async () => {
+        await createUser(prisma, intraService, intraUserToken, userData);
+
+        await pactum
+          .spec()
+          .get('/game/stats/666')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(422)
+          .expectJson({
+            error: 'Unprocessable Entity',
+            message: 'User does not exist',
+            statusCode: 422,
+          });
+      });
+
+      it('should return 401 if user is not authenticated', async () => {
+        await pactum
+          .spec()
+          .get('/game/stats')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(401)
+          .expectJson({
+            message: 'Unauthorized',
+            statusCode: 401,
+          });
+      });
+
+      describe('it should return empty stats', () => {
+        it('for current user', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          await pactum
+            .spec()
+            .get('/game/stats')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .expectStatus(200)
+            .expectJsonLike({
+              found: 0,
+              data: {},
+            });
+        });
+
+        it('for another user', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          await createUser(prisma, intraService, intraUserToken, userData2);
+
+          await pactum
+            .spec()
+            .get(`/game/stats/${userData2.intraId}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .expectStatus(200)
+            .expectJsonLike({
+              found: 0,
+              data: {},
+            });
+        });
+      });
+    });
   });
 
   describe('Sockets', () => {
