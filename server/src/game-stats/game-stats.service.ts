@@ -192,7 +192,7 @@ export class GameStatsService {
     return {
       found: filteredUserGameDataSets.length,
       data: {
-        rank: Math.round(wins / 5),
+        rank: wins / 5,
         totalGames: filteredUserGameDataSets.length,
         wins,
         losses,
