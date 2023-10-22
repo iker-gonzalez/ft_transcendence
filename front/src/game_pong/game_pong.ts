@@ -29,7 +29,7 @@ import UserData from '../interfaces/user-data.interface';
 import { matchUser1, matchUser2, onGameEnd, render } from './game_pong.render';
 
 const fps: number = 120;
-const computedFps: number = 1000 / fps * 2;
+const computedFps: number = (1000 / fps) * 2;
 export const thickness: number = 10;
 export const slit: number = 3;
 const userSpeedInput: number = 10;
@@ -66,7 +66,7 @@ export async function gameLoop({
     x: canvas.width / 2,
     y: canvas.height / 2,
   };
-  let user1 = { ...user1Init, y: canvas.height / 2 - 100 / 2 };
+  let user1 = { ...user1Init, x: 40, y: canvas.height / 2 - 100 / 2 };
   let user2 = {
     ...user2Init,
     x: canvas.width - 40,
@@ -209,7 +209,7 @@ function game({
       );
     }
 
-    console.log("Is Ball Frozen? " , isBallFrozen)
+    console.log('Is Ball Frozen? ', isBallFrozen);
     if (isFirstRun) {
       countDownToStart(countDown);
       isFirstRun = false;
