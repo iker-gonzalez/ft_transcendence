@@ -117,7 +117,11 @@ const UserProfileStats: React.FC = (): JSX.Element => {
       })
       .then((data) => {
         console.log('data.data', data.data);
-        setStats(data.data);
+        if (data.found > 0) {
+          setStats(data.data);
+        } else {
+          setStats(null);
+        }
         setIsLoading(false);
       });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
