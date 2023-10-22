@@ -20,8 +20,8 @@ export const ballDataInit: IBallData = {
   x: 0,
   y: 0,
   radius: +CANVAS_WIDTH / BALL_SIZE_RATIO,
-  velocityX: BALL_VELOCITY,
-  velocityY: BALL_VELOCITY,
+  moveX: BALL_VELOCITY,
+  moveY: BALL_VELOCITY,
   speed: userSpeedInput,
   color: RenderColor.White,
   reset: false,
@@ -33,7 +33,7 @@ export const ballDataInit: IBallData = {
 };
 
 export const user1Init: IUserData = {
-  x: 30,
+  x: 0,
   y: 0,
   width: +CANVAS_WIDTH / USER_SIZE_RATIO,
   height: (+CANVAS_WIDTH / USER_SIZE_RATIO) * 10,

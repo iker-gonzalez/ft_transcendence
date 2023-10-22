@@ -60,10 +60,10 @@ export function drawBallTrail(canvas: HTMLCanvasElement): void {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   if (!ctx) return;
 
-  const lastBalls = ballTrail.slice(-40);
+  const lastBalls = ballTrail.slice(-100);
 
   lastBalls.forEach((ballTrail, index) => {
-    const opacity = (index / lastBalls.length) * 0.4;
+    const opacity = (index / lastBalls.length) * 0.2;
     const size = ballTrail.r * (index / lastBalls.length) * 0.9;
 
     ctx.globalAlpha = opacity;
