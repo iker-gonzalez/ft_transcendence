@@ -18,7 +18,7 @@ const WrapperDiv = styled.div`
   gap: 40px;
 
   > :first-child {
-    width: 350px;
+    width: 375px;
   }
 
   .blocks-container {

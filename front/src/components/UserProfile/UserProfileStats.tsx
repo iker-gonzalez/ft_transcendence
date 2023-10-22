@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
+import {
+  fetchAuthorized,
+  formatMsToFullTime,
+  getBaseUrl,
+} from '../../utils/utils';
 import Cookies from 'js-cookie';
 import RoundImg from '../UI/RoundImage';
 import LoadingSpinner from '../UI/LoadingSpinner';
@@ -68,7 +72,7 @@ const WrapperDiv = styled.div`
     }
 
     .stat-highlight {
-      font-size: 36px;
+      font-size: 30px;
       font-weight: bold;
     }
   }
@@ -225,13 +229,13 @@ const UserProfileStats: React.FC<UserProfileStatsProps> = ({
                       <p>
                         quickest win{' '}
                         <span className="stat-highlight">
-                          {new Date(stats.quickestWin).getSeconds()}s
+                          {(stats.quickestWin / 1000).toFixed(0)}s
                         </span>
                       </p>
                       <p>
                         longest match{' '}
                         <span className="stat-highlight">
-                          {new Date(stats.longestMatch).getSeconds()}s
+                          {formatMsToFullTime(stats.longestMatch)}
                         </span>
                       </p>
                     </div>
