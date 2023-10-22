@@ -40,7 +40,7 @@ const WrapperDiv = styled.div`
       font-size: 26px;
 
       .level-highlight {
-        font-size: 72px;
+        font-size: 52px;
         font-weight: bold;
       }
     }
