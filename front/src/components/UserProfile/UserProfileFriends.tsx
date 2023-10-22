@@ -141,7 +141,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
         })()}
         <div>
           <div className="search-friends-container">
-            <h3 className="title-3">On the look for new game mates?</h3>
+            <h3 className="title-3">On the lookout for new game mates?</h3>
             <SecondaryButton
               onClick={() => {
                 setShowAddNewFriendFlow(true);
