@@ -294,87 +294,6 @@ export function resetBall(
   return { newBallData, newUserData1, newUserData2 };
 }
 
-export function matchUser2(
-  canvas: HTMLCanvasElement,
-  ballData: IBallData,
-  user1: IUserData,
-  user2: IUserData,
-  sounds: ISounds,
-  isSoloMode: boolean = false,
-) {
-  //  ballData.x += ballData.moveX;
-  //  ballData.y += ballData.moveY;
-
-  // Paddle motion in 1 player mode (bot movements)
-  if (isSoloMode) {
-    user2.y += (ballData.y - (user2.y + user2.height / 2)) * 0.1;
-  }
-
-  // Limit paddle vertical motion
-  if (user2.y < thickness + ballData.radius * slit) {
-    user2.y = thickness + ballData.radius * slit;
-  } else if (
-    user2.y >
-    canvas.height - thickness - user2.height - ballData.radius * slit
-  ) {
-    user2.y = canvas.height - thickness - user2.height - ballData.radius * slit;
-  }
-
-  // Change direction of ball motion when it hits walls
-  // if (
-  //   ballData.y - ballData.radius - thickness < 0 ||
-  //   ballData.y + ballData.radius + thickness > canvas.height
-  // ) {
-  //   ballData.moveY = -ballData.moveY;
-  // }
-
-  // Check if ball pass the goal line
-  // if (ballData.x - ballData.radius < 30 && !ballData.reset) {
-  //   user2.score++;
-  //   // sounds.userScore.play().catch(function (error: any) {
-  //   //   // console.log("Chrome cannot play sound without user interaction first");
-  //   // });
-  //   let { newBallData } = resetBall(
-  //     canvas,
-  //     ballData,
-  //     user1,
-  //     user2,
-  //     userSpeedInput,
-  //   );
-  //   ballData = newBallData;
-  // } else if (ballData.x - ballData.radius > canvas.width && !ballData.reset) {
-  //   let { newBallData } = resetBall(
-  //     canvas,
-  //     ballData,
-  //     user1,
-  //     user2,
-  //     userSpeedInput,
-  //   );
-  //   ballData = newBallData;
-  // }
-
-  // let player: IUserData =
-  //   ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
-
-  // if (checkCollision(ballData, player)) {
-  //   // sounds.hit.play().catch(function (error: any) {
-  //   //   // console.log("Chrome cannot play sound without user interaction first");
-  //   // });
-  //   let collidePoint = ballData.y - (player.y + player.height / 2);
-  //   collidePoint = collidePoint / (player.height / 2);
-
-  //   let angleRad = (Math.PI / 4) * collidePoint;
-
-  //   let direction = ballData.x + ballData.radius < canvas.width / 2 ? 1 : -1;
-  //   ballData.moveX = direction * ballData.speed * Math.cos(angleRad);
-  //   ballData.moveY = ballData.speed * Math.sin(angleRad);
-
-  //   ballData.speed += 0.1;
-  //   user1.height -= 2;
-  //   user2.height -= 2;
-  // }
-}
-
 export function matchUser1(
   canvas: HTMLCanvasElement,
   ballData: IBallData,
@@ -470,6 +389,30 @@ export function matchUser1(
     // Sparks effect when the ball hits the paddle
     sparks(canvas, ballData.x, ballData.y, ballData.radius, RenderColor.Yellow);
   }
+}
+
+export function matchUser2(
+  canvas: HTMLCanvasElement,
+  ballData: IBallData,
+  user1: IUserData,
+  user2: IUserData,
+  sounds: ISounds,
+  isSoloMode: boolean = false,
+) {
+  // Paddle motion in 1 player mode (bot movements)
+  if (isSoloMode) {
+    user2.y += (ballData.y - (user2.y + user2.height / 2)) * 0.1;
+  }
+
+  // Limit paddle vertical motion
+  if (user2.y < thickness + ballData.radius * slit) {
+    user2.y = thickness + ballData.radius * slit;
+  } else if (
+    user2.y >
+    canvas.height - thickness - user2.height - ballData.radius * slit
+  ) {
+    user2.y = canvas.height - thickness - user2.height - ballData.radius * slit;
+  } 
 }
 
 export function onGameEnd(
