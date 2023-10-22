@@ -1,16 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { FetchGameStatsResponseDto } from './dto/fetch-game-stats-response.dto';
 
 @Injectable()
 export class GameStatsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getUserStats(intraId: number) {
+  async getUserStats(intraId: number): Promise<FetchGameStatsResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        intraId,
+      },
+    });
+
+    if (!user) {
+      throw new UnprocessableEntityException('User does not exist');
+    }
+
     const userGameDataSets = await this.prisma.gameDataSet.findMany({
       where: {
         players: {
           some: {
-            intraId: +intraId,
+            intraId,
           },
         },
       },
