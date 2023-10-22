@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ContrastPanel from '../UI/ContrastPanel';
 import styled from 'styled-components';
 import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
@@ -103,14 +102,20 @@ const WrapperDiv = styled.div`
   }
 `;
 
-const UserProfileStats: React.FC = (): JSX.Element => {
+type UserProfileStatsProps = {
+  userId?: number;
+};
+
+const UserProfileStats: React.FC<UserProfileStatsProps> = ({
+  userId,
+}): JSX.Element => {
   const [stats, setStats] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     setIsLoading(true);
-    fetchAuthorized(`${getBaseUrl()}/game/stats`, {
+    fetchAuthorized(`${getBaseUrl()}/game/stats${userId ? `/${userId}` : ''}`, {
       headers: {
         Authorization: `Bearer ${Cookies.get('token')}`,
       },
@@ -129,136 +134,151 @@ const UserProfileStats: React.FC = (): JSX.Element => {
       });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const otherUserEmptyState = (
+    <div>
+      <p>
+        This user hasn't played enough games to have meaningful stats yet 👶
+      </p>
+    </div>
+  );
+
+  const currentUserEmptyState = (
+    <div>
+      <p className="mb-16">
+        These are rookie numbers! Start playing now to make your stats grow 🕹️
+      </p>
+      <MainButton
+        onClick={() => {
+          navigate('/game');
+        }}
+      >
+        Play now
+      </MainButton>
+    </div>
+  );
   return (
-    <ContrastPanel>
-      <WrapperDiv>
-        <h2 className="title-2 mb-24">Stats</h2>
-        {(() => {
-          if (isLoading) {
-            return (
-              <div className="centered-container">
-                <LoadingSpinner />
-              </div>
-            );
-          }
-
-          if (!stats) {
-            return (
-              <div>
-                <p className="mb-16">
-                  These are rookie numbers! Start playing now to make your stats
-                  grow 🕹️
-                </p>
-                <MainButton
-                  onClick={() => {
-                    navigate('/game');
-                  }}
-                >
-                  Play now
-                </MainButton>
-              </div>
-            );
-          }
-
+    <WrapperDiv>
+      <h2 className="title-2 mb-24">Stats</h2>
+      {(() => {
+        if (isLoading) {
           return (
-            <div className="stats-container">
-              <GradientBorder className="basic-info-container">
-                <div>
-                  <h3 className="title-3 sr-only">Rank</h3>
-                  <p className="level-text">
-                    lv. <span className="level-highlight">{stats.rank}</span>
-                  </p>
-                </div>
-                <div className="win-losses-text">
-                  <h3 className="title-3 sr-only">Wins & losses</h3>
-                  <p>
-                    <span className="win-losses-highlight">
-                      🔼 {stats.wins}
-                    </span>{' '}
-                    wins
-                  </p>
-                  <p>
-                    <span className="win-losses-highlight">
-                      🔽 {stats.losses}
-                    </span>{' '}
-                    losses
-                  </p>
-                </div>
-              </GradientBorder>
-              <div>
-                <h3 className="title-3 mb-16">Win streak</h3>
-                <div className="stat-container">
-                  <p>
-                    longest
-                    <span className="stat-highlight">
-                      {stats.longestWinStreak} ✨
-                    </span>
-                  </p>
-                  <p>
-                    current
-                    <span className="stat-highlight">
-                      {stats.currentWinStreak}
-                    </span>
-                  </p>
-                </div>
-              </div>
-              <div>
-                <h3 className="title-3 mb-16">Records</h3>
-                <div className="stat-container">
-                  <p>
-                    quickest win{' '}
-                    <span className="stat-highlight">
-                      {new Date(stats.quickestWin).getSeconds()}s
-                    </span>
-                  </p>
-                  <p>
-                    longest match{' '}
-                    <span className="stat-highlight">
-                      {new Date(stats.longestMatch).getSeconds()}s
-                    </span>
-                  </p>
-                </div>
-              </div>
-              <div>
-                <h3 className="title-3 mb-16">Social</h3>
-                <div className="social-container">
-                  <div>
-                    <h4 className="sr-only">Nemesis</h4>
-                    <div className="image-container">
-                      <RoundImg
-                        src={stats.nemesis.avatar}
-                        alt=""
-                        className="image"
-                      />
-                      <p>
-                        <span>{stats.nemesis.username}</span> is your nemesis,
-                        having defeated you <span>{stats.nemesis.count}</span>{' '}
-                        times
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="sr-only">Target</h4>
-                    <div className="image-container right">
-                      <RoundImg
-                        src={stats.victim.avatar}
-                        alt=""
-                        className="image"
-                      />
-                      <p>
-                        <span>{stats.victim.username}</span> is your target,
-                        having defeated them <span>{stats.victim.count}</span>{' '}
-                        {stats.victim.count === 1 ? 'time' : 'times'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="centered-container">
+              <LoadingSpinner />
             </div>
           );
-        })()}
-      </WrapperDiv>
-    </ContrastPanel>
+        }
+
+        if (!stats) {
+          return userId ? otherUserEmptyState : currentUserEmptyState;
+        }
+
+        return (
+          <div className="stats-container">
+            <GradientBorder className="basic-info-container">
+              <div>
+                <h3 className="title-3 sr-only">Rank</h3>
+                <p className="level-text">
+                  lv. <span className="level-highlight">{stats.rank}</span>
+                </p>
+              </div>
+              <div className="win-losses-text">
+                <h3 className="title-3 sr-only">Wins & losses</h3>
+                <p>
+                  <span className="win-losses-highlight">🔼 {stats.wins}</span>{' '}
+                  wins
+                </p>
+                <p>
+                  <span className="win-losses-highlight">
+                    🔽 {stats.losses}
+                  </span>{' '}
+                  losses
+                </p>
+              </div>
+            </GradientBorder>
+            {(() => {
+              if (stats.totalGames < 5) {
+                return userId ? otherUserEmptyState : currentUserEmptyState;
+              }
+
+              return (
+                <>
+                  <div>
+                    <h3 className="title-3 mb-16">Win streak</h3>
+                    <div className="stat-container">
+                      <p>
+                        longest
+                        <span className="stat-highlight">
+                          {stats.longestWinStreak} ✨
+                        </span>
+                      </p>
+                      <p>
+                        current
+                        <span className="stat-highlight">
+                          {stats.currentWinStreak}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="title-3 mb-16">Records</h3>
+                    <div className="stat-container">
+                      <p>
+                        quickest win{' '}
+                        <span className="stat-highlight">
+                          {new Date(stats.quickestWin).getSeconds()}s
+                        </span>
+                      </p>
+                      <p>
+                        longest match{' '}
+                        <span className="stat-highlight">
+                          {new Date(stats.longestMatch).getSeconds()}s
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="title-3 mb-16">Social</h3>
+                    <div className="social-container">
+                      <div>
+                        <h4 className="sr-only">Nemesis</h4>
+                        <div className="image-container">
+                          <RoundImg
+                            src={stats.nemesis.avatar}
+                            alt=""
+                            className="image"
+                          />
+                          <p>
+                            <span>{stats.nemesis.username}</span> is your
+                            nemesis, having defeated you{' '}
+                            <span>{stats.nemesis.count}</span> times
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="sr-only">Target</h4>
+                        <div className="image-container right">
+                          <RoundImg
+                            src={stats.victim.avatar}
+                            alt=""
+                            className="image"
+                          />
+                          <p>
+                            <span>{stats.victim.username}</span> is your target,
+                            having defeated them{' '}
+                            <span>{stats.victim.count}</span>{' '}
+                            {stats.victim.count === 1 ? 'time' : 'times'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        );
+      })()}
+    </WrapperDiv>
   );
 };
 
