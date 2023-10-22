@@ -38,3 +38,16 @@ export async function fetchAuthorized(
 
   return res;
 }
+
+/**
+ * Formats a given number of milliseconds into a string representation of minutes and seconds.
+ * @param ms - The number of milliseconds to format.
+ * @returns A string representation of the given milliseconds.
+ */
+export function formatMsToFullTime(ms: number): string {
+  const date = new Date(ms);
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  return `${minutes ? minutes + 'm ' : ''} ${seconds ? seconds + 's' : ''}`;
+}
