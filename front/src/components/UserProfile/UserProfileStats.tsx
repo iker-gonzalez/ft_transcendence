@@ -5,10 +5,8 @@ import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import RoundImg from '../UI/RoundImage';
 import LoadingSpinner from '../UI/LoadingSpinner';
-import {
-  darkerBgColor,
-  primaryAccentColor,
-} from '../../constants/color-tokens';
+import { darkerBgColor } from '../../constants/color-tokens';
+import GradientBorder from '../UI/GradientBorder';
 
 const WrapperDiv = styled.div`
   .centered-container {
@@ -24,9 +22,6 @@ const WrapperDiv = styled.div`
   }
 
   .basic-info-container {
-    position: relative;
-    z-index: 2;
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -35,8 +30,6 @@ const WrapperDiv = styled.div`
     padding: 15px 20px;
 
     background: ${darkerBgColor};
-    border: 2px ${primaryAccentColor} solid;
-    border-radius: 20px;
 
     .level-text {
       font-size: 26px;
@@ -152,7 +145,7 @@ const UserProfileStats: React.FC = (): JSX.Element => {
 
           return (
             <div className="stats-container">
-              <div className="basic-info-container">
+              <GradientBorder className="basic-info-container">
                 <div>
                   <h3 className="title-3 sr-only">Rank</h3>
                   <p className="level-text">
@@ -174,7 +167,7 @@ const UserProfileStats: React.FC = (): JSX.Element => {
                     losses
                   </p>
                 </div>
-              </div>
+              </GradientBorder>
               <div>
                 <h3 className="title-3 mb-16">Win streak</h3>
                 <div className="stat-container">
