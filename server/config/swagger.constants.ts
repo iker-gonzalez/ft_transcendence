@@ -492,5 +492,40 @@ export const swaggerConstants = {
         },
       },
     },
+    fetchGameStatsResponseDto: {
+      found: {
+        description: 'Number of found sessions on which stats are based',
+        example: 1,
+      },
+      data: {
+        description: 'Stats data',
+        example: {
+          rank: 2,
+          totalGames: 43,
+          wins: 10,
+          losses: 33,
+          longestWinStreak: 4,
+          currentWinStreak: 0,
+          longestMatch: 621961,
+          quickestWin: 608692,
+          nemesis: {
+            avatar: '/static/media/c3po_avatar.763ed1d4866a4dc88e10.webp',
+            intraId: 42,
+            username: 'bot',
+            count: 29,
+          },
+          victim: {
+            avatar: 'https://i.pravatar.cc/600?img=10',
+            intraId: 667,
+            username: 'test2-',
+            count: 7,
+          },
+          busiestDay: {
+            date: 'Wed Oct 18 2023',
+            count: 17,
+          },
+        },
+      },
+    },
   },
 };
