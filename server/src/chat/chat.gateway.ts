@@ -23,22 +23,28 @@ export class ChatGateway implements OnGatewayConnection {
   }
 
   async handleDisconnect(client : any) : Promise<void> {
-
  }
 
   @SubscribeMessage('privateMessage')
-  handlePrivateMessage(client, payload) {
-    console.log("payload");      
-    console.log(payload);
-
+  async handlePrivateMessage(client, payload) {
     console.log("receiverId");
     console.log(payload.receiverId);
-    console.log("content"); 
+    console.log("contents"); 
     console.log(payload.content);  
 
+    // Add DM to DB, this will update the DM chat of the sender and the receiver 
     this.chatService.addMessageToUser(payload.id, payload.senderId,
                       payload.receiverId, payload.content);
+    try {
+      // Prueba para el get de lo DM
+      const allMD = await this.chatService.getMessagesByUser(payload.id);
+      console.log("allMD", allMD);
+    } catch (error) {
+      console.error("Error:", error);
+    }
 
+
+    // Emit signal to update the sender chat frontend
     this.server.emit(`privateMessageReceived/${payload.intraId}`,
                       JSON.stringify(payload))
 }
