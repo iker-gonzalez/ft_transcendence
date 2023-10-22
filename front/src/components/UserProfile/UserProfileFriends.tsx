@@ -13,6 +13,7 @@ import { primaryLightColor } from '../../constants/color-tokens';
 import { useUserFriends } from '../../context/UserDataContext';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import LoadingSpinner from '../UI/LoadingSpinner';
+import PaginatedSection from '../UI/PaginatedSection';
 
 const WrapperDiv = styled.div`
   position: relative;
@@ -98,7 +99,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
 
           if (userFriends.length) {
             return (
-              <div>
+              <PaginatedSection numberOfItems={2}>
                 <ul className="friends-list">
                   {userFriends.map((friend) => {
                     return (
@@ -134,7 +135,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                     );
                   })}
                 </ul>
-              </div>
+              </PaginatedSection>
             );
           }
         })()}
