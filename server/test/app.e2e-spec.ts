@@ -1429,7 +1429,7 @@ describe('App e2e', () => {
   });
 
   describe('Game', () => {
-    describe('game data', () => {
+    describe('game sessions', () => {
       const baseGameData = {
         gameDataId: '95130ad8-ffaf-4c7f-84c2-68ae2d020306',
         startedAt: '2023-10-11T20:32:33.610Z',

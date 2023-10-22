@@ -6,7 +6,7 @@ import { primaryLightColor } from '../constants/color-tokens';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
-import LoadingPage from './LoadingPage';
+import LoadingFullscreen from '../components/UI/LoadingFullscreen';
 import teamImage from '../assets/images/team.png';
 import logo42 from '../assets/svg/logo_42.svg';
 
@@ -81,7 +81,7 @@ const SignIn: React.FC = (): JSX.Element => {
   return (
     <PageWrapperDiv>
       {(() => {
-        if (isUserDataFetching) return <LoadingPage />;
+        if (isUserDataFetching) return <LoadingFullscreen />;
 
         return (
           <>
