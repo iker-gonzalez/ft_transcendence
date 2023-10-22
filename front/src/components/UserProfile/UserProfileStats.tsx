@@ -7,6 +7,8 @@ import RoundImg from '../UI/RoundImage';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import { darkerBgColor } from '../../constants/color-tokens';
 import GradientBorder from '../UI/GradientBorder';
+import MainButton from '../UI/MainButton';
+import { useNavigate } from 'react-router-dom';
 
 const WrapperDiv = styled.div`
   .centered-container {
@@ -94,7 +96,7 @@ const WrapperDiv = styled.div`
       }
 
       .image {
-        width: 75px;
+        width: 60px;
         object-fit: contain;
       }
     }
@@ -104,6 +106,7 @@ const WrapperDiv = styled.div`
 const UserProfileStats: React.FC = (): JSX.Element => {
   const [stats, setStats] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsLoading(true);
@@ -141,8 +144,18 @@ const UserProfileStats: React.FC = (): JSX.Element => {
 
           if (!stats) {
             return (
-              <div className="centered-container">
-                <p>Empty state</p>
+              <div>
+                <p className="mb-16">
+                  These are rookie numbers! Start playing now to make your stats
+                  grow 🕹️
+                </p>
+                <MainButton
+                  onClick={() => {
+                    navigate('/game');
+                  }}
+                >
+                  Play now
+                </MainButton>
               </div>
             );
           }
