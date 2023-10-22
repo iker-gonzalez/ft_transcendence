@@ -54,8 +54,8 @@ export class GameStatsService {
 
     const longestMatch: number = filteredUserGameDataSets.reduce(
       (acc, gameDataSet) => {
-        acc = gameDataSet.elapsedTime > acc ? gameDataSet.elapsedTime : acc;
-        return acc;
+        return (acc =
+          gameDataSet.elapsedTime > acc ? gameDataSet.elapsedTime : acc);
       },
       0,
     );
@@ -68,10 +68,10 @@ export class GameStatsService {
 
         if (playerData.isWinner) {
           if (acc === 0) {
-            acc = gameDataSet.elapsedTime;
+            return gameDataSet.elapsedTime;
           }
 
-          acc = gameDataSet.elapsedTime < acc ? gameDataSet.elapsedTime : acc;
+          return gameDataSet.elapsedTime < acc ? gameDataSet.elapsedTime : acc;
         }
 
         return acc;
