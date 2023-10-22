@@ -26,6 +26,10 @@ export class StatsDto {
   @IsPositive()
   currentWinStreak: number;
 
+  @IsNumber()
+  @IsPositive()
+  totalGameTime: number;
+
   @IsDateString()
   busiestDay: {
     date: string;

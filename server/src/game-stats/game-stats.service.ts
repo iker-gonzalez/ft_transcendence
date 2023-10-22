@@ -79,6 +79,21 @@ export class GameStatsService {
       0,
     );
 
+    const totalGameTime = filteredUserGameDataSets.reduce(
+      (acc, gameDataSet) => {
+        const playerData = gameDataSet.players.find(
+          (player) => player.intraId === +intraId,
+        );
+
+        if (playerData.isWinner) {
+          acc += gameDataSet.elapsedTime;
+        }
+
+        return acc;
+      },
+      0,
+    );
+
     const busiestDayList = filteredUserGameDataSets.reduce(
       (acc, gameDataSet) => {
         const dateIndex = acc.findIndex((accObject) => {
@@ -192,12 +207,13 @@ export class GameStatsService {
     return {
       found: filteredUserGameDataSets.length,
       data: {
-        rank: Math.round(wins / 5),
+        rank: wins / 5,
         totalGames: filteredUserGameDataSets.length,
         wins,
         losses,
         longestWinStreak,
         currentWinStreak,
+        totalGameTime,
         longestMatch,
         quickestWin,
         nemesis,
