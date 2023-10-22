@@ -30,11 +30,11 @@ export class ChatService {
   }
 
   async getMessagesByUser(
-    intraId: number,
+    intraId: string,
     ): Promise<any[]> 
   {
     const userWithMessage = await this.prisma.user.findUnique({
-      where: { intraId: intraId},
+      where: { intraId: parseInt(intraId, 10)},
       include: {
        sentMessages: true,
        receivedMessages: true,
@@ -67,15 +67,13 @@ export class ChatService {
 
 
   async addMessageToUser(
-    intraId: number,
-    senderId: string,
-    receiverId: string,
+    senderIntraId: string,
+    receiverIntraId: string,
     content: string
   ): Promise<void> 
   {
-    const idSender = this.findUserIdByIntraId(intraId);
-    const  receiverId2 = parseInt(receiverId, 10); 
-    const idReceiver = this.findUserIdByIntraId(receiverId2);
+    const idSender = this.findUserIdByIntraId(parseInt(senderIntraId, 10));
+    const idReceiver = this.findUserIdByIntraId(parseInt(receiverIntraId, 10));
     try {
       const userSenderId = await idSender;
       console.log("userSenderId");
