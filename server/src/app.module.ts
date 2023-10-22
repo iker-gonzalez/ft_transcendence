@@ -14,6 +14,7 @@ import { GameDataModule } from './game-data/game-data.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ChatModule } from './chat/chat.module';
 import { GameStatsModule } from './game-stats/game-stats.module';
+import { GameLeaderboardModule } from './game-leaderboard/game-leaderboard.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { GameStatsModule } from './game-stats/game-stats.module';
     GameDataModule,
     ChatModule,
     GameStatsModule,
+    GameLeaderboardModule,
   ],
   providers: [IntraService],
 })
