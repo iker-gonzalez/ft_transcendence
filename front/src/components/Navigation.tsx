@@ -54,6 +54,9 @@ const Navbar = (): JSX.Element => {
         <NavItem>
           <NavLink to="/game">Game</NavLink>
         </NavItem>
+        <NavItem>
+          <NavLink to="/leaderboard">Leaderboard</NavLink>
+        </NavItem>
       </NavList>
     </NavbarContainer>
   );
