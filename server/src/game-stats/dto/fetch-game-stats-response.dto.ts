@@ -1,4 +1,4 @@
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { swaggerConstants } from '../../../config/swagger.constants';
 import { StatsDto } from './stats.dto';
@@ -17,5 +17,6 @@ export class FetchGameStatsResponseDto {
       swaggerConstants.dto.fetchGameStatsResponseDto.data.description,
     example: swaggerConstants.dto.fetchGameStatsResponseDto.data.example,
   })
+  @IsObject()
   data: StatsDto;
 }

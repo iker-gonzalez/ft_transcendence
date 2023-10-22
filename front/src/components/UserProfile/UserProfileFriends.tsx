@@ -61,7 +61,9 @@ const WrapperDiv = styled.div`
 `;
 
 const UserProfileFriends: React.FC = (): JSX.Element => {
-  const [showFriendProfile, setShowFriendProfile] = useState<boolean>(false);
+  const [friendProfileToShow, setFriendProfileToShow] = useState<any | null>(
+    false,
+  );
   const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
 
@@ -78,7 +80,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
     successMessage: string,
   ): void => {
     setUserFriends(newFriendsList);
-    setShowFriendProfile(false);
+    setFriendProfileToShow(null);
     setShowAddNewFriendFlow(false);
 
     launchFlashMessage(successMessage, FlashMessageLevel.SUCCESS);
@@ -99,43 +101,49 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
 
           if (userFriends.length) {
             return (
-              <PaginatedSection numberOfItems={2}>
-                <ul className="friends-list">
-                  {userFriends.map((friend) => {
-                    return (
-                      <li key={friend.intraId} className="user-item">
-                        <div className="user-info">
-                          <RoundImg
-                            src={friend.avatar}
-                            alt=""
-                            className="avatar"
-                          />
-                          <div>
-                            <h3 className="title-2 mb-8">{friend.username}</h3>
-                            <p className="small mb-8">{friend.email}</p>
-                          </div>
-                        </div>
-                        <MainButton onClick={() => setShowFriendProfile(true)}>
-                          See profile
-                        </MainButton>
-                        {showFriendProfile && (
-                          <Modal
-                            dismissModalAction={() => {
-                              setShowFriendProfile(false);
-                            }}
-                          >
-                            <ViewNewUserProfile
-                              foundUserData={friend}
-                              isAlreadyFriend={true}
-                              onUpdateFriendsList={onUpdateFriendsList}
+              <>
+                <PaginatedSection numberOfItems={2}>
+                  <ul className="friends-list">
+                    {userFriends.map((friend) => {
+                      return (
+                        <li key={friend.intraId} className="user-item">
+                          <div className="user-info">
+                            <RoundImg
+                              src={friend.avatar}
+                              alt=""
+                              className="avatar"
                             />
-                          </Modal>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </PaginatedSection>
+                            <div>
+                              <h3 className="title-2 mb-8">
+                                {friend.username}
+                              </h3>
+                              <p className="small mb-8">{friend.email}</p>
+                            </div>
+                          </div>
+                          <MainButton
+                            onClick={() => setFriendProfileToShow(friend)}
+                          >
+                            See profile
+                          </MainButton>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </PaginatedSection>
+                {friendProfileToShow && (
+                  <Modal
+                    dismissModalAction={() => {
+                      setFriendProfileToShow(null);
+                    }}
+                  >
+                    <ViewNewUserProfile
+                      foundUserData={friendProfileToShow}
+                      isAlreadyFriend={true}
+                      onUpdateFriendsList={onUpdateFriendsList}
+                    />
+                  </Modal>
+                )}
+              </>
             );
           }
         })()}

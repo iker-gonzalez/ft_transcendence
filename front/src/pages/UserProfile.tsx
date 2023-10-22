@@ -10,6 +10,7 @@ import UserProfileWelcomeModal from '../components/UserProfile/UserProfileWelcom
 import UserProfileFriends from '../components/UserProfile/UserProfileFriends';
 import UserProfileMatchlist from '../components/UserProfile/UserProfileMatchList';
 import UserProfileStats from '../components/UserProfile/UserProfileStats';
+import ContrastPanel from '../components/UI/ContrastPanel';
 
 const WrapperDiv = styled.div`
   display: flex;
@@ -17,7 +18,7 @@ const WrapperDiv = styled.div`
   gap: 40px;
 
   > :first-child {
-    width: 350px;
+    width: 375px;
   }
 
   .blocks-container {
@@ -57,7 +58,9 @@ const UserProfile: React.FC = () => {
             <WrapperDiv>
               <div className="blocks-container">
                 <UserProfileHero userData={userData} />
-                <UserProfileStats />
+                <ContrastPanel>
+                  <UserProfileStats />
+                </ContrastPanel>
               </div>
               <div className="blocks-container">
                 <UserProfileSettings userData={userData} />
