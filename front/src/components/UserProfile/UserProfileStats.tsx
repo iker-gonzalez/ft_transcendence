@@ -242,7 +242,7 @@ const UserProfileStats: React.FC<UserProfileStatsProps> = ({
                       <p>
                         quickest win{' '}
                         <span className="stat-highlight">
-                          {(stats.quickestWin / 1000).toFixed(0)}s
+                          {formatMsToFullTime(stats.quickestWin)}
                         </span>
                       </p>
                       <p>
