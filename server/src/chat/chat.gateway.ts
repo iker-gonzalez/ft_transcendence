@@ -16,7 +16,7 @@ export class ChatGateway implements OnGatewayConnection {
   constructor(private readonly chatService: ChatService,
     private readonly userService: UserService) {}
 
-  @WebSocketServer()
+  @WebSocketServer() 
   server: Server;
 
   async handleConnection(client :Socket, data: string ) : Promise<void> {
@@ -33,11 +33,11 @@ export class ChatGateway implements OnGatewayConnection {
     console.log(payload.content);  
 
     // Add DM to DB, this will update the DM chat of the sender and the receiver 
-    this.chatService.addMessageToUser(payload.id, payload.senderId,
+    this.chatService.addMessageToUser( payload.senderId,
                       payload.receiverId, payload.content);
     try {
       // Prueba para el get de lo DM
-      const allMD = await this.chatService.getMessagesByUser(payload.id);
+      const allMD = await this.chatService.getMessagesByUser(payload.senderId);
       console.log("allMD", allMD);
     } catch (error) {
       console.error("Error:", error);
