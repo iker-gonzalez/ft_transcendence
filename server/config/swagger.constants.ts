@@ -508,6 +508,7 @@ export const swaggerConstants = {
           currentWinStreak: 0,
           longestMatch: 621961,
           quickestWin: 608692,
+          totalGameTime: 123456789,
           nemesis: {
             avatar: '/static/media/c3po_avatar.763ed1d4866a4dc88e10.webp',
             intraId: 42,

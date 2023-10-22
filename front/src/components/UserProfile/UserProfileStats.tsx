@@ -199,6 +199,19 @@ const UserProfileStats: React.FC<UserProfileStatsProps> = ({
                 </p>
               </div>
             </GradientBorder>
+            <div>
+              <h3 className="title-3 mb-16">Game time</h3>
+              <div className="stat-container">
+                <p>
+                  <span className="stat-highlight">
+                    {formatMsToFullTime(stats.totalGameTime)}
+                  </span>{' '}
+                  over{' '}
+                  <span className="stat-highlight">{stats.totalGames}</span>{' '}
+                  {stats.totalGames === 1 ? 'game' : 'games'}
+                </p>
+              </div>
+            </div>
             {(() => {
               if (stats.totalGames < 5) {
                 return userId ? otherUserEmptyState : currentUserEmptyState;
