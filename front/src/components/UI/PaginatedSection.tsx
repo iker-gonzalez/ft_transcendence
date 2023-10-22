@@ -71,8 +71,14 @@ const PaginatedSection: React.FC<PropsWithChildren<PaginatedSectionProps>> = ({
         )}
       </div>
       <div className="pagination-container">
-        {[...new Array(Math.ceil(childrenArray.length / numberOfItems))].map(
-          (value, index) => {
+        {(() => {
+          const numberOfPages = Math.ceil(childrenArray.length / numberOfItems);
+
+          if (numberOfPages === 1) {
+            return <></>;
+          }
+
+          return [...new Array(numberOfPages)].map((value, index) => {
             return (
               <button
                 onClick={() => {
@@ -86,8 +92,8 @@ const PaginatedSection: React.FC<PropsWithChildren<PaginatedSectionProps>> = ({
                 {index + 1}
               </button>
             );
-          },
-        )}
+          });
+        })()}
       </div>
     </WrapperDiv>
   );
