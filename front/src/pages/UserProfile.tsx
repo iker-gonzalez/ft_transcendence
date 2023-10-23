@@ -8,9 +8,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
 import UserProfileWelcomeModal from '../components/UserProfile/UserProfileWelcomeModal';
 import UserProfileFriends from '../components/UserProfile/UserProfileFriends';
-import UserProfileMatchlist from '../components/UserProfile/UserProfileMatchList';
-import UserProfileStats from '../components/UserProfile/UserProfileStats';
-import ContrastPanel from '../components/UI/ContrastPanel';
 
 const WrapperDiv = styled.div`
   display: flex;
@@ -58,14 +55,10 @@ const UserProfile: React.FC = () => {
             <WrapperDiv>
               <div className="blocks-container">
                 <UserProfileHero userData={userData} />
-                <ContrastPanel>
-                  <UserProfileStats />
-                </ContrastPanel>
               </div>
               <div className="blocks-container">
                 <UserProfileSettings userData={userData} />
                 <UserProfileFriends />
-                <UserProfileMatchlist userData={userData} />
               </div>
             </WrapperDiv>
           )}
