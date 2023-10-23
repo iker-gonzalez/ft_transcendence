@@ -1,17 +1,16 @@
 import React, { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 
+const borderWidth = '5px';
 const WrapperDiv = styled.div`
-  --border-width: 3px;
-
-  background: #ffd369;
-  background: linear-gradient(225deg, #ffd369, #00aeb5);
+  background: #00aeb5;
+  background: linear-gradient(180deg, #ffd369 0%, #00aeb5 100%);
   border-radius: 20px;
 
   .container {
     border-radius: inherit;
 
-    margin: var(--border-width);
+    margin: ${borderWidth};
   }
 `;
 

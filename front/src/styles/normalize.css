@@ -150,3 +150,9 @@ button {
   cursor: pointer;
   outline: none;
 }
+
+progress[value],
+progress {
+  -webkit-appearance: none;
+  appearance: none;
+}
