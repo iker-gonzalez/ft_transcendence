@@ -134,7 +134,7 @@ const UserProfileMatchlist: React.FC<{ userData: UserData }> = ({
           }
 
           return (
-            <PaginatedSection numberOfItems={4}>
+            <PaginatedSection numberOfItems={3}>
               {userGames.map((game: UserGameData, index) => {
                 const formattedDate = new Date(
                   game.startedAt,

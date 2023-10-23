@@ -12,6 +12,7 @@ import { darkerBgColor } from '../../constants/color-tokens';
 import GradientBorder from '../UI/GradientBorder';
 import MainButton from '../UI/MainButton';
 import { useNavigate } from 'react-router-dom';
+import UserStats from '../../interfaces/user-stats.interface';
 
 const WrapperDiv = styled.div`
   .centered-container {
@@ -113,7 +114,7 @@ type UserProfileStatsProps = {
 const UserProfileStats: React.FC<UserProfileStatsProps> = ({
   userId,
 }): JSX.Element => {
-  const [stats, setStats] = useState<any | null>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -127,8 +128,7 @@ const UserProfileStats: React.FC<UserProfileStatsProps> = ({
       .then((res) => {
         return res.json();
       })
-      .then((data) => {
-        console.log('data.data', data.data);
+      .then((data: { found: number; data: UserStats }) => {
         if (data.found > 0) {
           setStats(data.data);
         } else {
