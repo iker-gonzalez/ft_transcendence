@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import CenteredLayout from '../components/UI/CenteredLayout';
-import UserProfileStats from '../components/UserProfile/UserProfileStats';
+import UserStatsStats from '../components/UserStats/UserStatsStats';
 import ContrastPanel from '../components/UI/ContrastPanel';
-import UserProfileMatchlist from '../components/UserProfile/UserProfileMatchList';
+import UserStatsMatchList from '../components/UserStats/UserStatsMatchList';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
@@ -47,7 +47,7 @@ const UserStats: React.FC = (): JSX.Element => {
         <h1 className="title-1 mb-24">Game dashboard</h1>
         <div className="container">
           <ContrastPanel className="stats-container">
-            <UserProfileStats />
+            <UserStatsStats />
           </ContrastPanel>
           <ContrastPanel>
             {(() => {
@@ -56,7 +56,7 @@ const UserStats: React.FC = (): JSX.Element => {
               }
 
               if (userData) {
-                return <UserProfileMatchlist userData={userData} />;
+                return <UserStatsMatchList userData={userData} />;
               }
             })()}
           </ContrastPanel>
