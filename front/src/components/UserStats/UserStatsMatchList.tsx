@@ -82,7 +82,7 @@ const WrapperDiv = styled.div`
   }
 `;
 
-const UserProfileMatchlist: React.FC<{ userData: UserData }> = ({
+const UserStatsMatchList: React.FC<{ userData: UserData }> = ({
   userData,
 }): JSX.Element => {
   const { userGames, isFetchingGames, fetchGamesList, isErrorFetchingGames } =
@@ -204,4 +204,4 @@ const UserProfileMatchlist: React.FC<{ userData: UserData }> = ({
   );
 };
 
-export default UserProfileMatchlist;
+export default UserStatsMatchList;

@@ -114,11 +114,11 @@ const WrapperDiv = styled.div`
   }
 `;
 
-type UserProfileStatsProps = {
+type UserStatsStatsProps = {
   userId?: number;
 };
 
-const UserProfileStats: React.FC<UserProfileStatsProps> = ({
+const UserStatsStats: React.FC<UserStatsStatsProps> = ({
   userId,
 }): JSX.Element => {
   const [stats, setStats] = useState<UserStats | null>(null);
@@ -344,4 +344,4 @@ const UserProfileStats: React.FC<UserProfileStatsProps> = ({
   );
 };
 
-export default UserProfileStats;
+export default UserStatsStats;
