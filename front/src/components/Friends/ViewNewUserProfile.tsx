@@ -9,7 +9,7 @@ import Cookies from 'js-cookie';
 import FriendData from '../../interfaces/friend-data.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
-import UserProfileStats from '../UserProfile/UserProfileStats';
+import UserStatsStats from '../UserStats/UserStatsStats';
 
 type AddNewFriendResponse = {
   created?: number;
@@ -119,7 +119,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
           <p className="small">{foundUserData.email}</p>
         </div>
       </div>
-      <UserProfileStats userId={foundUserData.intraId} />
+      <UserStatsStats userId={foundUserData.intraId} />
       <div className="actions-container">
         {isAlreadyFriend ? (
           <SecondaryButton onClick={removeUserFromFriends}>

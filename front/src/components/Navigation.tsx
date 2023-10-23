@@ -46,13 +46,13 @@ const Navbar = (): JSX.Element => {
           <NavLink to="/">Home</NavLink>
         </NavItem>
         <NavItem>
-          <NavLink to="/stats">Stats</NavLink>
-        </NavItem>
-        <NavItem>
           <NavLink to="/profile">Profile</NavLink>
         </NavItem>
         <NavItem>
-          <NavLink to="/game">Game</NavLink>
+          <NavLink to="/game">Play</NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink to="/stats">Stats</NavLink>
         </NavItem>
         <NavItem>
           <NavLink to="/leaderboard">Leaderboard</NavLink>
