@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
   fetchAuthorized,
@@ -13,6 +13,7 @@ import GradientBorder from '../UI/GradientBorder';
 import MainButton from '../UI/MainButton';
 import { useNavigate } from 'react-router-dom';
 import UserStats from '../../interfaces/user-stats.interface';
+import GradientProgressBar from '../UI/GradientProgressBar';
 
 const WrapperDiv = styled.div`
   .centered-container {
@@ -29,31 +30,37 @@ const WrapperDiv = styled.div`
 
   .basic-info-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 32px;
+    flex-direction: column;
+    gap: 16px;
 
     padding: 15px 20px;
 
     background: ${darkerBgColor};
 
-    .level-text {
-      font-size: 26px;
+    .level-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
 
-      .level-highlight {
-        font-size: 52px;
-        font-weight: bold;
+      .level-text {
+        font-size: 26px;
+        white-space: nowrap;
+
+        .level-highlight {
+          font-size: 52px;
+          font-weight: bold;
+        }
       }
     }
 
     .win-losses-text {
-      > p {
-        font-size: 20px;
-      }
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-      .win-losses-highlight {
-        font-size: 28px;
-        font-weight: bold;
+      p {
+        font-size: 20px;
       }
     }
   }
@@ -71,11 +78,11 @@ const WrapperDiv = styled.div`
 
       text-align: center;
     }
+  }
 
-    .stat-highlight {
-      font-size: 30px;
-      font-weight: bold;
-    }
+  .stat-highlight {
+    font-size: 30px;
+    font-weight: bold;
   }
 
   .social-container {
@@ -117,6 +124,7 @@ const UserProfileStats: React.FC<UserProfileStatsProps> = ({
   const [stats, setStats] = useState<UserStats | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const progressBarRef = useRef<HTMLProgressElement>(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -181,22 +189,59 @@ const UserProfileStats: React.FC<UserProfileStatsProps> = ({
             <GradientBorder className="basic-info-container">
               <div>
                 <h3 className="title-3 sr-only">Rank</h3>
-                <p className="level-text">
-                  lv. <span className="level-highlight">{stats.rank}</span>
-                </p>
+                <div className="level-container">
+                  <div aria-hidden="true" className="progress-bar-container">
+                    {(() => {
+                      const value = stats.rank - Math.floor(stats.rank);
+                      const nextLevel = Math.floor(stats.rank) + 1;
+
+                      return (
+                        <>
+                          <label htmlFor="level" className="sr-only">
+                            Level
+                          </label>
+                          <p className="small">until level {nextLevel}</p>
+                          <GradientProgressBar
+                            id="level"
+                            value={value}
+                            max={1}
+                            ref={progressBarRef}
+                            $progressBarWidth={
+                              progressBarRef.current
+                                ? `${progressBarRef.current.offsetWidth}px`
+                                : '100%'
+                            }
+                            className="progress-bar"
+                          />
+                          <p>
+                            {progressBarRef.current
+                              ? `${progressBarRef.current?.offsetWidth}px`
+                              : '100%'}
+                          </p>
+                        </>
+                      );
+                    })()}
+                  </div>
+                  <p className="level-text">
+                    lv. <span className="level-highlight">{stats.rank}</span>
+                  </p>
+                </div>
               </div>
               <div className="win-losses-text">
                 <h3 className="title-3 sr-only">Wins & losses</h3>
                 <p>
-                  <span className="win-losses-highlight">🔼 {stats.wins}</span>{' '}
-                  wins
+                  <span className="stat-highlight">{stats.totalGames}</span>{' '}
+                  matches
                 </p>
-                <p>
-                  <span className="win-losses-highlight">
-                    🔽 {stats.losses}
-                  </span>{' '}
-                  losses
-                </p>
+                <div>
+                  <p>
+                    <span className="stat-highlight">🔼 {stats.wins}</span> wins
+                  </p>
+                  <p>
+                    <span className="stat-highlight">🔽 {stats.losses}</span>{' '}
+                    losses
+                  </p>
+                </div>
               </div>
             </GradientBorder>
             <div>
