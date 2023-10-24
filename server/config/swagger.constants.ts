@@ -175,6 +175,14 @@ export const swaggerConstants = {
         },
       },
     },
+    leaderboard: {
+      get: {
+        summary: 'Retrieve global leaderboard.',
+        ok: {
+          description: 'Returns global leaderboard.',
+        },
+      },
+    },
   },
   dto: {
     intraSignin: {
@@ -526,6 +534,46 @@ export const swaggerConstants = {
             count: 17,
           },
         },
+      },
+    },
+    fetchLeaderboardResponseDto: {
+      found: {
+        description: 'Number of found users',
+        example: 2,
+      },
+      data: {
+        description: 'Array with users and their stats',
+        example: [
+          {
+            user: {
+              username: 'ngasco',
+              intraId: 88103,
+              avatar:
+                'https://cdn.intra.42.fr/users/a17a37c3c5f97cc6d8e2454710c10ccd/ngasco.jpg',
+            },
+            stats: {
+              rank: 2.4,
+              wins: 12,
+              losses: 33,
+              totalGames: 45,
+              totalGameTime: 2127849,
+            },
+          },
+          {
+            user: {
+              username: 'test2-',
+              intraId: 667,
+              avatar: 'https://i.pravatar.cc/600?img=10',
+            },
+            stats: {
+              rank: 1,
+              wins: 5,
+              losses: 16,
+              totalGames: 21,
+              totalGameTime: 945295,
+            },
+          },
+        ],
       },
     },
   },

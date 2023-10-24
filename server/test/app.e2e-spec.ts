@@ -2016,6 +2016,19 @@ describe('App e2e', () => {
         });
       });
     });
+
+    describe('game leaderboard', () => {
+      test('it should return leaderboard data', async () => {
+        await pactum
+          .spec()
+          .get(`/game/leaderboard`)
+          .expectStatus(200)
+          .expectJsonLike({
+            found: 0,
+            data: [],
+          });
+      });
+    });
   });
 
   describe('Sockets', () => {
