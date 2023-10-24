@@ -39,16 +39,25 @@ const WrapperDiv = styled.div`
 
     .level-container {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       gap: 20px;
 
+      .progress-bar-container {
+        width: 100%;
+        max-width: 200px;
+
+        .progress-bar {
+          width: 100%;
+        }
+      }
+
       .level-text {
-        font-size: 26px;
+        font-size: 32px;
         white-space: nowrap;
 
         .level-highlight {
-          font-size: 52px;
+          font-size: 60px;
           font-weight: bold;
         }
       }
