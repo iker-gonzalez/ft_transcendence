@@ -1,6 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GameLeaderboardService } from './game-leaderboard.service';
+import { swaggerConstants } from '../../config/swagger.constants';
+import { FetchLeaderboardResponseDto } from './dto/fetch-leaderboard-response.dto';
 
 @ApiTags('Game stats')
 @Controller('game/leaderboard')
@@ -10,7 +12,14 @@ export class GameLeaderboardController {
   ) {}
 
   @Get()
-  getLeaderboard(): Promise<any> {
+  @ApiOperation({
+    summary: swaggerConstants.game.leaderboard.get.summary,
+  })
+  @ApiOkResponse({
+    description: swaggerConstants.game.leaderboard.get.ok.description,
+    type: FetchLeaderboardResponseDto,
+  })
+  getLeaderboard(): Promise<FetchLeaderboardResponseDto> {
     return this.gameLeaderboardService.getLeaderboard();
   }
 }

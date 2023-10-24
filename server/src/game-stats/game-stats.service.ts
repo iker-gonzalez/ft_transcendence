@@ -198,11 +198,15 @@ export class GameStatsService {
     const { streak, currentCount } = longestWinStreakData;
     const longestWinStreak = streak > currentCount ? streak : currentCount;
 
-    const currentWinStreak = playerDataSets
+    const partialCurrentWinStreak = playerDataSets
       .reverse()
       .findIndex((playerData) => {
         return !playerData.isWinner;
       });
+    const currentWinStreak =
+      partialCurrentWinStreak === -1
+        ? playerDataSets.length
+        : partialCurrentWinStreak;
 
     return {
       found: filteredUserGameDataSets.length,
