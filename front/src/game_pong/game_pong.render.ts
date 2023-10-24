@@ -328,7 +328,7 @@ export function matchUser1(
 
   // Check if ball pass the goal line & increase user score
   // If a goal is scored, the ball is reset
-  if (ballData.x + ballData.radius < 25 && !ballData.reset) {
+  if (ballData.x + ballData.radius < 20 && !ballData.reset) {
     user2.score++;
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
@@ -341,7 +341,7 @@ export function matchUser1(
     user1 = newUserData1;
     user2 = newUserData2;
   } else if (
-    ballData.x + ballData.radius > canvas.width - 25 &&
+    ballData.x + ballData.radius > canvas.width - 20 &&
     !ballData.reset
   ) {
     user1.score++;
