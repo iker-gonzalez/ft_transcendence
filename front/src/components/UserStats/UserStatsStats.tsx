@@ -213,11 +213,6 @@ const UserStatsStats: React.FC<UserStatsStatsProps> = ({
                             }
                             className="progress-bar"
                           />
-                          <p>
-                            {progressBarRef.current
-                              ? `${progressBarRef.current?.offsetWidth}px`
-                              : '100%'}
-                          </p>
                         </>
                       );
                     })()}
