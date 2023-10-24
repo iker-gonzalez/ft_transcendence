@@ -7,8 +7,8 @@ import UserDataContextData from '../interfaces/user-data-context-data.interface'
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import LoadingSpinner from '../components/UI/LoadingSpinner';
 import styled from 'styled-components';
+import LoadingFullscreen from '../components/UI/LoadingFullscreen';
 
 const WrapperDiv = styled.div`
   .container {
@@ -41,29 +41,29 @@ const UserStats: React.FC = (): JSX.Element => {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
-    <CenteredLayout>
-      <WrapperDiv>
-        <h1 className="title-1 mb-24">Game dashboard</h1>
-        <div className="container">
-          <ContrastPanel className="stats-container">
-            <UserStatsStats />
-          </ContrastPanel>
-          <ContrastPanel>
-            {(() => {
-              if (isUserDataFetching) {
-                return <LoadingSpinner />;
-              }
+  if (isUserDataFetching) {
+    return <LoadingFullscreen />;
+  }
 
-              if (userData) {
-                return <UserStatsMatchList userData={userData} />;
-              }
-            })()}
-          </ContrastPanel>
-        </div>
-      </WrapperDiv>
-    </CenteredLayout>
-  );
+  if (userData) {
+    return (
+      <CenteredLayout>
+        <WrapperDiv>
+          <h1 className="title-1 mb-24">Game dashboard</h1>
+          <div className="container">
+            <ContrastPanel className="stats-container">
+              <UserStatsStats />
+            </ContrastPanel>
+            <ContrastPanel>
+              <UserStatsMatchList userData={userData} />;
+            </ContrastPanel>
+          </div>
+        </WrapperDiv>
+      </CenteredLayout>
+    );
+  }
+
+  return <></>;
 };
 
 export default UserStats;
