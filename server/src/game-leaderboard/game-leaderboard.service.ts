@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { GameStatsService } from 'src/game-stats/game-stats.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { GameStatsService } from '../game-stats/game-stats.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { FetchLeaderboardResponseDto } from './dto/fetch-leaderboard-response.dto';
 
 @Injectable()
 export class GameLeaderboardService {
@@ -9,7 +10,7 @@ export class GameLeaderboardService {
     private readonly gameStatsService: GameStatsService,
   ) {}
 
-  async getLeaderboard(): Promise<any> {
+  async getLeaderboard(): Promise<FetchLeaderboardResponseDto> {
     const allUsers = await this.prisma.user.findMany({});
 
     const leaderboardData = [];
