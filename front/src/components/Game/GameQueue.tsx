@@ -93,6 +93,8 @@ export default function GameQueue(): JSX.Element {
   }: UseMatchmakingSocket = useMatchmakingSocket();
   const { launchFlashMessage } = useFlashMessages();
 
+  // let inactivityTimeoutId: number;
+
   useEffect(() => {
     if (!userData) {
       matchmakingSocketRef.current.disconnect();
@@ -116,6 +118,8 @@ export default function GameQueue(): JSX.Element {
             setSessionData(newSessionRes.data);
 
             setIsSessionCreated(true);
+
+            // window.clearInterval(inactivityTimeoutId);
           } else {
             console.warn('error creating session');
           }
@@ -131,6 +135,8 @@ export default function GameQueue(): JSX.Element {
         },
       );
     }
+
+    // return window.clearTimeout(inactivityTimeoutId);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoinQueue = () => {
@@ -141,13 +147,13 @@ export default function GameQueue(): JSX.Element {
       }),
     );
 
-    setTimeout(() => {
-      launchFlashMessage(
-        'Your queue session expired. Better luck next time.',
-        FlashMessageLevel.ERROR,
-      );
-      onRemoveFromQueue();
-    }, INACTIVITY_TIMEOUT);
+    // inactivityTimeoutId = window.setTimeout(() => {
+    //   launchFlashMessage(
+    //     'Your queue session expired. Better luck next time.',
+    //     FlashMessageLevel.ERROR,
+    //   );
+    //   onRemoveFromQueue();
+    // }, INACTIVITY_TIMEOUT);
 
     for (let i = INACTIVITY_TIMEOUT / 1000; i > 0; i--) {
       setTimeout(() => {
@@ -177,6 +183,7 @@ export default function GameQueue(): JSX.Element {
         intraId: userData!.intraId,
       }),
     );
+    // window.clearTimeout(inactivityTimeoutId);
   };
 
   return (
