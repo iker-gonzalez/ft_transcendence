@@ -34,6 +34,7 @@ const MainContent = styled.main`
     }
   }
 `;
+
 const Leaderboard: React.FC = (): JSX.Element => {
   const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -98,16 +99,19 @@ const Leaderboard: React.FC = (): JSX.Element => {
                       <td>{leaderboardData.stats.wins} wins</td>
                       <td>{leaderboardData.stats.losses} losses</td>
                       <td>
-                        {(
-                          (leaderboardData.stats.wins * 100) /
-                          leaderboardData.stats.totalGames
-                        ).toFixed()}
-                        %
+                        {leaderboardData.stats.totalGames
+                          ? `${(
+                              (leaderboardData.stats.wins * 100) /
+                              leaderboardData.stats.totalGames
+                            ).toFixed()}%`
+                          : '-'}
                       </td>
                       <td>
-                        {formatMsToFullTime(
-                          leaderboardData.stats.totalGameTime,
-                        )}
+                        {leaderboardData.stats.totalGameTime
+                          ? formatMsToFullTime(
+                              leaderboardData.stats.totalGameTime,
+                            )
+                          : '-'}
                       </td>
                     </tr>
                   );
