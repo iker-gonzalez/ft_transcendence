@@ -14,6 +14,10 @@ import useMatchmakingSocket, {
 import ContrastPanel from '../UI/ContrastPanel';
 import waitingAnimationData from '../../assets/lotties/playing.json';
 import Lottie from 'lottie-react';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
+import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+
+const INACTIVITY_TIMEOUT = 20000;
 
 type GameQueueRes = {
   queued: boolean;
@@ -79,12 +83,15 @@ export default function GameQueue(): JSX.Element {
 
   const [isQueued, setIsQueued] = useState<boolean>(false);
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
+  const [countdownValue, setCountdownValue] =
+    useState<number>(INACTIVITY_TIMEOUT);
 
   const {
     matchmakingSocketRef,
     isConnectionError,
     isSocketConnected,
   }: UseMatchmakingSocket = useMatchmakingSocket();
+  const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
     if (!userData) {
@@ -133,6 +140,20 @@ export default function GameQueue(): JSX.Element {
         intraId: userData!.intraId,
       }),
     );
+
+    setTimeout(() => {
+      launchFlashMessage(
+        'Your queue session expired. Better luck next time.',
+        FlashMessageLevel.ERROR,
+      );
+      onRemoveFromQueue();
+    }, INACTIVITY_TIMEOUT);
+
+    for (let i = INACTIVITY_TIMEOUT / 1000; i > 0; i--) {
+      setTimeout(() => {
+        setCountdownValue(i);
+      }, INACTIVITY_TIMEOUT - i * 1000);
+    }
   };
 
   const onGoToMatch = () => {
@@ -202,8 +223,12 @@ export default function GameQueue(): JSX.Element {
               return (
                 <>
                   <h1 className="title-1 mb-16">Your opponent is on the way</h1>
-                  <p className="mb-16">
-                    Queue joined. Be patient, your moment will come...
+                  <p>
+                    You will be thrown out of the current queue in{' '}
+                    {countdownValue > 1
+                      ? `${countdownValue} seconds`
+                      : `${countdownValue} second`}
+                    ...
                   </p>
                   <Lottie
                     animationData={waitingAnimationData}
@@ -229,10 +254,6 @@ export default function GameQueue(): JSX.Element {
             }
           }
         })()}
-        <p className="mb-16">
-          Game queue for user with intradId{' '}
-          <span className="highlighted">{userData?.intraId}</span>
-        </p>
       </CenteredLayout>
     </WrapperDiv>
   );
