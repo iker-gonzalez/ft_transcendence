@@ -31,7 +31,6 @@ const WrapperDiv = styled.div`
 
     width: fit-content;
     min-width: 450px;
-    max-width: 500px;
     min-height: 250px;
 
     background-color: ${darkerBgColor};
