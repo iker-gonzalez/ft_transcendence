@@ -11,10 +11,9 @@ import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import PaginatedSection from '../UI/PaginatedSection';
 import { formatMsToFullTime } from '../../utils/utils';
+import UserCoreData from '../../interfaces/user-core-data.interface';
 
 const WrapperDiv = styled.div`
-  width: 650px;
-
   .session-box {
     padding: 24px 0;
 
@@ -82,8 +81,14 @@ const WrapperDiv = styled.div`
   }
 `;
 
-const UserStatsMatchList: React.FC<{ userData: UserData }> = ({
+type UserStatsMatchListProps = {
+  userData: UserData | UserCoreData;
+  numberOfItemsPerPage: number;
+};
+
+const UserStatsMatchList: React.FC<UserStatsMatchListProps> = ({
   userData,
+  numberOfItemsPerPage,
 }): JSX.Element => {
   const { userGames, isFetchingGames, fetchGamesList, isErrorFetchingGames } =
     useUserGames();
@@ -132,7 +137,7 @@ const UserStatsMatchList: React.FC<{ userData: UserData }> = ({
         }
 
         return (
-          <PaginatedSection numberOfItems={4}>
+          <PaginatedSection numberOfItems={numberOfItemsPerPage}>
             {userGames.map((game: UserGameData, index) => {
               const formattedDate = new Date(game.startedAt).toLocaleDateString(
                 'en-us',

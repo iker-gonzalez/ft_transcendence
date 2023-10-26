@@ -55,7 +55,10 @@ const UserStats: React.FC = (): JSX.Element => {
               <UserStatsStats />
             </ContrastPanel>
             <ContrastPanel>
-              <UserStatsMatchList userData={userData} />
+              <UserStatsMatchList
+                userData={userData}
+                numberOfItemsPerPage={4}
+              />
             </ContrastPanel>
           </div>
         </WrapperDiv>
