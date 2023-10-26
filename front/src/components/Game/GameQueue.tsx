@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGameRouteContext } from '../../pages/Game';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import MainButton from '../UI/MainButton';
@@ -17,7 +17,7 @@ import Lottie from 'lottie-react';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 
-const INACTIVITY_TIMEOUT = 20000;
+const INACTIVITY_TIMEOUT = 20_000;
 
 type GameQueueRes = {
   queued: boolean;
@@ -85,6 +85,7 @@ export default function GameQueue(): JSX.Element {
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
   const [countdownValue, setCountdownValue] =
     useState<number>(INACTIVITY_TIMEOUT);
+  const inactivityTimeoutRef = useRef<number>(0);
 
   const {
     matchmakingSocketRef,
@@ -92,8 +93,6 @@ export default function GameQueue(): JSX.Element {
     isSocketConnected,
   }: UseMatchmakingSocket = useMatchmakingSocket();
   const { launchFlashMessage } = useFlashMessages();
-
-  // let inactivityTimeoutId: number;
 
   useEffect(() => {
     if (!userData) {
@@ -119,7 +118,7 @@ export default function GameQueue(): JSX.Element {
 
             setIsSessionCreated(true);
 
-            // window.clearInterval(inactivityTimeoutId);
+            window.clearInterval(inactivityTimeoutRef.current);
           } else {
             console.warn('error creating session');
           }
@@ -136,7 +135,9 @@ export default function GameQueue(): JSX.Element {
       );
     }
 
-    // return window.clearTimeout(inactivityTimeoutId);
+    return () => {
+      window.clearTimeout(inactivityTimeoutRef.current);
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoinQueue = () => {
@@ -147,13 +148,13 @@ export default function GameQueue(): JSX.Element {
       }),
     );
 
-    // inactivityTimeoutId = window.setTimeout(() => {
-    //   launchFlashMessage(
-    //     'Your queue session expired. Better luck next time.',
-    //     FlashMessageLevel.ERROR,
-    //   );
-    //   onRemoveFromQueue();
-    // }, INACTIVITY_TIMEOUT);
+    inactivityTimeoutRef.current = window.setTimeout(() => {
+      launchFlashMessage(
+        'Your queue session expired. Better luck next time.',
+        FlashMessageLevel.INFO,
+      );
+      onRemoveFromQueue();
+    }, INACTIVITY_TIMEOUT);
 
     for (let i = INACTIVITY_TIMEOUT / 1000; i > 0; i--) {
       setTimeout(() => {
@@ -183,7 +184,7 @@ export default function GameQueue(): JSX.Element {
         intraId: userData!.intraId,
       }),
     );
-    // window.clearTimeout(inactivityTimeoutId);
+    window.clearTimeout(inactivityTimeoutRef.current);
   };
 
   return (
