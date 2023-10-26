@@ -61,9 +61,8 @@ const WrapperDiv = styled.div`
 `;
 
 const UserProfileFriends: React.FC = (): JSX.Element => {
-  const [friendProfileToShow, setFriendProfileToShow] = useState<any | null>(
-    false,
-  );
+  const [friendProfileToShow, setFriendProfileToShow] =
+    useState<FriendData | null>(null);
   const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
 
