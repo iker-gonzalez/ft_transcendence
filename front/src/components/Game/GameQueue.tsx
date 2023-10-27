@@ -1,13 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useGameRouteContext } from '../../pages/Game';
-import { createSearchParams, useNavigate } from 'react-router-dom';
 import MainButton from '../UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from '../UI/CenteredLayout';
-import RoundImg from '../UI/RoundImage';
 import { primaryAccentColor } from '../../constants/color-tokens';
 import SessionData from '../../interfaces/game-session-data.interface';
-import GameSessionUser from '../../interfaces/game-session-user.interface';
 import useMatchmakingSocket, {
   UseMatchmakingSocket,
 } from './useMatchmakingSocket';
@@ -16,6 +13,7 @@ import waitingAnimationData from '../../assets/lotties/playing.json';
 import Lottie from 'lottie-react';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import GameMatchQueueSession from './GameMatch/GameMatchQueueSession';
 
 const INACTIVITY_TIMEOUT = 20_000;
 
@@ -44,32 +42,6 @@ const WrapperDiv = styled.div`
     align-items: center;
     justify-content: center;
     min-width: 450px;
-
-    .users-box {
-      display: flex;
-      gap: 20px;
-
-      .user-box {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-
-        p {
-          font-weight: bold;
-        }
-
-        img {
-          width: 130px;
-        }
-      }
-    }
-
-    .versus-icon {
-      width: 60px;
-      height: auto;
-      transform: translateY(-20px);
-    }
   }
 
   .waiting-animation {
@@ -78,7 +50,6 @@ const WrapperDiv = styled.div`
 `;
 
 export default function GameQueue(): JSX.Element {
-  const navigate = useNavigate();
   const { sessionDataState, userData } = useGameRouteContext();
 
   const [isQueued, setIsQueued] = useState<boolean>(false);
@@ -163,20 +134,6 @@ export default function GameQueue(): JSX.Element {
     }
   };
 
-  const onGoToMatch = () => {
-    navigate(
-      {
-        pathname: '/game/match',
-        search: createSearchParams({
-          sessionId: sessionDataState[0].id,
-        }).toString(),
-      },
-      {
-        replace: true,
-      },
-    );
-  };
-
   const onRemoveFromQueue = () => {
     matchmakingSocketRef.current.emit(
       'unqueueUser',
@@ -202,27 +159,12 @@ export default function GameQueue(): JSX.Element {
           if (isSessionCreated) {
             return (
               <>
-                <h2 className="title-2 mb-24">This is your new session</h2>
+                <h2 className="title-1 mb-24">This is your new session</h2>
                 <ContrastPanel className="session-box mb-16">
-                  <div className="users-box mb-24">
-                    {sessionDataState[0].players.map(
-                      (player: GameSessionUser) => {
-                        return (
-                          <div key={player.id}>
-                            <div className="user-box">
-                              <RoundImg
-                                alt=""
-                                src={player.avatar}
-                                className="mb-8"
-                              />
-                              <p className="title-3">{player.username}</p>
-                            </div>
-                          </div>
-                        );
-                      },
-                    )}
-                  </div>
-                  <MainButton onClick={onGoToMatch}>Go to match</MainButton>
+                  <GameMatchQueueSession
+                    sessionId={sessionDataState[0].id}
+                    players={sessionDataState[0].players}
+                  />
                 </ContrastPanel>
               </>
             );

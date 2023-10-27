@@ -123,12 +123,14 @@ const WrapperDiv = styled.div`
   }
 `;
 
-type UserStatsStatsProps = {
+type UserStatsInfoProps = {
   userId?: number;
+  showOnlyEssentialStats?: boolean;
 };
 
-const UserStatsStats: React.FC<UserStatsStatsProps> = ({
+const UserStatsStats: React.FC<UserStatsInfoProps> = ({
   userId,
+  showOnlyEssentialStats = false,
 }): JSX.Element => {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -177,9 +179,10 @@ const UserStatsStats: React.FC<UserStatsStatsProps> = ({
       </MainButton>
     </div>
   );
+
   return (
     <WrapperDiv>
-      <h2 className="title-2 mb-24">Stats</h2>
+      {!showOnlyEssentialStats && <h2 className="title-2 mb-24">Stats</h2>}
       {(() => {
         if (isLoading) {
           return (
@@ -248,99 +251,103 @@ const UserStatsStats: React.FC<UserStatsStatsProps> = ({
                 </div>
               </div>
             </GradientBorder>
-            <div>
-              <h3 className="title-3 mb-16">Game time</h3>
-              <div className="stat-container">
-                <p>
-                  <span className="stat-highlight">
-                    {formatMsToFullTime(stats.totalGameTime)}
-                  </span>{' '}
-                  over{' '}
-                  <span className="stat-highlight">{stats.totalGames}</span>{' '}
-                  {stats.totalGames === 1 ? 'game' : 'games'}
-                </p>
-              </div>
-            </div>
-            {(() => {
-              if (stats.totalGames < 5) {
-                return userId ? otherUserEmptyState : currentUserEmptyState;
-              }
+            {!showOnlyEssentialStats && (
+              <>
+                <div>
+                  <h3 className="title-3 mb-16">Game time</h3>
+                  <div className="stat-container">
+                    <p>
+                      <span className="stat-highlight">
+                        {formatMsToFullTime(stats.totalGameTime)}
+                      </span>{' '}
+                      over{' '}
+                      <span className="stat-highlight">{stats.totalGames}</span>{' '}
+                      {stats.totalGames === 1 ? 'game' : 'games'}
+                    </p>
+                  </div>
+                </div>
+                {(() => {
+                  if (stats.totalGames < 5) {
+                    return userId ? otherUserEmptyState : currentUserEmptyState;
+                  }
 
-              return (
-                <>
-                  <div>
-                    <h3 className="title-3 mb-16">Win streak</h3>
-                    <div className="stat-container">
-                      <p>
-                        longest
-                        <span className="stat-highlight">
-                          {stats.longestWinStreak} ✨
-                        </span>
-                      </p>
-                      <p>
-                        current
-                        <span className="stat-highlight">
-                          {stats.currentWinStreak}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="title-3 mb-16">Records</h3>
-                    <div className="stat-container">
-                      <p>
-                        quickest win{' '}
-                        <span className="stat-highlight">
-                          {formatMsToFullTime(stats.quickestWin)}
-                        </span>
-                      </p>
-                      <p>
-                        longest match{' '}
-                        <span className="stat-highlight">
-                          {formatMsToFullTime(stats.longestMatch)}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="title-3 mb-16">Social</h3>
-                    <div className="social-container">
+                  return (
+                    <>
                       <div>
-                        <h4 className="sr-only">Nemesis</h4>
-                        <div className="image-container">
-                          <RoundImg
-                            src={stats.nemesis.avatar}
-                            alt=""
-                            className="image"
-                          />
+                        <h3 className="title-3 mb-16">Win streak</h3>
+                        <div className="stat-container">
                           <p>
-                            <span>{stats.nemesis.username}</span> is your
-                            nemesis, having defeated you{' '}
-                            <span>{stats.nemesis.count}</span> times
+                            longest
+                            <span className="stat-highlight">
+                              {stats.longestWinStreak} ✨
+                            </span>
+                          </p>
+                          <p>
+                            current
+                            <span className="stat-highlight">
+                              {stats.currentWinStreak}
+                            </span>
                           </p>
                         </div>
                       </div>
                       <div>
-                        <h4 className="sr-only">Target</h4>
-                        <div className="image-container right">
-                          <RoundImg
-                            src={stats.victim.avatar}
-                            alt=""
-                            className="image"
-                          />
+                        <h3 className="title-3 mb-16">Records</h3>
+                        <div className="stat-container">
                           <p>
-                            <span>{stats.victim.username}</span> is your target,
-                            having defeated them{' '}
-                            <span>{stats.victim.count}</span>{' '}
-                            {stats.victim.count === 1 ? 'time' : 'times'}
+                            quickest win{' '}
+                            <span className="stat-highlight">
+                              {formatMsToFullTime(stats.quickestWin)}
+                            </span>
+                          </p>
+                          <p>
+                            longest match{' '}
+                            <span className="stat-highlight">
+                              {formatMsToFullTime(stats.longestMatch)}
+                            </span>
                           </p>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
+                      <div>
+                        <h3 className="title-3 mb-16">Social</h3>
+                        <div className="social-container">
+                          <div>
+                            <h4 className="sr-only">Nemesis</h4>
+                            <div className="image-container">
+                              <RoundImg
+                                src={stats.nemesis.avatar}
+                                alt=""
+                                className="image"
+                              />
+                              <p>
+                                <span>{stats.nemesis.username}</span> is your
+                                nemesis, having defeated you{' '}
+                                <span>{stats.nemesis.count}</span> times
+                              </p>
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="sr-only">Target</h4>
+                            <div className="image-container right">
+                              <RoundImg
+                                src={stats.victim.avatar}
+                                alt=""
+                                className="image"
+                              />
+                              <p>
+                                <span>{stats.victim.username}</span> is your
+                                target, having defeated them{' '}
+                                <span>{stats.victim.count}</span>{' '}
+                                {stats.victim.count === 1 ? 'time' : 'times'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </>
+            )}
           </div>
         );
       })()}

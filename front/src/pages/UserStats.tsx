@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import CenteredLayout from '../components/UI/CenteredLayout';
-import UserStatsStats from '../components/UserStats/UserStatsStats';
+import UserStatsInfo from '../components/shared/UserStatsInfo';
 import ContrastPanel from '../components/UI/ContrastPanel';
 import UserStatsMatchList from '../components/UserStats/UserStatsMatchList';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
@@ -52,7 +52,7 @@ const UserStats: React.FC = (): JSX.Element => {
           <h1 className="title-1 mb-24">Game dashboard</h1>
           <div className="container">
             <ContrastPanel className="stats-container">
-              <UserStatsStats />
+              <UserStatsInfo />
             </ContrastPanel>
             <ContrastPanel>
               <UserStatsMatchList
