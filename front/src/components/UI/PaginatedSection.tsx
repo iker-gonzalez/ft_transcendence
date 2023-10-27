@@ -1,11 +1,11 @@
 import React, { Children, PropsWithChildren, useState } from 'react';
 import styled from 'styled-components';
 import {
-  blackColor,
   primaryAccentColor,
-  primaryColor,
   primaryLightColor,
 } from '../../constants/color-tokens';
+import arrowLeft from '../../assets/svg/arrow-left.svg';
+import arrowRight from '../../assets/svg/arrow-right.svg';
 
 const WrapperDiv = styled.div`
   .pagination-container {
@@ -19,29 +19,39 @@ const WrapperDiv = styled.div`
     gap: 5px;
     row-gap: 10px;
 
-    .page-number {
+    .page-counter-container {
       display: flex;
       justify-content: center;
       align-items: center;
+      gap: 5px;
 
-      padding: 10px 15px;
-      font-weight: bold;
-      color: ${primaryLightColor};
-      border: 1px ${primaryAccentColor} solid;
-      border-radius: 100%;
-      width: 45px;
-      height: 45px;
+      .arrow-button {
+        &:disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
 
-      transition: background-color 0.3s ease-in-out;
+        &:hover:not(:disabled) {
+          filter: brightness(1.4);
+        }
 
-      &.active {
-        background-color: ${primaryColor};
-        color: ${blackColor};
+        .arrow-icon {
+          width: 50px;
+        }
       }
 
-      &:hover:not(.active) {
-        background-color: ${primaryAccentColor};
-        cursor: pointer;
+      .page-number {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        padding: 10px 15px;
+        font-weight: bold;
+        color: ${primaryLightColor};
+        border: 1px ${primaryAccentColor} solid;
+        border-radius: 100%;
+        width: 45px;
+        height: 45px;
       }
     }
   }
@@ -78,21 +88,37 @@ const PaginatedSection: React.FC<PropsWithChildren<PaginatedSectionProps>> = ({
             return <></>;
           }
 
-          return [...new Array(numberOfPages)].map((value, index) => {
-            return (
+          return (
+            <div className="page-counter-container">
               <button
                 onClick={() => {
-                  if (currentPage === index) {
-                    return;
-                  }
-                  setCurrentPage(index);
+                  setCurrentPage((prevState) => {
+                    return prevState === 0 ? 0 : prevState - 1;
+                  });
                 }}
-                className={`page-number ${currentPage === index && 'active'}`}
+                disabled={currentPage === 0}
+                aria-label="Previous page"
+                className="arrow-button"
               >
-                {index + 1}
+                <img src={arrowLeft} alt="" className="arrow-icon" />
               </button>
-            );
-          });
+              <p className="page-number">{currentPage + 1}</p>
+              <button
+                onClick={() => {
+                  setCurrentPage((prevState) => {
+                    return prevState === numberOfPages - 1
+                      ? numberOfPages - 1
+                      : prevState + 1;
+                  });
+                }}
+                disabled={currentPage === numberOfPages - 1}
+                aria-label="Next page"
+                className="arrow-button"
+              >
+                <img src={arrowRight} alt="" className="arrow-icon" />
+              </button>
+            </div>
+          );
         })()}
       </div>
     </WrapperDiv>
