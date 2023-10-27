@@ -9,7 +9,7 @@ import Cookies from 'js-cookie';
 import FriendData from '../../interfaces/friend-data.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
-import UserStatsStats from '../UserStats/UserStatsStats';
+import UserStatsInfo from '../shared/UserStatsInfo';
 import UserStatsMatchList from '../UserStats/UserStatsMatchList';
 import { darkBgColor } from '../../constants/color-tokens';
 import ContrastPanel from '../UI/ContrastPanel';
@@ -148,7 +148,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
 
       <div className="user-data-container">
         <ContrastPanel $backgroundColor={darkBgColor}>
-          <UserStatsStats userId={foundUserData.intraId} />
+          <UserStatsInfo userId={foundUserData.intraId} />
         </ContrastPanel>
         <ContrastPanel $backgroundColor={darkBgColor}>
           <UserStatsMatchList
