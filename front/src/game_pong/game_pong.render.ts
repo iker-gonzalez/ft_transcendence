@@ -183,6 +183,7 @@ export function render(
     );
 
     if (user1.score >= matchPoints || user2.score >= matchPoints) {
+      
       drawRect(canvas, 200, 200, 500, 150, RenderColor.Grey);
 
       drawText(
@@ -321,15 +322,15 @@ export function matchUser1(
     ballData.y + ballData.radius + thickness > canvas.height
   ) {
     ballData.moveY = -ballData.moveY;
-    // sounds.wall.play().catch(function (error: any) {
-    //   // console.log("Chrome cannot play sound without user interaction first");
-    // });
+    sounds.hit.play().catch(function (error: any) {});
   }
 
   // Check if ball pass the goal line & increase user score
   // If a goal is scored, the ball & paddle are reset to initial values
   if (ballData.x + ballData.radius < 15 && !ballData.reset) {
     user2.score++;
+    sounds.botScore.play().catch(function (error: any) {});
+    console.log('Sound');
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
@@ -345,6 +346,8 @@ export function matchUser1(
     !ballData.reset
   ) {
     user1.score++;
+    sounds.botScore.play().catch(function (error: any) {});
+    console.log('Sound');
     // sounds.userScore.play().catch(function (error: any) {
     //   // console.log("Chrome cannot play sound without user interaction first");
     // });
@@ -366,10 +369,6 @@ export function matchUser1(
 
   // Detect if the ball hits the paddle & bounce the ball
   if (checkCollision(ballData, player)) {
-    // sounds.hit.play().catch(function (error: any) {
-    //   // console.log("Chrome cannot play sound without user interaction first");
-    // });
-
     // Detect the point where the ball hits in the paddle
     let collidePoint = ballData.y - (player.y + player.height / 2);
     collidePoint = collidePoint / (player.height / 2);
@@ -385,6 +384,8 @@ export function matchUser1(
     ballData.speed += 0.1;
     user1.height -= 2;
     user2.height -= 2;
+
+    sounds.hit.play().catch(function (error: any) {});
 
     // Sparks effect when the ball hits the paddle
     sparks(canvas, ballData.x, ballData.y, ballData.radius, RenderColor.Yellow);
@@ -418,6 +419,8 @@ export function matchUser2(
   // If a goal is scored, the ball & paddle are reset to initial values
   if (ballData.x + ballData.radius < 15 && !ballData.reset) {
     user2.score++;
+    sounds.botScore.play().catch(function (error: any) {});
+    console.log('Sound');
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
@@ -433,9 +436,8 @@ export function matchUser2(
     !ballData.reset
   ) {
     user1.score++;
-    // sounds.userScore.play().catch(function (error: any) {
-    //   // console.log("Chrome cannot play sound without user interaction first");
-    // });
+    sounds.botScore.play().catch(function (error: any) {});
+    console.log('Sound');
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
@@ -454,9 +456,7 @@ export function matchUser2(
 
   // Detect if the ball hits the paddle & bounce the ball
   if (checkCollision(ballData, player)) {
-    // sounds.hit.play().catch(function (error: any) {
-    //   // console.log("Chrome cannot play sound without user interaction first");
-    // });
+    sounds.hit.play().catch(function (error: any) {});
 
     // Detect the point where the ball hits in the paddle
     let collidePoint = ballData.y - (player.y + player.height / 2);
