@@ -330,7 +330,6 @@ export function matchUser1(
     ballData.y + ballData.radius + thickness > canvas.height
   ) {
     ballData.moveY = -ballData.moveY;
-    sounds.hit.play().catch(function (error: any) {});
   }
 
   // Check if ball pass the goal line & increase user score
