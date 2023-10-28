@@ -157,6 +157,7 @@ export function initializeSounds(): ISounds {
   let userScore = new Audio(userScoreSound);
   let botScore = new Audio(botScoreSound);
   let music = new Audio(musicBackground);
+  music.loop = true;
 
   return { hit, wall, userScore, botScore, music };
 }
@@ -356,6 +357,7 @@ export function initializeSocketLogic({
         usersData,
         canvasImages,
         thickness,
+        sounds,
       );
 
       socket.emit(
@@ -399,6 +401,7 @@ export function initializeSocketLogic({
         usersData,
         canvasImages,
         thickness,
+        sounds,
       );
 
       socket.emit(
