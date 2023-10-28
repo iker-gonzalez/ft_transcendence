@@ -5,9 +5,9 @@ import { matchPoints, slit, thickness } from './game_pong';
 import { userSpeedInput } from './game_pong.constants';
 import {
   InitializeCanvasImages,
+  ballTrailClean,
   checkCollision,
   drawBall,
-  drawBallClean,
   drawBallTrail,
   drawDashedLine,
   drawImg,
@@ -493,7 +493,7 @@ export function onGameEnd(
   };
   sounds.music.stop();
 
-  drawBallClean();
+  ballTrailClean();
 
   let endGamePayload: IEndGamePayload = {
     gameDataId: sessionId,
