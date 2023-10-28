@@ -63,7 +63,7 @@ export function drawBallTrail(canvas: HTMLCanvasElement): void {
   const lastBalls = ballTrail.slice(-100);
 
   lastBalls.forEach((ballTrail, index) => {
-    const opacity = (index / lastBalls.length) * 0.2;
+    const opacity = (index / lastBalls.length) * 0.05;
     const size = ballTrail.r * (index / lastBalls.length) * 0.9;
 
     ctx.globalAlpha = opacity;

@@ -66,10 +66,10 @@ export async function gameLoop({
     x: canvas.width / 2,
     y: canvas.height / 2,
   };
-  let user1 = { ...user1Init, x: 40, y: canvas.height / 2 - 100 / 2 };
+  let user1 = { ...user1Init, x: 45, y: canvas.height / 2 - 100 / 2 };
   let user2 = {
     ...user2Init,
-    x: canvas.width - 40,
+    x: canvas.width - 55,
     y: canvas.height / 2 - 100 / 2,
   };
   let net = { ...netInit, x: canvas.width / 2 - 5 };
