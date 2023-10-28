@@ -175,12 +175,7 @@ function game({
   canvasImages,
 }: GameFunctionParams) {
   if (matchFinish) {
-    sounds.music.stop = function () {
-      this.pause();
-      this.currentTime = 0;
-    };
-    sounds.music.stop();
-    console.log('stops music background');
+    
 
     return;
   }
@@ -204,10 +199,10 @@ function game({
       );
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
-        onGameEnd(canvas, eventList, socket, sessionId, user1, usersData.user1);
+        onGameEnd(canvas, eventList, socket, sessionId, user1, usersData.user1, sounds);
         // Delay is required by the server to process the data
         setTimeout(() => {
-          onGameEnd(canvas, eventList, socket, sessionId, user2, botUserData);
+          onGameEnd(canvas, eventList, socket, sessionId, user2, botUserData, sounds);
         }, 500);
         matchFinish = true;
       }
