@@ -77,7 +77,7 @@ export function drawBallTrail(canvas: HTMLCanvasElement): void {
   ctx.globalAlpha = 1;
 }
 
-export function drawBallClean(): void {
+export function ballTrailClean(): void {
   ballTrail = [];
 }
 
