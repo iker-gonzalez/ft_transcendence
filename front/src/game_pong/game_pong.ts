@@ -34,7 +34,7 @@ export const thickness: number = 10;
 export const slit: number = 3;
 const userSpeedInput: number = 10;
 let matchFinish: boolean = false;
-export const matchPoints: number = 5;
+export const matchPoints: number = 50;
 export const startedAt: Date = new Date();
 let countDown: number = 5;
 let isFirstRun: boolean = true;
@@ -191,6 +191,7 @@ function game({
         usersData,
         canvasImages,
         thickness,
+        sounds,
       );
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
