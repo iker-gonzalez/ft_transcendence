@@ -330,6 +330,10 @@ export function matchUser1(
   // If a goal is scored, the ball & paddle are reset to initial values
   if (ballData.x + ballData.radius < 15 && !ballData.reset) {
     user2.score++;
+    sounds.botScore.play().catch(function (error: any) {
+      // console.log("Chrome cannot play sound without user interaction first");
+    });
+    console.log('Sound');
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
@@ -345,6 +349,10 @@ export function matchUser1(
     !ballData.reset
   ) {
     user1.score++;
+    sounds.botScore.play().catch(function (error: any) {
+      // console.log("Chrome cannot play sound without user interaction first");
+    });
+    console.log('Sound');
     // sounds.userScore.play().catch(function (error: any) {
     //   // console.log("Chrome cannot play sound without user interaction first");
     // });
@@ -418,6 +426,10 @@ export function matchUser2(
   // If a goal is scored, the ball & paddle are reset to initial values
   if (ballData.x + ballData.radius < 15 && !ballData.reset) {
     user2.score++;
+    sounds.botScore.play().catch(function (error: any) {
+      // console.log("Chrome cannot play sound without user interaction first");
+    });
+    console.log('Sound');
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
@@ -433,9 +445,10 @@ export function matchUser2(
     !ballData.reset
   ) {
     user1.score++;
-    // sounds.userScore.play().catch(function (error: any) {
-    //   // console.log("Chrome cannot play sound without user interaction first");
-    // });
+    sounds.botScore.play().catch(function (error: any) {
+      // console.log("Chrome cannot play sound without user interaction first");
+    });
+    console.log('Sound');
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
