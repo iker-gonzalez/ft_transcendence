@@ -13,7 +13,7 @@ import {
 import * as fs from 'fs';
 import { TwoFactorAuthService } from '../src/two-factor-auth/two-factor-auth.service';
 import { testUserData } from '../config/app.constants';
-import { User } from '@prisma/client';
+import { User, UserStatus } from '@prisma/client';
 import { IntraUserDataDto } from 'src/auth/dto/intra-user-data.dto';
 import { Socket } from 'socket.io-client';
 import {
@@ -124,6 +124,7 @@ describe('App e2e', () => {
           where: { intraId: userData.intraId },
         });
         expect(user).not.toBeNull();
+        expect(user.status).toBe(UserStatus.ONLINE);
       });
 
       it('should sign in user', async () => {
@@ -157,6 +158,11 @@ describe('App e2e', () => {
             access_token: /.*/,
             data: userData,
           });
+
+        const user = await prisma.user.findUnique({
+          where: { intraId: userData.intraId },
+        });
+        expect(user.status).toBe(UserStatus.ONLINE);
       });
 
       it('should sign in user with OTP', async () => {
