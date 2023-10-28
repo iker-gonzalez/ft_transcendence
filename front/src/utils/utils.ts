@@ -1,3 +1,6 @@
+import UserStatus from '../interfaces/user-status.interface';
+import Cookies from 'js-cookie';
+
 /**
  * Returns the base URL in the app depending on whether the current hostname is localhost or not (e.g., a GitHub Codespace),
  * @returns base URL
@@ -50,4 +53,22 @@ export function formatMsToFullTime(ms: number): string {
   const seconds = date.getSeconds();
 
   return `${minutes ? minutes + 'm ' : ''} ${seconds ? seconds + 's' : ''}`;
+}
+
+/**
+ * Updates the status of the current user.
+ * @param status The new status of the user.
+ * @returns void
+ */
+export function patchUserStatus(status: UserStatus): void {
+  fetchAuthorized(`${getBaseUrl()}/user/status`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${Cookies.get('token')}`,
+    },
+    body: JSON.stringify({
+      status,
+    }),
+  });
 }

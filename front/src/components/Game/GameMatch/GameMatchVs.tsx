@@ -13,12 +13,17 @@ import GameSessionUser from '../../../interfaces/game-session-user.interface';
 import Lottie from 'lottie-react';
 import waitingAnimationData from '../../../assets/lotties/waiting.json';
 import { IEndGamePayload } from '../../../game_pong/game_pong.interfaces';
-import { fetchAuthorized, getBaseUrl } from '../../../utils/utils';
+import {
+  fetchAuthorized,
+  getBaseUrl,
+  patchUserStatus,
+} from '../../../utils/utils';
 import Cookies from 'js-cookie';
 import UserData from '../../../interfaces/user-data.interface';
 import GameCanvasWithAction from '../GameCanvasWithAction';
 import GameMatchEndGameAction from './GameMatchEndGameAction';
 import GameMatchConfettiAnimation from './GameMatchConfettiAnimation';
+import UserStatus from '../../../interfaces/user-status.interface';
 
 const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
   const playerIndex: number = players?.findIndex(
@@ -114,6 +119,8 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
     const socketCopy = socketRef.current;
 
     socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
+      patchUserStatus(UserStatus.PLAYING);
+
       setShowCanvasChildren(false);
 
       if (canvasRef.current) {
@@ -135,6 +142,8 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
     socketRef.current.on(
       `gameEnded/${userData.intraId}/${sessionId}`,
       (socketData: string) => {
+        patchUserStatus(UserStatus.ONLINE);
+
         socketRef.current.disconnect();
         setGameEnd(true);
 
