@@ -174,7 +174,16 @@ function game({
   eventList,
   canvasImages,
 }: GameFunctionParams) {
-  if (matchFinish) return;
+  if (matchFinish) {
+    sounds.music.stop = function () {
+      this.pause();
+      this.currentTime = 0;
+    };
+    sounds.music.stop();
+    console.log('stops music background');
+
+    return;
+  }
 
   setTimeout(() => {
     if (isSoloMode(usersData)) {
