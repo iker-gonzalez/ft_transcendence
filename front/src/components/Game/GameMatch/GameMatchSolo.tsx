@@ -16,7 +16,12 @@ import { Socket } from 'socket.io-client';
 import { IEndGamePayload } from '../../../game_pong/game_pong.interfaces';
 import GameMatchEndGameAction from './GameMatchEndGameAction';
 import GameMatchConfettiAnimation from './GameMatchConfettiAnimation';
-import { fetchAuthorized, getBaseUrl } from '../../../utils/utils';
+import {
+  fetchAuthorized,
+  getBaseUrl,
+  patchUserStatus,
+} from '../../../utils/utils';
+import UserStatus from '../../../interfaces/user-status.interface';
 
 const WrapperDiv = styled.div``;
 
@@ -81,6 +86,8 @@ export default function GameMatchSolo(): JSX.Element {
       socketRef.current.on(
         `gameEnded/${userData.intraId}/${sessionId.current}`,
         (socketData: string) => {
+          patchUserStatus(UserStatus.ONLINE);
+
           setGameEnd(true);
 
           const parsedData: IEndGamePayload = JSON.parse(socketData);
@@ -104,6 +111,8 @@ export default function GameMatchSolo(): JSX.Element {
   }, [userData, socketRef]);
 
   const onStartNewGame = (): void => {
+    patchUserStatus(UserStatus.PLAYING);
+
     setShowMainCta(false);
 
     gameLoop({

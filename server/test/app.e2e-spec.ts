@@ -13,7 +13,7 @@ import {
 import * as fs from 'fs';
 import { TwoFactorAuthService } from '../src/two-factor-auth/two-factor-auth.service';
 import { testUserData } from '../config/app.constants';
-import { User } from '@prisma/client';
+import { User, UserStatus } from '@prisma/client';
 import { IntraUserDataDto } from 'src/auth/dto/intra-user-data.dto';
 import { Socket } from 'socket.io-client';
 import {
@@ -124,6 +124,7 @@ describe('App e2e', () => {
           where: { intraId: userData.intraId },
         });
         expect(user).not.toBeNull();
+        expect(user.status).toBe(UserStatus.ONLINE);
       });
 
       it('should sign in user', async () => {
@@ -157,6 +158,11 @@ describe('App e2e', () => {
             access_token: /.*/,
             data: userData,
           });
+
+        const user = await prisma.user.findUnique({
+          where: { intraId: userData.intraId },
+        });
+        expect(user.status).toBe(UserStatus.ONLINE);
       });
 
       it('should sign in user with OTP', async () => {
@@ -876,6 +882,78 @@ describe('App e2e', () => {
           .readdirSync(testAvatarPath)
           .some((file) => file.match(avatarRegex));
         expect(filesExists).toBe(false);
+      });
+    });
+  });
+
+  describe('User status', () => {
+    describe('update status', () => {
+      it('should update status', async () => {
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        expect(user.status).toBe(UserStatus.ONLINE);
+
+        await pactum
+          .spec()
+          .patch(`/user/status`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody({
+            status: UserStatus.PLAYING,
+          })
+          .expectStatus(200)
+          .expectJsonLike({
+            updated: 1,
+            data: {
+              intraId: user.intraId,
+              status: UserStatus.PLAYING,
+            },
+          });
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        expect(updatedUser.status).toBe(UserStatus.PLAYING);
+      });
+
+      it('should return 400 if status is not valid', async () => {
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        expect(user.status).toBe(UserStatus.ONLINE);
+
+        await pactum
+          .spec()
+          .patch(`/user/status`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody({
+            status: 'fakestatus',
+          })
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        expect(updatedUser.status).toBe(UserStatus.ONLINE);
+      });
+
+      it('should return 401 if token is not valid', async () => {
+        await pactum
+          .spec()
+          .patch(`/user/status`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody({
+            status: UserStatus.PLAYING,
+          })
+          .expectStatus(401);
       });
     });
   });

@@ -10,6 +10,8 @@ import LoadingFullscreen from '../components/UI/LoadingFullscreen';
 import teamImage from '../assets/images/team.png';
 import logo42 from '../assets/svg/logo_42.svg';
 import CenteredLayout from '../components/UI/CenteredLayout';
+import { patchUserStatus } from '../utils/utils';
+import UserStatus from '../interfaces/user-status.interface';
 
 const PageWrapperDiv = styled.div`
   min-height: 100vh;
@@ -71,11 +73,6 @@ const SignIn: React.FC = (): JSX.Element => {
     window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code`;
   };
 
-  const handleLogOut = () => {
-    Cookies.remove('token');
-    setUserData(null);
-  };
-
   return (
     <PageWrapperDiv>
       <CenteredLayout>
@@ -88,7 +85,15 @@ const SignIn: React.FC = (): JSX.Element => {
               {userData ? (
                 <>
                   <h2 className="title-1 mb-24">Hello, {userData.username}!</h2>
-                  <MainButton onClick={handleLogOut}>Log out</MainButton>
+                  <MainButton
+                    onClick={() => {
+                      patchUserStatus(UserStatus.OFFLINE);
+                      Cookies.remove('token');
+                      setUserData(null);
+                    }}
+                  >
+                    Log out
+                  </MainButton>
                 </>
               ) : (
                 <>

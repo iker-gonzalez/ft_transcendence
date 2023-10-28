@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { IntraService } from '../intra/intra.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { IntraUserDataDto } from './dto/intra-user-data.dto';
-import { User } from '@prisma/client';
+import { User, UserStatus } from '@prisma/client';
 import { SigninResponseDto } from './dto/signin-response';
 import { JwtService } from '@nestjs/jwt';
 import { TwoFactorAuthService } from '../two-factor-auth/two-factor-auth.service';
@@ -79,6 +79,14 @@ export class AuthService {
         }
       }
 
+      // Update user status
+      await this.prisma.user.update({
+        where: { id },
+        data: {
+          status: UserStatus.ONLINE,
+        },
+      });
+
       const response: SigninResponseDto = {
         created: 0,
         access_token: await this._signToken(id),
@@ -95,7 +103,7 @@ export class AuthService {
 
     // Otherwise, create a new user
     const newUser: User = await this.prisma.user.create({
-      data: userData,
+      data: { ...userData, status: UserStatus.ONLINE },
     });
 
     const {
