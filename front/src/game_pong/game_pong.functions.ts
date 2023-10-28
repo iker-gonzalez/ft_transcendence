@@ -158,6 +158,7 @@ export function initializeSounds(): ISounds {
   let botScore = new Audio(botScoreSound);
   let music = new Audio(musicBackground);
   music.loop = true;
+  music.volume = 0.5;
 
   return { hit, wall, userScore, botScore, music };
 }
