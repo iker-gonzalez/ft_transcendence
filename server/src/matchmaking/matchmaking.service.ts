@@ -64,10 +64,11 @@ export class MatchmakingService {
       return;
     }
 
-    await this.cacheManager.set('queue', [
-      ...queue,
-      { id: clientId, data: userData },
-    ]);
+    await this.cacheManager.set(
+      'queue',
+      [...queue, { id: clientId, data: userData }],
+      0,
+    );
     server.emit(`userJoined/${intraId}`, {
       queued: true,
     });
@@ -79,7 +80,7 @@ export class MatchmakingService {
       sessionUsers.push(updatedQueue.shift());
       sessionUsers.push(updatedQueue.shift());
 
-      await this.cacheManager.set('queue', updatedQueue);
+      await this.cacheManager.set('queue', updatedQueue, 0);
 
       const session = await this.prisma.userGameSession.create({
         data: {
@@ -129,7 +130,7 @@ export class MatchmakingService {
     const updatedQueue: QueueUser[] = queue.filter((user) => {
       return user.id !== clientId;
     });
-    await this.cacheManager.set('queue', updatedQueue);
+    await this.cacheManager.set('queue', updatedQueue, 0);
   }
 
   async removeUserFromQueue(
@@ -153,7 +154,7 @@ export class MatchmakingService {
     const updatedQueue: QueueUser[] = queue.filter(
       (user: QueueUser) => user.id !== clientId,
     );
-    await this.cacheManager.set('queue', updatedQueue);
+    await this.cacheManager.set('queue', updatedQueue, 0);
 
     server.emit(`unqueuedUser/${parsedBody.intraId}`, {
       queued: false,

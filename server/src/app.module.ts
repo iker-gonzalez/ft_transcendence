@@ -16,6 +16,7 @@ import { ChatModule } from './chat/chat.module';
 import { GameStatsModule } from './game-stats/game-stats.module';
 import { GameLeaderboardModule } from './game-leaderboard/game-leaderboard.module';
 import { StatusModule } from './status/status.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { StatusModule } from './status/status.module';
     CacheModule.register({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     IntraModule,
     UserModule,
