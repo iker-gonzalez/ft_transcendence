@@ -23,7 +23,6 @@ const ARROW_DOWN_KEY = 'ArrowDown';
 const ballTrail: any[] = [];
 export let isBallFrozen: boolean = true;
 
-
 export function drawRect(
   canvas: HTMLCanvasElement,
   x: number,
