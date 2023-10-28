@@ -66,10 +66,10 @@ export default function GameMatchSolo(): JSX.Element {
         body: socketData,
       })
         .then((res: any) => {
-          console.log(res);
           return res.json();
         })
         .then((data: any) => {
+          //  TODO check this
           console.log(data);
         })
         .catch((e: any) => {
