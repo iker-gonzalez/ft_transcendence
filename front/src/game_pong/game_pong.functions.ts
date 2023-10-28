@@ -22,7 +22,6 @@ const ARROW_DOWN_KEY = 'ArrowDown';
 const ballTrail: any[] = [];
 export let isBallFrozen: boolean = true;
 
-
 export function drawRect(
   canvas: HTMLCanvasElement,
   x: number,
@@ -424,11 +423,10 @@ export function onAbortGame(
   };
 }
 
-export async function countDownToStart(countDown: number): Promise<void>{
-  return await new Promise(resolve => {
+export async function countDownToStart(countDown: number): Promise<void> {
+  return await new Promise((resolve) => {
     const countDownInterval = setInterval(() => {
       countDown--;
-      console.log(countDown);
       if (countDown === 0) {
         resolve();
         isBallFrozen = false;
