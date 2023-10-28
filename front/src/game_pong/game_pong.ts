@@ -191,6 +191,7 @@ function game({
         usersData,
         canvasImages,
         thickness,
+        sounds,
       );
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {

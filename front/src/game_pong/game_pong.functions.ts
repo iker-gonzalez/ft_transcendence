@@ -356,6 +356,7 @@ export function initializeSocketLogic({
         usersData,
         canvasImages,
         thickness,
+        sounds,
       );
 
       socket.emit(
@@ -399,6 +400,7 @@ export function initializeSocketLogic({
         usersData,
         canvasImages,
         thickness,
+        sounds,
       );
 
       socket.emit(

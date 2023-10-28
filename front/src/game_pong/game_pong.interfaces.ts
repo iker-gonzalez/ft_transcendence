@@ -16,7 +16,7 @@ export interface ISounds {
   wall: HTMLAudioElement;
   userScore: HTMLAudioElement;
   botScore: HTMLAudioElement;
-  music: HTMLAudioElement;
+  music: any;
 }
 
 export enum RenderColor {
