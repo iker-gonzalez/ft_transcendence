@@ -143,7 +143,6 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
 
         if (player.isWinner) setShowAnimation(true);
 
-        console.log('parsedData', socketData);
         fetchAuthorized(`${getBaseUrl()}/game/sessions`, {
           method: 'POST',
           headers: {
@@ -153,10 +152,10 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           body: socketData,
         })
           .then((res: any) => {
-            console.log(res);
             return res.json();
           })
           .then((data: any) => {
+            // TODO check this
             console.log(data);
           })
           .catch((e: any) => {
