@@ -491,7 +491,6 @@ export function onGameEnd(
     this.currentTime = 0;
   };
   sounds.music.stop();
-  console.log('stops music background');
 
   let endGamePayload: IEndGamePayload = {
     gameDataId: sessionId,

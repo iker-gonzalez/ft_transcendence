@@ -175,8 +175,6 @@ function game({
   canvasImages,
 }: GameFunctionParams) {
   if (matchFinish) {
-    
-
     return;
   }
 
