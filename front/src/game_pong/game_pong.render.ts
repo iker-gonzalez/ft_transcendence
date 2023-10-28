@@ -184,14 +184,6 @@ export function render(
     );
 
     if (user1.score >= matchPoints || user2.score >= matchPoints) {
-            
-      sounds.music.stop = function () {
-        this.pause();
-        this.currentTime = 0;
-      };
-
-      sounds.music.stop();
-
       drawRect(canvas, 200, 200, 500, 150, RenderColor.Grey);
 
       drawText(
@@ -337,7 +329,6 @@ export function matchUser1(
   if (ballData.x + ballData.radius < 15 && !ballData.reset) {
     user2.score++;
     sounds.botScore.play().catch(function (error: any) {});
-    console.log('Sound');
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
@@ -354,7 +345,6 @@ export function matchUser1(
   ) {
     user1.score++;
     sounds.botScore.play().catch(function (error: any) {});
-    console.log('Sound');
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
