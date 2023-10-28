@@ -886,6 +886,78 @@ describe('App e2e', () => {
     });
   });
 
+  describe('User status', () => {
+    describe('update status', () => {
+      it('should update status', async () => {
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        expect(user.status).toBe(UserStatus.ONLINE);
+
+        await pactum
+          .spec()
+          .patch(`/user/status`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody({
+            status: UserStatus.PLAYING,
+          })
+          .expectStatus(200)
+          .expectJsonLike({
+            updated: 1,
+            data: {
+              intraId: user.intraId,
+              status: UserStatus.PLAYING,
+            },
+          });
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        expect(updatedUser.status).toBe(UserStatus.PLAYING);
+      });
+
+      it('should return 400 if status is not valid', async () => {
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        expect(user.status).toBe(UserStatus.ONLINE);
+
+        await pactum
+          .spec()
+          .patch(`/user/status`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody({
+            status: 'fakestatus',
+          })
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        expect(updatedUser.status).toBe(UserStatus.ONLINE);
+      });
+
+      it('should return 401 if token is not valid', async () => {
+        await pactum
+          .spec()
+          .patch(`/user/status`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody({
+            status: UserStatus.PLAYING,
+          })
+          .expectStatus(401);
+      });
+    });
+  });
+
   describe('Friends', () => {
     describe('new', () => {
       it('it should add another user as friend', async () => {

@@ -184,6 +184,20 @@ export const swaggerConstants = {
       },
     },
   },
+  status: {
+    patch: {
+      summary: 'Update user status.',
+      ok: {
+        description: 'Returns updated user status.',
+      },
+      unauthorized: {
+        description: 'JWT token is invalid or expired.',
+      },
+      bad: {
+        description: 'Status is invalid.',
+      },
+    },
+  },
   dto: {
     intraSignin: {
       code: {
@@ -574,6 +588,25 @@ export const swaggerConstants = {
             },
           },
         ],
+      },
+    },
+    patchStatusBodyDto: {
+      status: {
+        description: 'User status',
+        example: 'ONLINE',
+      },
+    },
+    patchStatusResDto: {
+      updated: {
+        description: 'Number of updated resources',
+        example: 1,
+      },
+      data: {
+        description: 'Updated status',
+        example: {
+          intraId: 12345,
+          status: 'ONLINE',
+        },
       },
     },
   },
