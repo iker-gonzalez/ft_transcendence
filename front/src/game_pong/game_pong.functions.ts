@@ -342,6 +342,7 @@ export function initializeSocketLogic({
             sessionId,
             user1,
             usersData.user1,
+            sounds,
           );
         matchFinish = true;
       }
@@ -386,6 +387,7 @@ export function initializeSocketLogic({
             sessionId,
             user2,
             usersData.user2,
+            sounds
           );
         matchFinish = true;
       }
