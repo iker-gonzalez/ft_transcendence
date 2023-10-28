@@ -81,13 +81,7 @@ export class GameStatsService {
 
     const totalGameTime = filteredUserGameDataSets.reduce(
       (acc, gameDataSet) => {
-        const playerData = gameDataSet.players.find(
-          (player) => player.intraId === +intraId,
-        );
-
-        if (playerData.isWinner) {
-          acc += gameDataSet.elapsedTime;
-        }
+        acc += gameDataSet.elapsedTime;
 
         return acc;
       },
