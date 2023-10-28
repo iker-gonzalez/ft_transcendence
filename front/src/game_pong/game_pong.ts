@@ -76,6 +76,8 @@ export async function gameLoop({
 
   const sounds = initializeSounds();
 
+  sounds.music.play().catch(function (error: any) {});
+
   // Images need to be loaded once before rendering
   // Otherwise they create a flickering effect
   const canvasImages = initializeCanvasImages();
