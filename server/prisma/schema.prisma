@@ -10,6 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserStatus {
+  ONLINE
+  OFFLINE
+  PLAYING
+}
+
 model User {
   id        String   @id @unique @default(uuid())
   createdAt DateTime @default(now())
@@ -24,6 +30,8 @@ model User {
   email    String @unique
 
   friends Friend[]
+
+  status UserStatus @default(OFFLINE)
 
   sentMessages     DirectMessage[] @relation("sentMessages")
   receivedMessages DirectMessage[] @relation("receivedMessages")
