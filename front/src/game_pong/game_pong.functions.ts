@@ -20,7 +20,7 @@ import { render } from './game_pong.render';
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
 
-const ballTrail: any[] = [];
+let ballTrail: any[] = [];
 export let isBallFrozen: boolean = true;
 
 export function drawRect(
@@ -75,6 +75,10 @@ export function drawBallTrail(canvas: HTMLCanvasElement): void {
   });
 
   ctx.globalAlpha = 1;
+}
+
+export function drawBallClean(): void {
+  ballTrail = [];
 }
 
 export function sparks(
@@ -387,7 +391,7 @@ export function initializeSocketLogic({
             sessionId,
             user2,
             usersData.user2,
-            sounds
+            sounds,
           );
         matchFinish = true;
       }

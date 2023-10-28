@@ -7,6 +7,7 @@ import {
   InitializeCanvasImages,
   checkCollision,
   drawBall,
+  drawBallClean,
   drawBallTrail,
   drawDashedLine,
   drawImg,
@@ -491,6 +492,8 @@ export function onGameEnd(
     this.currentTime = 0;
   };
   sounds.music.stop();
+
+  drawBallClean();
 
   let endGamePayload: IEndGamePayload = {
     gameDataId: sessionId,
