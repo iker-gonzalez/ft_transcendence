@@ -11,6 +11,7 @@ import hitSound from './sounds/hit.wav';
 import wallSound from './sounds/punch.wav';
 import userScoreSound from './sounds/strike.wav';
 import botScoreSound from './sounds/goal.wav';
+import musicBackground from './sounds/music.mp3';
 import BgImageGrass from './images/grass.jpg';
 import { matchUser1, matchUser2, onGameEnd } from './game_pong.render';
 import { Socket } from 'socket.io-client';
@@ -156,8 +157,9 @@ export function initializeSounds(): ISounds {
   let wall = new Audio(wallSound);
   let userScore = new Audio(userScoreSound);
   let botScore = new Audio(botScoreSound);
+  let music = new Audio(musicBackground);
 
-  return { hit, wall, userScore, botScore };
+  return { hit, wall, userScore, botScore, music };
 }
 
 export function isSoloMode(usersData: {
