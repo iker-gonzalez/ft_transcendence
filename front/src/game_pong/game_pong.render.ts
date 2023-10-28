@@ -329,7 +329,7 @@ export function matchUser1(
   // Check if ball pass the goal line & increase user score
   // If a goal is scored, the ball & paddle are reset to initial values
   if (ballData.x + ballData.radius < 15 && !ballData.reset) {
-    //user2.score++;
+    user2.score++;
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
@@ -417,7 +417,7 @@ export function matchUser2(
   // Check if ball pass the goal line & increase user score
   // If a goal is scored, the ball & paddle are reset to initial values
   if (ballData.x + ballData.radius < 15 && !ballData.reset) {
-    //user2.score++;
+    user2.score++;
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
