@@ -479,11 +479,19 @@ export function onGameEnd(
   sessionId: string,
   player: IUserData,
   userData: any,
+  sounds: any,
 ) {
   // TODO check this, looks like it's not working
   eventList.forEach(function ({ typeEvent, handler }) {
     canvas.removeEventListener(typeEvent, handler);
   });
+
+  sounds.music.stop = function () {
+    this.pause();
+    this.currentTime = 0;
+  };
+  sounds.music.stop();
+  console.log('stops music background');
 
   let endGamePayload: IEndGamePayload = {
     gameDataId: sessionId,
