@@ -39,6 +39,7 @@ export function render(
   },
   canvasImages: InitializeCanvasImages,
   thickness: number,
+  sounds: any,
 ) {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   // To clear the canvas
@@ -183,7 +184,14 @@ export function render(
     );
 
     if (user1.score >= matchPoints || user2.score >= matchPoints) {
-      
+            
+      sounds.music.stop = function () {
+        this.pause();
+        this.currentTime = 0;
+      };
+
+      sounds.music.stop();
+
       drawRect(canvas, 200, 200, 500, 150, RenderColor.Grey);
 
       drawText(
@@ -348,9 +356,6 @@ export function matchUser1(
     user1.score++;
     sounds.botScore.play().catch(function (error: any) {});
     console.log('Sound');
-    // sounds.userScore.play().catch(function (error: any) {
-    //   // console.log("Chrome cannot play sound without user interaction first");
-    // });
     let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
