@@ -288,6 +288,7 @@ export type InitializeSocketLogicArgs = {
   isPlayer1: boolean;
   sessionId: string;
   ballData: IBallData;
+  startedAt: Date;
   user1: IUserData;
   user2: IUserData;
   matchPoints: number;
@@ -308,6 +309,7 @@ export function initializeSocketLogic({
   socket,
   isPlayer1,
   sessionId,
+  startedAt,
   ballData,
   user1,
   user2,
@@ -344,6 +346,7 @@ export function initializeSocketLogic({
             eventList,
             socket,
             sessionId,
+            startedAt,
             user1,
             usersData.user1,
             sounds,
@@ -389,6 +392,7 @@ export function initializeSocketLogic({
             eventList,
             socket,
             sessionId,
+            startedAt,
             user2,
             usersData.user2,
             sounds,
