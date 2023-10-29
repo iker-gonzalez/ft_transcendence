@@ -338,7 +338,7 @@ export function matchUser1(
     // user1 = newUserData1;
     // user2 = newUserData2;
   } else if (
-    ballData.x + ballData.radius > canvas.width - 15 &&
+    ballData.x - ballData.radius > canvas.width - 15 &&
     !ballData.reset
   ) {
     user1.score++;
