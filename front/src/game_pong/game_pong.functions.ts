@@ -56,14 +56,14 @@ export function drawBall(
   ballTrail.push({ canvas: canvas, x: x, y: y, r: r, color: color });
 }
 
-export function drawBallTrail(canvas: HTMLCanvasElement): void {
+export function drawBallTrail(canvas: HTMLCanvasElement, opacityGrade: number): void {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   if (!ctx) return;
 
   const lastBalls = ballTrail.slice(-100);
 
   lastBalls.forEach((ballTrail, index) => {
-    const opacity = (index / lastBalls.length) * 0.05;
+    const opacity = (index / lastBalls.length) * opacityGrade;
     const size = ballTrail.r * (index / lastBalls.length) * 0.9;
 
     ctx.globalAlpha = opacity;
@@ -87,13 +87,14 @@ export function sparks(
   y: number,
   r: number,
   color: RenderColor,
+  numSparks: number,
+  opacityGrade: number,
 ) {
-  const numSparks = 20;
 
   for (let i = 0; i < numSparks; i++) {
-    const dx = (Math.random() - 0.5) * 10 * r * 0.5;
-    const dy = (Math.random() - 0.5) * 10 * r * 0.5;
-    drawBallTrail(canvas);
+    const dx = (Math.random() - 0.5) * 15 * r * 0.5;
+    const dy = (Math.random() - 0.5) * 15 * r * 0.5;
+    drawBallTrail(canvas, opacityGrade);
     drawBall(canvas, x + dx, y + dy, r, color);
   }
 }
