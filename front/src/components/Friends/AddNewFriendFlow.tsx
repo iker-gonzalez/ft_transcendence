@@ -13,11 +13,13 @@ type AddNewFriendFlowProps = {
     friendsList: FriendData[],
     successMessage: string,
   ) => void;
+  userFriends: FriendData[];
 };
 
 const AddNewFriendFlow: React.FC<AddNewFriendFlowProps> = ({
   setShowAddNewFriendFlow,
   onUpdateFriendsList,
+  userFriends,
 }): JSX.Element => {
   const [showUserSearchModal, setShowUserSearchModal] = useState<boolean>(true);
   const [foundUserData, setFoundUserData] = useState<UserCoreData | null>(null);
@@ -47,6 +49,9 @@ const AddNewFriendFlow: React.FC<AddNewFriendFlowProps> = ({
         <ViewNewUserProfile
           foundUserData={foundUserData!}
           onUpdateFriendsList={onUpdateFriendsList}
+          isAlreadyFriend={userFriends
+            .map((friend) => friend.intraId)
+            .includes(foundUserData!.intraId)}
         />
       )}
     </Modal>
