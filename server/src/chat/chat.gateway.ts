@@ -37,8 +37,15 @@ export class ChatGateway implements OnGatewayConnection {
                       payload.receiverId, payload.content);
     try {
       // Prueba para el get de lo DM
-      const allMD = await this.chatService.getMessagesByUser(payload.senderId);
-      console.log("allMD", allMD);
+    // const allMD = await this.chatService.getMessagesByUser(payload.senderId);
+    // console.log("allMD", allMD);
+    
+    const idSernder = await this.chatService.findUserIdByIntraId(parseInt(payload.senderId, 10));
+    console.log("allMD", idSernder);
+      const idReceiver = await this.chatService.findUserIdByIntraId(parseInt(payload.receiverId, 10));
+
+      const allMD2 = await this.chatService.getDMUsers(idSernder, idReceiver);
+      console.log("allMD2", allMD2);
     } catch (error) {
       console.error("Error:", error);
     }

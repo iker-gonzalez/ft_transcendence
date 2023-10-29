@@ -29,6 +29,29 @@ export class ChatService {
       }  
   }
 
+  async getDMUsers(userId1: string, userId2: string):
+    Promise<any[]>
+  {
+    const conversationMessages = await this.prisma.directMessage.findMany({
+      where: {
+        OR: [
+          {
+            senderId: userId1,
+            receiverId: userId2,
+          },
+          {
+            senderId: userId2,
+            receiverId: userId1,
+          },
+        ],
+      },
+      orderBy: {
+        createdAt: 'asc', // Ordenar por fecha de creación de forma ascendente
+      },
+    });
+    return conversationMessages;
+  }
+
   async getMessagesByUser(
     intraId: string,
     ): Promise<any[]> 
