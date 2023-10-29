@@ -39,7 +39,7 @@ model User {
 }
 
 model DirectMessage {
-  id         String   @id
+  id         String   @id @unique @default(uuid())
   senderId   String? // ID del remitente del mensaje
   receiverId String? // ID del destinatario del mensaje
   content    String // Contenido  del mensaje
@@ -53,7 +53,7 @@ model DirectMessage {
 }
 
 model UserGameSession {
-  id        String   @id @unique @default(uuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
 
   players UserIntraData[]
