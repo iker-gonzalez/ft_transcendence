@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -39,5 +39,13 @@ export class StatusController {
     @Body() body: PatchStatusBodyDto,
   ): Promise<PatchStatusResDto> {
     return this.statusService.patchUserStatus(user.intraId, body.status);
+  }
+
+  @Get(':intraId?')
+  getUserStatus(
+    @GetUser() user: User,
+    @Param() params: { intraId: number },
+  ): Promise<any> {
+    return this.statusService.getUserStatus(+params.intraId ?? +user.intraId);
   }
 }

@@ -33,4 +33,23 @@ export class StatusService {
       },
     };
   }
+
+  async getUserStatus(intraId: number): Promise<any> {
+    const user = await this.prisma.user.findUnique({
+      where: { intraId },
+      select: { status: true },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    return {
+      found: 1,
+      data: {
+        intraId,
+        status: user.status,
+      },
+    };
+  }
 }
