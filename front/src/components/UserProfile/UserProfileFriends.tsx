@@ -100,7 +100,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
       <WrapperDiv>
         <div className="title-container mb-24">
           <h2 className="title-2">Friends</h2>
-          {userFriends.length && (
+          {Boolean(userFriends.length) && (
             <SecondaryButton
               onClick={() => {
                 fetchFriendsList();

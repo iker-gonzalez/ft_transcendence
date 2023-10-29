@@ -160,6 +160,12 @@ const SignIn: React.FC = (): JSX.Element => {
                     >
                       Sign in with test user 2
                     </Link>
+                    <Link
+                      to={`login?code=${process.env.REACT_APP_USER_TEST_3_CODE}`}
+                      className="signin-link"
+                    >
+                      Sign in with test user 3
+                    </Link>
                   </div>
                 </>
               )}
