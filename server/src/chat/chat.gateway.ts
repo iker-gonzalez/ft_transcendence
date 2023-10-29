@@ -32,24 +32,24 @@ export class ChatGateway implements OnGatewayConnection {
     console.log("contents"); 
     console.log(payload.content);  
 
-    // Add DM to DB, this will update the DM chat of the sender and the receiver 
-    this.chatService.addMessageToUser( payload.senderId,
-                      payload.receiverId, payload.content);
     try {
       // Prueba para el get de lo DM
-    // const allMD = await this.chatService.getMessagesByUser(payload.senderId);
-    // console.log("allMD", allMD);
-    
-    const idSernder = await this.chatService.findUserIdByIntraId(parseInt(payload.senderId, 10));
-    console.log("allMD", idSernder);
+      const idSernder = await this.chatService.findUserIdByIntraId(parseInt(payload.senderId, 10));
       const idReceiver = await this.chatService.findUserIdByIntraId(parseInt(payload.receiverId, 10));
 
-      const allMD2 = await this.chatService.getDMUsers(idSernder, idReceiver);
+      await this.chatService.addMessageToUser(idSernder, idReceiver, payload.content);
+    
+      // Pruebas de getters
+      const allMD2 = await this.chatService.getDMBetweenUsers(idSernder, idReceiver);
       console.log("allMD2", allMD2);
+
+      const usersDM = await this.chatService.getAllUserDMWith(idSernder);
+      console.log("userDM", usersDM);
+
+
     } catch (error) {
       console.error("Error:", error);
     }
-
 
     // Emit signal to update the sender chat frontend
     this.server.emit(`privateMessageReceived/${payload.intraId}`,
