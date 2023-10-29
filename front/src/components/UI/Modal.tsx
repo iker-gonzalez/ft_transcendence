@@ -29,7 +29,7 @@ const WrapperDiv = styled.div`
   .modal {
     position: relative;
 
-    width: fit-content;
+    width: min-content;
     min-width: 450px;
     min-height: 250px;
 
