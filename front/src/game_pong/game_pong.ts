@@ -35,7 +35,6 @@ export const slit: number = 3;
 const userSpeedInput: number = 10;
 let matchFinish: boolean = false;
 export const matchPoints: number = 5;
-export const startedAt: Date = new Date();
 let countDown: number = 5;
 let isFirstRun: boolean = true;
 
@@ -59,6 +58,7 @@ export async function gameLoop({
 }: GameLoopFunctionParams) {
   // Reset state when a new game starts
   matchFinish = false;
+  const startedAt: Date = new Date();
 
   // Update initial data
   let ballData = {
@@ -108,6 +108,7 @@ export async function gameLoop({
       socket,
       isPlayer1,
       sessionId,
+      startedAt,
       ballData,
       user1,
       user2,
@@ -135,6 +136,7 @@ export async function gameLoop({
     isPlayer1,
     matchPoints,
     sessionId,
+    startedAt,
     eventList,
     canvasImages,
   });
@@ -155,6 +157,7 @@ type GameFunctionParams = {
   isPlayer1: boolean;
   matchPoints: number;
   sessionId: string;
+  startedAt: Date;
   eventList: any[];
   canvasImages: InitializeCanvasImages;
 };
@@ -171,6 +174,7 @@ function game({
   isPlayer1,
   matchPoints,
   sessionId,
+  startedAt,
   eventList,
   canvasImages,
 }: GameFunctionParams) {
@@ -197,10 +201,28 @@ function game({
       );
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
-        onGameEnd(canvas, eventList, socket, sessionId, user1, usersData.user1, sounds);
+        onGameEnd(
+          canvas,
+          eventList,
+          socket,
+          sessionId,
+          startedAt,
+          user1,
+          usersData.user1,
+          sounds,
+        );
         // Delay is required by the server to process the data
         setTimeout(() => {
-          onGameEnd(canvas, eventList, socket, sessionId, user2, botUserData, sounds);
+          onGameEnd(
+            canvas,
+            eventList,
+            socket,
+            sessionId,
+            startedAt,
+            user2,
+            botUserData,
+            sounds,
+          );
         }, 500);
         matchFinish = true;
       }
@@ -233,6 +255,7 @@ function game({
         isPlayer1,
         matchPoints,
         sessionId,
+        startedAt,
         eventList,
         canvasImages,
       });
