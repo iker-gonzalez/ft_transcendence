@@ -14,10 +14,18 @@ import { useUserFriends } from '../../context/UserDataContext';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import PaginatedSection from '../UI/PaginatedSection';
+import UserStatusInfo from '../UI/UserStatus';
 
 const WrapperDiv = styled.div`
   position: relative;
   width: 650px;
+
+  .title-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   .centered-container {
     display: flex;
@@ -36,6 +44,8 @@ const WrapperDiv = styled.div`
       justify-content: flex-start;
       align-items: center;
       gap: 20px;
+
+      margin-right: auto;
       .avatar {
         width: 75px;
         height: auto;
@@ -88,7 +98,18 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
   return (
     <ContrastPanel>
       <WrapperDiv>
-        <h2 className="title-2 mb-24">Friends</h2>
+        <div className="title-container mb-24">
+          <h2 className="title-2">Friends</h2>
+          {userFriends.length && (
+            <SecondaryButton
+              onClick={() => {
+                fetchFriendsList();
+              }}
+            >
+              Refresh
+            </SecondaryButton>
+          )}
+        </div>
         {(() => {
           if (isFetchingFriends) {
             return (
@@ -119,6 +140,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                               <p className="small mb-8">{friend.email}</p>
                             </div>
                           </div>
+                          <UserStatusInfo intraId={friend.intraId} />
                           <MainButton
                             onClick={() => setFriendProfileToShow(friend)}
                           >
