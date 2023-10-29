@@ -83,7 +83,7 @@ export function render(
   //Ball
   drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
 
-  drawBallTrail(canvas);
+  drawBallTrail(canvas, 0.05);
 
   drawText(
     canvas,
@@ -383,7 +383,7 @@ export function matchUser1(
     sounds.hit.play().catch(function (error: any) {});
 
     // Sparks effect when the ball hits the paddle
-    sparks(canvas, ballData.x, ballData.y, ballData.radius, RenderColor.Yellow);
+    sparks(canvas, ballData.x, ballData.y, ballData.radius, RenderColor.Yellow, 50, 1);
   }
 }
 
