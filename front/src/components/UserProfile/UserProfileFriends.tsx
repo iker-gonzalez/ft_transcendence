@@ -180,10 +180,11 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
             </SecondaryButton>
           </div>
         </div>
-        {showAddNewFriendFlow && (
+        {showAddNewFriendFlow && Boolean(userFriends.length) && (
           <AddNewFriendFlow
             setShowAddNewFriendFlow={setShowAddNewFriendFlow}
             onUpdateFriendsList={onUpdateFriendsList}
+            userFriends={userFriends}
           />
         )}
       </WrapperDiv>
