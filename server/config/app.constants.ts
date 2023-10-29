@@ -15,3 +15,11 @@ export const testUser2Data: IntraUserDataDto = {
   isTwoFactorAuthEnabled: false,
   username: 'test2-',
 };
+
+export const testUser3Data: IntraUserDataDto = {
+  avatar: 'https://i.pravatar.cc/600?img=35',
+  email: 'test3@42urduliz.com',
+  intraId: 668,
+  isTwoFactorAuthEnabled: false,
+  username: 'test3-',
+};

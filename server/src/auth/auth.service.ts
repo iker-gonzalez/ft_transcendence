@@ -12,7 +12,11 @@ import { User, UserStatus } from '@prisma/client';
 import { SigninResponseDto } from './dto/signin-response';
 import { JwtService } from '@nestjs/jwt';
 import { TwoFactorAuthService } from '../two-factor-auth/two-factor-auth.service';
-import { testUser2Data, testUserData } from '../../config/app.constants';
+import {
+  testUser2Data,
+  testUser3Data,
+  testUserData,
+} from '../../config/app.constants';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import * as moment from 'moment';
@@ -43,6 +47,8 @@ export class AuthService {
       userData = testUserData;
     } else if (code === this.configService.get<string>('FAKE_USER_2_CODE')) {
       userData = testUser2Data;
+    } else if (code === this.configService.get<string>('FAKE_USER_3_CODE')) {
+      userData = testUser3Data;
     } else {
       // Get Intra User Token
       const token: string = await this.intraService.getIntraUserToken(code);
@@ -163,7 +169,8 @@ export class AuthService {
   _isTestUser(code: string): boolean {
     return (
       code === this.configService.get<string>('FAKE_USER_1_CODE') ||
-      code === this.configService.get<string>('FAKE_USER_2_CODE')
+      code === this.configService.get<string>('FAKE_USER_2_CODE') ||
+      code === this.configService.get<string>('FAKE_USER_3_CODE')
     );
   }
 
