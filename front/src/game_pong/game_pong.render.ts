@@ -10,10 +10,8 @@ import {
   drawBall,
   drawBallTrail,
   drawDashedLine,
-  drawImg,
   drawRect,
   drawText,
-  isBallFrozen,
   isSoloMode,
   sparks,
 } from './game_pong.functions';
@@ -25,7 +23,6 @@ import {
   IUserData,
   RenderColor,
 } from './game_pong.interfaces';
-import { startedAt } from './game_pong';
 
 export function render(
   canvas: HTMLCanvasElement,
@@ -478,6 +475,7 @@ export function onGameEnd(
   eventList: any[],
   socket: Socket,
   sessionId: string,
+  startedAt: Date,
   player: IUserData,
   userData: any,
   sounds: any,
