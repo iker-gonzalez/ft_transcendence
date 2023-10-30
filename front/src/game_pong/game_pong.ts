@@ -182,31 +182,31 @@ function game({
   const isAbortedMatch = true;
   socket.on(`gameAborted/user1/${sessionId}`, () => {
     matchFinish = true;
-    onGameEnd(
+    onGameEnd({
       canvas,
       eventList,
       socket,
       sessionId,
       startedAt,
-      user1,
-      usersData.user1,
+      player: user1,
+      userData: usersData.user1,
       sounds,
       isAbortedMatch,
-    );
+    });
   });
   socket.on(`gameAborted/user2/${sessionId}`, () => {
     matchFinish = true;
-    onGameEnd(
+    onGameEnd({
       canvas,
       eventList,
       socket,
       sessionId,
       startedAt,
-      user2,
-      usersData.user2,
+      player: user2,
+      userData: usersData.user2,
       sounds,
       isAbortedMatch,
-    );
+    });
   });
 
   if (matchFinish) {
@@ -233,29 +233,29 @@ function game({
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
         // First save data of player 1
-        onGameEnd(
+        onGameEnd({
           canvas,
           eventList,
           socket,
           sessionId,
           startedAt,
-          user1,
-          usersData.user1,
+          player: user1,
+          userData: usersData.user1,
           sounds,
-        );
+        });
         // Then of bot
         // Delay is required by the server to process the data
         setTimeout(() => {
-          onGameEnd(
+          onGameEnd({
             canvas,
             eventList,
             socket,
             sessionId,
             startedAt,
-            user2,
-            botUserData,
+            player: user2,
+            userData: botUserData,
             sounds,
-          );
+          });
         }, 100);
         matchFinish = true;
       }

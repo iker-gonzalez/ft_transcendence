@@ -470,17 +470,28 @@ export function matchUser2(
   // }
 }
 
-export function onGameEnd(
-  canvas: HTMLCanvasElement,
-  eventList: any[],
-  socket: Socket,
-  sessionId: string,
-  startedAt: Date,
-  player: IUserData,
-  userData: any,
-  sounds: any,
-  isAbortedMatch: boolean = false,
-) {
+type OnGameEndArgs = {
+  canvas: HTMLCanvasElement;
+  eventList: any[];
+  socket: Socket;
+  sessionId: string;
+  startedAt: Date;
+  player: IUserData;
+  userData: any;
+  sounds: any;
+  isAbortedMatch?: boolean;
+};
+export function onGameEnd({
+  canvas,
+  eventList,
+  socket,
+  sessionId,
+  startedAt,
+  player,
+  userData,
+  sounds,
+  isAbortedMatch = false,
+}: OnGameEndArgs) {
   // TODO check this, looks like it's not working
   eventList.forEach(function ({ typeEvent, handler }) {
     canvas.removeEventListener(typeEvent, handler);
