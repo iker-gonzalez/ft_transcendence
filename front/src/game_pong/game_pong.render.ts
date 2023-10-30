@@ -479,6 +479,7 @@ export function onGameEnd(
   player: IUserData,
   userData: any,
   sounds: any,
+  isAbortedMatch: boolean = false,
 ) {
   // TODO check this, looks like it's not working
   eventList.forEach(function ({ typeEvent, handler }) {
@@ -493,18 +494,22 @@ export function onGameEnd(
 
   ballTrailClean();
 
-  let endGamePayload: IEndGamePayload = {
-    gameDataId: sessionId,
-    startedAt,
-    elapsedTime: new Date().getTime() - startedAt.getTime(),
-    player: {
-      avatar: userData.avatar,
-      intraId: userData.intraId,
-      isWinner: player.score >= matchPoints,
-      score: player.score,
-      username: userData.username,
-    },
-  };
+  // In case of aborted match
+  // We don't want to send match data to the API
+  if (!isAbortedMatch) {
+    let endGamePayload: IEndGamePayload = {
+      gameDataId: sessionId,
+      startedAt,
+      elapsedTime: new Date().getTime() - startedAt.getTime(),
+      player: {
+        avatar: userData.avatar,
+        intraId: userData.intraId,
+        isWinner: player.score >= matchPoints,
+        score: player.score,
+        username: userData.username,
+      },
+    };
 
-  socket.emit('endGame', JSON.stringify(endGamePayload));
+    socket.emit('endGame', JSON.stringify(endGamePayload));
+  }
 }
