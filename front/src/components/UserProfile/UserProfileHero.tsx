@@ -24,8 +24,8 @@ const WrapperDiv = styled.div`
 
     .avatar-change-btn {
       position: absolute;
-      bottom: 15px;
-      right: 15px;
+      bottom: 20px;
+      right: 45px;
     }
   }
 
