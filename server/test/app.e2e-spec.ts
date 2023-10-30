@@ -3073,6 +3073,43 @@ describe('App e2e', () => {
                 );
               });
             });
+
+            test('when it is solo mode', (done) => {
+              const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+              socket.on('connect', () => {
+                expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                socket.emit(
+                  'abort',
+                  JSON.stringify({
+                    isSoloMode: true,
+                    gameDataId: dataSetInitial.gameDataId,
+                  }),
+                  (ack) => {
+                    expect(ack).toStrictEqual('OK');
+                  },
+                );
+              });
+
+              socket.on(
+                `gameAborted/user1/${dataSetInitial.gameDataId}`,
+                () => {
+                  expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                  socket.disconnect();
+
+                  done();
+                },
+              );
+
+              socket.on(
+                `gameAborted/user1/${dataSetInitial.gameDataId}`,
+                () => {
+                  done('gameAbort/user1 should not be emitted');
+                },
+              );
+            });
           });
         });
       });

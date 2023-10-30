@@ -178,6 +178,23 @@ function game({
   eventList,
   canvasImages,
 }: GameFunctionParams) {
+  // Clean up if one of the players leaves the game
+  socket.on(`gameAborted/user${isPlayer1 ? '2' : '1'}/${sessionId}`, () => {
+    matchFinish = true;
+    const isAbortedMatch = isSoloMode(usersData);
+    onGameEnd(
+      canvas,
+      eventList,
+      socket,
+      sessionId,
+      startedAt,
+      user1,
+      usersData.user1,
+      sounds,
+      isAbortedMatch,
+    );
+  });
+
   if (matchFinish) {
     return;
   }
@@ -201,6 +218,7 @@ function game({
       );
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
+        // First save data of player 1
         onGameEnd(
           canvas,
           eventList,
@@ -211,6 +229,7 @@ function game({
           usersData.user1,
           sounds,
         );
+        // Then of bot
         // Delay is required by the server to process the data
         setTimeout(() => {
           onGameEnd(
@@ -223,7 +242,7 @@ function game({
             botUserData,
             sounds,
           );
-        }, 500);
+        }, 100);
         matchFinish = true;
       }
     } else {
