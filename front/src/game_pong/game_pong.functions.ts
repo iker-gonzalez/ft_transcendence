@@ -342,16 +342,16 @@ export function initializeSocketLogic({
 
       if (user2.score >= matchPoints || user1.score >= matchPoints) {
         if (!matchFinish)
-          onGameEnd(
+          onGameEnd({
             canvas,
             eventList,
             socket,
             sessionId,
             startedAt,
-            user1,
-            usersData.user1,
+            player: user1,
+            userData: usersData.user1,
             sounds,
-          );
+          });
         matchFinish = true;
       }
 
@@ -388,16 +388,16 @@ export function initializeSocketLogic({
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
         if (!matchFinish)
-          onGameEnd(
+          onGameEnd({
             canvas,
             eventList,
             socket,
             sessionId,
             startedAt,
-            user2,
-            usersData.user2,
+            player: user2,
+            userData: usersData.user2,
             sounds,
-          );
+          });
         matchFinish = true;
       }
 
