@@ -59,6 +59,7 @@ export default function GameMatchSolo(): JSX.Element {
           'abort',
           JSON.stringify({ gameDataId: sessionIdCopy, isSoloMode: true }),
           () => {
+            patchUserStatus(UserStatus.ONLINE);
             launchFlashMessage(
               'You abandoned a match 👎 Data will be lost',
               FlashMessageLevel.INFO,
