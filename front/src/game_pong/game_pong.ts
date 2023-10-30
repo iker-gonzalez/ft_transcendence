@@ -178,6 +178,37 @@ function game({
   eventList,
   canvasImages,
 }: GameFunctionParams) {
+  // Clean up if one of the players leaves the game
+  const isAbortedMatch = true;
+  socket.on(`gameAborted/user1/${sessionId}`, () => {
+    matchFinish = true;
+    onGameEnd({
+      canvas,
+      eventList,
+      socket,
+      sessionId,
+      startedAt,
+      player: user1,
+      userData: usersData.user1,
+      sounds,
+      isAbortedMatch,
+    });
+  });
+  socket.on(`gameAborted/user2/${sessionId}`, () => {
+    matchFinish = true;
+    onGameEnd({
+      canvas,
+      eventList,
+      socket,
+      sessionId,
+      startedAt,
+      player: user2,
+      userData: usersData.user2,
+      sounds,
+      isAbortedMatch,
+    });
+  });
+
   if (matchFinish) {
     return;
   }
@@ -201,29 +232,31 @@ function game({
       );
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
-        onGameEnd(
+        // First save data of player 1
+        onGameEnd({
           canvas,
           eventList,
           socket,
           sessionId,
           startedAt,
-          user1,
-          usersData.user1,
+          player: user1,
+          userData: usersData.user1,
           sounds,
-        );
+        });
+        // Then of bot
         // Delay is required by the server to process the data
         setTimeout(() => {
-          onGameEnd(
+          onGameEnd({
             canvas,
             eventList,
             socket,
             sessionId,
             startedAt,
-            user2,
-            botUserData,
+            player: user2,
+            userData: botUserData,
             sounds,
-          );
-        }, 500);
+          });
+        }, 100);
         matchFinish = true;
       }
     } else {

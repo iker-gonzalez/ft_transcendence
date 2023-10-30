@@ -145,8 +145,17 @@ export class GameDataService {
   }
 
   abortGame(server: Server, data: string): string {
-    const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: string } =
+    const {
+      isUser1,
+      isSoloMode,
+      gameDataId,
+    }: { isUser1: boolean; isSoloMode: boolean; gameDataId: string } =
       JSON.parse(data);
+
+    if (isSoloMode) {
+      server.emit(`gameAborted/user2/${gameDataId}`);
+      return 'OK';
+    }
 
     if (isUser1 === undefined || gameDataId === undefined) {
       return 'KO';

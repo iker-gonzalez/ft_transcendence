@@ -38,6 +38,7 @@ export default function GameMatchSolo(): JSX.Element {
 
   useEffect(() => {
     const socketCopy = socketRef.current;
+    const sessionIdCopy = sessionId.current;
 
     if (!userData) {
       const token = Cookies.get('token');
@@ -54,9 +55,18 @@ export default function GameMatchSolo(): JSX.Element {
 
     return () => {
       if (!gameEnd) {
-        socketCopy.disconnect();
+        socketCopy.emit(
+          'abort',
+          JSON.stringify({ gameDataId: sessionIdCopy, isSoloMode: true }),
+          () => {
+            launchFlashMessage(
+              'You abandoned a match 👎 Data will be lost',
+              FlashMessageLevel.INFO,
+            );
+            socketCopy.disconnect();
+          },
+        );
       }
-      // TODO show feedback to user
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

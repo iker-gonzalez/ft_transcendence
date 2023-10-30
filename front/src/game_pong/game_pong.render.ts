@@ -470,16 +470,28 @@ export function matchUser2(
   // }
 }
 
-export function onGameEnd(
-  canvas: HTMLCanvasElement,
-  eventList: any[],
-  socket: Socket,
-  sessionId: string,
-  startedAt: Date,
-  player: IUserData,
-  userData: any,
-  sounds: any,
-) {
+type OnGameEndArgs = {
+  canvas: HTMLCanvasElement;
+  eventList: any[];
+  socket: Socket;
+  sessionId: string;
+  startedAt: Date;
+  player: IUserData;
+  userData: any;
+  sounds: any;
+  isAbortedMatch?: boolean;
+};
+export function onGameEnd({
+  canvas,
+  eventList,
+  socket,
+  sessionId,
+  startedAt,
+  player,
+  userData,
+  sounds,
+  isAbortedMatch = false,
+}: OnGameEndArgs) {
   // TODO check this, looks like it's not working
   eventList.forEach(function ({ typeEvent, handler }) {
     canvas.removeEventListener(typeEvent, handler);
@@ -493,18 +505,22 @@ export function onGameEnd(
 
   ballTrailClean();
 
-  let endGamePayload: IEndGamePayload = {
-    gameDataId: sessionId,
-    startedAt,
-    elapsedTime: new Date().getTime() - startedAt.getTime(),
-    player: {
-      avatar: userData.avatar,
-      intraId: userData.intraId,
-      isWinner: player.score >= matchPoints,
-      score: player.score,
-      username: userData.username,
-    },
-  };
+  // In case of aborted match
+  // We don't want to send match data to the API
+  if (!isAbortedMatch) {
+    let endGamePayload: IEndGamePayload = {
+      gameDataId: sessionId,
+      startedAt,
+      elapsedTime: new Date().getTime() - startedAt.getTime(),
+      player: {
+        avatar: userData.avatar,
+        intraId: userData.intraId,
+        isWinner: player.score >= matchPoints,
+        score: player.score,
+        username: userData.username,
+      },
+    };
 
-  socket.emit('endGame', JSON.stringify(endGamePayload));
+    socket.emit('endGame', JSON.stringify(endGamePayload));
+  }
 }
