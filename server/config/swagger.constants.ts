@@ -199,12 +199,18 @@ export const swaggerConstants = {
     },
   },
   chat:{
-      get:{
-        summary: 'Return all the DM between tow users',
+      data:{
+        summary: 'Return all the DM between two users',
         ok:{
           description: 'Return Direct messages sorted by time'
         }
     },
+    all:{
+      summary: 'Return all the users which had DM',
+      ok:{
+        description: 'Return Direct messages sorted by time'
+      }
+  },
   },
   dto: {
     intraSignin: {
