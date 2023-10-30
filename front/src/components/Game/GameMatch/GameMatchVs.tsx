@@ -170,7 +170,6 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           .catch((e: any) => {
             console.error('Error creating new game data set: ', e);
           });
-        // TODO hit endpoint to store game data
       },
     );
 
@@ -179,6 +178,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
       () => {
         // Allow time for the game loop to properly end
         setTimeout(() => {
+          patchUserStatus(UserStatus.ONLINE);
           socketRef.current.disconnect();
           setGameEnd(true);
           setShowCanvasChildren(true);
@@ -193,6 +193,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           'abort',
           JSON.stringify({ gameDataId: sessionId, isUser1: isPlayer1 }),
           () => {
+            patchUserStatus(UserStatus.ONLINE);
             launchFlashMessage(
               'You abandoned a match 👎 Data will be lost',
               FlashMessageLevel.INFO,
