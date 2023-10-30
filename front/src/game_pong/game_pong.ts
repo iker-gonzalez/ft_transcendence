@@ -179,9 +179,9 @@ function game({
   canvasImages,
 }: GameFunctionParams) {
   // Clean up if one of the players leaves the game
-  socket.on(`gameAborted/user${isPlayer1 ? '2' : '1'}/${sessionId}`, () => {
+  const isAbortedMatch = true;
+  socket.on(`gameAborted/user1/${sessionId}`, () => {
     matchFinish = true;
-    const isAbortedMatch = isSoloMode(usersData);
     onGameEnd(
       canvas,
       eventList,
@@ -190,6 +190,20 @@ function game({
       startedAt,
       user1,
       usersData.user1,
+      sounds,
+      isAbortedMatch,
+    );
+  });
+  socket.on(`gameAborted/user2/${sessionId}`, () => {
+    matchFinish = true;
+    onGameEnd(
+      canvas,
+      eventList,
+      socket,
+      sessionId,
+      startedAt,
+      user2,
+      usersData.user2,
       sounds,
       isAbortedMatch,
     );
