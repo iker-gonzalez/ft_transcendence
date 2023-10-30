@@ -59,8 +59,8 @@ const Leaderboard: React.FC = (): JSX.Element => {
     <>
       {isLoading && <LoadingFullscreen />}
       <CenteredLayout>
-        <h1 className="title-1 mb-24">Leaderboard</h1>
         <MainContent>
+          <h1 className="title-1 mb-24">Leaderboard</h1>
           <table>
             <thead>
               <tr>
@@ -86,7 +86,21 @@ const Leaderboard: React.FC = (): JSX.Element => {
                   return leaderboardData.map((leaderboardData: any, index) => {
                     return (
                       <tr key={`${leaderboardData.user.intraId}`}>
-                        <td className="title-1">#{index + 1}</td>
+                        <td className="title-1">
+                          #{index + 1}{' '}
+                          {(() => {
+                            switch (index) {
+                              case 0:
+                                return '🥇';
+                              case 1:
+                                return '🥈';
+                              case 2:
+                                return '🥉';
+                              default:
+                                return '';
+                            }
+                          })()}
+                        </td>
                         <td>
                           <RoundImg
                             src={leaderboardData.user.avatar}
