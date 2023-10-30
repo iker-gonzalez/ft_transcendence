@@ -177,10 +177,13 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
     socketRef.current.on(
       `gameAborted/user${isPlayer1 ? '2' : '1'}/${sessionId}`,
       () => {
-        setGameEnd(true);
-        setShowCanvasChildren(true);
-        setOpponentLeft(true);
-        socketRef.current.disconnect();
+        // Allow time for the game loop to properly end
+        setTimeout(() => {
+          socketRef.current.disconnect();
+          setGameEnd(true);
+          setShowCanvasChildren(true);
+          setOpponentLeft(true);
+        }, 100);
       },
     );
 
@@ -190,8 +193,11 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           'abort',
           JSON.stringify({ gameDataId: sessionId, isUser1: isPlayer1 }),
           () => {
+            launchFlashMessage(
+              'You abandoned a match 👎 Data will be lost',
+              FlashMessageLevel.INFO,
+            );
             socketCopy.disconnect();
-            // TODO show feedback to user
           },
         );
       }
