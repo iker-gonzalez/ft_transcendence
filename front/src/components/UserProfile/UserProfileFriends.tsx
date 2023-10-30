@@ -15,6 +15,7 @@ import { useFlashMessages } from '../../context/FlashMessagesContext';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import PaginatedSection from '../UI/PaginatedSection';
 import UserStatusInfo from '../UI/UserStatus';
+import RefreshIcon from '../../assets/svg/refresh.svg';
 
 const WrapperDiv = styled.div`
   position: relative;
@@ -25,6 +26,25 @@ const WrapperDiv = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    .refresh-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+
+      .icon {
+        width: 20px;
+        object-fit: contain;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      &:hover {
+        .icon {
+          transform: rotate(90deg);
+        }
+      }
+    }
   }
 
   .centered-container {
@@ -105,8 +125,9 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
               onClick={() => {
                 fetchFriendsList();
               }}
+              className="refresh-btn"
             >
-              Refresh
+              Refresh <img src={RefreshIcon} alt="" className="icon" />
             </SecondaryButton>
           )}
         </div>
