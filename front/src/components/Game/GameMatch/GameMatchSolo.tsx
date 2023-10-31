@@ -29,6 +29,7 @@ export default function GameMatchSolo(): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { userData, fetchUserData, isUserDataFetching } = useUserData();
   const [showMainCta, setShowMainCta] = React.useState<boolean>(true);
+  const [gameStarted, setGameStarted] = React.useState<boolean>(false);
   const [gameEnd, setGameEnd] = React.useState<boolean>(false);
   const [showAnimation, setShowAnimation] = React.useState<boolean>(false); // TODO: remove
   const sessionId = useRef<string>(uuidv4());
@@ -54,7 +55,7 @@ export default function GameMatchSolo(): JSX.Element {
     }
 
     return () => {
-      if (!gameEnd) {
+      if (gameStarted && !gameEnd) {
         socketCopy.emit(
           'abort',
           JSON.stringify({ gameDataId: sessionIdCopy, isSoloMode: true }),
@@ -124,6 +125,7 @@ export default function GameMatchSolo(): JSX.Element {
   const onStartNewGame = (): void => {
     patchUserStatus(UserStatus.PLAYING);
 
+    setGameStarted(true);
     setShowMainCta(false);
 
     gameLoop({
