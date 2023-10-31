@@ -128,7 +128,7 @@ type UserStatsInfoProps = {
   showOnlyEssentialStats?: boolean;
 };
 
-const UserStatsStats: React.FC<UserStatsInfoProps> = ({
+const UserStatsInfo: React.FC<UserStatsInfoProps> = ({
   userId,
   showOnlyEssentialStats = false,
 }): JSX.Element => {
@@ -193,7 +193,13 @@ const UserStatsStats: React.FC<UserStatsInfoProps> = ({
         }
 
         if (!stats) {
-          return userId ? otherUserEmptyState : currentUserEmptyState;
+          return (
+            <div className="stats-container">
+              <GradientBorder className="basic-info-container">
+                {userId ? otherUserEmptyState : currentUserEmptyState}
+              </GradientBorder>
+            </div>
+          );
         }
 
         return (
@@ -355,4 +361,4 @@ const UserStatsStats: React.FC<UserStatsInfoProps> = ({
   );
 };
 
-export default UserStatsStats;
+export default UserStatsInfo;
