@@ -5,12 +5,15 @@ import LoadingFullscreen from './UI/LoadingFullscreen';
 import { useUserData } from '../context/UserDataContext';
 import moment from 'moment';
 import Cookies from 'js-cookie';
+import { useFlashMessages } from '../context/FlashMessagesContext';
+import FlashMessageLevel from '../interfaces/flash-message-color.interface';
 
 const Login: React.FC = (): JSX.Element => {
   const { setUserData } = useUserData();
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
     // You can directly access the code from the URL query parameter here
@@ -58,13 +61,17 @@ const Login: React.FC = (): JSX.Element => {
         .catch((error) => {
           console.error('An error occurred:', error);
           setUserData(null);
-          // Handle the error and set a message if needed
+          navigate('/');
+          launchFlashMessage(
+            'Something went wrong. Try again later',
+            FlashMessageLevel.ERROR,
+          );
         })
         .finally(() => {
           setIsLoading(false);
         });
     }
-  }, [navigate, location, setUserData]);
+  }, [navigate, location, setUserData, launchFlashMessage]);
 
   return <>{isLoading && <LoadingFullscreen />}</>;
 };
