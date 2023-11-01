@@ -177,6 +177,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                     dismissModalAction={() => {
                       setFriendProfileToShow(null);
                     }}
+                    showFullScreen={true}
                   >
                     <ViewNewUserProfile
                       foundUserData={friendProfileToShow}
