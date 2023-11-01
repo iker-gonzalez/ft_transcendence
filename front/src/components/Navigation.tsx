@@ -14,9 +14,13 @@ import LeaderboardIcon from '../assets/svg/leaderboard-icon.svg';
 import SVG from 'react-inlinesvg';
 
 const NavbarContainer = styled.nav`
-  color: ${primaryLightColor};
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+
   padding: 25px 30px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: rgba(0, 173, 181, 0.45) 0px 25px 20px -20px;
 
   .nav-list {
     padding: 0;
