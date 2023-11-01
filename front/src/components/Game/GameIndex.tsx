@@ -57,8 +57,10 @@ const WrapperDiv = styled.div`
 
       .game-name {
         color: ${primaryLightColor};
+
+        font-family: 'Dogica';
+        font-size: 1.5rem;
         font-weight: bold;
-        font-size: 2rem;
 
         position: absolute;
         bottom: 5px;
