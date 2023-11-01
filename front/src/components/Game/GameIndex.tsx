@@ -96,7 +96,7 @@ export default function GameIndex(): JSX.Element {
               <button
                 className="game-mode"
                 onClick={() => {
-                  navigate('queue');
+                  navigate('match?solo=true');
                 }}
               >
                 <Lottie
@@ -110,7 +110,7 @@ export default function GameIndex(): JSX.Element {
               <button
                 className="game-mode"
                 onClick={() => {
-                  navigate('match?solo=true');
+                  navigate('queue');
                 }}
               >
                 <Lottie animationData={VsModeAnimationData} className="vs" />
