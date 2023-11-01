@@ -85,7 +85,7 @@ const Login: React.FC = (): JSX.Element => {
           setIsLoading(false);
         });
     }
-  }, [navigate, location, setUserData, otpValue]); // Include otpValue in the dependency array
+  }, [navigate, location, setUserData]); // Include otpValue in the dependency array
 
   // Function to handle changes in the OTP input
   const handleOtpInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
