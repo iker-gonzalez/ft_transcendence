@@ -7,6 +7,16 @@ import {
   RenderColor,
 } from './game_pong.interfaces';
 import BotAvatar from './images/c3po_avatar.webp';
+import GameTheme from '../interfaces/game-theme.interface';
+
+import PongBg from './images/themes/pong-bg.jpeg';
+import PongHitSound from './sounds/themes/hit-classic.wav';
+
+import StarWarsBg from './images/themes/star-wars-bg.jpg';
+import StarWarsHitSound from './sounds/themes/hit-star_wars.mp3';
+
+import FootballBg from './images/themes/football-bg.jpg';
+import FootballHitSound from './sounds/themes/hit-footbal.wav';
 
 export const thickness: number = 10;
 export const slit: number = 3;
@@ -29,7 +39,6 @@ export const ballDataInit: IBallData = {
   bottom: 0,
   left: 0,
   right: 0,
-  
 };
 
 export const user1Init: IUserData = {
@@ -73,3 +82,27 @@ export const botUserData: UserData = {
   isTwoFactorAuthEnabled: false,
   username: 'bot',
 };
+
+export const gameThemes: GameTheme[] = [
+  {
+    name: 'Classic',
+    id: 'classic',
+    backgroundImg: PongBg,
+    ballColor: '#FFFFFF',
+    hitSound: PongHitSound,
+  },
+  {
+    name: 'Star Wars',
+    id: 'star-wars',
+    backgroundImg: StarWarsBg,
+    ballColor: '#FFE81F',
+    hitSound: StarWarsHitSound,
+  },
+  {
+    name: 'Football',
+    id: 'football',
+    backgroundImg: FootballBg,
+    ballColor: '#FFFFFF',
+    hitSound: FootballHitSound,
+  },
+];
