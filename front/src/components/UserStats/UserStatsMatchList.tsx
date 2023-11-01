@@ -36,12 +36,15 @@ const WrapperDiv = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 25px;
+    gap: 70px;
 
-    .battle-icon {
-      font-size: 40px;
-      position: relative;
-      top: 25px;
+    &::before {
+      content: '⚔️';
+      font-size: 2rem;
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
 
     .player-box {
@@ -172,30 +175,23 @@ const UserStatsMatchList: React.FC<UserStatsMatchListProps> = ({
                       })
                       .map((player: UserGameDataPlayer, indexPlayer) => {
                         return (
-                          <>
-                            <div className="player-box" key={player.intraId}>
-                              <p className="title-3">
-                                {player.username} {player.isWinner && '🏆'}
-                              </p>
-                              <div
-                                className={`score-box ${
-                                  indexPlayer % 2 !== 0 ? 'right' : 'left'
-                                }`}
-                              >
-                                <p className="title-1">{player.score}</p>
-                                <RoundImg
-                                  src={player.avatar}
-                                  alt=""
-                                  className="avatar"
-                                />
-                              </div>
+                          <div className="player-box" key={player.intraId}>
+                            <p className="title-3">
+                              {player.username} {player.isWinner && '🏆'}
+                            </p>
+                            <div
+                              className={`score-box ${
+                                indexPlayer % 2 !== 0 ? 'right' : 'left'
+                              }`}
+                            >
+                              <p className="title-1">{player.score}</p>
+                              <RoundImg
+                                src={player.avatar}
+                                alt=""
+                                className="avatar"
+                              />
                             </div>
-                            {indexPlayer === 0 && (
-                              <span className="battle-icon" aria-label="vs">
-                                ⚔️
-                              </span>
-                            )}
-                          </>
+                          </div>
                         );
                       })}
                   </div>

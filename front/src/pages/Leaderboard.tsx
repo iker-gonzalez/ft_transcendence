@@ -11,6 +11,10 @@ const MainContent = styled.main`
     width: 75px;
   }
 
+  .table-container {
+    overflow: hidden;
+  }
+
   table {
     th {
       font-weight: bold;
@@ -61,83 +65,94 @@ const Leaderboard: React.FC = (): JSX.Element => {
       <CenteredLayout>
         <MainContent>
           <h1 className="title-1 mb-24">Leaderboard</h1>
-          <table>
-            <thead>
-              <tr>
-                <th>
-                  <span className="sr-only">Rank</span>
-                </th>
-                <th>
-                  <span className="sr-only">Avatar</span>
-                </th>
-                <th>
-                  <span className="sr-only">Username</span>
-                </th>
-                <th>Level</th>
-                <th>Wins</th>
-                <th>Losses</th>
-                <th>Win ratio</th>
-                <th>Total game time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(() => {
-                if (leaderboardData.length > 0) {
-                  return leaderboardData.map((leaderboardData: any, index) => {
-                    return (
-                      <tr key={`${leaderboardData.user.intraId}`}>
-                        <td className="title-1">
-                          #{index + 1}{' '}
-                          {(() => {
-                            switch (index) {
-                              case 0:
-                                return '🥇';
-                              case 1:
-                                return '🥈';
-                              case 2:
-                                return '🥉';
-                              default:
-                                return '';
-                            }
-                          })()}
-                        </td>
-                        <td>
-                          <RoundImg
-                            src={leaderboardData.user.avatar}
-                            alt=""
-                            className="avatar"
-                          />
-                        </td>
-                        <td className="title-3">
-                          {leaderboardData.user.username}
-                        </td>
-                        <td className="title-3">
-                          {leaderboardData.stats.rank}
-                        </td>
-                        <td>{leaderboardData.stats.wins} wins</td>
-                        <td>{leaderboardData.stats.losses} losses</td>
-                        <td>
-                          {leaderboardData.stats.totalGames
-                            ? `${(
-                                (leaderboardData.stats.wins * 100) /
-                                leaderboardData.stats.totalGames
-                              ).toFixed()}%`
-                            : '-'}
-                        </td>
-                        <td>
-                          {leaderboardData.stats.totalGameTime
-                            ? formatMsToFullTime(
-                                leaderboardData.stats.totalGameTime,
-                              )
-                            : '-'}
-                        </td>
-                      </tr>
+          <div className="table-container">
+            <table className="animate__animated animate__slideInDown">
+              <thead>
+                <tr>
+                  <th>
+                    <span className="sr-only">Rank</span>
+                  </th>
+                  <th>
+                    <span className="sr-only">Avatar</span>
+                  </th>
+                  <th>
+                    <span className="sr-only">Username</span>
+                  </th>
+                  <th>Level</th>
+                  <th>Wins</th>
+                  <th>Losses</th>
+                  <th>Win ratio</th>
+                  <th>Total game time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  if (leaderboardData.length > 0) {
+                    return leaderboardData.map(
+                      (leaderboardData: any, index) => {
+                        return (
+                          <tr key={`${leaderboardData.user.intraId}`}>
+                            <td className="title-1">
+                              #{index + 1}{' '}
+                              <span
+                                className={`${
+                                  index === 0 &&
+                                  'animate__animated animate__tada animate__delay-2s'
+                                }`}
+                              >
+                                {(() => {
+                                  switch (index) {
+                                    case 0:
+                                      return '🥇';
+                                    case 1:
+                                      return '🥈';
+                                    case 2:
+                                      return '🥉';
+                                    default:
+                                      return '';
+                                  }
+                                })()}
+                              </span>
+                            </td>
+                            <td>
+                              <RoundImg
+                                src={leaderboardData.user.avatar}
+                                alt=""
+                                className="avatar"
+                              />
+                            </td>
+                            <td className="title-3">
+                              {leaderboardData.user.username}
+                            </td>
+                            <td className="title-3">
+                              {leaderboardData.stats.rank}
+                            </td>
+                            <td>{leaderboardData.stats.wins} wins</td>
+                            <td>{leaderboardData.stats.losses} losses</td>
+                            <td>
+                              {leaderboardData.stats.totalGames
+                                ? `${(
+                                    (leaderboardData.stats.wins * 100) /
+                                    leaderboardData.stats.totalGames
+                                  ).toFixed()}%`
+                                : '-'}
+                            </td>
+                            <td>
+                              {leaderboardData.stats.totalGameTime
+                                ? formatMsToFullTime(
+                                    leaderboardData.stats.totalGameTime,
+                                  )
+                                : '-'}
+                            </td>
+                          </tr>
+                        );
+                      },
                     );
-                  });
-                }
-              })()}
-            </tbody>
-          </table>
+                  }
+                })()}
+              </tbody>
+            </table>
+          </div>
         </MainContent>
       </CenteredLayout>
     </>
