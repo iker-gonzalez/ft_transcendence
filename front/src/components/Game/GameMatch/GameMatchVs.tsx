@@ -24,6 +24,9 @@ import GameCanvasWithAction from '../GameCanvasWithAction';
 import GameMatchEndGameAction from './GameMatchEndGameAction';
 import GameMatchConfettiAnimation from './GameMatchConfettiAnimation';
 import UserStatus from '../../../interfaces/user-status.interface';
+import GameTheme from '../../../interfaces/game-theme.interface';
+import { gameThemes } from '../../../game_pong/game_pong.constants';
+import GameMatchCustomization from './GameMatchCustomization';
 
 const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
   const playerIndex: number = players?.findIndex(
@@ -104,6 +107,10 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
   const [showCanvasChildren, setShowCanvasChildren] = useState<boolean>(true);
   const [showAnimation, setShowAnimation] = useState<boolean>(false);
   const [gameEnd, setGameEnd] = useState<boolean>(false);
+  const [selectedTheme, setSelectedTheme] = React.useState<GameTheme>(
+    gameThemes[0],
+  );
+  const selectedThemeRef = useRef<GameTheme>(selectedTheme); // Required for socket logic on game start
   const [opponentLeft, setOpponentLeft] = useState<boolean>(false);
   const [players] = useState<GameSessionUser[]>(sessionDataState[0]?.players);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -135,6 +142,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           isPlayer1,
           sessionId,
           usersData,
+          theme: selectedThemeRef.current,
         });
       }
     });
@@ -236,6 +244,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
         </h2>
         <GameCanvasWithAction
           canvasRef={canvasRef}
+          background={selectedTheme.backgroundImg}
           className={`${opponentLeft ? 'overlay' : ''} canvas-container`}
         >
           {showCanvasChildren && (
@@ -267,6 +276,16 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
             </div>
           )}
         </GameCanvasWithAction>
+        <p>{selectedTheme.name}</p>
+        {!opponentLeft && !isAwaitingOpponent && (
+          <GameMatchCustomization
+            selectedTheme={selectedTheme}
+            onThemeChange={(theme: GameTheme) => {
+              setSelectedTheme(theme);
+              selectedThemeRef.current = theme;
+            }}
+          />
+        )}
         {gameEnd && <GameMatchEndGameAction />}
       </CenteredLayout>
       {showAnimation && (
