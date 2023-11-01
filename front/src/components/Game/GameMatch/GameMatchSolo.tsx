@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import CenteredLayout from '../../UI/CenteredLayout';
-import styled from 'styled-components';
 import GameCanvasWithAction from '../GameCanvasWithAction';
 import MainButton from '../../UI/MainButton';
 import { gameLoop } from '../../../game_pong/game_pong';
@@ -22,8 +21,9 @@ import {
   patchUserStatus,
 } from '../../../utils/utils';
 import UserStatus from '../../../interfaces/user-status.interface';
-
-const WrapperDiv = styled.div``;
+import GameMatchCustomization from './GameMatchCustomization';
+import { gameThemes } from '../../../game_pong/game_pong.constants';
+import GameTheme from '../../../interfaces/game-theme.interface';
 
 export default function GameMatchSolo(): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -32,6 +32,9 @@ export default function GameMatchSolo(): JSX.Element {
   const [gameStarted, setGameStarted] = React.useState<boolean>(false);
   const [gameEnd, setGameEnd] = React.useState<boolean>(false);
   const [showAnimation, setShowAnimation] = React.useState<boolean>(false); // TODO: remove
+  const [selectedTheme, setSelectedTheme] = React.useState<GameTheme>(
+    gameThemes[0],
+  );
   const sessionId = useRef<string>(uuidv4());
   const { socketRef, isConnectionError } = useGameDataSocket(sessionId.current);
   const navigate = useNavigate();
@@ -136,14 +139,18 @@ export default function GameMatchSolo(): JSX.Element {
       usersData: {
         user1: userData as UserData,
       },
+      theme: selectedTheme,
     });
   };
 
   return (
-    <WrapperDiv>
+    <div>
       <CenteredLayout>
-        <h2 className="title-2 mb-24">Be ready to challenge our AI 💪</h2>
-        <GameCanvasWithAction canvasRef={canvasRef}>
+        <h2 className="title-1 mb-24">Be ready to challenge our AI 🦾</h2>
+        <GameCanvasWithAction
+          canvasRef={canvasRef}
+          background={selectedTheme.backgroundImg}
+        >
           {showMainCta && (
             <MainButton
               onClick={onStartNewGame}
@@ -154,6 +161,12 @@ export default function GameMatchSolo(): JSX.Element {
           )}
         </GameCanvasWithAction>
         {gameEnd && <GameMatchEndGameAction />}
+        {showMainCta && (
+          <GameMatchCustomization
+            selectedTheme={selectedTheme}
+            onThemeChange={setSelectedTheme}
+          />
+        )}
       </CenteredLayout>
       {showAnimation && (
         <GameMatchConfettiAnimation
@@ -162,6 +175,6 @@ export default function GameMatchSolo(): JSX.Element {
           }}
         />
       )}
-    </WrapperDiv>
+    </div>
   );
 }
