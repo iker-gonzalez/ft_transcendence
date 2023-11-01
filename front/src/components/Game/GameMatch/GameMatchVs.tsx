@@ -181,6 +181,12 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
         setTimeout(() => {
           patchUserStatus(UserStatus.ONLINE);
           socketRef.current.disconnect();
+
+          launchFlashMessage(
+            'Your opponent abandoned the match 💔 Data will be lost',
+            FlashMessageLevel.INFO,
+          );
+
           setGameEnd(true);
           setShowCanvasChildren(true);
           setOpponentLeft(true);
