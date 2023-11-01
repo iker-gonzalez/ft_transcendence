@@ -1,3 +1,4 @@
+import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserStatus from '../interfaces/user-status.interface';
 import Cookies from 'js-cookie';
 
@@ -71,4 +72,21 @@ export function patchUserStatus(status: UserStatus): void {
       status,
     }),
   });
+}
+
+/**
+ * Returns a boolean indicating whether the user with the given ID is player 1 in the game session.
+ * @param players - An array of GameSessionUser objects representing the players in the game session.
+ * @param userId - The ID of the user to check.
+ * @returns A boolean indicating whether the user with the given ID is player 1 in the game session.
+ */
+export function getIsPlayer1(
+  players: GameSessionUser[],
+  userId: number,
+): boolean {
+  const playerIndex: number = players?.findIndex(
+    (player: any) => player?.intraId === userId,
+  );
+
+  return playerIndex === 0;
 }
