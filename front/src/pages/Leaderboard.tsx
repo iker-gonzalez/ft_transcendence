@@ -4,7 +4,7 @@ import { formatMsToFullTime, getBaseUrl } from '../utils/utils';
 import LoadingFullscreen from '../components/UI/LoadingFullscreen';
 import RoundImg from '../components/UI/RoundImage';
 import styled from 'styled-components';
-import { primaryLightColor } from '../constants/color-tokens';
+import { darkerBgColor, primaryLightColor } from '../constants/color-tokens';
 
 const MainContent = styled.main`
   .avatar {
@@ -36,6 +36,12 @@ const MainContent = styled.main`
       justify-content: center;
       align-items: center;
     }
+  }
+
+  .username {
+    font-family: 'Dogica';
+    font-weight: bold;
+    font-size: 1rem;
   }
 `;
 
@@ -121,7 +127,7 @@ const Leaderboard: React.FC = (): JSX.Element => {
                                 className="avatar"
                               />
                             </td>
-                            <td className="title-3">
+                            <td className="title-3 username">
                               {leaderboardData.user.username}
                             </td>
                             <td className="title-3">

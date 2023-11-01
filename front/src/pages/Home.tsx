@@ -82,9 +82,56 @@ const SignIn: React.FC = (): JSX.Element => {
           return (
             <>
               <img src={logo42} alt="" className="logo" />
+
+              <div className="mb-24 text-container">
+                <h1 className="title-1 mb-24">
+                  Welcome to our ft_transcendence project
+                </h1>
+                <img src={teamImage} alt="" className="team-image" />
+                <p className="mb-8">
+                  We are{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/dgerwig-"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    dgerwig-
+                  </a>
+                  ,{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/ikgonzal"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    ikgonzal
+                  </a>
+                  ,{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/ngasco"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    ngasco
+                  </a>
+                  , and{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/zcanales"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    zcanales
+                  </a>
+                  ,<br />
+                  students of the 42Urduliz campus in Bilbao, Spain
+                </p>
+                <p className="mb-8">Go ahead and explore our project 🤠</p>
+              </div>
               {userData ? (
-                <>
-                  <h2 className="title-1 mb-24">Hello, {userData.username}!</h2>
+                <div>
                   <MainButton
                     onClick={() => {
                       patchUserStatus(UserStatus.OFFLINE);
@@ -94,80 +141,31 @@ const SignIn: React.FC = (): JSX.Element => {
                   >
                     Log out
                   </MainButton>
-                </>
+                </div>
               ) : (
-                <>
-                  <div className="mb-24 text-container">
-                    <h1 className="title-1 mb-24">
-                      Welcome to our ft_transcendence project
-                    </h1>
-                    <img src={teamImage} alt="" className="team-image" />
-                    <p className="mb-8">
-                      We are{' '}
-                      <a
-                        href="https://profile.intra.42.fr/users/dgerwig-"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="body-link"
-                      >
-                        dgerwig-
-                      </a>
-                      ,{' '}
-                      <a
-                        href="https://profile.intra.42.fr/users/ikgonzal"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="body-link"
-                      >
-                        ikgonzal
-                      </a>
-                      ,{' '}
-                      <a
-                        href="https://profile.intra.42.fr/users/ngasco"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="body-link"
-                      >
-                        ngasco
-                      </a>
-                      , and{' '}
-                      <a
-                        href="https://profile.intra.42.fr/users/zcanales"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="body-link"
-                      >
-                        zcanales
-                      </a>
-                      ,<br />
-                      students of the 42Urduliz campus in Bilbao, Spain
-                    </p>
-                    <p className="mb-8">Go ahead and explore our project 🤠</p>
-                  </div>
-                  <div className="links-container">
-                    <MainButton type="button" onClick={handleSignIn}>
-                      Sign In with 42
-                    </MainButton>
-                    <Link
-                      to={`login?code=${process.env.REACT_APP_USER_TEST_1_CODE}`}
-                      className="signin-link"
-                    >
-                      Sign in with test user 1
-                    </Link>
-                    <Link
-                      to={`login?code=${process.env.REACT_APP_USER_TEST_2_CODE}`}
-                      className="signin-link"
-                    >
-                      Sign in with test user 2
-                    </Link>
-                    <Link
-                      to={`login?code=${process.env.REACT_APP_USER_TEST_3_CODE}`}
-                      className="signin-link"
-                    >
-                      Sign in with test user 3
-                    </Link>
-                  </div>
-                </>
+                <div className="links-container">
+                  <MainButton type="button" onClick={handleSignIn}>
+                    Sign In with 42
+                  </MainButton>
+                  <Link
+                    to={`login?code=${process.env.REACT_APP_USER_TEST_1_CODE}`}
+                    className="signin-link"
+                  >
+                    Sign in with test user 1
+                  </Link>
+                  <Link
+                    to={`login?code=${process.env.REACT_APP_USER_TEST_2_CODE}`}
+                    className="signin-link"
+                  >
+                    Sign in with test user 2
+                  </Link>
+                  <Link
+                    to={`login?code=${process.env.REACT_APP_USER_TEST_3_CODE}`}
+                    className="signin-link"
+                  >
+                    Sign in with test user 3
+                  </Link>
+                </div>
               )}
             </>
           );
