@@ -35,7 +35,8 @@ const WrapperDiv = styled.div`
     position: relative;
     top: -10vh;
 
-    width: min-content;
+    width: fit-content;
+    max-width: 75vw;
     min-width: 450px;
     min-height: 250px;
 
@@ -56,6 +57,7 @@ const WrapperDiv = styled.div`
     &.full-screen {
       top: 0;
 
+      max-width: none;
       width: 100vw;
       height: 100vh;
       overflow-x: hidden;
