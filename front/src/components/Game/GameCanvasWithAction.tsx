@@ -32,7 +32,7 @@ const WrapperDiv = styled.div<{ $background: string }>`
 type GameCanvasWithActionProps = {
   canvasRef: React.RefObject<HTMLCanvasElement>;
   className?: string;
-  background?: string;
+  background: string;
 };
 
 export default function GameCanvasWithAction({
@@ -42,7 +42,7 @@ export default function GameCanvasWithAction({
   background,
 }: PropsWithChildren<GameCanvasWithActionProps>): JSX.Element {
   return (
-    <WrapperDiv className={className} $background={background || ''}>
+    <WrapperDiv className={className} $background={background}>
       <div className="children-container">{children}</div>
       <canvas
         id="gamePong"
