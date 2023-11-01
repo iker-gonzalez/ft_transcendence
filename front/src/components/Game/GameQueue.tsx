@@ -66,6 +66,8 @@ export default function GameQueue(): JSX.Element {
   const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
+    const matchmakingSocketRefCopy = matchmakingSocketRef.current;
+
     if (!userData) {
       matchmakingSocketRef.current.disconnect();
     }
@@ -108,6 +110,15 @@ export default function GameQueue(): JSX.Element {
 
     return () => {
       window.clearTimeout(inactivityTimeoutRef.current);
+
+      if (userData) {
+        matchmakingSocketRefCopy.emit(
+          'unqueueUser',
+          JSON.stringify({
+            intraId: userData.intraId,
+          }),
+        );
+      }
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -142,6 +153,7 @@ export default function GameQueue(): JSX.Element {
       }),
     );
     window.clearTimeout(inactivityTimeoutRef.current);
+    setIsQueued(false);
   };
 
   return (
