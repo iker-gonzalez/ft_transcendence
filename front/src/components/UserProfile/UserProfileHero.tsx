@@ -50,8 +50,6 @@ const UserProfileHero: React.FC<{ userData: UserData }> = ({
         </div>
         <h3 className="title-1 mb-16">Hello, {userData.username}!</h3>
         <p className="email mb-24">{userData.email}</p>
-        <p className="small">IntraId: {userData.intraId}</p>
-        {/* TODO delete intraId, users don't really care about it */}
       </WrapperDiv>
     </ContrastPanel>
   );
