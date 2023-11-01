@@ -1,6 +1,7 @@
 export const primaryColor = '#ffd369';
 export const primaryLightColor = '#eeeeee';
 export const darkerBgColor = '#222831';
+export const darkestBgColor = '#040d12';
 export const darkBgColor = '#393e46';
 export const primaryAccentColor = '#00adb5';
 export const errorColor = '#ee3b2b';
