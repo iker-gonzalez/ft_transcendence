@@ -2,6 +2,7 @@ import { styled } from 'styled-components';
 
 const CenteredLayout = styled.div`
   padding: 60px 100px;
+  padding-top: 130px;
 
   display: flex;
   flex-direction: column;
