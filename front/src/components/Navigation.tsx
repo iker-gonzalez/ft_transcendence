@@ -11,13 +11,13 @@ import ProfileIcon from '../assets/svg/profile-icon.svg';
 import PlayIcon from '../assets/svg/play-icon.svg';
 import StatsIcon from '../assets/svg/stats-icon.svg';
 import LeaderboardIcon from '../assets/svg/leaderboard-icon.svg';
+import LockIcon from '../assets/svg/lock-icon.svg';
 import SVG from 'react-inlinesvg';
 
 const NavbarContainer = styled.nav`
   color: ${primaryLightColor};
   padding: 25px 30px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-
 
   .nav-list {
     padding: 0;
@@ -36,7 +36,7 @@ const NavbarContainer = styled.nav`
     }
 
     > :last-child {
-      margin-left: auto;ƒ
+      margin-left: auto;
     }
 
     .link {
@@ -69,9 +69,13 @@ const NavbarContainer = styled.nav`
         width: 17px;
         height: auto;
 
-        path {
+        &:not(.lock-icon) path {
           fill: ${primaryLightColor};
           transition: fill 0.3s ease-in-out;
+        }
+
+        &.lock-icon path {
+          stroke: ${primaryLightColor};
         }
       }
     }
@@ -100,30 +104,31 @@ const Navbar = (): JSX.Element => {
           <SVG src={HomeIcon} aria-hidden="true" className="icon" />
           Home
         </Link>
-        <Link
-          to="/profile"
-          onClick={disableLink}
-          className={`${!isLogged && 'disabled'} link`}
-        >
-          <SVG src={ProfileIcon} aria-hidden="true" className="icon" />
-          Profile
-        </Link>
-        <Link
-          to="/game"
-          onClick={disableLink}
-          className={`${!isLogged && 'disabled'} link`}
-        >
-          <SVG src={PlayIcon} aria-hidden="true" className="icon" />
-          Play
-        </Link>
-        <Link
-          to="/stats"
-          onClick={disableLink}
-          className={`${!isLogged && 'disabled'} link`}
-        >
-          <SVG src={StatsIcon} aria-hidden="true" className="icon" />
-          Stats
-        </Link>
+        {[
+          { to: '/profile', text: 'Profile', icon: ProfileIcon },
+          { to: '/game', text: 'Play', icon: PlayIcon },
+          { to: '/stats', text: 'Stats', icon: StatsIcon },
+        ].map((item) => {
+          return (
+            <Link
+              to={item.to}
+              onClick={disableLink}
+              className={`${!isLogged && 'disabled'} link`}
+            >
+              {isLogged ? (
+                <SVG src={item.icon} aria-hidden="true" className="icon" />
+              ) : (
+                <SVG
+                  src={LockIcon}
+                  aria-hidden="true"
+                  className="icon lock-icon"
+                />
+              )}
+              {item.text}
+            </Link>
+          );
+        })}
+
         <Link to="/leaderboard" className="link">
           <SVG src={LeaderboardIcon} aria-hidden="true" className="icon" />
           Leaderboard
