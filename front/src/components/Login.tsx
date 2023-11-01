@@ -63,7 +63,7 @@ const Login: React.FC = (): JSX.Element => {
           setUserData(null);
           navigate('/');
           launchFlashMessage(
-            'Something went wrong. Try again later',
+            'It is not possible to log in with the Intra right now 😬',
             FlashMessageLevel.ERROR,
           );
         })
