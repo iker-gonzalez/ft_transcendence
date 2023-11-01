@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import ContrastPanel from '../UI/ContrastPanel';
 import UserData from '../../interfaces/user-data.interface';
 import UserProfileSettingsAvatar from './UserProfileSettingsAvatar';
+import UserStatsInfo from '../shared/UserStatsInfo';
 
 const WrapperDiv = styled.div`
   .avatar-container {
@@ -50,6 +51,7 @@ const UserProfileHero: React.FC<{ userData: UserData }> = ({
         </div>
         <h3 className="title-1 mb-16">Hello, {userData.username}!</h3>
         <p className="email mb-24">{userData.email}</p>
+        <UserStatsInfo showOnlyEssentialStats={true} />
       </WrapperDiv>
     </ContrastPanel>
   );
