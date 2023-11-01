@@ -141,7 +141,7 @@ const Login: React.FC = (): JSX.Element => {
             style={{ marginLeft: '0', marginRight: 'auto' }}
             onClick={handleActivateWithOTP}
           >
-            Activate
+            Sign In
           </MainButton>
         </Modal>
       )}
