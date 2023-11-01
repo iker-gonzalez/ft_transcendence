@@ -33,27 +33,32 @@ const AddNewFriendFlow: React.FC<AddNewFriendFlowProps> = ({
     setFoundUserData(chosenUser);
   };
 
-  return (
+  return showUserSearchModal ? (
     <Modal
       dismissModalAction={() => {
         setShowAddNewFriendFlow(false);
       }}
     >
-      {showUserSearchModal ? (
-        <UserSearchModal
-          userData={userData!}
-          setChosenUser={setChosenUser}
-          proceedToNextStep={proceedToNextStep}
-        />
-      ) : (
-        <ViewNewUserProfile
-          foundUserData={foundUserData!}
-          onUpdateFriendsList={onUpdateFriendsList}
-          isAlreadyFriend={userFriends
-            .map((friend) => friend.intraId)
-            .includes(foundUserData!.intraId)}
-        />
-      )}
+      <UserSearchModal
+        userData={userData!}
+        setChosenUser={setChosenUser}
+        proceedToNextStep={proceedToNextStep}
+      />
+    </Modal>
+  ) : (
+    <Modal
+      dismissModalAction={() => {
+        setShowUserSearchModal(true);
+      }}
+      showFullScreen={true}
+    >
+      <ViewNewUserProfile
+        foundUserData={foundUserData!}
+        onUpdateFriendsList={onUpdateFriendsList}
+        isAlreadyFriend={userFriends
+          .map((friend) => friend.intraId)
+          .includes(foundUserData!.intraId)}
+      />
     </Modal>
   );
 };
