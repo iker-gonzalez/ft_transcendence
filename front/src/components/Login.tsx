@@ -18,8 +18,9 @@ const Login: React.FC = (): JSX.Element => {
   const [otpValue, setOtpValue] = useState('');
 
   const handleActivateWithOTP = () => {
+    const otpValue = sessionStorage.getItem('otpValue');
     if (otpValue) {
-      console.log('OTP: ', otpValue);
+      //window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code`;
       const urlParams = new URLSearchParams(location.search);
       const code = urlParams.get('code');
 
@@ -37,6 +38,7 @@ const Login: React.FC = (): JSX.Element => {
         }),
       })
         .then((response) => {
+          navigate('/profile');
           if (response.ok) {
             return response.json();
           }
@@ -77,7 +79,7 @@ const Login: React.FC = (): JSX.Element => {
 
     if (code) {
       setIsLoading(true);
-
+      console.log('THIS IS PEPE');
       fetch(`${getBaseUrl()}/auth/intra/signin`, {
         method: 'POST',
         headers: {
@@ -114,7 +116,6 @@ const Login: React.FC = (): JSX.Element => {
         .catch((error) => {
           console.error('An error occurred:', error);
           setUserData(null);
-
           setShowModal(true);
         })
         .finally(() => {
@@ -128,9 +129,6 @@ const Login: React.FC = (): JSX.Element => {
       {isLoading && <LoadingPage />}
       {showModal && (
         <Modal dismissModalAction={() => setShowModal(false)}>
-          {qrCode ? (
-            <img src={qrCode} alt="QR Code" />
-          ) : null}
           <input
             type="text"
             placeholder="Enter OTP"

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import MainButton from '../components/UI/MainButton';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -47,6 +47,9 @@ const PageWrapperDiv = styled.div`
 `;
 
 const SignIn: React.FC = (): JSX.Element => {
+  
+  const [otpValue, setOtpValue] = useState('');
+
   const {
     userData,
     setUserData,
@@ -70,7 +73,7 @@ const SignIn: React.FC = (): JSX.Element => {
 
   const handleSignIn = () => {
     // Redirect the user to the intranet URL
-    window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code`;
+    window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code&opt=${otpValue}`;
   };
 
   const handleLogOut = () => {
