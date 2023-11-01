@@ -16,6 +16,7 @@ import { IEndGamePayload } from '../../../game_pong/game_pong.interfaces';
 import {
   fetchAuthorized,
   getBaseUrl,
+  getIsPlayer1,
   patchUserStatus,
 } from '../../../utils/utils';
 import Cookies from 'js-cookie';
@@ -27,14 +28,6 @@ import UserStatus from '../../../interfaces/user-status.interface';
 import GameTheme from '../../../interfaces/game-theme.interface';
 import { gameThemes } from '../../../game_pong/game_pong.constants';
 import GameMatchCustomization from './GameMatchCustomization';
-
-const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
-  const playerIndex: number = players?.findIndex(
-    (player: any) => player?.intraId === userId,
-  );
-
-  return playerIndex === 0;
-};
 
 const WrapperDiv = styled.div`
   .highlighted {
