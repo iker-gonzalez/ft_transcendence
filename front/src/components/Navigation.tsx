@@ -18,7 +18,6 @@ const NavbarContainer = styled.nav`
   padding: 25px 30px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 
-
   .nav-list {
     padding: 0;
 
@@ -36,7 +35,7 @@ const NavbarContainer = styled.nav`
     }
 
     > :last-child {
-      margin-left: auto;ƒ
+      margin-left: auto;
     }
 
     .link {
