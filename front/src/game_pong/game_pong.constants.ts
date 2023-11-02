@@ -17,6 +17,7 @@ import StarWarsHitSound from './sounds/themes/hit-star_wars.mp3';
 
 import FootballBg from './images/themes/football-bg.jpg';
 import FootballHitSound from './sounds/themes/hit-footbal.wav';
+import GamePowerUp from '../interfaces/game-power-up.interface';
 
 export const thickness: number = 10;
 export const slit: number = 3;
@@ -104,5 +105,18 @@ export const gameThemes: GameTheme[] = [
     backgroundImg: FootballBg,
     ballColor: '#FFFFFF',
     hitSound: FootballHitSound,
+  },
+];
+
+export const gamePowerUps: GamePowerUp[] = [
+  {
+    id: 'ball',
+    description: 'Ball speeds up',
+    value: false,
+  },
+  {
+    id: 'paddle',
+    description: 'Paddle shrinks',
+    value: false,
   },
 ];
