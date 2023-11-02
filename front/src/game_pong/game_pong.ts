@@ -28,6 +28,7 @@ import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
 import { matchUser1, matchUser2, onGameEnd, render } from './game_pong.render';
 import GameTheme from '../interfaces/game-theme.interface';
+import GamePowerUp from '../interfaces/game-power-up.interface';
 
 const fps: number = 120;
 const computedFps: number = (1000 / fps) * 2;
@@ -48,7 +49,8 @@ type GameLoopFunctionParams = {
     user1: GameSessionUser | UserData;
     user2?: GameSessionUser | UserData;
   };
-  theme?: GameTheme; // TODO make this not optional when build is done
+  theme: GameTheme;
+  powerUps: GamePowerUp[];
 };
 
 export async function gameLoop({
@@ -58,6 +60,7 @@ export async function gameLoop({
   sessionId,
   usersData,
   theme,
+  powerUps,
 }: GameLoopFunctionParams) {
   // Reset state when a new game starts
   matchFinish = false;
@@ -65,6 +68,9 @@ export async function gameLoop({
 
   // TODO render theme assets in game
   console.log('theme is', theme);
+
+  // TODO render powerUps in game
+  console.log('powerUps are', powerUps[0], powerUps[1]);
 
   // Update initial data
   let ballData = {

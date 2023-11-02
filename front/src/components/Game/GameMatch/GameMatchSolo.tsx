@@ -22,8 +22,12 @@ import {
 } from '../../../utils/utils';
 import UserStatus from '../../../interfaces/user-status.interface';
 import GameMatchCustomization from './GameMatchCustomization';
-import { gameThemes } from '../../../game_pong/game_pong.constants';
+import {
+  gamePowerUps,
+  gameThemes,
+} from '../../../game_pong/game_pong.constants';
 import GameTheme from '../../../interfaces/game-theme.interface';
+import GamePowerUp from '../../../interfaces/game-power-up.interface';
 
 export default function GameMatchSolo(): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -35,6 +39,8 @@ export default function GameMatchSolo(): JSX.Element {
   const [selectedTheme, setSelectedTheme] = React.useState<GameTheme>(
     gameThemes[0],
   );
+  const [selectedPowerUps, setSelectedPowerUps] =
+    React.useState<GamePowerUp[]>(gamePowerUps);
   const sessionId = useRef<string>(uuidv4());
   const { socketRef, isConnectionError } = useGameDataSocket(sessionId.current);
   const navigate = useNavigate();
@@ -140,6 +146,7 @@ export default function GameMatchSolo(): JSX.Element {
         user1: userData as UserData,
       },
       theme: selectedTheme,
+      powerUps: selectedPowerUps,
     });
   };
 
@@ -165,6 +172,8 @@ export default function GameMatchSolo(): JSX.Element {
           <GameMatchCustomization
             selectedTheme={selectedTheme}
             onThemeChange={setSelectedTheme}
+            selectedPowerUps={selectedPowerUps}
+            onPowerUpsChange={setSelectedPowerUps}
           />
         )}
       </CenteredLayout>
