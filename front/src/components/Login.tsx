@@ -7,6 +7,8 @@ import moment from 'moment';
 import Cookies from 'js-cookie';
 import Modal from './UI/Modal';
 import MainButton from './UI/MainButton';
+import FlashMessageLevel from '../interfaces/flash-message-color.interface';
+import { useFlashMessages } from '../context/FlashMessagesContext';
 
 const Login: React.FC = (): JSX.Element => {
   const { setUserData } = useUserData();
@@ -15,6 +17,7 @@ const Login: React.FC = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [otpValue, setOtpValue] = useState(''); // Initialize the state with an empty string
+  const { launchFlashMessage } = useFlashMessages();
 
   const handleActivateWithOTP = () => {
     console.log(otpValue);
@@ -77,7 +80,12 @@ const Login: React.FC = (): JSX.Element => {
           }
         })
         .catch((error) => {
-          console.error('An error occurred:', error);
+          if (error.status === 401) {
+            launchFlashMessage(
+              'OTP code invalid. Please try again.',
+              FlashMessageLevel.ERROR,
+            );
+          }
           setUserData(null);
           setShowModal(true);
         })
@@ -104,7 +112,7 @@ const Login: React.FC = (): JSX.Element => {
             onChange={handleOtpInputChange} // Handle OTP input changes
           />
           <MainButton
-            style={{ marginLeft: '0', marginRight: 'auto' }}
+            style={{ marginLeft: 'auto', marginRight: 'auto', marginTop: '50px' }}
             onClick={handleActivateWithOTP}
           >
             Sign In
