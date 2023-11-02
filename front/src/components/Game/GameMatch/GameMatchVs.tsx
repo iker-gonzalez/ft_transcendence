@@ -26,8 +26,12 @@ import GameMatchEndGameAction from './GameMatchEndGameAction';
 import GameMatchConfettiAnimation from './GameMatchConfettiAnimation';
 import UserStatus from '../../../interfaces/user-status.interface';
 import GameTheme from '../../../interfaces/game-theme.interface';
-import { gameThemes } from '../../../game_pong/game_pong.constants';
+import {
+  gamePowerUps,
+  gameThemes,
+} from '../../../game_pong/game_pong.constants';
 import GameMatchCustomization from './GameMatchCustomization';
+import GamePowerUp from '../../../interfaces/game-power-up.interface';
 
 const WrapperDiv = styled.div`
   .highlighted {
@@ -103,6 +107,8 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
   const [selectedTheme, setSelectedTheme] = React.useState<GameTheme>(
     gameThemes[0],
   );
+  const [selectedPowerUps, setSelectedPowerUps] =
+    React.useState<GamePowerUp[]>(gamePowerUps);
   const selectedThemeRef = useRef<GameTheme>(selectedTheme); // Required for socket logic on game start
   const [opponentLeft, setOpponentLeft] = useState<boolean>(false);
   const [players] = useState<GameSessionUser[]>(sessionDataState[0]?.players);
@@ -136,6 +142,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           sessionId,
           usersData,
           theme: selectedThemeRef.current,
+          powerUps: selectedPowerUps,
         });
       }
     });
@@ -283,6 +290,8 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
               setSelectedTheme(theme);
               selectedThemeRef.current = theme;
             }}
+            selectedPowerUps={selectedPowerUps}
+            onPowerUpsChange={setSelectedPowerUps}
           />
         )}
         {gameEnd && <GameMatchEndGameAction />}
