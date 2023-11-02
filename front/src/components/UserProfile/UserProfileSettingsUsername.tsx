@@ -131,15 +131,14 @@ const UserProfileSettingsUsername: React.FC<{ className: string }> = ({
           </p>
         </div>
       ) : (
-        <div className="username-change-container">
           <MainButton
+          style={{ marginLeft: 'auto', marginRight: '0' }}
             onClick={() => {
               setShowUsernameForm((prev) => !prev);
             }}
           >
             Change
           </MainButton>
-        </div>
       )}
     </WrapperDiv>
   );
