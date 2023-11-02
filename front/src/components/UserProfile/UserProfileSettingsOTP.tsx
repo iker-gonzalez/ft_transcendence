@@ -4,8 +4,8 @@ import UserData from '../../interfaces/user-data.interface';
 import Cookies from 'js-cookie';
 import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Modal from '../UI/Modal';
-import { primaryLightColor } from '../../constants/color-tokens';
-import styled from 'styled-components';
+import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
 
 interface UserProfileSettingsOTPProps {
   userData: UserData;
@@ -16,6 +16,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
   const [isActivating, setIsActivating] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null); // State to store the QR code image URL
   const [otpValue, setOtpValue] = useState(''); // State to store OTP input value
+  const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
     if (isGeneratingQR) {
@@ -52,7 +53,6 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
   };
 
   const handleActivateWithOTP = async () => {
-    console.log(otpValue);
     try {
       // Make a POST request to the /2fa/activate endpoint with the OTP value.
       const response = await fetchAuthorized(`${getBaseUrl()}/2fa/activate`, {
@@ -67,8 +67,17 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
 
       if (response.ok) {
         console.log('2FA activated');
+        setIsActivating(false);
+        launchFlashMessage(
+          '2FA activated successfully',
+          FlashMessageLevel.SUCCESS,
+        );
       } else {
         console.error('Failed to activate 2FA.');
+        launchFlashMessage(
+          'Failed to activate 2FA.',
+          FlashMessageLevel.ERROR,
+        );
       }
     } catch (error) {
       console.error('Error:', error);
@@ -79,7 +88,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
     <>
       <h3 className="title-3">OTP</h3>
       {userData.isTwoFactorAuthEnabled ? (
-        <p>On</p>
+        <p style={{ marginLeft: 'auto', marginRight: '0', fontSize: '28px', color: 'yellow'}}>On</p>
       ) : (
         isGeneratingQR ? (
           <p>Generating QR code...</p>
