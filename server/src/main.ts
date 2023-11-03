@@ -5,12 +5,14 @@ import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { swaggerAsyncConfig, swaggerConfig } from 'config/swagger.config';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import helmet from 'helmet';
 // import { AsyncApiDocumentBuilder, AsyncApiModule } from 'nestjs-asyncapi';
 // import { swaggerAsyncConstants } from 'config/swagger-async.constants';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  app.use(helmet());
   app.enableCors();
 
   // Documentation for REST API

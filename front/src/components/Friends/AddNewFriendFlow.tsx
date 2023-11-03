@@ -13,11 +13,13 @@ type AddNewFriendFlowProps = {
     friendsList: FriendData[],
     successMessage: string,
   ) => void;
+  userFriends: FriendData[];
 };
 
 const AddNewFriendFlow: React.FC<AddNewFriendFlowProps> = ({
   setShowAddNewFriendFlow,
   onUpdateFriendsList,
+  userFriends,
 }): JSX.Element => {
   const [showUserSearchModal, setShowUserSearchModal] = useState<boolean>(true);
   const [foundUserData, setFoundUserData] = useState<UserCoreData | null>(null);
@@ -31,24 +33,32 @@ const AddNewFriendFlow: React.FC<AddNewFriendFlowProps> = ({
     setFoundUserData(chosenUser);
   };
 
-  return (
+  return showUserSearchModal ? (
     <Modal
       dismissModalAction={() => {
         setShowAddNewFriendFlow(false);
       }}
     >
-      {showUserSearchModal ? (
-        <UserSearchModal
-          userData={userData!}
-          setChosenUser={setChosenUser}
-          proceedToNextStep={proceedToNextStep}
-        />
-      ) : (
-        <ViewNewUserProfile
-          foundUserData={foundUserData!}
-          onUpdateFriendsList={onUpdateFriendsList}
-        />
-      )}
+      <UserSearchModal
+        userData={userData!}
+        setChosenUser={setChosenUser}
+        proceedToNextStep={proceedToNextStep}
+      />
+    </Modal>
+  ) : (
+    <Modal
+      dismissModalAction={() => {
+        setShowUserSearchModal(true);
+      }}
+      showFullScreen={true}
+    >
+      <ViewNewUserProfile
+        foundUserData={foundUserData!}
+        onUpdateFriendsList={onUpdateFriendsList}
+        isAlreadyFriend={userFriends
+          .map((friend) => friend.intraId)
+          .includes(foundUserData!.intraId)}
+      />
     </Modal>
   );
 };

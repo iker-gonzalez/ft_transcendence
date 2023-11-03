@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -7,11 +8,18 @@ import { ConfigService } from '@nestjs/config';
 import { IntraService } from '../intra/intra.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { IntraUserDataDto } from './dto/intra-user-data.dto';
-import { User } from '@prisma/client';
+import { User, UserStatus } from '@prisma/client';
 import { SigninResponseDto } from './dto/signin-response';
 import { JwtService } from '@nestjs/jwt';
 import { TwoFactorAuthService } from '../two-factor-auth/two-factor-auth.service';
-import { testUser2Data, testUserData } from '../../config/app.constants';
+import {
+  testUser2Data,
+  testUser3Data,
+  testUserData,
+} from '../../config/app.constants';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import * as moment from 'moment';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +29,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly twoFactorAuthService: TwoFactorAuthService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async signinUser(
@@ -38,6 +47,8 @@ export class AuthService {
       userData = testUserData;
     } else if (code === this.configService.get<string>('FAKE_USER_2_CODE')) {
       userData = testUser2Data;
+    } else if (code === this.configService.get<string>('FAKE_USER_3_CODE')) {
+      userData = testUser3Data;
     } else {
       // Get Intra User Token
       const token: string = await this.intraService.getIntraUserToken(code);
@@ -79,6 +90,14 @@ export class AuthService {
         }
       }
 
+      // Update user status
+      await this.prisma.user.update({
+        where: { id },
+        data: {
+          status: UserStatus.ONLINE,
+        },
+      });
+
       const response: SigninResponseDto = {
         created: 0,
         access_token: await this._signToken(id),
@@ -95,7 +114,7 @@ export class AuthService {
 
     // Otherwise, create a new user
     const newUser: User = await this.prisma.user.create({
-      data: userData,
+      data: { ...userData, status: UserStatus.ONLINE },
     });
 
     const {
@@ -116,13 +135,31 @@ export class AuthService {
     return response;
   }
 
-  _signToken(userId: string): Promise<string> {
+  async _signToken(userId: string): Promise<string> {
     const payload: { sub: string } = {
       sub: userId,
     };
 
     const jwtExipirationMinutes: string =
       this.configService.get('JWT_EXPIRATION_MINUTES') ?? '20'; // Default value is used in testing
+
+    // Set the user as offline when the token expires
+    const usersToSetAsOffline: { id: string; timestamp: string }[] =
+      (await this.cacheManager.get('offline')) || [];
+
+    const newUsersList = [
+      ...usersToSetAsOffline,
+      {
+        id: userId,
+        timestamp: moment().add(+jwtExipirationMinutes, 'm').toDate(),
+      },
+    ];
+    await this.cacheManager.set(
+      'offline',
+      [...new Set(newUsersList)], // remove duplicates
+      0,
+    );
+
     return this.jwtService.signAsync(payload, {
       expiresIn: `${jwtExipirationMinutes}m`,
       secret: this.configService.get('JWT_SECRET'),
@@ -132,7 +169,36 @@ export class AuthService {
   _isTestUser(code: string): boolean {
     return (
       code === this.configService.get<string>('FAKE_USER_1_CODE') ||
-      code === this.configService.get<string>('FAKE_USER_2_CODE')
+      code === this.configService.get<string>('FAKE_USER_2_CODE') ||
+      code === this.configService.get<string>('FAKE_USER_3_CODE')
     );
+  }
+
+  async setUsersAsOffline(): Promise<void> {
+    const usersToSetAsOffline: { id: string; timestamp: string }[] =
+      (await this.cacheManager.get('offline')) || [];
+
+    const usersThatCanBeSet = usersToSetAsOffline.filter((user) => {
+      return moment(user.timestamp).isBefore(moment());
+    });
+
+    usersThatCanBeSet.forEach(async (userToBeSetAsOffline) => {
+      const updatedUser = await this.prisma.user.update({
+        where: { id: userToBeSetAsOffline.id },
+        data: {
+          status: UserStatus.OFFLINE,
+        },
+      });
+
+      if (updatedUser) {
+        await this.cacheManager.set(
+          'offline',
+          usersToSetAsOffline.filter(
+            (user) => user.id !== userToBeSetAsOffline.id,
+          ),
+          0,
+        );
+      }
+    });
   }
 }

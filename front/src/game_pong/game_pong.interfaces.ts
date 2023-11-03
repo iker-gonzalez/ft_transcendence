@@ -16,6 +16,7 @@ export interface ISounds {
   wall: HTMLAudioElement;
   userScore: HTMLAudioElement;
   botScore: HTMLAudioElement;
+  music: any;
 }
 
 export enum RenderColor {
@@ -29,8 +30,8 @@ export enum RenderColor {
 
 export interface IBallData extends ICommonData, IPositionData {
   radius: number;
-  velocityX: number;
-  velocityY: number;
+  moveX: number;
+  moveY: number;
   speed: number;
   reset: boolean;
 }

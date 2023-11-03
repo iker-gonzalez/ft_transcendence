@@ -13,20 +13,25 @@ import GameSessionUser from '../../../interfaces/game-session-user.interface';
 import Lottie from 'lottie-react';
 import waitingAnimationData from '../../../assets/lotties/waiting.json';
 import { IEndGamePayload } from '../../../game_pong/game_pong.interfaces';
-import { fetchAuthorized, getBaseUrl } from '../../../utils/utils';
+import {
+  fetchAuthorized,
+  getBaseUrl,
+  getIsPlayer1,
+  patchUserStatus,
+} from '../../../utils/utils';
 import Cookies from 'js-cookie';
 import UserData from '../../../interfaces/user-data.interface';
 import GameCanvasWithAction from '../GameCanvasWithAction';
 import GameMatchEndGameAction from './GameMatchEndGameAction';
 import GameMatchConfettiAnimation from './GameMatchConfettiAnimation';
-
-const getIsPlayer1 = (players: GameSessionUser[], userId: number): boolean => {
-  const playerIndex: number = players?.findIndex(
-    (player: any) => player?.intraId === userId,
-  );
-
-  return playerIndex === 0;
-};
+import UserStatus from '../../../interfaces/user-status.interface';
+import GameTheme from '../../../interfaces/game-theme.interface';
+import {
+  gamePowerUps,
+  gameThemes,
+} from '../../../game_pong/game_pong.constants';
+import GameMatchCustomization from './GameMatchCustomization';
+import GamePowerUp from '../../../interfaces/game-power-up.interface';
 
 const WrapperDiv = styled.div`
   .highlighted {
@@ -99,6 +104,12 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
   const [showCanvasChildren, setShowCanvasChildren] = useState<boolean>(true);
   const [showAnimation, setShowAnimation] = useState<boolean>(false);
   const [gameEnd, setGameEnd] = useState<boolean>(false);
+  const [selectedTheme, setSelectedTheme] = React.useState<GameTheme>(
+    gameThemes[0],
+  );
+  const [selectedPowerUps, setSelectedPowerUps] =
+    React.useState<GamePowerUp[]>(gamePowerUps);
+  const selectedThemeRef = useRef<GameTheme>(selectedTheme); // Required for socket logic on game start
   const [opponentLeft, setOpponentLeft] = useState<boolean>(false);
   const [players] = useState<GameSessionUser[]>(sessionDataState[0]?.players);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -114,6 +125,8 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
     const socketCopy = socketRef.current;
 
     socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
+      patchUserStatus(UserStatus.PLAYING);
+
       setShowCanvasChildren(false);
 
       if (canvasRef.current) {
@@ -128,6 +141,8 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           isPlayer1,
           sessionId,
           usersData,
+          theme: selectedThemeRef.current,
+          powerUps: selectedPowerUps,
         });
       }
     });
@@ -135,6 +150,8 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
     socketRef.current.on(
       `gameEnded/${userData.intraId}/${sessionId}`,
       (socketData: string) => {
+        patchUserStatus(UserStatus.ONLINE);
+
         socketRef.current.disconnect();
         setGameEnd(true);
 
@@ -143,7 +160,6 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
 
         if (player.isWinner) setShowAnimation(true);
 
-        console.log('parsedData', socketData);
         fetchAuthorized(`${getBaseUrl()}/game/sessions`, {
           method: 'POST',
           headers: {
@@ -153,26 +169,35 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           body: socketData,
         })
           .then((res: any) => {
-            console.log(res);
             return res.json();
           })
           .then((data: any) => {
+            // TODO check this
             console.log(data);
           })
           .catch((e: any) => {
             console.error('Error creating new game data set: ', e);
           });
-        // TODO hit endpoint to store game data
       },
     );
 
     socketRef.current.on(
       `gameAborted/user${isPlayer1 ? '2' : '1'}/${sessionId}`,
       () => {
-        setGameEnd(true);
-        setShowCanvasChildren(true);
-        setOpponentLeft(true);
-        socketRef.current.disconnect();
+        // Allow time for the game loop to properly end
+        setTimeout(() => {
+          patchUserStatus(UserStatus.ONLINE);
+          socketRef.current.disconnect();
+
+          launchFlashMessage(
+            'Your opponent abandoned the match 💔 Data will be lost',
+            FlashMessageLevel.INFO,
+          );
+
+          setGameEnd(true);
+          setShowCanvasChildren(true);
+          setOpponentLeft(true);
+        }, 100);
       },
     );
 
@@ -182,8 +207,12 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           'abort',
           JSON.stringify({ gameDataId: sessionId, isUser1: isPlayer1 }),
           () => {
+            patchUserStatus(UserStatus.ONLINE);
+            launchFlashMessage(
+              'You abandoned a match 👎 Data will be lost',
+              FlashMessageLevel.INFO,
+            );
             socketCopy.disconnect();
-            // TODO show feedback to user
           },
         );
       }
@@ -221,6 +250,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
         </h2>
         <GameCanvasWithAction
           canvasRef={canvasRef}
+          background={selectedTheme.backgroundImg}
           className={`${opponentLeft ? 'overlay' : ''} canvas-container`}
         >
           {showCanvasChildren && (
@@ -252,6 +282,18 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
             </div>
           )}
         </GameCanvasWithAction>
+        <p>{selectedTheme.name}</p>
+        {!opponentLeft && !isAwaitingOpponent && (
+          <GameMatchCustomization
+            selectedTheme={selectedTheme}
+            onThemeChange={(theme: GameTheme) => {
+              setSelectedTheme(theme);
+              selectedThemeRef.current = theme;
+            }}
+            selectedPowerUps={selectedPowerUps}
+            onPowerUpsChange={setSelectedPowerUps}
+          />
+        )}
         {gameEnd && <GameMatchEndGameAction />}
       </CenteredLayout>
       {showAnimation && (

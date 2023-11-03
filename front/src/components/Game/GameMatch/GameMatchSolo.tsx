@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import CenteredLayout from '../../UI/CenteredLayout';
-import styled from 'styled-components';
 import GameCanvasWithAction from '../GameCanvasWithAction';
 import MainButton from '../../UI/MainButton';
 import { gameLoop } from '../../../game_pong/game_pong';
@@ -16,16 +15,32 @@ import { Socket } from 'socket.io-client';
 import { IEndGamePayload } from '../../../game_pong/game_pong.interfaces';
 import GameMatchEndGameAction from './GameMatchEndGameAction';
 import GameMatchConfettiAnimation from './GameMatchConfettiAnimation';
-import { fetchAuthorized, getBaseUrl } from '../../../utils/utils';
-
-const WrapperDiv = styled.div``;
+import {
+  fetchAuthorized,
+  getBaseUrl,
+  patchUserStatus,
+} from '../../../utils/utils';
+import UserStatus from '../../../interfaces/user-status.interface';
+import GameMatchCustomization from './GameMatchCustomization';
+import {
+  gamePowerUps,
+  gameThemes,
+} from '../../../game_pong/game_pong.constants';
+import GameTheme from '../../../interfaces/game-theme.interface';
+import GamePowerUp from '../../../interfaces/game-power-up.interface';
 
 export default function GameMatchSolo(): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { userData, fetchUserData, isUserDataFetching } = useUserData();
   const [showMainCta, setShowMainCta] = React.useState<boolean>(true);
+  const [gameStarted, setGameStarted] = React.useState<boolean>(false);
   const [gameEnd, setGameEnd] = React.useState<boolean>(false);
   const [showAnimation, setShowAnimation] = React.useState<boolean>(false); // TODO: remove
+  const [selectedTheme, setSelectedTheme] = React.useState<GameTheme>(
+    gameThemes[0],
+  );
+  const [selectedPowerUps, setSelectedPowerUps] =
+    React.useState<GamePowerUp[]>(gamePowerUps);
   const sessionId = useRef<string>(uuidv4());
   const { socketRef, isConnectionError } = useGameDataSocket(sessionId.current);
   const navigate = useNavigate();
@@ -33,6 +48,7 @@ export default function GameMatchSolo(): JSX.Element {
 
   useEffect(() => {
     const socketCopy = socketRef.current;
+    const sessionIdCopy = sessionId.current;
 
     if (!userData) {
       const token = Cookies.get('token');
@@ -48,10 +64,20 @@ export default function GameMatchSolo(): JSX.Element {
     }
 
     return () => {
-      if (!gameEnd) {
-        socketCopy.disconnect();
+      if (gameStarted && !gameEnd) {
+        socketCopy.emit(
+          'abort',
+          JSON.stringify({ gameDataId: sessionIdCopy, isSoloMode: true }),
+          () => {
+            patchUserStatus(UserStatus.ONLINE);
+            launchFlashMessage(
+              'You abandoned a match 👎 Data will be lost',
+              FlashMessageLevel.INFO,
+            );
+            socketCopy.disconnect();
+          },
+        );
       }
-      // TODO show feedback to user
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -66,10 +92,10 @@ export default function GameMatchSolo(): JSX.Element {
         body: socketData,
       })
         .then((res: any) => {
-          console.log(res);
           return res.json();
         })
         .then((data: any) => {
+          //  TODO check this
           console.log(data);
         })
         .catch((e: any) => {
@@ -81,6 +107,8 @@ export default function GameMatchSolo(): JSX.Element {
       socketRef.current.on(
         `gameEnded/${userData.intraId}/${sessionId.current}`,
         (socketData: string) => {
+          patchUserStatus(UserStatus.ONLINE);
+
           setGameEnd(true);
 
           const parsedData: IEndGamePayload = JSON.parse(socketData);
@@ -104,6 +132,9 @@ export default function GameMatchSolo(): JSX.Element {
   }, [userData, socketRef]);
 
   const onStartNewGame = (): void => {
+    patchUserStatus(UserStatus.PLAYING);
+
+    setGameStarted(true);
     setShowMainCta(false);
 
     gameLoop({
@@ -114,14 +145,19 @@ export default function GameMatchSolo(): JSX.Element {
       usersData: {
         user1: userData as UserData,
       },
+      theme: selectedTheme,
+      powerUps: selectedPowerUps,
     });
   };
 
   return (
-    <WrapperDiv>
+    <div>
       <CenteredLayout>
-        <h2 className="title-2 mb-24">Be ready to challenge our AI 💪</h2>
-        <GameCanvasWithAction canvasRef={canvasRef}>
+        <h2 className="title-1 mb-24">Be ready to challenge our AI 🦾</h2>
+        <GameCanvasWithAction
+          canvasRef={canvasRef}
+          background={selectedTheme.backgroundImg}
+        >
           {showMainCta && (
             <MainButton
               onClick={onStartNewGame}
@@ -132,6 +168,14 @@ export default function GameMatchSolo(): JSX.Element {
           )}
         </GameCanvasWithAction>
         {gameEnd && <GameMatchEndGameAction />}
+        {showMainCta && (
+          <GameMatchCustomization
+            selectedTheme={selectedTheme}
+            onThemeChange={setSelectedTheme}
+            selectedPowerUps={selectedPowerUps}
+            onPowerUpsChange={setSelectedPowerUps}
+          />
+        )}
       </CenteredLayout>
       {showAnimation && (
         <GameMatchConfettiAnimation
@@ -140,6 +184,6 @@ export default function GameMatchSolo(): JSX.Element {
           }}
         />
       )}
-    </WrapperDiv>
+    </div>
   );
 }

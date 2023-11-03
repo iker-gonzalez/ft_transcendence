@@ -11,6 +11,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { swaggerConstants } from '../../config/swagger.constants';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -41,5 +42,10 @@ export class AuthController {
   ): Promise<SigninResponseDto> {
     const { code, state, otp } = intraSigninDto;
     return this.authService.signinUser(code, state, otp);
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  handleCron() {
+    return this.authService.setUsersAsOffline();
   }
 }

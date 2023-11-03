@@ -9,10 +9,12 @@ import {
 } from './game_pong.constants';
 import {
   InitializeCanvasImages,
+  countDownToStart,
   initializeCanvasImages,
   initializeEventListeners,
   initializeSocketLogic,
   initializeSounds,
+  isBallFrozen,
   isSoloMode,
   onAbortGame,
 } from './game_pong.functions';
@@ -25,15 +27,18 @@ import {
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
 import { matchUser1, matchUser2, onGameEnd, render } from './game_pong.render';
+import GameTheme from '../interfaces/game-theme.interface';
+import GamePowerUp from '../interfaces/game-power-up.interface';
 
-const fps: number = 60;
-const computedFps: number = 1000 / fps;
+const fps: number = 120;
+const computedFps: number = (1000 / fps) * 2;
 export const thickness: number = 10;
 export const slit: number = 3;
 const userSpeedInput: number = 10;
 let matchFinish: boolean = false;
 export const matchPoints: number = 5;
-export const startedAt: Date = new Date();
+let countDown: number = 5;
+let isFirstRun: boolean = true;
 
 type GameLoopFunctionParams = {
   canvas: HTMLCanvasElement;
@@ -44,16 +49,28 @@ type GameLoopFunctionParams = {
     user1: GameSessionUser | UserData;
     user2?: GameSessionUser | UserData;
   };
+  theme: GameTheme;
+  powerUps: GamePowerUp[];
 };
+
 export async function gameLoop({
   canvas,
   socket,
   isPlayer1,
   sessionId,
   usersData,
+  theme,
+  powerUps,
 }: GameLoopFunctionParams) {
   // Reset state when a new game starts
   matchFinish = false;
+  const startedAt: Date = new Date();
+
+  // TODO render theme assets in game
+  console.log('theme is', theme);
+
+  // TODO render powerUps in game
+  console.log('powerUps are', powerUps[0], powerUps[1]);
 
   // Update initial data
   let ballData = {
@@ -61,15 +78,17 @@ export async function gameLoop({
     x: canvas.width / 2,
     y: canvas.height / 2,
   };
-  let user1 = { ...user1Init, y: canvas.height / 2 - 100 / 2 };
+  let user1 = { ...user1Init, x: 45, y: canvas.height / 2 - 100 / 2 };
   let user2 = {
     ...user2Init,
-    x: canvas.width - 40,
+    x: canvas.width - 55,
     y: canvas.height / 2 - 100 / 2,
   };
   let net = { ...netInit, x: canvas.width / 2 - 5 };
 
   const sounds = initializeSounds();
+
+  sounds.music.play().catch(function (error: any) {});
 
   // Images need to be loaded once before rendering
   // Otherwise they create a flickering effect
@@ -101,6 +120,7 @@ export async function gameLoop({
       socket,
       isPlayer1,
       sessionId,
+      startedAt,
       ballData,
       user1,
       user2,
@@ -116,23 +136,22 @@ export async function gameLoop({
     });
   }
 
-  setTimeout(() => {
-    game({
-      canvas,
-      ballData,
-      sounds,
-      user1,
-      user2,
-      usersData,
-      net,
-      socket,
-      isPlayer1,
-      matchPoints,
-      sessionId,
-      eventList,
-      canvasImages,
-    });
-  }, 1000);
+  game({
+    canvas,
+    ballData,
+    sounds,
+    user1,
+    user2,
+    usersData,
+    net,
+    socket,
+    isPlayer1,
+    matchPoints,
+    sessionId,
+    startedAt,
+    eventList,
+    canvasImages,
+  });
 }
 
 type GameFunctionParams = {
@@ -150,9 +169,11 @@ type GameFunctionParams = {
   isPlayer1: boolean;
   matchPoints: number;
   sessionId: string;
+  startedAt: Date;
   eventList: any[];
   canvasImages: InitializeCanvasImages;
 };
+
 function game({
   canvas,
   ballData,
@@ -165,10 +186,44 @@ function game({
   isPlayer1,
   matchPoints,
   sessionId,
+  startedAt,
   eventList,
   canvasImages,
 }: GameFunctionParams) {
-  if (matchFinish) return;
+  // Clean up if one of the players leaves the game
+  const isAbortedMatch = true;
+  socket.on(`gameAborted/user1/${sessionId}`, () => {
+    matchFinish = true;
+    onGameEnd({
+      canvas,
+      eventList,
+      socket,
+      sessionId,
+      startedAt,
+      player: user1,
+      userData: usersData.user1,
+      sounds,
+      isAbortedMatch,
+    });
+  });
+  socket.on(`gameAborted/user2/${sessionId}`, () => {
+    matchFinish = true;
+    onGameEnd({
+      canvas,
+      eventList,
+      socket,
+      sessionId,
+      startedAt,
+      player: user2,
+      userData: usersData.user2,
+      sounds,
+      isAbortedMatch,
+    });
+  });
+
+  if (matchFinish) {
+    return;
+  }
 
   setTimeout(() => {
     if (isSoloMode(usersData)) {
@@ -185,14 +240,35 @@ function game({
         usersData,
         canvasImages,
         thickness,
+        sounds,
       );
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
-        onGameEnd(canvas, eventList, socket, sessionId, user1, usersData.user1);
+        // First save data of player 1
+        onGameEnd({
+          canvas,
+          eventList,
+          socket,
+          sessionId,
+          startedAt,
+          player: user1,
+          userData: usersData.user1,
+          sounds,
+        });
+        // Then of bot
         // Delay is required by the server to process the data
         setTimeout(() => {
-          onGameEnd(canvas, eventList, socket, sessionId, user2, botUserData);
-        }, 500);
+          onGameEnd({
+            canvas,
+            eventList,
+            socket,
+            sessionId,
+            startedAt,
+            player: user2,
+            userData: botUserData,
+            sounds,
+          });
+        }, 100);
         matchFinish = true;
       }
     } else {
@@ -203,6 +279,12 @@ function game({
           gameDataId: sessionId,
         }),
       );
+    }
+
+    console.log('Is Ball Frozen? ', isBallFrozen);
+    if (isFirstRun) {
+      countDownToStart(countDown);
+      isFirstRun = false;
     }
 
     requestAnimationFrame(function () {
@@ -218,6 +300,7 @@ function game({
         isPlayer1,
         matchPoints,
         sessionId,
+        startedAt,
         eventList,
         canvasImages,
       });

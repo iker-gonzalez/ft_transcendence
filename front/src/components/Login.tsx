@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getBaseUrl } from '../utils/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
-import LoadingPage from '../pages/LoadingPage';
+import LoadingFullscreen from './UI/LoadingFullscreen';
 import { useUserData } from '../context/UserDataContext';
 import moment from 'moment';
 import Cookies from 'js-cookie';
@@ -102,7 +102,7 @@ const Login: React.FC = (): JSX.Element => {
 
   return (
     <>
-      {isLoading && <LoadingPage />}
+      {isLoading && <LoadingFullscreen />}
       {showModal && (
         <Modal dismissModalAction={() => setShowModal(false)}>
           <input

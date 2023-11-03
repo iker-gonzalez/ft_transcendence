@@ -11,6 +11,8 @@ import Login from './components/Login';
 import { UserDataProvider } from './context/UserDataContext';
 import { FlashMessagesProvider } from './context/FlashMessagesContext';
 import FlashMessagesContainer from './pages/FlashMessagesContainer';
+import Leaderboard from './pages/Leaderboard';
+import UserStats from './pages/UserStats';
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
                 <Route path="queue" element={<GameQueue />} />
                 <Route path="match" element={<GameMatch />} />
               </Route>
+              <Route path="stats" element={<UserStats />} />
+              <Route path="leaderboard" element={<Leaderboard />} />
             </Routes>
           </div>
         </Router>

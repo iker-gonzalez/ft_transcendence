@@ -9,9 +9,17 @@ export const testUserData: IntraUserDataDto = {
 };
 
 export const testUser2Data: IntraUserDataDto = {
-  avatar: 'https://i.pravatar.cc/600?img=10',
+  avatar: 'https://i.pravatar.cc/600?img=32',
   email: 'test2@42urduliz.com',
   intraId: 667,
   isTwoFactorAuthEnabled: false,
   username: 'test2-',
+};
+
+export const testUser3Data: IntraUserDataDto = {
+  avatar: 'https://i.pravatar.cc/600?img=35',
+  email: 'test3@42urduliz.com',
+  intraId: 668,
+  isTwoFactorAuthEnabled: false,
+  username: 'test3-',
 };

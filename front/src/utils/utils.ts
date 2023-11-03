@@ -1,3 +1,7 @@
+import GameSessionUser from '../interfaces/game-session-user.interface';
+import UserStatus from '../interfaces/user-status.interface';
+import Cookies from 'js-cookie';
+
 /**
  * Returns the base URL in the app depending on whether the current hostname is localhost or not (e.g., a GitHub Codespace),
  * @returns base URL
@@ -37,4 +41,52 @@ export async function fetchAuthorized(
   }
 
   return res;
+}
+
+/**
+ * Formats a given number of milliseconds into a string representation of minutes and seconds.
+ * @param ms - The number of milliseconds to format.
+ * @returns A string representation of the given milliseconds.
+ */
+export function formatMsToFullTime(ms: number): string {
+  const date = new Date(ms);
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  return `${minutes ? minutes + 'm ' : ''} ${seconds ? seconds + 's' : ''}`;
+}
+
+/**
+ * Updates the status of the current user.
+ * @param status The new status of the user.
+ * @returns void
+ */
+export function patchUserStatus(status: UserStatus): void {
+  fetchAuthorized(`${getBaseUrl()}/user/status`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${Cookies.get('token')}`,
+    },
+    body: JSON.stringify({
+      status,
+    }),
+  });
+}
+
+/**
+ * Returns a boolean indicating whether the user with the given ID is player 1 in the game session.
+ * @param players - An array of GameSessionUser objects representing the players in the game session.
+ * @param userId - The ID of the user to check.
+ * @returns A boolean indicating whether the user with the given ID is player 1 in the game session.
+ */
+export function getIsPlayer1(
+  players: GameSessionUser[],
+  userId: number,
+): boolean {
+  const playerIndex: number = players?.findIndex(
+    (player: any) => player?.intraId === userId,
+  );
+
+  return playerIndex === 0;
 }
