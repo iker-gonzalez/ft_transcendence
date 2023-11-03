@@ -51,6 +51,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
   userData,
   className,
 }) => {
+  const [isTestUser, setIsTestUser] = useState(false);
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
   const [is2FAOn, set2FAOn] = useState(false);
@@ -81,9 +82,17 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
         setIsGeneratingQR(false);
         setIsActivating(true);
       } else {
-        console.error('Failed to generate QR code');
+        console.error('Failed to generate QR code.');
+        if (response.status === 422) {
+          setIsTestUser(true);
+          launchFlashMessage(
+            '2FA is not available for test users.',
+            FlashMessageLevel.ERROR,
+          );
+        }
       }
     } catch (error) {
+      console.log('ciao');
       console.error('Error:', error);
     }
   };
@@ -117,7 +126,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
         console.error('Failed to activate 2FA.');
         launchFlashMessage('Failed to activate 2FA.', FlashMessageLevel.ERROR);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
     }
   };
@@ -129,7 +138,9 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
         {userData.isTwoFactorAuthEnabled || is2FAOn ? (
           <SVG src={Checkmark} title="activated" className="checkmark-icon" />
         ) : (
-          <MainButton onClick={handleActivate}>Activate</MainButton>
+          <MainButton onClick={handleActivate} disabled={isTestUser}>
+            Activate
+          </MainButton>
         )}
       </WrapperDiv>
       {isActivating && (
