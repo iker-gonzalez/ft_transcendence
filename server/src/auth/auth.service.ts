@@ -76,7 +76,10 @@ export class AuthService {
 
       const id: string = user.id;
 
-      if (user.isTwoFactorAuthEnabled && !this._isTestUser(code)) {
+      if (
+        user.isTwoFactorAuthEnabled &&
+        !this._isTestUser(intraId.toString())
+      ) {
         const isOtpCodeValid =
           this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
             otp,
@@ -166,11 +169,11 @@ export class AuthService {
     });
   }
 
-  _isTestUser(code: string): boolean {
+  _isTestUser(intraId: string): boolean {
     return (
-      code === this.configService.get<string>('FAKE_USER_1_CODE') ||
-      code === this.configService.get<string>('FAKE_USER_2_CODE') ||
-      code === this.configService.get<string>('FAKE_USER_3_CODE')
+      intraId === this.configService.get<string>('FAKE_USER_1_ID') ||
+      intraId === this.configService.get<string>('FAKE_USER_2_ID') ||
+      intraId === this.configService.get<string>('FAKE_USER_3_ID')
     );
   }
 
