@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import ContrastPanel from '../UI/ContrastPanel';
-import MainButton from '../UI/MainButton';
 import { primaryLightColor } from '../../constants/color-tokens';
 import UserData from '../../interfaces/user-data.interface';
 import UserProfileSettingsUsername from './UserProfileSettingsUsername';
@@ -12,7 +11,7 @@ const WrapperDiv = styled.div`
 
   .settings-item {
     display: flex;
-    justify-content: space between;
+    justify-content: space-between;
     align-items: center;
 
     &:not(:last-of-type) {
@@ -27,14 +26,14 @@ const WrapperDiv = styled.div`
   }
 `;
 
-const UserProfileSettings: React.FC<{ userData: UserData }> = ({ userData }) => {
+const UserProfileSettings: React.FC<{ userData: UserData }> = ({
+  userData,
+}) => {
   return (
     <ContrastPanel>
       <WrapperDiv>
         <h2 className="title-2 mb-24">Settings</h2>
-        <div className="settings-item">
-          <UserProfileSettingsOTP userData={userData} />
-        </div>
+        <UserProfileSettingsOTP userData={userData} className="settings-item" />
         <UserProfileSettingsUsername className="settings-item" />
       </WrapperDiv>
     </ContrastPanel>
@@ -42,4 +41,3 @@ const UserProfileSettings: React.FC<{ userData: UserData }> = ({ userData }) => 
 };
 
 export default UserProfileSettings;
-
