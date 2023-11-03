@@ -325,18 +325,18 @@ export function matchUser1(
   // Check if ball pass the goal line & increase user score
   // If a goal is scored, the ball & paddle are reset to initial values
   if (ballData.x + ballData.radius < 15 && !ballData.reset) {
-    // user2.score++;
-    // sounds.botScore.play().catch(function (error: any) {});
-    // let { newBallData, newUserData1, newUserData2 } = resetBall(
-    //   canvas,
-    //   ballData,
-    //   user1,
-    //   user2,
-    //   userSpeedInput,
-    // );
-    // ballData = newBallData;
-    // user1 = newUserData1;
-    // user2 = newUserData2;
+    user2.score++;
+    sounds.botScore.play().catch(function (error: any) {});
+    let { newBallData, newUserData1, newUserData2 } = resetBall(
+      canvas,
+      ballData,
+      user1,
+      user2,
+      userSpeedInput,
+    );
+    ballData = newBallData;
+    user1 = newUserData1;
+    user2 = newUserData2;
   } else if (
     ballData.x - ballData.radius > canvas.width - 15 &&
     !ballData.reset
@@ -409,23 +409,22 @@ export function matchUser2(
 
   // Check if ball pass the goal line & increase user score
   // If a goal is scored, the ball & paddle are reset to initial values
-  if (ballData.x + ballData.radius < 15 && !ballData.reset) {
-    user2.score++;
-    sounds.botScore.play().catch(function (error: any) {});
-    let { newBallData, newUserData1, newUserData2 } = resetBall(
-      canvas,
-      ballData,
-      user1,
-      user2,
-      userSpeedInput,
-    );
-    ballData = newBallData;
-    user1 = newUserData1;
-    user2 = newUserData2;
-  } else if (
-    ballData.x + ballData.radius > canvas.width - 15 &&
-    !ballData.reset
-  ) {
+  //if (ballData.x + ballData.radius < 15 && !ballData.reset) {
+    // user2.score++;
+    // sounds.botScore.play().catch(function (error: any) {});
+    // let { newBallData, newUserData1, newUserData2 } = resetBall(
+    //   canvas,
+    //   ballData,
+    //   user1,
+    //   user2,
+    //   userSpeedInput,
+    // );
+    // ballData = newBallData;
+    // user1 = newUserData1;
+    // user2 = newUserData2;
+  // } else if (
+  //   ballData.x + ballData.radius > canvas.width - 15 && !ballData.reset
+  // ) {
     //   user1.score++;
     //   sounds.botScore.play().catch(function (error: any) {});
     //   console.log('Sound');
@@ -439,7 +438,7 @@ export function matchUser2(
     //   ballData = newBallData;
     //   user1 = newUserData1;
     //   user2 = newUserData2;
-  }
+  //}
 
   // // Detect if the ball is in the court of user1 or user2
   // let player: IUserData =
