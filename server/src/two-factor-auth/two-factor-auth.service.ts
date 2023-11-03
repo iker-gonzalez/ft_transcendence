@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { authenticator } from 'otplib';
@@ -15,6 +19,14 @@ export class TwoFactorAuthService {
     private readonly configService: ConfigService,
   ) {}
 
+  _isTestUser(intraId: string): boolean {
+    return (
+      intraId === this.configService.get<string>('FAKE_USER_1_ID') ||
+      intraId === this.configService.get<string>('FAKE_USER_2_ID') ||
+      intraId === this.configService.get<string>('FAKE_USER_3_ID')
+    );
+  }
+
   async generateTwoFactorAuthenticationSecret(
     user: User,
   ): Promise<OtpAuthUrlDto> {
@@ -25,6 +37,12 @@ export class TwoFactorAuthService {
       this.configService.get('TWO_FACTOR_AUTHENTICATION_APP_NAME'),
       secret,
     );
+
+    if (this._isTestUser(user.intraId.toString())) {
+      throw new UnprocessableEntityException(
+        "You can't activate 2FA on test users",
+      );
+    }
 
     await this.prisma.user.update({
       where: {
