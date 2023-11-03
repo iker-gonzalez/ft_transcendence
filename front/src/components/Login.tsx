@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getBaseUrl } from '../utils/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
-import LoadingFullscreen from './UI/LoadingFullscreen';
 import { useUserData } from '../context/UserDataContext';
 import moment from 'moment';
 import Cookies from 'js-cookie';
@@ -9,6 +8,27 @@ import Modal from './UI/Modal';
 import MainButton from './UI/MainButton';
 import FlashMessageLevel from '../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../context/FlashMessagesContext';
+import MainInput from './UI/MainInput';
+import styled from 'styled-components';
+import Lottie from 'lottie-react';
+import OtpAnimationData from '../assets/lotties/otp.json';
+import { OTP_LENGTH } from '../constants/shared';
+import LoadingFullscreen from './UI/LoadingFullscreen';
+
+const OtpModal = styled(Modal)`
+  .action-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .otp-lottie {
+    width: 350px;
+    height: 100%;
+    object-fit: contain;
+  }
+`;
 
 const Login: React.FC = (): JSX.Element => {
   const { setUserData } = useUserData();
@@ -37,14 +57,14 @@ const Login: React.FC = (): JSX.Element => {
       interface RequestBody {
         code: string;
         state: string | undefined;
-        otp?: string; 
+        otp?: string;
       }
-      
+
       const requestBody: RequestBody = {
         code,
         state: process.env.REACT_APP_INTRA_STATE,
       };
-      
+
       if (otpValue) {
         requestBody.otp = otpValue;
       }
@@ -72,6 +92,9 @@ const Login: React.FC = (): JSX.Element => {
             expires: tokenExpirationDate,
           });
 
+          // Remove the otpValue from the session storage
+          sessionStorage.removeItem('otpValue');
+
           const isNewUser: boolean = data.created === 1;
           if (isNewUser) {
             navigate('/profile?welcome');
@@ -93,7 +116,7 @@ const Login: React.FC = (): JSX.Element => {
           setIsLoading(false);
         });
     }
-  }, [navigate, location, setUserData]); // Include otpValue in the dependency array
+  }, [navigate, location, setUserData, launchFlashMessage]);
 
   // Function to handle changes in the OTP input
   const handleOtpInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,25 +125,30 @@ const Login: React.FC = (): JSX.Element => {
 
   return (
     <>
+      {isLoading && !showModal && <LoadingFullscreen />}
       {showModal && (
-        <Modal dismissModalAction={() => setShowModal(false)}>
-          <input
-            type="text"
-            placeholder="Enter OTP"
-            value={otpValue}
-            onChange={handleOtpInputChange} // Handle OTP input changes
+        <OtpModal dismissModalAction={() => setShowModal(false)}>
+          <h1 className="title-2 mb-24">Insert OTP</h1>
+          <p>Take out your phone and input an OTP to sign in.</p>
+          <Lottie
+            animationData={OtpAnimationData}
+            className="otp-lottie"
+            loop={false}
           />
-          <MainButton
-            style={{ marginLeft: 'auto', marginRight: 'auto', marginTop: '50px' }}
-            onClick={handleActivateWithOTP}
-          >
-            Sign In
-          </MainButton>
-        </Modal>
+          <div className="action-container">
+            <MainInput
+              type="text"
+              placeholder="Enter OTP"
+              maxLength={OTP_LENGTH}
+              value={otpValue}
+              onChange={handleOtpInputChange} // Handle OTP input changes
+            />
+            <MainButton onClick={handleActivateWithOTP}>Sign In</MainButton>
+          </div>
+        </OtpModal>
       )}
     </>
   );
 };
 
 export default Login;
-
