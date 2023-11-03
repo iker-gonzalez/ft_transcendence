@@ -28,18 +28,16 @@ export class ChatGateway implements OnGatewayConnection {
 
   @SubscribeMessage('privateMessage')
   handlePrivateMessage(client, payload) {
-    const {receiverId, content} = payload;
+    console.log("payload");      
+    console.log(payload);
 
-        
-   console.log("payload");
-    console.log(payload);  
-    const user = client.data.user;
-    console.log("user");
-    console.log(user);
     console.log("receiverId");
-    console.log(payload.intraId);
-    console.log("content");
-    console.log(payload.content);
+    console.log(payload.receiverId);
+    console.log("content"); 
+    console.log(payload.content);  
+
+    this.chatService.addMessageToUser(payload.id, payload.senderId,
+                      payload.receiverId, payload.content);
 
     this.server.emit(`privateMessageReceived/${payload.intraId}`,
                       JSON.stringify(payload))
