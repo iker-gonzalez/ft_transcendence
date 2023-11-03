@@ -9,6 +9,10 @@ import Cookies from 'js-cookie';
 import FriendData from '../../interfaces/friend-data.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import UserStatsInfo from '../shared/UserStatsInfo';
+import UserStatsMatchList from '../UserStats/UserStatsMatchList';
+import { darkBgColor } from '../../constants/color-tokens';
+import ContrastPanel from '../UI/ContrastPanel';
 
 type AddNewFriendResponse = {
   created?: number;
@@ -23,24 +27,36 @@ type DeleteFriendResponse = {
 };
 
 const WrapperDiv = styled.div`
-  .user-info-container {
-    width: 100%;
+  .header-container {
+    max-width: 550px;
+    margin: 0 auto;
+
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
+    align-items: center;
+    gap: 50px;
+  }
+
+  .user-info-container {
+    display: flex;
+    justify-content: center;
     align-items: center;
     gap: 20px;
 
     .avatar {
-      width: 150px;
+      width: 125px;
     }
   }
 
   .actions-container {
+    white-space: nowrap;
+  }
+
+  .user-data-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-
-    padding-top: 40px;
+    align-items: stretch;
+    gap: 50px;
   }
 `;
 
@@ -111,21 +127,35 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
 
   return (
     <WrapperDiv>
-      <div className="user-info-container">
-        <RoundImg src={foundUserData.avatar} alt="" className="avatar" />
-        <div>
-          <h2 className="title-2 mb-8">{foundUserData.username}</h2>
-          <p className="small">{foundUserData.email}</p>
+      <div className="header-container">
+        <div className="user-info-container mb-24">
+          <RoundImg src={foundUserData.avatar} alt="" className="avatar" />
+          <div>
+            <h2 className="title-2 mb-8">{foundUserData.username}</h2>
+            <p className="small">{foundUserData.email}</p>
+          </div>
+        </div>
+        <div className="actions-container">
+          {isAlreadyFriend ? (
+            <SecondaryButton onClick={removeUserFromFriends}>
+              Unfriend 💔
+            </SecondaryButton>
+          ) : (
+            <MainButton onClick={addUserToFriend}>Add to friends</MainButton>
+          )}
         </div>
       </div>
-      <div className="actions-container">
-        {isAlreadyFriend ? (
-          <SecondaryButton onClick={removeUserFromFriends}>
-            Unfriend 💔
-          </SecondaryButton>
-        ) : (
-          <MainButton onClick={addUserToFriend}>Add to friends</MainButton>
-        )}
+
+      <div className="user-data-container">
+        <ContrastPanel $backgroundColor={darkBgColor}>
+          <UserStatsInfo userId={foundUserData.intraId} />
+        </ContrastPanel>
+        <ContrastPanel $backgroundColor={darkBgColor}>
+          <UserStatsMatchList
+            userData={foundUserData}
+            numberOfItemsPerPage={3}
+          />
+        </ContrastPanel>
       </div>
     </WrapperDiv>
   );

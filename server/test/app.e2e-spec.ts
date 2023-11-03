@@ -13,7 +13,7 @@ import {
 import * as fs from 'fs';
 import { TwoFactorAuthService } from '../src/two-factor-auth/two-factor-auth.service';
 import { testUserData } from '../config/app.constants';
-import { User } from '@prisma/client';
+import { User, UserStatus } from '@prisma/client';
 import { IntraUserDataDto } from 'src/auth/dto/intra-user-data.dto';
 import { Socket } from 'socket.io-client';
 import {
@@ -124,6 +124,7 @@ describe('App e2e', () => {
           where: { intraId: userData.intraId },
         });
         expect(user).not.toBeNull();
+        expect(user.status).toBe(UserStatus.ONLINE);
       });
 
       it('should sign in user', async () => {
@@ -157,6 +158,11 @@ describe('App e2e', () => {
             access_token: /.*/,
             data: userData,
           });
+
+        const user = await prisma.user.findUnique({
+          where: { intraId: userData.intraId },
+        });
+        expect(user.status).toBe(UserStatus.ONLINE);
       });
 
       it('should sign in user with OTP', async () => {
@@ -880,6 +886,78 @@ describe('App e2e', () => {
     });
   });
 
+  describe('User status', () => {
+    describe('update status', () => {
+      it('should update status', async () => {
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        expect(user.status).toBe(UserStatus.ONLINE);
+
+        await pactum
+          .spec()
+          .patch(`/user/status`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody({
+            status: UserStatus.PLAYING,
+          })
+          .expectStatus(200)
+          .expectJsonLike({
+            updated: 1,
+            data: {
+              intraId: user.intraId,
+              status: UserStatus.PLAYING,
+            },
+          });
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        expect(updatedUser.status).toBe(UserStatus.PLAYING);
+      });
+
+      it('should return 400 if status is not valid', async () => {
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        expect(user.status).toBe(UserStatus.ONLINE);
+
+        await pactum
+          .spec()
+          .patch(`/user/status`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody({
+            status: 'fakestatus',
+          })
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        expect(updatedUser.status).toBe(UserStatus.ONLINE);
+      });
+
+      it('should return 401 if token is not valid', async () => {
+        await pactum
+          .spec()
+          .patch(`/user/status`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody({
+            status: UserStatus.PLAYING,
+          })
+          .expectStatus(401);
+      });
+    });
+  });
+
   describe('Friends', () => {
     describe('new', () => {
       it('it should add another user as friend', async () => {
@@ -1429,7 +1507,7 @@ describe('App e2e', () => {
   });
 
   describe('Game', () => {
-    describe('game data', () => {
+    describe('game sessions', () => {
       const baseGameData = {
         gameDataId: '95130ad8-ffaf-4c7f-84c2-68ae2d020306',
         startedAt: '2023-10-11T20:32:33.610Z',
@@ -1938,6 +2016,95 @@ describe('App e2e', () => {
               statusCode: 401,
             });
         });
+      });
+    });
+
+    describe('game stats', () => {
+      it('should return 422 if user ID is undefined', async () => {
+        await createUser(prisma, intraService, intraUserToken, userData);
+
+        await pactum
+          .spec()
+          .get(`/game/stats/${undefined}`)
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(422)
+          .expectJson({
+            error: 'Unprocessable Entity',
+            message: 'User ID is invalid',
+            statusCode: 422,
+          });
+      });
+
+      it('should return 422 if user does not exist', async () => {
+        await createUser(prisma, intraService, intraUserToken, userData);
+
+        await pactum
+          .spec()
+          .get('/game/stats/666')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(422)
+          .expectJson({
+            error: 'Unprocessable Entity',
+            message: 'User does not exist',
+            statusCode: 422,
+          });
+      });
+
+      it('should return 401 if user is not authenticated', async () => {
+        await pactum
+          .spec()
+          .get('/game/stats')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(401)
+          .expectJson({
+            message: 'Unauthorized',
+            statusCode: 401,
+          });
+      });
+
+      describe('it should return empty stats', () => {
+        it('for current user', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          await pactum
+            .spec()
+            .get('/game/stats')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .expectStatus(200)
+            .expectJsonLike({
+              found: 0,
+              data: {},
+            });
+        });
+
+        it('for another user', async () => {
+          await createUser(prisma, intraService, intraUserToken, userData);
+
+          await createUser(prisma, intraService, intraUserToken, userData2);
+
+          await pactum
+            .spec()
+            .get(`/game/stats/${userData2.intraId}`)
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .expectStatus(200)
+            .expectJsonLike({
+              found: 0,
+              data: {},
+            });
+        });
+      });
+    });
+
+    describe('game leaderboard', () => {
+      test('it should return leaderboard data', async () => {
+        await pactum
+          .spec()
+          .get(`/game/leaderboard`)
+          .expectStatus(200)
+          .expectJsonLike({
+            found: 0,
+            data: [],
+          });
       });
     });
   });
@@ -2769,6 +2936,180 @@ describe('App e2e', () => {
             socket.disconnect();
 
             done();
+          });
+        });
+
+        describe('abort', () => {
+          beforeEach(async () => {
+            gameDataService.gameDataSets = [];
+          });
+
+          test('should return KO if the payload is invalid', (done) => {
+            expect.assertions(1);
+
+            const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+            socket.on('connect', () => {
+              socket.emit('abort', JSON.stringify({}), (ack) => {
+                expect(ack).toStrictEqual('KO');
+
+                socket.disconnect();
+
+                done();
+              });
+            });
+          });
+
+          test('should return KO if GameDataSet does not exist', (done) => {
+            expect.assertions(1);
+
+            const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+            socket.on('connect', () => {
+              socket.emit('startGame', JSON.stringify(dataSetInitial));
+            });
+
+            socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
+              socket.emit(
+                'abort',
+                JSON.stringify({
+                  gameDataId: 'f7c9c8d0-0e1f-11ec-9a03-0242ac130003',
+                  isPlayer1: true,
+                }),
+                (ack) => {
+                  expect(ack).toStrictEqual('KO');
+
+                  socket.disconnect();
+
+                  done();
+                },
+              );
+            });
+          });
+
+          describe('should emit gameAborted and delete the GameDataSet from cache', () => {
+            test('when it is user1', (done) => {
+              const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+              socket.on('connect', () => {
+                expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                socket.emit('startGame', JSON.stringify(dataSetInitial));
+              });
+
+              socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
+                expect(gameDataService.gameDataSets).toHaveLength(1);
+
+                socket.emit(
+                  'abort',
+                  JSON.stringify({
+                    isUser1: true,
+                    gameDataId: dataSetInitial.gameDataId,
+                  }),
+                  (ack) => {
+                    expect(ack).toStrictEqual('OK');
+                  },
+                );
+
+                socket.on(
+                  `gameAborted/user1/${dataSetInitial.gameDataId}`,
+                  () => {
+                    expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                    socket.disconnect();
+
+                    done();
+                  },
+                );
+
+                socket.on(
+                  `gameAborted/user2/${dataSetInitial.gameDataId}`,
+                  () => {
+                    done('gameAbort/user2 should not be emitted');
+                  },
+                );
+              });
+            });
+
+            test('when it is user2', (done) => {
+              const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+              socket.on('connect', () => {
+                expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                socket.emit('startGame', JSON.stringify(dataSetInitial));
+              });
+
+              socket.on(`gameDataCreated/${dataSetInitial.gameDataId}`, () => {
+                expect(gameDataService.gameDataSets).toHaveLength(1);
+
+                socket.emit(
+                  'abort',
+                  JSON.stringify({
+                    isUser1: false,
+                    gameDataId: dataSetInitial.gameDataId,
+                  }),
+                  (ack) => {
+                    expect(ack).toStrictEqual('OK');
+                  },
+                );
+
+                socket.on(
+                  `gameAborted/user2/${dataSetInitial.gameDataId}`,
+                  () => {
+                    expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                    socket.disconnect();
+
+                    done();
+                  },
+                );
+
+                socket.on(
+                  `gameAborted/user1/${dataSetInitial.gameDataId}`,
+                  () => {
+                    done('gameAbort/user1 should not be emitted');
+                  },
+                );
+              });
+            });
+
+            test('when it is solo mode', (done) => {
+              const socket = createSocketClient(app, GAME_DATA_ENDPOINT);
+
+              socket.on('connect', () => {
+                expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                socket.emit(
+                  'abort',
+                  JSON.stringify({
+                    isSoloMode: true,
+                    gameDataId: dataSetInitial.gameDataId,
+                  }),
+                  (ack) => {
+                    expect(ack).toStrictEqual('OK');
+                  },
+                );
+              });
+
+              socket.on(
+                `gameAborted/user1/${dataSetInitial.gameDataId}`,
+                () => {
+                  expect(gameDataService.gameDataSets).toHaveLength(0);
+
+                  socket.disconnect();
+
+                  done();
+                },
+              );
+
+              socket.on(
+                `gameAborted/user1/${dataSetInitial.gameDataId}`,
+                () => {
+                  done('gameAbort/user1 should not be emitted');
+                },
+              );
+            });
           });
         });
       });

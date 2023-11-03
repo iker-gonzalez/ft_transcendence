@@ -11,12 +11,47 @@ import FriendData from '../../interfaces/friend-data.interface';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { primaryLightColor } from '../../constants/color-tokens';
 import { useUserFriends } from '../../context/UserDataContext';
-import UserProfileFriendsEmptyState from './UserProfileFriendsEmptyState';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
+import LoadingSpinner from '../UI/LoadingSpinner';
+import PaginatedSection from '../UI/PaginatedSection';
+import UserStatusInfo from '../UI/UserStatus';
+import RefreshIcon from '../../assets/svg/refresh.svg';
 
 const WrapperDiv = styled.div`
   position: relative;
   width: 650px;
+
+  .title-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .refresh-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+
+      .icon {
+        width: 20px;
+        object-fit: contain;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      &:hover {
+        .icon {
+          transform: rotate(90deg);
+        }
+      }
+    }
+  }
+
+  .centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
   .user-item {
     display: flex;
@@ -29,6 +64,8 @@ const WrapperDiv = styled.div`
       justify-content: flex-start;
       align-items: center;
       gap: 20px;
+
+      margin-right: auto;
       .avatar {
         width: 75px;
         height: auto;
@@ -54,7 +91,8 @@ const WrapperDiv = styled.div`
 `;
 
 const UserProfileFriends: React.FC = (): JSX.Element => {
-  const [showFriendProfile, setShowFriendProfile] = useState<boolean>(false);
+  const [friendProfileToShow, setFriendProfileToShow] =
+    useState<FriendData | null>(null);
   const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
 
@@ -71,7 +109,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
     successMessage: string,
   ): void => {
     setUserFriends(newFriendsList);
-    setShowFriendProfile(false);
+    setFriendProfileToShow(null);
     setShowAddNewFriendFlow(false);
 
     launchFlashMessage(successMessage, FlashMessageLevel.SUCCESS);
@@ -80,14 +118,32 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
   return (
     <ContrastPanel>
       <WrapperDiv>
-        {isFetchingFriends ? (
-          <p>Loading...</p>
-        ) : (
-          <>
-            <h2 className="title-2 mb-24">Friends</h2>
-            <div>
-              {userFriends.length ? (
-                <div>
+        <div className="title-container mb-24">
+          <h2 className="title-2">Friends</h2>
+          {Boolean(userFriends.length) && (
+            <SecondaryButton
+              onClick={() => {
+                fetchFriendsList();
+              }}
+              className="refresh-btn"
+            >
+              Refresh <img src={RefreshIcon} alt="" className="icon" />
+            </SecondaryButton>
+          )}
+        </div>
+        {(() => {
+          if (isFetchingFriends) {
+            return (
+              <div className="centered-container">
+                <LoadingSpinner />
+              </div>
+            );
+          }
+
+          if (userFriends.length) {
+            return (
+              <>
+                <PaginatedSection numberOfItems={2}>
                   <ul className="friends-list">
                     {userFriends.map((friend) => {
                       return (
@@ -105,52 +161,53 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                               <p className="small mb-8">{friend.email}</p>
                             </div>
                           </div>
+                          <UserStatusInfo intraId={friend.intraId} />
                           <MainButton
-                            onClick={() => setShowFriendProfile(true)}
+                            onClick={() => setFriendProfileToShow(friend)}
                           >
                             See profile
                           </MainButton>
-                          {showFriendProfile && (
-                            <Modal
-                              dismissModalAction={() => {
-                                setShowFriendProfile(false);
-                              }}
-                            >
-                              <ViewNewUserProfile
-                                foundUserData={friend}
-                                isAlreadyFriend={true}
-                                onUpdateFriendsList={onUpdateFriendsList}
-                              />
-                            </Modal>
-                          )}
                         </li>
                       );
                     })}
                   </ul>
-                  <div className="search-friends-container">
-                    <h3 className="title-3">On the look for new game mates?</h3>
-                    <SecondaryButton
-                      onClick={() => {
-                        setShowAddNewFriendFlow(true);
-                      }}
-                    >
-                      Search now
-                    </SecondaryButton>
-                  </div>
-                </div>
-              ) : (
-                <UserProfileFriendsEmptyState
-                  setShowAddNewFriendFlow={setShowAddNewFriendFlow}
-                />
-              )}
-            </div>
-            {showAddNewFriendFlow && (
-              <AddNewFriendFlow
-                setShowAddNewFriendFlow={setShowAddNewFriendFlow}
-                onUpdateFriendsList={onUpdateFriendsList}
-              />
-            )}
-          </>
+                </PaginatedSection>
+                {friendProfileToShow && (
+                  <Modal
+                    dismissModalAction={() => {
+                      setFriendProfileToShow(null);
+                    }}
+                    showFullScreen={true}
+                  >
+                    <ViewNewUserProfile
+                      foundUserData={friendProfileToShow}
+                      isAlreadyFriend={true}
+                      onUpdateFriendsList={onUpdateFriendsList}
+                    />
+                  </Modal>
+                )}
+              </>
+            );
+          }
+        })()}
+        <div>
+          <div className="search-friends-container">
+            <h3 className="title-3">On the lookout for new game mates?</h3>
+            <SecondaryButton
+              onClick={() => {
+                setShowAddNewFriendFlow(true);
+              }}
+            >
+              Search now
+            </SecondaryButton>
+          </div>
+        </div>
+        {showAddNewFriendFlow && Boolean(userFriends.length) && (
+          <AddNewFriendFlow
+            setShowAddNewFriendFlow={setShowAddNewFriendFlow}
+            onUpdateFriendsList={onUpdateFriendsList}
+            userFriends={userFriends}
+          />
         )}
       </WrapperDiv>
     </ContrastPanel>

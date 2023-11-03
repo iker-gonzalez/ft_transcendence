@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGameRouteContext } from '../../pages/Game';
-import { createSearchParams, useNavigate } from 'react-router-dom';
 import MainButton from '../UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from '../UI/CenteredLayout';
-import RoundImg from '../UI/RoundImage';
 import { primaryAccentColor } from '../../constants/color-tokens';
 import SessionData from '../../interfaces/game-session-data.interface';
-import GameSessionUser from '../../interfaces/game-session-user.interface';
 import useMatchmakingSocket, {
   UseMatchmakingSocket,
 } from './useMatchmakingSocket';
 import ContrastPanel from '../UI/ContrastPanel';
 import waitingAnimationData from '../../assets/lotties/playing.json';
 import Lottie from 'lottie-react';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
+import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import GameMatchQueueSession from './GameMatch/GameMatchQueueSession';
+
+const INACTIVITY_TIMEOUT = 20_000;
 
 type GameQueueRes = {
   queued: boolean;
@@ -40,32 +42,6 @@ const WrapperDiv = styled.div`
     align-items: center;
     justify-content: center;
     min-width: 450px;
-
-    .users-box {
-      display: flex;
-      gap: 20px;
-
-      .user-box {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-
-        p {
-          font-weight: bold;
-        }
-
-        img {
-          width: 130px;
-        }
-      }
-    }
-
-    .versus-icon {
-      width: 60px;
-      height: auto;
-      transform: translateY(-20px);
-    }
   }
 
   .waiting-animation {
@@ -74,19 +50,24 @@ const WrapperDiv = styled.div`
 `;
 
 export default function GameQueue(): JSX.Element {
-  const navigate = useNavigate();
   const { sessionDataState, userData } = useGameRouteContext();
 
   const [isQueued, setIsQueued] = useState<boolean>(false);
   const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
+  const [countdownValue, setCountdownValue] =
+    useState<number>(INACTIVITY_TIMEOUT);
+  const inactivityTimeoutRef = useRef<number>(0);
 
   const {
     matchmakingSocketRef,
     isConnectionError,
     isSocketConnected,
   }: UseMatchmakingSocket = useMatchmakingSocket();
+  const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
+    const matchmakingSocketRefCopy = matchmakingSocketRef.current;
+
     if (!userData) {
       matchmakingSocketRef.current.disconnect();
     }
@@ -109,6 +90,8 @@ export default function GameQueue(): JSX.Element {
             setSessionData(newSessionRes.data);
 
             setIsSessionCreated(true);
+
+            window.clearInterval(inactivityTimeoutRef.current);
           } else {
             console.warn('error creating session');
           }
@@ -124,6 +107,19 @@ export default function GameQueue(): JSX.Element {
         },
       );
     }
+
+    return () => {
+      window.clearTimeout(inactivityTimeoutRef.current);
+
+      if (userData) {
+        matchmakingSocketRefCopy.emit(
+          'unqueueUser',
+          JSON.stringify({
+            intraId: userData.intraId,
+          }),
+        );
+      }
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoinQueue = () => {
@@ -133,20 +129,20 @@ export default function GameQueue(): JSX.Element {
         intraId: userData!.intraId,
       }),
     );
-  };
 
-  const onGoToMatch = () => {
-    navigate(
-      {
-        pathname: '/game/match',
-        search: createSearchParams({
-          sessionId: sessionDataState[0].id,
-        }).toString(),
-      },
-      {
-        replace: true,
-      },
-    );
+    inactivityTimeoutRef.current = window.setTimeout(() => {
+      launchFlashMessage(
+        'Your queue session expired. Better luck next time.',
+        FlashMessageLevel.INFO,
+      );
+      onRemoveFromQueue();
+    }, INACTIVITY_TIMEOUT);
+
+    for (let i = INACTIVITY_TIMEOUT / 1000; i > 0; i--) {
+      setTimeout(() => {
+        setCountdownValue(i);
+      }, INACTIVITY_TIMEOUT - i * 1000);
+    }
   };
 
   const onRemoveFromQueue = () => {
@@ -156,6 +152,8 @@ export default function GameQueue(): JSX.Element {
         intraId: userData!.intraId,
       }),
     );
+    window.clearTimeout(inactivityTimeoutRef.current);
+    setIsQueued(false);
   };
 
   return (
@@ -173,27 +171,12 @@ export default function GameQueue(): JSX.Element {
           if (isSessionCreated) {
             return (
               <>
-                <h2 className="title-2 mb-24">This is your new session</h2>
+                <h2 className="title-1 mb-24">This is your new session</h2>
                 <ContrastPanel className="session-box mb-16">
-                  <div className="users-box mb-24">
-                    {sessionDataState[0].players.map(
-                      (player: GameSessionUser) => {
-                        return (
-                          <div key={player.id}>
-                            <div className="user-box">
-                              <RoundImg
-                                alt=""
-                                src={player.avatar}
-                                className="mb-8"
-                              />
-                              <p className="title-3">{player.username}</p>
-                            </div>
-                          </div>
-                        );
-                      },
-                    )}
-                  </div>
-                  <MainButton onClick={onGoToMatch}>Go to match</MainButton>
+                  <GameMatchQueueSession
+                    sessionId={sessionDataState[0].id}
+                    players={sessionDataState[0].players}
+                  />
                 </ContrastPanel>
               </>
             );
@@ -202,8 +185,12 @@ export default function GameQueue(): JSX.Element {
               return (
                 <>
                   <h1 className="title-1 mb-16">Your opponent is on the way</h1>
-                  <p className="mb-16">
-                    Queue joined. Be patient, your moment will come...
+                  <p>
+                    You will be thrown out of the current queue in{' '}
+                    {countdownValue > 1
+                      ? `${countdownValue} seconds`
+                      : `${countdownValue} second`}
+                    ...
                   </p>
                   <Lottie
                     animationData={waitingAnimationData}
@@ -229,10 +216,6 @@ export default function GameQueue(): JSX.Element {
             }
           }
         })()}
-        <p className="mb-16">
-          Game queue for user with intradId{' '}
-          <span className="highlighted">{userData?.intraId}</span>
-        </p>
       </CenteredLayout>
     </WrapperDiv>
   );

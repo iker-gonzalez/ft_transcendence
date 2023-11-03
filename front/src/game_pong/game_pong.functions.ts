@@ -11,6 +11,7 @@ import hitSound from './sounds/hit.wav';
 import wallSound from './sounds/punch.wav';
 import userScoreSound from './sounds/strike.wav';
 import botScoreSound from './sounds/goal.wav';
+import musicBackground from './sounds/music.mp3';
 import BgImageGrass from './images/grass.jpg';
 import { matchUser1, matchUser2, onGameEnd } from './game_pong.render';
 import { Socket } from 'socket.io-client';
@@ -18,6 +19,9 @@ import { render } from './game_pong.render';
 
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
+
+let ballTrail: any[] = [];
+export let isBallFrozen: boolean = true;
 
 export function drawRect(
   canvas: HTMLCanvasElement,
@@ -33,7 +37,7 @@ export function drawRect(
   ctx.fillRect(x, y, w, h);
 }
 
-export function drawArc(
+export function drawBall(
   canvas: HTMLCanvasElement,
   x: number,
   y: number,
@@ -45,9 +49,54 @@ export function drawArc(
 
   ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI * 2, true);
+  ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.closePath();
   ctx.fill();
+
+  ballTrail.push({ canvas: canvas, x: x, y: y, r: r, color: color });
+}
+
+export function drawBallTrail(canvas: HTMLCanvasElement, opacityGrade: number): void {
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  if (!ctx) return;
+
+  const lastBalls = ballTrail.slice(-100);
+
+  lastBalls.forEach((ballTrail, index) => {
+    const opacity = (index / lastBalls.length) * opacityGrade;
+    const size = ballTrail.r * (index / lastBalls.length) * 0.9;
+
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = ballTrail.color;
+    ctx.beginPath();
+    ctx.arc(ballTrail.x, ballTrail.y, size, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fill();
+  });
+
+  ctx.globalAlpha = 1;
+}
+
+export function ballTrailClean(): void {
+  ballTrail = [];
+}
+
+export function sparks(
+  canvas: HTMLCanvasElement,
+  x: number,
+  y: number,
+  r: number,
+  color: RenderColor,
+  numSparks: number,
+  opacityGrade: number,
+) {
+
+  for (let i = 0; i < numSparks; i++) {
+    const dx = (Math.random() - 0.5) * 15 * r * 0.5;
+    const dy = (Math.random() - 0.5) * 15 * r * 0.5;
+    drawBallTrail(canvas, opacityGrade);
+    drawBall(canvas, x + dx, y + dy, r, color);
+  }
 }
 
 export function drawDashedLine(canvas: HTMLCanvasElement, net: INetData): void {
@@ -112,8 +161,11 @@ export function initializeSounds(): ISounds {
   let wall = new Audio(wallSound);
   let userScore = new Audio(userScoreSound);
   let botScore = new Audio(botScoreSound);
+  let music = new Audio(musicBackground);
+  music.loop = true;
+  music.volume = 0.5;
 
-  return { hit, wall, userScore, botScore };
+  return { hit, wall, userScore, botScore, music };
 }
 
 export function isSoloMode(usersData: {
@@ -126,6 +178,7 @@ export function isSoloMode(usersData: {
 export type InitializeCanvasImages = {
   canvasBgImage: HTMLImageElement;
 };
+
 export function initializeCanvasImages(): InitializeCanvasImages {
   const canvasBgImage: HTMLImageElement = new Image();
   canvasBgImage.src = BgImageGrass;
@@ -149,6 +202,7 @@ export type InitializeEventListenersArgs = {
   ballData: IBallData;
   slit: number;
 };
+
 export function initializeEventListeners({
   canvas,
   isPlayer1,
@@ -235,6 +289,7 @@ export type InitializeSocketLogicArgs = {
   isPlayer1: boolean;
   sessionId: string;
   ballData: IBallData;
+  startedAt: Date;
   user1: IUserData;
   user2: IUserData;
   matchPoints: number;
@@ -250,10 +305,12 @@ export type InitializeSocketLogicArgs = {
   canvasImages: InitializeCanvasImages;
   thickness: number;
 };
+
 export function initializeSocketLogic({
   socket,
   isPlayer1,
   sessionId,
+  startedAt,
   ballData,
   user1,
   user2,
@@ -285,14 +342,16 @@ export function initializeSocketLogic({
 
       if (user2.score >= matchPoints || user1.score >= matchPoints) {
         if (!matchFinish)
-          onGameEnd(
+          onGameEnd({
             canvas,
             eventList,
             socket,
             sessionId,
-            user1,
-            usersData.user1,
-          );
+            startedAt,
+            player: user1,
+            userData: usersData.user1,
+            sounds,
+          });
         matchFinish = true;
       }
 
@@ -308,6 +367,7 @@ export function initializeSocketLogic({
         usersData,
         canvasImages,
         thickness,
+        sounds,
       );
 
       socket.emit(
@@ -328,14 +388,16 @@ export function initializeSocketLogic({
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
         if (!matchFinish)
-          onGameEnd(
+          onGameEnd({
             canvas,
             eventList,
             socket,
             sessionId,
-            user2,
-            usersData.user2,
-          );
+            startedAt,
+            player: user2,
+            userData: usersData.user2,
+            sounds,
+          });
         matchFinish = true;
       }
 
@@ -351,6 +413,7 @@ export function initializeSocketLogic({
         usersData,
         canvasImages,
         thickness,
+        sounds,
       );
 
       socket.emit(
@@ -375,4 +438,17 @@ export function onAbortGame(
       },
     );
   };
+}
+
+export async function countDownToStart(countDown: number): Promise<void> {
+  return await new Promise((resolve) => {
+    const countDownInterval = setInterval(() => {
+      countDown--;
+      if (countDown === 0) {
+        resolve();
+        isBallFrozen = false;
+        clearInterval(countDownInterval);
+      }
+    }, 1000);
+  });
 }

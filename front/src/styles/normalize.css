@@ -143,3 +143,16 @@ html {
 *:after {
   box-sizing: inherit;
 }
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+progress[value],
+progress {
+  -webkit-appearance: none;
+  appearance: none;
+}

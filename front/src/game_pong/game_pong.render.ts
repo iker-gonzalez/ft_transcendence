@@ -5,13 +5,15 @@ import { matchPoints, slit, thickness } from './game_pong';
 import { userSpeedInput } from './game_pong.constants';
 import {
   InitializeCanvasImages,
+  ballTrailClean,
   checkCollision,
-  drawArc,
+  drawBall,
+  drawBallTrail,
   drawDashedLine,
-  drawImg,
   drawRect,
   drawText,
   isSoloMode,
+  sparks,
 } from './game_pong.functions';
 import {
   IBallData,
@@ -21,7 +23,6 @@ import {
   IUserData,
   RenderColor,
 } from './game_pong.interfaces';
-import { startedAt } from './game_pong';
 
 export function render(
   canvas: HTMLCanvasElement,
@@ -36,23 +37,28 @@ export function render(
   },
   canvasImages: InitializeCanvasImages,
   thickness: number,
+  sounds: any,
 ) {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   // To clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
-  drawImg(
-    canvas,
-    canvasImages.canvasBgImage,
-    0,
-    0,
-    canvas.width,
-    canvas.height,
-  );
+  //Background
+  drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
 
+  // drawImg(
+  //   canvas,
+  //   canvasImages.canvasBgImage,
+  //   0,
+  //   0,
+  //   canvas.width,
+  //   canvas.height,
+  // );
+
+  // Above wall
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
 
+  // Below wall
   drawRect(
     canvas,
     0,
@@ -62,13 +68,19 @@ export function render(
     RenderColor.White,
   );
 
+  // Net line
   drawDashedLine(canvas, net);
 
+  // Paddle user1
   drawRect(canvas, user1.x, user1.y, user1.width, user1.height, user1.color);
 
+  //Paddle user2
   drawRect(canvas, user2.x, user2.y, user2.width, user2.height, user2.color);
 
-  drawArc(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
+  //Ball
+  drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
+
+  drawBallTrail(canvas, 0.05);
 
   drawText(
     canvas,
@@ -243,8 +255,9 @@ export function render(
   );
 }
 
+// Reset ball to initial values when each point starts
 export function resetBall(
-  canvas: { width: number; height: number },
+  canvas: HTMLCanvasElement,
   ballData: IBallData,
   user1: IUserData,
   user2: IUserData,
@@ -255,19 +268,120 @@ export function resetBall(
   const newUserData2: IUserData = user2;
   newBallData.reset = true;
 
+  // TODO Check setTimeout (async / await)
   setTimeout(() => {
     newBallData.x = canvas.width / 2;
     newBallData.y = canvas.height / 2;
-    // eslint-disable-next-line no-self-assign
-    newBallData.velocityX = newBallData.velocityX;
-    newBallData.velocityY = -newBallData.velocityY * Math.random();
+    newBallData.moveX = newBallData.moveX * 1;
+    newBallData.moveY = -newBallData.moveY * Math.random();
     newBallData.speed = userSpeedInput;
     newUserData1.height = 100;
     newUserData2.height = 100;
     newBallData.reset = false;
-  }, 1500);
+  }, 2000);
+
+  // drawText(
+  //   canvas,
+  //   'reloj',
+  //   canvas.width / 2,
+  //   canvas.height / 2,
+  //   '20px Arial',
+  //   'center',
+  //   RenderColor.White,
+  // );
 
   return { newBallData, newUserData1, newUserData2 };
+}
+
+export function matchUser1(
+  canvas: HTMLCanvasElement,
+  ballData: IBallData,
+  user1: IUserData,
+  user2: IUserData,
+  sounds: ISounds,
+) {
+  // Ball motion
+  ballData.x += ballData.moveX;
+  ballData.y += ballData.moveY;
+
+  // Limit paddle vertical motion
+  if (user1.y < thickness + ballData.radius * slit) {
+    user1.y = thickness + ballData.radius * slit;
+  } else if (
+    user1.y >
+    canvas.height - thickness - user1.height - ballData.radius * slit
+  ) {
+    user1.y = canvas.height - thickness - user1.height - ballData.radius * slit;
+  }
+
+  // Change direction of ball motion when it hits walls
+  if (
+    ballData.y - ballData.radius - thickness < 0 ||
+    ballData.y + ballData.radius + thickness > canvas.height
+  ) {
+    ballData.moveY = -ballData.moveY;
+  }
+
+  // Check if ball pass the goal line & increase user score
+  // If a goal is scored, the ball & paddle are reset to initial values
+  if (ballData.x + ballData.radius < 15 && !ballData.reset) {
+    // user2.score++;
+    // sounds.botScore.play().catch(function (error: any) {});
+    // let { newBallData, newUserData1, newUserData2 } = resetBall(
+    //   canvas,
+    //   ballData,
+    //   user1,
+    //   user2,
+    //   userSpeedInput,
+    // );
+    // ballData = newBallData;
+    // user1 = newUserData1;
+    // user2 = newUserData2;
+  } else if (
+    ballData.x - ballData.radius > canvas.width - 15 &&
+    !ballData.reset
+  ) {
+    user1.score++;
+    sounds.botScore.play().catch(function (error: any) {});
+    let { newBallData, newUserData1, newUserData2 } = resetBall(
+      canvas,
+      ballData,
+      user1,
+      user2,
+      userSpeedInput,
+    );
+    ballData = newBallData;
+    user1 = newUserData1;
+    user2 = newUserData2;
+  }
+
+  // Detect if the ball is in the court of user1 or user2
+  let player: IUserData =
+    ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
+
+  // Detect if the ball hits the paddle & bounce the ball
+  if (checkCollision(ballData, player)) {
+    // Detect the point where the ball hits in the paddle
+    let collidePoint = ballData.y - (player.y + player.height / 2);
+    collidePoint = collidePoint / (player.height / 2);
+
+    let angleRad = (Math.PI / 4) * collidePoint;
+
+    // Get direction to bounce the ball
+    let direction = ballData.x + ballData.radius < canvas.width / 2 ? 1 : -1;
+    ballData.moveX = direction * ballData.speed * Math.cos(angleRad);
+    ballData.moveY = ballData.speed * Math.sin(angleRad);
+
+    // Modify values to make it more difficult
+    ballData.speed += 0.1;
+    user1.height -= 2;
+    user2.height -= 2;
+
+    sounds.hit.play().catch(function (error: any) {});
+
+    // Sparks effect when the ball hits the paddle
+    sparks(canvas, ballData.x, ballData.y, ballData.radius, RenderColor.Yellow, 50, 1);
+  }
 }
 
 export function matchUser2(
@@ -278,13 +392,12 @@ export function matchUser2(
   sounds: ISounds,
   isSoloMode: boolean = false,
 ) {
-  ballData.x += ballData.velocityX;
-  ballData.y += ballData.velocityY;
-
+  // Paddle motion in 1 player mode (bot movements)
   if (isSoloMode) {
     user2.y += (ballData.y - (user2.y + user2.height / 2)) * 0.1;
   }
 
+  // Limit paddle vertical motion
   if (user2.y < thickness + ballData.radius * slit) {
     user2.y = thickness + ballData.radius * slit;
   } else if (
@@ -294,19 +407,12 @@ export function matchUser2(
     user2.y = canvas.height - thickness - user2.height - ballData.radius * slit;
   }
 
-  if (
-    ballData.y - ballData.radius - thickness < 0 ||
-    ballData.y + ballData.radius + thickness > canvas.height
-  ) {
-    ballData.velocityY = -ballData.velocityY;
-  }
-
-  if (ballData.x + ballData.radius < 0 && !ballData.reset) {
+  // Check if ball pass the goal line & increase user score
+  // If a goal is scored, the ball & paddle are reset to initial values
+  if (ballData.x + ballData.radius < 15 && !ballData.reset) {
     user2.score++;
-    sounds.userScore.play().catch(function (error: any) {
-      // console.log("Chrome cannot play sound without user interaction first");
-    });
-    let { newBallData } = resetBall(
+    sounds.botScore.play().catch(function (error: any) {});
+    let { newBallData, newUserData1, newUserData2 } = resetBall(
       canvas,
       ballData,
       user1,
@@ -314,143 +420,107 @@ export function matchUser2(
       userSpeedInput,
     );
     ballData = newBallData;
-  } else if (ballData.x - ballData.radius > canvas.width && !ballData.reset) {
-    let { newBallData } = resetBall(
-      canvas,
-      ballData,
-      user1,
-      user2,
-      userSpeedInput,
-    );
-    ballData = newBallData;
-  }
-
-  let player: IUserData =
-    ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
-
-  if (checkCollision(ballData, player)) {
-    sounds.hit.play().catch(function (error: any) {
-      // console.log("Chrome cannot play sound without user interaction first");
-    });
-    let collidePoint = ballData.y - (player.y + player.height / 2);
-    collidePoint = collidePoint / (player.height / 2);
-
-    let angleRad = (Math.PI / 4) * collidePoint;
-
-    let direction = ballData.x + ballData.radius < canvas.width / 2 ? 1 : -1;
-    ballData.velocityX = direction * ballData.speed * Math.cos(angleRad);
-    ballData.velocityY = ballData.speed * Math.sin(angleRad);
-
-    ballData.speed += 0.1;
-    user1.height -= 2;
-    user2.height -= 2;
-  }
-}
-
-export function matchUser1(
-  canvas: HTMLCanvasElement,
-  ballData: IBallData,
-  user1: IUserData,
-  user2: IUserData,
-  sounds: ISounds,
-) {
-  ballData.x += ballData.velocityX;
-  ballData.y += ballData.velocityY;
-
-  if (user1.y < thickness + ballData.radius * slit) {
-    user1.y = thickness + ballData.radius * slit;
+    user1 = newUserData1;
+    user2 = newUserData2;
   } else if (
-    user1.y >
-    canvas.height - thickness - user1.height - ballData.radius * slit
+    ballData.x + ballData.radius > canvas.width - 15 &&
+    !ballData.reset
   ) {
-    user1.y = canvas.height - thickness - user1.height - ballData.radius * slit;
+    //   user1.score++;
+    //   sounds.botScore.play().catch(function (error: any) {});
+    //   console.log('Sound');
+    //   let { newBallData, newUserData1, newUserData2 } = resetBall(
+    //     canvas,
+    //     ballData,
+    //     user1,
+    //     user2,
+    //     userSpeedInput,
+    //   );
+    //   ballData = newBallData;
+    //   user1 = newUserData1;
+    //   user2 = newUserData2;
   }
 
-  if (
-    ballData.y - ballData.radius - thickness < 0 ||
-    ballData.y + ballData.radius + thickness > canvas.height
-  ) {
-    ballData.velocityY = -ballData.velocityY;
-    sounds.wall.play().catch(function (error: any) {
-      // console.log("Chrome cannot play sound without user interaction first");
-    });
-  }
+  // // Detect if the ball is in the court of user1 or user2
+  // let player: IUserData =
+  //   ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
 
-  if (ballData.x + ballData.radius < 0 && !ballData.reset) {
-    let { newBallData, newUserData1, newUserData2 } = resetBall(
-      canvas,
-      ballData,
-      user1,
-      user2,
-      userSpeedInput,
-    );
-    ballData = newBallData;
-    user1 = newUserData1;
-    user2 = newUserData2;
-  } else if (ballData.x - ballData.radius > canvas.width && !ballData.reset) {
-    user1.score++;
-    sounds.userScore.play().catch(function (error: any) {
-      // console.log("Chrome cannot play sound without user interaction first");
-    });
-    let { newBallData, newUserData1, newUserData2 } = resetBall(
-      canvas,
-      ballData,
-      user1,
-      user2,
-      userSpeedInput,
-    );
-    ballData = newBallData;
-    user1 = newUserData1;
-    user2 = newUserData2;
-  }
+  // // Detect if the ball hits the paddle & bounce the ball
+  // if (checkCollision(ballData, player)) {
+  //   sounds.hit.play().catch(function (error: any) {});
 
-  let player: IUserData =
-    ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
+  //   // Detect the point where the ball hits in the paddle
+  //   let collidePoint = ballData.y - (player.y + player.height / 2);
+  //   collidePoint = collidePoint / (player.height / 2);
 
-  if (checkCollision(ballData, player)) {
-    sounds.hit.play().catch(function (error: any) {
-      // console.log("Chrome cannot play sound without user interaction first");
-    });
-    let collidePoint = ballData.y - (player.y + player.height / 2);
-    collidePoint = collidePoint / (player.height / 2);
+  //   let angleRad = (Math.PI / 4) * collidePoint;
 
-    let angleRad = (Math.PI / 4) * collidePoint;
+  //   // Get direction to bounce the ball
+  //   let direction = ballData.x + ballData.radius < canvas.width / 2 ? 1 : -1;
+  //   ballData.moveX = direction * ballData.speed * Math.cos(angleRad);
+  //   ballData.moveY = ballData.speed * Math.sin(angleRad);
 
-    let direction = ballData.x + ballData.radius < canvas.width / 2 ? 1 : -1;
-    ballData.velocityX = direction * ballData.speed * Math.cos(angleRad);
-    ballData.velocityY = ballData.speed * Math.sin(angleRad);
+  //   // Modify values to make it more difficult
+  //   ballData.speed += 0.1;
+  //   user1.height -= 2;
+  //   user2.height -= 2;
 
-    ballData.speed += 0.1;
-    user1.height -= 2;
-    user2.height -= 2;
-  }
+  //   // Sparks effect when the ball hits the paddle
+  //   sparks(canvas, ballData.x, ballData.y, ballData.radius, RenderColor.Yellow);
+  // }
 }
 
-export function onGameEnd(
-  canvas: HTMLCanvasElement,
-  eventList: any[],
-  socket: Socket,
-  sessionId: string,
-  player: IUserData,
-  userData: any,
-) {
+type OnGameEndArgs = {
+  canvas: HTMLCanvasElement;
+  eventList: any[];
+  socket: Socket;
+  sessionId: string;
+  startedAt: Date;
+  player: IUserData;
+  userData: any;
+  sounds: any;
+  isAbortedMatch?: boolean;
+};
+export function onGameEnd({
+  canvas,
+  eventList,
+  socket,
+  sessionId,
+  startedAt,
+  player,
+  userData,
+  sounds,
+  isAbortedMatch = false,
+}: OnGameEndArgs) {
   // TODO check this, looks like it's not working
   eventList.forEach(function ({ typeEvent, handler }) {
     canvas.removeEventListener(typeEvent, handler);
   });
 
-  let endGamePayload: IEndGamePayload = {
-    gameDataId: sessionId,
-    startedAt,
-    elapsedTime: new Date().getTime() - startedAt.getTime(),
-    player: {
-      avatar: userData.avatar,
-      intraId: userData.intraId,
-      isWinner: player.score >= matchPoints,
-      score: player.score,
-      username: userData.username,
-    },
+  sounds.music.stop = function () {
+    this.pause();
+    this.currentTime = 0;
   };
+  sounds.music.stop();
 
-  socket.emit('endGame', JSON.stringify(endGamePayload));
+  ballTrailClean();
+
+  // In case of aborted match
+  // We don't want to send match data to the API
+  if (!isAbortedMatch) {
+    let endGamePayload: IEndGamePayload = {
+      gameDataId: sessionId,
+      startedAt,
+      elapsedTime: new Date().getTime() - startedAt.getTime(),
+      player: {
+        avatar: userData.avatar,
+        intraId: userData.intraId,
+        isWinner: player.score >= matchPoints,
+        score: player.score,
+        username: userData.username,
+      },
+    };
+
+    socket.emit('endGame', JSON.stringify(endGamePayload));
+  }
 }

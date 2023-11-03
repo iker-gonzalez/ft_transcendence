@@ -145,8 +145,21 @@ export class GameDataService {
   }
 
   abortGame(server: Server, data: string): string {
-    const { isUser1, gameDataId }: { isUser1: boolean; gameDataId: string } =
+    const {
+      isUser1,
+      isSoloMode,
+      gameDataId,
+    }: { isUser1: boolean; isSoloMode: boolean; gameDataId: string } =
       JSON.parse(data);
+
+    if (isSoloMode) {
+      server.emit(`gameAborted/user2/${gameDataId}`);
+      return 'OK';
+    }
+
+    if (isUser1 === undefined || gameDataId === undefined) {
+      return 'KO';
+    }
 
     const gameDataSet: GameDataSetDto = this.gameDataSets.find(
       (gameDataSet) => gameDataSet.gameDataId === gameDataId.toString(),
@@ -156,16 +169,17 @@ export class GameDataService {
       return 'KO';
     }
 
+    // Delete gameDataSet from cache
+    this.gameDataSets = this.gameDataSets.filter(
+      (gameDataSet: GameDataSetDto) =>
+        gameDataSet.gameDataId !== gameDataId.toString(),
+    );
+
     if (isUser1) {
       server.emit(`gameAborted/user1/${gameDataId}`);
     } else {
       server.emit(`gameAborted/user2/${gameDataId}`);
     }
-
-    // Delete gameDataSet from cache
-    this.gameDataSets = this.gameDataSets.filter(
-      (gameDataSet: GameDataSetDto) => gameDataSet.gameDataId !== gameDataId,
-    );
 
     return 'OK';
   }

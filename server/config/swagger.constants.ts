@@ -160,6 +160,43 @@ export const swaggerConstants = {
         },
       },
     },
+    stats: {
+      get: {
+        summary:
+          'Retrieve stats of either specified user or current user if user is not specified.',
+        ok: {
+          description: 'Returns user stats.',
+        },
+        unauthorized: {
+          description: 'JWT token is invalid or expired.',
+        },
+        unprocessable: {
+          description: 'User does not exist.',
+        },
+      },
+    },
+    leaderboard: {
+      get: {
+        summary: 'Retrieve global leaderboard.',
+        ok: {
+          description: 'Returns global leaderboard.',
+        },
+      },
+    },
+  },
+  status: {
+    patch: {
+      summary: 'Update user status.',
+      ok: {
+        description: 'Returns updated user status.',
+      },
+      unauthorized: {
+        description: 'JWT token is invalid or expired.',
+      },
+      bad: {
+        description: 'Status is invalid.',
+      },
+    },
   },
   dto: {
     intraSignin: {
@@ -474,6 +511,101 @@ export const swaggerConstants = {
               gameDataSetId: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
             },
           ],
+        },
+      },
+    },
+    fetchGameStatsResponseDto: {
+      found: {
+        description: 'Number of found sessions on which stats are based',
+        example: 1,
+      },
+      data: {
+        description: 'Stats data',
+        example: {
+          rank: 2,
+          totalGames: 43,
+          wins: 10,
+          losses: 33,
+          longestWinStreak: 4,
+          currentWinStreak: 0,
+          longestMatch: 621961,
+          quickestWin: 608692,
+          totalGameTime: 123456789,
+          nemesis: {
+            avatar: '/static/media/c3po_avatar.763ed1d4866a4dc88e10.webp',
+            intraId: 42,
+            username: 'bot',
+            count: 29,
+          },
+          victim: {
+            avatar: 'https://i.pravatar.cc/600?img=10',
+            intraId: 667,
+            username: 'test2-',
+            count: 7,
+          },
+          busiestDay: {
+            date: 'Wed Oct 18 2023',
+            count: 17,
+          },
+        },
+      },
+    },
+    fetchLeaderboardResponseDto: {
+      found: {
+        description: 'Number of found users',
+        example: 2,
+      },
+      data: {
+        description: 'Array with users and their stats',
+        example: [
+          {
+            user: {
+              username: 'ngasco',
+              intraId: 88103,
+              avatar:
+                'https://cdn.intra.42.fr/users/a17a37c3c5f97cc6d8e2454710c10ccd/ngasco.jpg',
+            },
+            stats: {
+              rank: 2.4,
+              wins: 12,
+              losses: 33,
+              totalGames: 45,
+              totalGameTime: 2127849,
+            },
+          },
+          {
+            user: {
+              username: 'test2-',
+              intraId: 667,
+              avatar: 'https://i.pravatar.cc/600?img=10',
+            },
+            stats: {
+              rank: 1,
+              wins: 5,
+              losses: 16,
+              totalGames: 21,
+              totalGameTime: 945295,
+            },
+          },
+        ],
+      },
+    },
+    patchStatusBodyDto: {
+      status: {
+        description: 'User status',
+        example: 'ONLINE',
+      },
+    },
+    patchStatusResDto: {
+      updated: {
+        description: 'Number of updated resources',
+        example: 1,
+      },
+      data: {
+        description: 'Updated status',
+        example: {
+          intraId: 12345,
+          status: 'ONLINE',
         },
       },
     },

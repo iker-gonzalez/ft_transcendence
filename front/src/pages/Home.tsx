@@ -6,16 +6,15 @@ import { primaryLightColor } from '../constants/color-tokens';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
-import LoadingPage from './LoadingPage';
+import LoadingFullscreen from '../components/UI/LoadingFullscreen';
 import teamImage from '../assets/images/team.png';
 import logo42 from '../assets/svg/logo_42.svg';
+import CenteredLayout from '../components/UI/CenteredLayout';
+import { patchUserStatus } from '../utils/utils';
+import UserStatus from '../interfaces/user-status.interface';
 
 const PageWrapperDiv = styled.div`
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 
   .logo {
     width: 100px;
@@ -25,6 +24,7 @@ const PageWrapperDiv = styled.div`
   .links-container {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 20px;
 
     .signin-link {
@@ -76,73 +76,76 @@ const SignIn: React.FC = (): JSX.Element => {
     window.location.href = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.REACT_APP_INTRA_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_INTRA_AUTH_REDIRECT_URI}&response_type=code&opt=${otpValue}`;
   };
 
-  const handleLogOut = () => {
-    Cookies.remove('token');
-    setUserData(null);
-  };
-
   return (
     <PageWrapperDiv>
-      {(() => {
-        if (isUserDataFetching) return <LoadingPage />;
+      <CenteredLayout>
+        {(() => {
+          if (isUserDataFetching) return <LoadingFullscreen />;
 
-        return (
-          <>
-            <img src={logo42} alt="" className="logo" />
-            {userData ? (
-              <>
-                <h2 className="title-1 mb-24">Hello, {userData.username}!</h2>
-                <MainButton onClick={handleLogOut}>Log out</MainButton>
-              </>
-            ) : (
-              <>
-                <div className="mb-24 text-container">
-                  <h1 className="title-1 mb-24">
-                    Welcome to our ft_transcendence project
-                  </h1>
-                  <img src={teamImage} alt="" className="team-image" />
-                  <p className="mb-8">
-                    We are{' '}
-                    <a
-                      href="https://profile.intra.42.fr/users/dgerwig-"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="body-link"
-                    >
-                      dgerwig-
-                    </a>
-                    ,{' '}
-                    <a
-                      href="https://profile.intra.42.fr/users/ikgonzal"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="body-link"
-                    >
-                      ikgonzal
-                    </a>
-                    ,{' '}
-                    <a
-                      href="https://profile.intra.42.fr/users/ngasco"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="body-link"
-                    >
-                      ngasco
-                    </a>
-                    , and{' '}
-                    <a
-                      href="https://profile.intra.42.fr/users/zcanales"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="body-link"
-                    >
-                      zcanales
-                    </a>
-                    ,<br />
-                    students of the 42Urduliz campus in Bilbao, Spain
-                  </p>
-                  <p className="mb-8">Go ahead and explore our project 🤠</p>
+          return (
+            <>
+              <img src={logo42} alt="" className="logo" />
+
+              <div className="mb-24 text-container">
+                <h1 className="title-1 mb-24">
+                  Welcome to our ft_transcendence project
+                </h1>
+                <img src={teamImage} alt="" className="team-image" />
+                <p className="mb-8">
+                  We are{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/dgerwig-"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    dgerwig-
+                  </a>
+                  ,{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/ikgonzal"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    ikgonzal
+                  </a>
+                  ,{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/ngasco"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    ngasco
+                  </a>
+                  , and{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/zcanales"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    zcanales
+                  </a>
+                  ,<br />
+                  students of the 42Urduliz campus in Bilbao, Spain
+                </p>
+                <p className="mb-8">Go ahead and explore our project 🤠</p>
+              </div>
+              {userData ? (
+                <div>
+                  <MainButton
+                    onClick={() => {
+                      patchUserStatus(UserStatus.OFFLINE);
+                      Cookies.remove('token');
+                      setUserData(null);
+                    }}
+                  >
+                    Log out
+                  </MainButton>
                 </div>
+              ) : (
                 <div className="links-container">
                   <MainButton type="button" onClick={handleSignIn}>
                     Sign In with 42
@@ -159,12 +162,18 @@ const SignIn: React.FC = (): JSX.Element => {
                   >
                     Sign in with test user 2
                   </Link>
+                  <Link
+                    to={`login?code=${process.env.REACT_APP_USER_TEST_3_CODE}`}
+                    className="signin-link"
+                  >
+                    Sign in with test user 3
+                  </Link>
                 </div>
-              </>
-            )}
-          </>
-        );
-      })()}
+              )}
+            </>
+          );
+        })()}
+      </CenteredLayout>
     </PageWrapperDiv>
   );
 };

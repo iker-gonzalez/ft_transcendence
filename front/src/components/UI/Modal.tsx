@@ -1,10 +1,15 @@
 import React, { PropsWithChildren } from 'react';
 import ReactDom from 'react-dom';
 import styled from 'styled-components';
-import { darkerBgColor, primaryLightColor } from '../../constants/color-tokens';
+import {
+  darkBgColor,
+  darkerBgColor,
+  primaryLightColor,
+} from '../../constants/color-tokens';
 
 type ModalProps = PropsWithChildren<{
   dismissModalAction: () => void;
+  showFullScreen?: boolean;
 }>;
 
 const WrapperDiv = styled.div`
@@ -19,8 +24,8 @@ const WrapperDiv = styled.div`
 
   overflow: hidden;
 
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  background-color: rgba(115, 115, 115, 0.4);
+  backdrop-filter: blur(7px);
 
   display: flex;
   justify-content: center;
@@ -28,15 +33,17 @@ const WrapperDiv = styled.div`
 
   .modal {
     position: relative;
+    top: -10vh;
 
     width: fit-content;
+    max-width: 75vw;
     min-width: 450px;
-    max-width: 500px;
     min-height: 250px;
 
     background-color: ${darkerBgColor};
 
-    padding: 35px;
+    padding: 60px;
+    padding-top: 60px;
     border-radius: 20px;
 
     text-align: center;
@@ -44,29 +51,47 @@ const WrapperDiv = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    --animate-duration: 300ms;
+
+    &.full-screen {
+      top: 0;
+
+      max-width: none;
+      width: 100vw;
+      height: 100vh;
+      overflow-x: hidden;
+
+      border-radius: 0;
+
+      --animate-duration: 300ms;
+    }
   }
 
   .close-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
 
     color: ${primaryLightColor};
-    font-size: 1rem;
+    font-size: 1.5rem;
     font-weight: bold;
 
-    background-color: unset;
-    border: none;
-    cursor: pointer;
+    width: 40px;
+    height: 40px;
+
+    border: 2px ${darkBgColor} solid;
+    border-radius: 5px;
 
     &:hover {
-      transform: scale(1.2);
+      background-color: ${darkBgColor};
     }
   }
 `;
 
 const Modal: React.FC<ModalProps> = ({
   dismissModalAction,
+  showFullScreen = false,
   children,
 }): JSX.Element => {
   const onModalDismissal = (e: React.MouseEvent<HTMLElement>) => {
@@ -78,9 +103,15 @@ const Modal: React.FC<ModalProps> = ({
 
   return ReactDom.createPortal(
     <WrapperDiv onClick={onModalDismissal}>
-      <div className="modal">
+      <div
+        className={`modal ${
+          showFullScreen && 'full-screen'
+        } animate__animated ${
+          showFullScreen ? 'animate__slideInUp' : 'animate__flipInY'
+        }`}
+      >
         <button type="button" className="close-btn" onClick={onModalDismissal}>
-          ✗
+          x
         </button>
         {children}
       </div>
