@@ -14,6 +14,7 @@ interface UserProfileSettingsOTPProps {
 const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userData }) => {
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
+  const [is2FAOn, set2FAOn] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null); // State to store the QR code image URL
   const [otpValue, setOtpValue] = useState(''); // State to store OTP input value
   const { launchFlashMessage } = useFlashMessages();
@@ -68,6 +69,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
       if (response.ok) {
         console.log('2FA activated');
         setIsActivating(false);
+        set2FAOn(true);
         launchFlashMessage(
           '2FA activated successfully',
           FlashMessageLevel.SUCCESS,
@@ -87,7 +89,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
   return (
     <>
       <h3 className="title-3">OTP</h3>
-      {userData.isTwoFactorAuthEnabled ? (
+      {userData.isTwoFactorAuthEnabled || is2FAOn ? (
         <p style={{ marginLeft: 'auto', marginRight: '0', fontSize: '28px', color: 'yellow'}}>On</p>
       ) : (
         isGeneratingQR ? (
@@ -98,13 +100,14 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
               <img src={qrCode} alt="QR Code" />
             ) : null}
             <input
+              style={{ marginLeft: 'auto', marginRight: 'auto' , marginTop: '20px'}}
               type="text"
               placeholder="Enter OTP"
               value={otpValue} // Bind input value to state
               onChange={(e) => setOtpValue(e.target.value)} // Update state on input change
             />
             <MainButton
-              style={{ marginLeft: '0', marginRight: 'auto' }}
+              style={{ marginLeft: 'auto', marginRight: 'auto' , marginTop: '30px'}}
               onClick={handleActivateWithOTP}
             >
               Activate

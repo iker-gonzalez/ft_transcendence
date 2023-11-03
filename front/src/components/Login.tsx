@@ -102,7 +102,6 @@ const Login: React.FC = (): JSX.Element => {
 
   return (
     <>
-      {isLoading && <LoadingFullscreen />}
       {showModal && (
         <Modal dismissModalAction={() => setShowModal(false)}>
           <input
