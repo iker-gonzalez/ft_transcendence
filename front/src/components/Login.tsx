@@ -127,7 +127,12 @@ const Login: React.FC = (): JSX.Element => {
     <>
       {isLoading && !showModal && <LoadingFullscreen />}
       {showModal && (
-        <OtpModal dismissModalAction={() => setShowModal(false)}>
+        <OtpModal
+          dismissModalAction={() => {
+            setShowModal(false);
+            navigate('/');
+          }}
+        >
           <h1 className="title-2 mb-24">Insert OTP</h1>
           <p>Take out your phone and input an OTP to sign in.</p>
           <Lottie
