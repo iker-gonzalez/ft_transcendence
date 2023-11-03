@@ -140,6 +140,7 @@ const SignIn: React.FC = (): JSX.Element => {
                       patchUserStatus(UserStatus.OFFLINE);
                       Cookies.remove('token');
                       setUserData(null);
+                      sessionStorage.clear();
                     }}
                   >
                     Log out
