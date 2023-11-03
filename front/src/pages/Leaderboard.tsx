@@ -4,7 +4,7 @@ import { formatMsToFullTime, getBaseUrl } from '../utils/utils';
 import LoadingFullscreen from '../components/UI/LoadingFullscreen';
 import RoundImg from '../components/UI/RoundImage';
 import styled from 'styled-components';
-import { darkerBgColor, primaryLightColor } from '../constants/color-tokens';
+import { primaryLightColor } from '../constants/color-tokens';
 
 const MainContent = styled.main`
   .avatar {
