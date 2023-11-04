@@ -60,6 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handl
             </li>
           ))}
         </List>
+        <br />
         <Title>Group Chats</Title>
         <List>
           {groups.map((group) => (
