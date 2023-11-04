@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const SidebarContainer = styled.div`
-  width: 25%;
+  width: calc(25% - 10px); /* Subtract 10px for margin/padding */
   background-color: black;
   color: white;
   padding: 20px;
@@ -10,6 +10,9 @@ const SidebarContainer = styled.div`
   border: 2px solid yellow;
   position: absolute;
   top: 100px; /* Adjust the offset as needed */
+  left: 0; /* Position on the left */
+  bottom: 0; /* Occupy the full height */
+  overflow-y: auto; /* Add scroll behavior when content overflows */
 `;
 
 const UserList = styled.div`
