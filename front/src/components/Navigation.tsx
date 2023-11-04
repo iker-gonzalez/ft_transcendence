@@ -127,6 +127,14 @@ const Navbar = (): JSX.Element => {
           <SVG src={StatsIcon} aria-hidden="true" className="icon" />
           Stats
         </Link>
+        <Link
+          to="/chat"
+          onClick={disableLink}
+          className={`${!isLogged && 'disabled'} link`}
+        >
+          <SVG src={PlayIcon} aria-hidden="true" className="icon" />
+          Chat
+        </Link>
         <Link to="/leaderboard" className="link">
           <SVG src={LeaderboardIcon} aria-hidden="true" className="icon" />
           Leaderboard

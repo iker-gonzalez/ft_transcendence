@@ -13,6 +13,7 @@ import { FlashMessagesProvider } from './context/FlashMessagesContext';
 import FlashMessagesContainer from './pages/FlashMessagesContainer';
 import Leaderboard from './pages/Leaderboard';
 import UserStats from './pages/UserStats';
+import Chat from './pages/Chat';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
                 <Route path="match" element={<GameMatch />} />
               </Route>
               <Route path="stats" element={<UserStats />} />
+              <Route path="chat" element={<Chat />} />
               <Route path="leaderboard" element={<Leaderboard />} />
             </Routes>
           </div>
