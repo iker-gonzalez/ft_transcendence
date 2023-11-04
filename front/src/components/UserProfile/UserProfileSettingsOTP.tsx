@@ -6,12 +6,11 @@ import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Modal from '../UI/Modal';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
-import MainInput from '../UI/MainInput';
 import styled from 'styled-components';
 import { primaryAccentColor } from '../../constants/color-tokens';
-import { OTP_LENGTH } from '../../constants/shared';
 import Checkmark from '../../assets/svg/checkmark.svg';
 import SVG from 'react-inlinesvg';
+import OtpSubmitForm from '../shared/OtpSubmitForm';
 
 interface UserProfileSettingsOTPProps {
   userData: UserData;
@@ -38,13 +37,6 @@ const OtpModal = styled(Modal)`
       margin-bottom: 16px;
     }
   }
-
-  .otp-input-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-  }
 `;
 
 const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
@@ -60,42 +52,42 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
   const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
+    const generateQRCode = async () => {
+      try {
+        const response = await fetchAuthorized(`${getBaseUrl()}/2fa/generate`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+        });
+
+        if (response.ok) {
+          // Assuming the response is an image
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+          setQrCode(imageUrl);
+          setIsGeneratingQR(false);
+          setIsActivating(true);
+        } else {
+          console.error('Failed to generate QR code.');
+          if (response.status === 422) {
+            setIsTestUser(true);
+            launchFlashMessage(
+              '2FA is not available for test users.',
+              FlashMessageLevel.ERROR,
+            );
+          }
+        }
+      } catch (error) {
+        console.log('ciao');
+        console.error('Error:', error);
+      }
+    };
+
     if (isGeneratingQR) {
       generateQRCode();
     }
-  }, [isGeneratingQR]);
-
-  const generateQRCode = async () => {
-    try {
-      const response = await fetchAuthorized(`${getBaseUrl()}/2fa/generate`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      });
-
-      if (response.ok) {
-        // Assuming the response is an image
-        const blob = await response.blob();
-        const imageUrl = URL.createObjectURL(blob);
-        setQrCode(imageUrl);
-        setIsGeneratingQR(false);
-        setIsActivating(true);
-      } else {
-        console.error('Failed to generate QR code.');
-        if (response.status === 422) {
-          setIsTestUser(true);
-          launchFlashMessage(
-            '2FA is not available for test users.',
-            FlashMessageLevel.ERROR,
-          );
-        }
-      }
-    } catch (error) {
-      console.log('ciao');
-      console.error('Error:', error);
-    }
-  };
+  }, [isGeneratingQR, launchFlashMessage]);
 
   const handleActivate = () => {
     setIsGeneratingQR(true);
@@ -124,7 +116,11 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
         );
       } else {
         console.error('Failed to activate 2FA.');
-        launchFlashMessage('Failed to activate 2FA.', FlashMessageLevel.ERROR);
+        launchFlashMessage(
+          'Failed to activate 2FA. Try again.',
+          FlashMessageLevel.ERROR,
+        );
+        setOtpValue('');
       }
     } catch (error: any) {
       console.error('Error:', error);
@@ -160,26 +156,11 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
                   below.
                 </p>
               </div>
-              <div className="otp-input-container">
-                <MainInput
-                  type="text"
-                  maxLength={OTP_LENGTH}
-                  placeholder="Enter OTP"
-                  value={otpValue} // Bind input value to state
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value.match(/^[0-9]*$/)) {
-                      setOtpValue(value);
-                    }
-                  }} // Update state on input change
-                />
-                <MainButton
-                  onClick={handleActivateWithOTP}
-                  disabled={otpValue.length !== OTP_LENGTH}
-                >
-                  Activate
-                </MainButton>
-              </div>
+              <OtpSubmitForm
+                otpValue={otpValue}
+                setOtpValue={setOtpValue}
+                handleActivateWithOTP={handleActivateWithOTP}
+              />
             </>
           )}
         </OtpModal>

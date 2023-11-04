@@ -5,24 +5,16 @@ import { useUserData } from '../context/UserDataContext';
 import moment from 'moment';
 import Cookies from 'js-cookie';
 import Modal from './UI/Modal';
-import MainButton from './UI/MainButton';
 import FlashMessageLevel from '../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../context/FlashMessagesContext';
-import MainInput from './UI/MainInput';
 import styled from 'styled-components';
 import Lottie from 'lottie-react';
 import OtpAnimationData from '../assets/lotties/otp.json';
-import { OTP_LENGTH } from '../constants/shared';
+import { INVALID_OTP_ERROR } from '../constants/shared';
 import LoadingFullscreen from './UI/LoadingFullscreen';
+import OtpSubmitForm from './shared/OtpSubmitForm';
 
 const OtpModal = styled(Modal)`
-  .action-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-  }
-
   .otp-lottie {
     width: 350px;
     height: 100%;
@@ -77,6 +69,8 @@ const Login: React.FC = (): JSX.Element => {
         body: JSON.stringify(requestBody),
       })
         .then((response) => {
+          if (response.status === 401) throw new Error(INVALID_OTP_ERROR);
+
           if (response.ok) {
             return response.json();
           }
@@ -103,25 +97,20 @@ const Login: React.FC = (): JSX.Element => {
           }
         })
         .catch((error) => {
-          if (error.status === 401) {
-            launchFlashMessage(
-              'OTP code invalid. Please try again.',
-              FlashMessageLevel.ERROR,
-            );
+          if (error.message === INVALID_OTP_ERROR) {
+            setShowModal(true);
+          } else {
+            setUserData(null);
+            sessionStorage.removeItem('otpValue');
+            launchFlashMessage('Failed to sign in.', FlashMessageLevel.ERROR);
+            navigate('/');
           }
-          setUserData(null);
-          setShowModal(true);
         })
         .finally(() => {
           setIsLoading(false);
         });
     }
   }, [navigate, location, setUserData, launchFlashMessage]);
-
-  // Function to handle changes in the OTP input
-  const handleOtpInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOtpValue(e.target.value);
-  };
 
   return (
     <>
@@ -140,16 +129,11 @@ const Login: React.FC = (): JSX.Element => {
             className="otp-lottie"
             loop={false}
           />
-          <div className="action-container">
-            <MainInput
-              type="text"
-              placeholder="Enter OTP"
-              maxLength={OTP_LENGTH}
-              value={otpValue}
-              onChange={handleOtpInputChange} // Handle OTP input changes
-            />
-            <MainButton onClick={handleActivateWithOTP}>Sign In</MainButton>
-          </div>
+          <OtpSubmitForm
+            otpValue={otpValue}
+            setOtpValue={setOtpValue}
+            handleActivateWithOTP={handleActivateWithOTP}
+          />
         </OtpModal>
       )}
     </>
