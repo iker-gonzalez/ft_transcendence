@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import Group from '../../interfaces/chat-group.interface';
+import User from '../../interfaces/chat-user.interface';
 
 const SidebarContainer = styled.div`
   width: calc(25% - 10px); /* Subtract 10px for margin/padding */
@@ -42,8 +44,8 @@ const ListItem = styled.li`
 interface SidebarProps {
   users: Array<{ id: number; name: string }>;
   groups: Array<{ id: number; name: string }>;
-  handleUserClick: (userId: number) => void;
-  handleGroupClick: (groupId: number) => void;
+  handleUserClick: (user: User) => void;
+  handleGroupClick: (group: Group) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handleGroupClick }) => {
@@ -53,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handl
         <Title>Direct Messages</Title>
         <List>
           {users.map((user) => (
-            <li key={user.id} onClick={() => handleUserClick(user.id)}>
+            <li key={user.id} onClick={() => handleUserClick(user)}>
               {user.name}
             </li>
           ))}
@@ -61,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handl
         <Title>Group Chats</Title>
         <List>
           {groups.map((group) => (
-            <li key={group.id} onClick={() => handleGroupClick(group.id)}>
+            <li key={group.id} onClick={() => handleGroupClick(group)}>
               {group.name}
             </li>
           ))}
