@@ -84,7 +84,7 @@ export function render(
   drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
 
   //Ball trail
-  drawBallTrail(canvas, 0.03);
+  drawBallTrail(canvas, 0.025);
 
   //Sparks effect
   drawSparks(canvas, 0, 0, 0, RenderColor.Yellow);
@@ -394,7 +394,6 @@ export function matchUser1(
       ballData.radius,
       RenderColor.Yellow,
       50,
-      0.5,
     );
   }
 }
@@ -436,7 +435,6 @@ export function matchUser2(
       ballData.radius,
       RenderColor.Yellow,
       50,
-      0.5,
     );
   }
 }

@@ -93,12 +93,10 @@ export function sparks(
   r: number,
   color: RenderColor,
   numSparks: number,
-  opacityGrade: number,
 ) {
   for (let i = 0; i < numSparks; i++) {
     const dx = (Math.random() - 0.5) * 15 * r * 0.5;
     const dy = (Math.random() - 0.5) * 15 * r * 0.5;
-    drawSparksTrail(canvas, opacityGrade);
     drawSparks(canvas, x + dx, y + dy, r, color);
   }
 }
