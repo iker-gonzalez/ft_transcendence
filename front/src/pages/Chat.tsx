@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ChatSidebar from '../components/Chat/ChatSidebar';
+import ChatMessageArea from '../components/Chat/ChatMessageArea';
 
 // Define an interface for dummyMessages
 interface Message {
@@ -72,36 +73,11 @@ const ChatPage: React.FC = () => {
         handleGroupClick={handleGroupClick}
       />
 
-      <div className="message-area">
-        {selectedUser !== null && (
-          <div className="conversation">
-            <h2>Chat with User {selectedUser}</h2>
-            <div className="message-list">
-              {dummyMessages[selectedUser].map((message, index) => (
-                <div key={index} className="message">
-                  {message.text}
-                </div>
-              ))}
-            </div>
-            {/* Add an input field and send button here for sending messages */}
-          </div>
-          
-        )}
-
-        {selectedGroup !== null && (
-          <div className="conversation">
-            <h2>Group Chat {selectedGroup}</h2>
-            <div className="message-list">
-              {dummyMessages[selectedGroup].map((message, index) => (
-                <div key={index} className="message">
-                  {message.text}
-                </div>
-              ))}
-            </div>
-            {/* Add an input field and send button here for sending messages */}
-          </div>
-        )}
-      </div>
+      <ChatMessageArea
+        selectedUser={selectedUser}
+        selectedGroup={selectedGroup}
+        messages={dummyMessages}
+      />
     </div>
   );
 };
