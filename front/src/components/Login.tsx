@@ -12,7 +12,7 @@ import MainInput from './UI/MainInput';
 import styled from 'styled-components';
 import Lottie from 'lottie-react';
 import OtpAnimationData from '../assets/lotties/otp.json';
-import { OTP_LENGTH } from '../constants/shared';
+import { INVALID_OTP_ERROR, OTP_LENGTH } from '../constants/shared';
 import LoadingFullscreen from './UI/LoadingFullscreen';
 
 const OtpModal = styled(Modal)`
@@ -77,6 +77,8 @@ const Login: React.FC = (): JSX.Element => {
         body: JSON.stringify(requestBody),
       })
         .then((response) => {
+          if (response.status === 401) throw new Error(INVALID_OTP_ERROR);
+
           if (response.ok) {
             return response.json();
           }
@@ -103,14 +105,13 @@ const Login: React.FC = (): JSX.Element => {
           }
         })
         .catch((error) => {
-          if (error.status === 401) {
-            launchFlashMessage(
-              'OTP code invalid. Please try again.',
-              FlashMessageLevel.ERROR,
-            );
+          if (error.message === INVALID_OTP_ERROR) {
+            setShowModal(true);
+          } else {
+            setUserData(null);
+            launchFlashMessage('Failed to sign in.', FlashMessageLevel.ERROR);
+            navigate('/');
           }
-          setUserData(null);
-          setShowModal(true);
         })
         .finally(() => {
           setIsLoading(false);
