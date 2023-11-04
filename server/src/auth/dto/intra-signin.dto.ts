@@ -20,6 +20,7 @@ export class IntraSigninDto {
   })
   @IsString()
   @IsOptional()
+  @Matches(/^[0-9]{6}$/)
   otp?: string;
 
   @ApiProperty({

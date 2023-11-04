@@ -101,7 +101,7 @@ export class TwoFactorAuthService {
     const decryptedSecret = Buffer.concat([
       decipher.update(Buffer.from(user.twoFactorAuthSecret, 'hex')),
       decipher.final(),
-    ]).toString('utf8');
+    ]).toString('hex');
 
     return authenticator.verify({
       token: twoFactorAuthenticationCode,
