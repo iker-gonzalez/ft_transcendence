@@ -42,7 +42,7 @@ export class ChatController {
 
     }
 
-    @Get('all/:userId') // Define una nueva ruta para el método getAllUserDMWith
+    @Get(':userId') // Define una nueva ruta para el método getAllUserDMWith
     @ApiParam({ name: 'userId' }) 
     @ApiOperation({
       summary: swaggerConstants.chat.all.summary,
