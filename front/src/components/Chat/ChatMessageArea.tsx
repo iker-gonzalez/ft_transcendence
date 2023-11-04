@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
+import MessageInput from './ChatMessageInput';
 
 const MessageAreaContainer = styled.div`
   width: calc(75% - 10px); /* Subtract 10px for margin/padding */
@@ -17,13 +18,10 @@ const MessageAreaContainer = styled.div`
   overflow-y: auto; /* Add scroll behavior when content overflows */
 `;
 
-const Conversation = styled.div`
-  margin: 10px 0;
-`;
-
 const Title = styled.h2`
-  font-size: 16px;
+  font-size: 32px;
   font-weight: bold;
+  margin-bottom: 20px;
 `;
 
 const MessageList = styled.ul`
@@ -32,50 +30,79 @@ const MessageList = styled.ul`
 `;
 
 const MessageItem = styled.li`
-  margin: 5px 0;
+  margin: 10px 0;
 `;
-
 
 // Define an interface for dummyMessages
 interface Message {
-    sender: string;
-    text: string;
-  }
-  
+  sender: string;
+  text: string;
+}
+
 interface MessageData {
-    [key: number]: Message[];
-  }
+  [key: number]: Message[];
+}
 
+interface ChatMessageAreaProps {
+  selectedUser: User | null;
+  selectedGroup: Group | null;
+  messages: MessageData;
+}
 
-  interface ChatMessageAreaProps {
-    selectedUser: User | null;
-    selectedGroup: Group | null;
-    messages: MessageData;
-  } 
-
-const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({ selectedUser, selectedGroup, messages}) => {
-  const selectedMessages = selectedUser 
-    ? messages[selectedUser.id] 
+const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
+  selectedUser,
+  selectedGroup,
+  messages,
+}) => {
+  const selectedMessages = selectedUser
+    ? messages[selectedUser.id]
     : selectedGroup
-      ? messages[selectedGroup.id]
-      : [];
+    ? messages[selectedGroup.id]
+    : [];
 
   const title = selectedUser?.name || selectedGroup?.name;
+
+  // Declare and initialize the message state
+  const [message, setMessage] = useState('');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+  };
+
+  const handleSendMessage = () => {
+    if (message.trim() !== '') {
+      // Implement logic to add the message to the chat or send it to the server
+      const newMessage: Message = {
+        sender: selectedUser ? selectedUser.name : selectedGroup ? selectedGroup.name : '',
+        text: message,
+      };
+      // Add logic to handle new message submission
+      
+      // Clear the input field
+      setMessage('');
+    }
+  };
 
   return (
     <MessageAreaContainer>
       {title && <Title>{title}</Title>}
-
       <MessageList>
         {selectedMessages.map((message, index) => (
-          <div key={index} className="message">
-            {message.text}
-          </div>
+          <MessageItem key={index}>
+            {`${message.sender}: ${message.text}`}
+          </MessageItem>
         ))}
+        {/* Render the new message below the last message */}
+        <MessageItem>
+          {`${selectedUser?.name || selectedGroup?.name}: ${message}`}
+        </MessageItem>
       </MessageList>
 
-      {/* Input and send message */}
-
+      <MessageInput
+        message={message}
+        onInputChange={handleInputChange}
+        onMessageSubmit={handleSendMessage}
+      />
     </MessageAreaContainer>
   );
 };
