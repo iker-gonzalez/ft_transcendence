@@ -11,6 +11,7 @@ import {
   drawBallTrail,
   drawDashedLine,
   drawRect,
+  drawSparks,
   drawText,
   isSoloMode,
   sparks,
@@ -80,7 +81,8 @@ export function render(
   //Ball
   drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
 
-  drawBallTrail(canvas, 0.05);
+  drawBallTrail(canvas, 0.03);
+  //drawSparks(canvas, 0.3);
 
   drawText(
     canvas,
@@ -386,7 +388,7 @@ export function matchUser1(
       ballData.radius,
       RenderColor.Yellow,
       50,
-      1,
+      0.5,
     );
   }
 }
@@ -448,32 +450,40 @@ export function matchUser2(
   // }
 
   // Detect if the ball is in the court of user1 or user2
-  // let player: IUserData =
-  //   ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
+  let player: IUserData =
+    ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
 
-  // // Detect if the ball hits the paddle & bounce the ball
-  // if (checkCollision(ballData, player)) {
-  //   sounds.hit.play().catch(function (error: any) {});
+  // Detect if the ball hits the paddle & bounce the ball
+  if (checkCollision(ballData, player)) {
+    // sounds.hit.play().catch(function (error: any) {});
 
-  //   // Detect the point where the ball hits in the paddle
-  //   let collidePoint = ballData.y - (player.y + player.height / 2);
-  //   collidePoint = collidePoint / (player.height / 2);
+    // // Detect the point where the ball hits in the paddle
+    // let collidePoint = ballData.y - (player.y + player.height / 2);
+    // collidePoint = collidePoint / (player.height / 2);
 
-  //   let angleRad = (Math.PI / 4) * collidePoint;
+    // let angleRad = (Math.PI / 4) * collidePoint;
 
-  //   // Get direction to bounce the ball
-  //   let direction = ballData.x + ballData.radius < canvas.width / 2 ? 1 : -1;
-  //   ballData.moveX = direction * ballData.speed * Math.cos(angleRad);
-  //   ballData.moveY = ballData.speed * Math.sin(angleRad);
+    // // Get direction to bounce the ball
+    // let direction = ballData.x + ballData.radius < canvas.width / 2 ? 1 : -1;
+    // ballData.moveX = direction * ballData.speed * Math.cos(angleRad);
+    // ballData.moveY = ballData.speed * Math.sin(angleRad);
 
-  //   // Modify values to make it more difficult
-  //   ballData.speed += 0.1;
-  //   user1.height -= 2;
-  //   user2.height -= 2;
+    // // Modify values to make it more difficult
+    // ballData.speed += 0.1;
+    // user1.height -= 2;
+    // user2.height -= 2;
 
-  //   //   // Sparks effect when the ball hits the paddle
-  //   //   sparks(canvas, ballData.x, ballData.y, ballData.radius, RenderColor.Yellow);
-  // }
+    // Sparks effect when the ball hits the paddle
+    sparks(
+      canvas,
+      ballData.x,
+      ballData.y,
+      ballData.radius,
+      RenderColor.Yellow,
+      50,
+      0.5,
+    );
+  }
 }
 
 type OnGameEndArgs = {
