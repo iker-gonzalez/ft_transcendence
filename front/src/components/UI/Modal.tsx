@@ -10,6 +10,7 @@ import {
 type ModalProps = PropsWithChildren<{
   dismissModalAction: () => void;
   showFullScreen?: boolean;
+  className?: string;
 }>;
 
 const WrapperDiv = styled.div`
@@ -92,6 +93,7 @@ const WrapperDiv = styled.div`
 const Modal: React.FC<ModalProps> = ({
   dismissModalAction,
   showFullScreen = false,
+  className,
   children,
 }): JSX.Element => {
   const onModalDismissal = (e: React.MouseEvent<HTMLElement>) => {
@@ -102,7 +104,7 @@ const Modal: React.FC<ModalProps> = ({
   };
 
   return ReactDom.createPortal(
-    <WrapperDiv onClick={onModalDismissal}>
+    <WrapperDiv onClick={onModalDismissal} className={className}>
       <div
         className={`modal ${
           showFullScreen && 'full-screen'

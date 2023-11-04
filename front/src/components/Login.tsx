@@ -1,14 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { getBaseUrl } from '../utils/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
-import LoadingFullscreen from './UI/LoadingFullscreen';
 import { useUserData } from '../context/UserDataContext';
 import moment from 'moment';
 import Cookies from 'js-cookie';
 import Modal from './UI/Modal';
-import MainButton from './UI/MainButton';
 import FlashMessageLevel from '../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../context/FlashMessagesContext';
+import styled from 'styled-components';
+import Lottie from 'lottie-react';
+import OtpAnimationData from '../assets/lotties/otp.json';
+import { INVALID_OTP_ERROR } from '../constants/shared';
+import LoadingFullscreen from './UI/LoadingFullscreen';
+import OtpSubmitForm from './shared/OtpSubmitForm';
+
+const OtpModal = styled(Modal)`
+  .otp-lottie {
+    width: 350px;
+    height: 100%;
+    object-fit: contain;
+  }
+`;
 
 const Login: React.FC = (): JSX.Element => {
   const { setUserData } = useUserData();
@@ -37,14 +49,14 @@ const Login: React.FC = (): JSX.Element => {
       interface RequestBody {
         code: string;
         state: string | undefined;
-        otp?: string; 
+        otp?: string;
       }
-      
+
       const requestBody: RequestBody = {
         code,
         state: process.env.REACT_APP_INTRA_STATE,
       };
-      
+
       if (otpValue) {
         requestBody.otp = otpValue;
       }
@@ -57,6 +69,8 @@ const Login: React.FC = (): JSX.Element => {
         body: JSON.stringify(requestBody),
       })
         .then((response) => {
+          if (response.status === 401) throw new Error(INVALID_OTP_ERROR);
+
           if (response.ok) {
             return response.json();
           }
@@ -72,6 +86,9 @@ const Login: React.FC = (): JSX.Element => {
             expires: tokenExpirationDate,
           });
 
+          // Remove the otpValue from the session storage
+          sessionStorage.removeItem('otpValue');
+
           const isNewUser: boolean = data.created === 1;
           if (isNewUser) {
             navigate('/profile?welcome');
@@ -80,47 +97,47 @@ const Login: React.FC = (): JSX.Element => {
           }
         })
         .catch((error) => {
-          if (error.status === 401) {
-            launchFlashMessage(
-              'OTP code invalid. Please try again.',
-              FlashMessageLevel.ERROR,
-            );
+          if (error.message === INVALID_OTP_ERROR) {
+            setShowModal(true);
+          } else {
+            setUserData(null);
+            sessionStorage.removeItem('otpValue');
+            launchFlashMessage('Failed to sign in.', FlashMessageLevel.ERROR);
+            navigate('/');
           }
-          setUserData(null);
-          setShowModal(true);
         })
         .finally(() => {
           setIsLoading(false);
         });
     }
-  }, [navigate, location, setUserData]); // Include otpValue in the dependency array
-
-  // Function to handle changes in the OTP input
-  const handleOtpInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOtpValue(e.target.value);
-  };
+  }, [navigate, location, setUserData, launchFlashMessage]);
 
   return (
     <>
+      {isLoading && !showModal && <LoadingFullscreen />}
       {showModal && (
-        <Modal dismissModalAction={() => setShowModal(false)}>
-          <input
-            type="text"
-            placeholder="Enter OTP"
-            value={otpValue}
-            onChange={handleOtpInputChange} // Handle OTP input changes
+        <OtpModal
+          dismissModalAction={() => {
+            setShowModal(false);
+            navigate('/');
+          }}
+        >
+          <h1 className="title-2 mb-24">Insert OTP</h1>
+          <p>Take out your phone and input an OTP to sign in.</p>
+          <Lottie
+            animationData={OtpAnimationData}
+            className="otp-lottie"
+            loop={false}
           />
-          <MainButton
-            style={{ marginLeft: 'auto', marginRight: 'auto', marginTop: '50px' }}
-            onClick={handleActivateWithOTP}
-          >
-            Sign In
-          </MainButton>
-        </Modal>
+          <OtpSubmitForm
+            otpValue={otpValue}
+            setOtpValue={setOtpValue}
+            handleActivateWithOTP={handleActivateWithOTP}
+          />
+        </OtpModal>
       )}
     </>
   );
 };
 
 export default Login;
-

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { authenticator } from 'otplib';
@@ -7,6 +11,9 @@ import { toFileStream } from 'qrcode';
 import { OtpAuthUrlDto } from './dto/otp-auth-url.dto';
 import { ActivateOtpResponseDto } from './dto/activate-otp-response.dto';
 import { ActivateOtpDto } from './dto/activate-otp.dto';
+import { createCipheriv, randomBytes, scrypt } from 'crypto';
+import { promisify } from 'util';
+import { createDecipheriv } from 'crypto';
 
 @Injectable()
 export class TwoFactorAuthService {
@@ -14,6 +21,18 @@ export class TwoFactorAuthService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
   ) {}
+
+  iv = randomBytes(16);
+  salt = randomBytes(16).toString('hex');
+  cipherSecret = this.configService.get<string>('CIPHER_SECRET');
+
+  _isTestUser(intraId: string): boolean {
+    return (
+      intraId === this.configService.get<string>('FAKE_USER_1_ID') ||
+      intraId === this.configService.get<string>('FAKE_USER_2_ID') ||
+      intraId === this.configService.get<string>('FAKE_USER_3_ID')
+    );
+  }
 
   async generateTwoFactorAuthenticationSecret(
     user: User,
@@ -26,12 +45,30 @@ export class TwoFactorAuthService {
       secret,
     );
 
+    if (this._isTestUser(user.intraId.toString())) {
+      throw new UnprocessableEntityException(
+        "You can't activate 2FA on test users",
+      );
+    }
+
+    const key = (await promisify(scrypt)(
+      this.cipherSecret,
+      this.salt,
+      32, // for aes256, it is 32 bytes.
+    )) as Buffer;
+    const cipher = createCipheriv('aes-256-ctr', key, this.iv);
+
+    const encryptedSecret = Buffer.concat([
+      cipher.update(secret),
+      cipher.final(),
+    ]).toString('hex');
+
     await this.prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
-        twoFactorAuthSecret: secret,
+        twoFactorAuthSecret: encryptedSecret,
       },
     });
 
@@ -48,13 +85,27 @@ export class TwoFactorAuthService {
     return toFileStream(stream, otpauthUrl);
   }
 
-  isTwoFactorAuthenticationCodeValid(
+  async isTwoFactorAuthenticationCodeValid(
     twoFactorAuthenticationCode: string,
     user: User,
-  ): boolean {
+  ): Promise<boolean> {
+    // The key length is dependent on the algorithm.
+    // In this case for aes256, it is 32 bytes.
+    const key = (await promisify(scrypt)(
+      this.configService.get<string>('CIPHER_SECRET'),
+      this.salt,
+      32,
+    )) as Buffer;
+
+    const decipher = createDecipheriv('aes-256-ctr', key, this.iv);
+    const decryptedSecret = Buffer.concat([
+      decipher.update(Buffer.from(user.twoFactorAuthSecret, 'hex')),
+      decipher.final(),
+    ]).toString('hex');
+
     return authenticator.verify({
       token: twoFactorAuthenticationCode,
-      secret: user.twoFactorAuthSecret,
+      secret: decryptedSecret,
     });
   }
 
@@ -64,7 +115,7 @@ export class TwoFactorAuthService {
   ): Promise<ActivateOtpResponseDto> {
     const { otp: twoFactorAuthenticationCode } = activateOtpDto;
 
-    const isCodeValid = this.isTwoFactorAuthenticationCodeValid(
+    const isCodeValid = await this.isTwoFactorAuthenticationCodeValid(
       twoFactorAuthenticationCode,
       user,
     );

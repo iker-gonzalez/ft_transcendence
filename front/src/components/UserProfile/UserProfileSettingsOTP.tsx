@@ -6,12 +6,44 @@ import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Modal from '../UI/Modal';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
+import styled from 'styled-components';
+import { primaryAccentColor } from '../../constants/color-tokens';
+import Checkmark from '../../assets/svg/checkmark.svg';
+import SVG from 'react-inlinesvg';
+import OtpSubmitForm from '../shared/OtpSubmitForm';
 
 interface UserProfileSettingsOTPProps {
   userData: UserData;
+  className?: string;
 }
 
-const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userData }) => {
+const WrapperDiv = styled.div`
+  .checkmark-icon {
+    width: 30px;
+    height: auto;
+    object-fit: contain;
+  }
+`;
+
+const OtpModal = styled(Modal)`
+  .qr-container {
+    max-width: 350px;
+
+    img {
+      width: 200px;
+      aspect-ratio: 1/1;
+      border: 4px ${primaryAccentColor} solid;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+  }
+`;
+
+const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
+  userData,
+  className,
+}) => {
+  const [isTestUser, setIsTestUser] = useState(false);
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
   const [is2FAOn, set2FAOn] = useState(false);
@@ -20,34 +52,42 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
   const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
+    const generateQRCode = async () => {
+      try {
+        const response = await fetchAuthorized(`${getBaseUrl()}/2fa/generate`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+        });
+
+        if (response.ok) {
+          // Assuming the response is an image
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+          setQrCode(imageUrl);
+          setIsGeneratingQR(false);
+          setIsActivating(true);
+        } else {
+          console.error('Failed to generate QR code.');
+          if (response.status === 422) {
+            setIsTestUser(true);
+            launchFlashMessage(
+              '2FA is not available for test users.',
+              FlashMessageLevel.ERROR,
+            );
+          }
+        }
+      } catch (error) {
+        console.log('ciao');
+        console.error('Error:', error);
+      }
+    };
+
     if (isGeneratingQR) {
       generateQRCode();
     }
-  }, [isGeneratingQR]);
-
-  const generateQRCode = async () => {
-    try {
-      const response = await fetchAuthorized(`${getBaseUrl()}/2fa/generate`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      });
-
-      if (response.ok) {
-        // Assuming the response is an image
-        const blob = await response.blob();
-        const imageUrl = URL.createObjectURL(blob);
-        setQrCode(imageUrl);
-        setIsGeneratingQR(false);
-        setIsActivating(true);
-      } else {
-        console.error('Failed to generate QR code');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+  }, [isGeneratingQR, launchFlashMessage]);
 
   const handleActivate = () => {
     setIsGeneratingQR(true);
@@ -59,9 +99,9 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
       const response = await fetchAuthorized(`${getBaseUrl()}/2fa/activate`, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${Cookies.get('token')}`,
         },
         body: JSON.stringify({ otp: otpValue }), // Pass the OTP value from state
       });
@@ -77,50 +117,53 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({ userDat
       } else {
         console.error('Failed to activate 2FA.');
         launchFlashMessage(
-          'Failed to activate 2FA.',
+          'Failed to activate 2FA. Try again.',
           FlashMessageLevel.ERROR,
         );
+        setOtpValue('');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
     }
   };
 
   return (
     <>
-      <h3 className="title-3">OTP</h3>
-      {userData.isTwoFactorAuthEnabled || is2FAOn ? (
-        <p style={{ marginLeft: 'auto', marginRight: '0', fontSize: '28px', color: 'yellow'}}>On</p>
-      ) : (
-        isGeneratingQR ? (
-          <p>Generating QR code...</p>
-        ) : isActivating ? (
-          <Modal dismissModalAction={() => {setIsActivating(false)}} >
-            {qrCode ? (
-              <img src={qrCode} alt="QR Code" />
-            ) : null}
-            <input
-              style={{ marginLeft: 'auto', marginRight: 'auto' , marginTop: '20px'}}
-              type="text"
-              placeholder="Enter OTP"
-              value={otpValue} // Bind input value to state
-              onChange={(e) => setOtpValue(e.target.value)} // Update state on input change
-            />
-            <MainButton
-              style={{ marginLeft: 'auto', marginRight: 'auto' , marginTop: '30px'}}
-              onClick={handleActivateWithOTP}
-            >
-              Activate
-            </MainButton>
-          </Modal>
+      <WrapperDiv className={className}>
+        <h3 className="title-3">OTP</h3>
+        {userData.isTwoFactorAuthEnabled || is2FAOn ? (
+          <SVG src={Checkmark} title="activated" className="checkmark-icon" />
         ) : (
-          <MainButton
-            style={{ marginLeft: 'auto', marginRight: '0' }}
-            onClick={handleActivate}
-          >
+          <MainButton onClick={handleActivate} disabled={isTestUser}>
             Activate
           </MainButton>
-        )
+        )}
+      </WrapperDiv>
+      {isActivating && (
+        <OtpModal
+          dismissModalAction={() => {
+            setIsActivating(false);
+          }}
+          className="qr-modal"
+        >
+          {qrCode && (
+            <>
+              <div className="qr-container mb-24">
+                <h1 className="title-1 mb-24">Scan this QR code</h1>
+                <img src={qrCode} alt="QR Code" />
+                <p>
+                  Use your preferred authenticator app and insert your first OTP
+                  below.
+                </p>
+              </div>
+              <OtpSubmitForm
+                otpValue={otpValue}
+                setOtpValue={setOtpValue}
+                handleActivateWithOTP={handleActivateWithOTP}
+              />
+            </>
+          )}
+        </OtpModal>
       )}
     </>
   );
