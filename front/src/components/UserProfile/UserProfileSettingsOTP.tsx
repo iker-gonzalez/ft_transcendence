@@ -52,42 +52,42 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
   const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
+    const generateQRCode = async () => {
+      try {
+        const response = await fetchAuthorized(`${getBaseUrl()}/2fa/generate`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+        });
+
+        if (response.ok) {
+          // Assuming the response is an image
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+          setQrCode(imageUrl);
+          setIsGeneratingQR(false);
+          setIsActivating(true);
+        } else {
+          console.error('Failed to generate QR code.');
+          if (response.status === 422) {
+            setIsTestUser(true);
+            launchFlashMessage(
+              '2FA is not available for test users.',
+              FlashMessageLevel.ERROR,
+            );
+          }
+        }
+      } catch (error) {
+        console.log('ciao');
+        console.error('Error:', error);
+      }
+    };
+
     if (isGeneratingQR) {
       generateQRCode();
     }
-  }, [isGeneratingQR]);
-
-  const generateQRCode = async () => {
-    try {
-      const response = await fetchAuthorized(`${getBaseUrl()}/2fa/generate`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      });
-
-      if (response.ok) {
-        // Assuming the response is an image
-        const blob = await response.blob();
-        const imageUrl = URL.createObjectURL(blob);
-        setQrCode(imageUrl);
-        setIsGeneratingQR(false);
-        setIsActivating(true);
-      } else {
-        console.error('Failed to generate QR code.');
-        if (response.status === 422) {
-          setIsTestUser(true);
-          launchFlashMessage(
-            '2FA is not available for test users.',
-            FlashMessageLevel.ERROR,
-          );
-        }
-      }
-    } catch (error) {
-      console.log('ciao');
-      console.error('Error:', error);
-    }
-  };
+  }, [isGeneratingQR, launchFlashMessage]);
 
   const handleActivate = () => {
     setIsGeneratingQR(true);
