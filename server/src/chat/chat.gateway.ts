@@ -29,15 +29,20 @@ export class ChatGateway implements OnGatewayConnection {
   async handlePrivateMessage(client, payload) {
     console.log("receiverId");
     console.log(payload.receiverId);
+    console.log("senderId");
+    console.log(payload.senderId);
+    console.log(parseInt(payload.senderId, 10));
+    
     console.log("contents"); 
     console.log(payload.content);  
-
+    
     try {
       // Prueba para el get de lo DM
       const idSernder = await this.chatService.findUserIdByIntraId(parseInt(payload.senderId, 10));
+      console.log(idSernder);
       const idReceiver = await this.chatService.findUserIdByIntraId(parseInt(payload.receiverId, 10));
 
-      await this.chatService.addMessageToUser(idSernder, idReceiver, payload.content);
+      const addMessageStatus =  await this.chatService.addMessageToUser(idSernder, idReceiver, payload.content);
     
       // Pruebas de getters
       const allMD2 = await this.chatService.getDMBetweenUsers(idSernder, idReceiver);
