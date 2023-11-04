@@ -101,6 +101,7 @@ const Login: React.FC = (): JSX.Element => {
             setShowModal(true);
           } else {
             setUserData(null);
+            sessionStorage.removeItem('otpValue');
             launchFlashMessage('Failed to sign in.', FlashMessageLevel.ERROR);
             navigate('/');
           }
