@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, Matches } from 'class-validator';
 import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class ActivateOtpDto {
@@ -9,5 +9,6 @@ export class ActivateOtpDto {
   })
   @IsString()
   @IsNotEmpty()
+  @Matches(/^[0-9]{6}$/)
   otp: string;
 }
