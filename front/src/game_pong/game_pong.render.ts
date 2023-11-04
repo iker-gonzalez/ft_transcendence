@@ -324,20 +324,20 @@ export function matchUser1(
 
   // Check if ball pass the goal line & increase user score
   // If a goal is scored, the ball & paddle are reset to initial values
-  // if (ballData.x + ballData.radius < 15 && !ballData.reset) {
-  //   user2.score++;
-  //   sounds.botScore.play().catch(function (error: any) {});
-  //   let { newBallData, newUserData1, newUserData2 } = resetBall(
-  //     canvas,
-  //     ballData,
-  //     user1,
-  //     user2,
-  //     userSpeedInput,
-  //   );
-  //   ballData = newBallData;
-  //   user1 = newUserData1;
-  //   user2 = newUserData2;
-  // }
+  if (ballData.x + ballData.radius < 15 && !ballData.reset) {
+    user2.score++;
+    sounds.botScore.play().catch(function (error: any) {});
+    let { newBallData, newUserData1, newUserData2 } = resetBall(
+      canvas,
+      ballData,
+      user1,
+      user2,
+      userSpeedInput,
+    );
+    ballData = newBallData;
+    user1 = newUserData1;
+    user2 = newUserData2;
+  }
 
   if (ballData.x - ballData.radius > canvas.width - 15 && !ballData.reset) {
     user1.score++;
@@ -416,20 +416,20 @@ export function matchUser2(
 
   // Check if ball pass the goal line & increase user score
   // If a goal is scored, the ball & paddle are reset to initial values
-  if (ballData.x + ballData.radius < 15 && !ballData.reset) {
-    user2.score++;
-    sounds.botScore.play().catch(function (error: any) {});
-    let { newBallData, newUserData1, newUserData2 } = resetBall(
-      canvas,
-      ballData,
-      user1,
-      user2,
-      userSpeedInput,
-    );
-    ballData = newBallData;
-    user1 = newUserData1;
-    user2 = newUserData2;
-  }
+  // if (ballData.x + ballData.radius < 15 && !ballData.reset) {
+  //   user2.score++;
+  //   sounds.botScore.play().catch(function (error: any) {});
+  //   let { newBallData, newUserData1, newUserData2 } = resetBall(
+  //     canvas,
+  //     ballData,
+  //     user1,
+  //     user2,
+  //     userSpeedInput,
+  //   );
+  //   ballData = newBallData;
+  //   user1 = newUserData1;
+  //   user2 = newUserData2;
+  // }
 
   // if (ballData.x + ballData.radius > canvas.width - 15 && !ballData.reset) {
   //   user1.score++;

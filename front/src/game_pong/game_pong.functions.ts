@@ -377,6 +377,7 @@ export function initializeSocketLogic({
           gameDataId: sessionId,
           ball: ballData,
           user1,
+          user2,
         }),
       );
     });
@@ -385,6 +386,10 @@ export function initializeSocketLogic({
       const downloadedData = JSON.parse(data);
       ballData = downloadedData.ball;
       user1 = downloadedData.user1;
+
+      // User1 keep tracks of user2 score
+      const updatedUser2 = downloadedData.user2;
+      user2.score = updatedUser2.score;
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
         if (!matchFinish)

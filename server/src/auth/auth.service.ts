@@ -81,7 +81,7 @@ export class AuthService {
         !this._isTestUser(intraId.toString())
       ) {
         const isOtpCodeValid =
-          this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
+          await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
             otp,
             user,
           );
