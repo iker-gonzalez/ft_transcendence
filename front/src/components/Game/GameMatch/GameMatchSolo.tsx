@@ -33,7 +33,7 @@ export default function GameMatchSolo(): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { userData, fetchUserData, isUserDataFetching } = useUserData();
   const [showMainCta, setShowMainCta] = React.useState<boolean>(true);
-  const [gameStarted, setGameStarted] = React.useState<boolean>(false);
+  const gameStartedRef = useRef<boolean>(false);
   const [gameEnd, setGameEnd] = React.useState<boolean>(false);
   const [showAnimation, setShowAnimation] = React.useState<boolean>(false); // TODO: remove
   const [selectedTheme, setSelectedTheme] = React.useState<GameTheme>(
@@ -49,6 +49,7 @@ export default function GameMatchSolo(): JSX.Element {
   useEffect(() => {
     const socketCopy = socketRef.current;
     const sessionIdCopy = sessionId.current;
+    const gameStartedCopy = gameStartedRef;
 
     if (!userData) {
       const token = Cookies.get('token');
@@ -64,7 +65,7 @@ export default function GameMatchSolo(): JSX.Element {
     }
 
     return () => {
-      if (gameStarted && !gameEnd) {
+      if (gameStartedCopy.current && !gameEnd) {
         socketCopy.emit(
           'abort',
           JSON.stringify({ gameDataId: sessionIdCopy, isSoloMode: true }),
@@ -134,7 +135,7 @@ export default function GameMatchSolo(): JSX.Element {
   const onStartNewGame = (): void => {
     patchUserStatus(UserStatus.PLAYING);
 
-    setGameStarted(true);
+    gameStartedRef.current = true;
     setShowMainCta(false);
 
     gameLoop({
