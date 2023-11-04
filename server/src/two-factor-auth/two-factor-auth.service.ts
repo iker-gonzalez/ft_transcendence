@@ -24,6 +24,7 @@ export class TwoFactorAuthService {
 
   iv = randomBytes(16);
   salt = randomBytes(16).toString('hex');
+  cipherSecret = this.configService.get<string>('CIPHER_SECRET');
 
   _isTestUser(intraId: string): boolean {
     return (
@@ -51,7 +52,7 @@ export class TwoFactorAuthService {
     }
 
     const key = (await promisify(scrypt)(
-      this.configService.get<string>('CIPHER_SECRET'),
+      this.cipherSecret,
       this.salt,
       32, // for aes256, it is 32 bytes.
     )) as Buffer;
