@@ -114,7 +114,11 @@ export class GameDataService {
     } else {
       server.emit(
         `downloaded/user2/${gameDataId}`,
-        JSON.stringify({ user1: gameData.user1, ball: gameData.ball }),
+        JSON.stringify({
+          ball: gameData.ball,
+          user1: gameData.user1,
+          user2: gameData.user2, // user2 relies on this for updated score
+        }),
       );
     }
   }
