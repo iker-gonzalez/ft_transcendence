@@ -58,7 +58,10 @@ export function drawBall(
   sparksTrail.push();
 }
 
-export function drawBallTrail(canvas: HTMLCanvasElement, opacityGrade: number): void {
+export function drawBallTrail(
+  canvas: HTMLCanvasElement,
+  opacityGrade: number,
+): void {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   if (!ctx) return;
 
@@ -98,7 +101,6 @@ export function sparks(
     drawSparksTrail(canvas, opacityGrade);
     drawSparks(canvas, x + dx, y + dy, r, color);
   }
-  //drawSparksTrail(canvas, opacityGrade);
 }
 
 export function drawSparks(
