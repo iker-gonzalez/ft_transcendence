@@ -83,7 +83,10 @@ export function render(
   //Ball
   drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
 
+  //Ball trail
   drawBallTrail(canvas, 0.03);
+
+  //Sparks effect
   drawSparks(canvas, 0, 0, 0, RenderColor.Yellow);
   drawSparksTrail(canvas, 0.3);
 
@@ -419,63 +422,12 @@ export function matchUser2(
     user2.y = canvas.height - thickness - user2.height - ballData.radius * slit;
   }
 
-  // Check if ball pass the goal line & increase user score
-  // If a goal is scored, the ball & paddle are reset to initial values
-  // if (ballData.x + ballData.radius < 15 && !ballData.reset) {
-  //   user2.score++;
-  //   sounds.botScore.play().catch(function (error: any) {});
-  //   let { newBallData, newUserData1, newUserData2 } = resetBall(
-  //     canvas,
-  //     ballData,
-  //     user1,
-  //     user2,
-  //     userSpeedInput,
-  //   );
-  //   ballData = newBallData;
-  //   user1 = newUserData1;
-  //   user2 = newUserData2;
-  // }
-
-  // if (ballData.x + ballData.radius > canvas.width - 15 && !ballData.reset) {
-  //   user1.score++;
-  //   sounds.botScore.play().catch(function (error: any) {});
-  //   console.log('Sound');
-  //   let { newBallData, newUserData1, newUserData2 } = resetBall(
-  //     canvas,
-  //     ballData,
-  //     user1,
-  //     user2,
-  //     userSpeedInput,
-  //   );
-  //   ballData = newBallData;
-  //   user1 = newUserData1;
-  //   user2 = newUserData2;
-  // }
-
   // Detect if the ball is in the court of user1 or user2
   let player: IUserData =
     ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
 
   // Detect if the ball hits the paddle & bounce the ball
   if (checkCollision(ballData, player)) {
-    // sounds.hit.play().catch(function (error: any) {});
-
-    // // Detect the point where the ball hits in the paddle
-    // let collidePoint = ballData.y - (player.y + player.height / 2);
-    // collidePoint = collidePoint / (player.height / 2);
-
-    // let angleRad = (Math.PI / 4) * collidePoint;
-
-    // // Get direction to bounce the ball
-    // let direction = ballData.x + ballData.radius < canvas.width / 2 ? 1 : -1;
-    // ballData.moveX = direction * ballData.speed * Math.cos(angleRad);
-    // ballData.moveY = ballData.speed * Math.sin(angleRad);
-
-    // // Modify values to make it more difficult
-    // ballData.speed += 0.1;
-    // user1.height -= 2;
-    // user2.height -= 2;
-
     // Sparks effect when the ball hits the paddle
     sparks(
       canvas,
