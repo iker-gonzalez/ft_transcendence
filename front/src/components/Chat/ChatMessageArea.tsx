@@ -54,35 +54,28 @@ interface MessageData {
   } 
 
 const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({ selectedUser, selectedGroup, messages}) => {
-  return (
-    <MessageAreaContainer   >
-      {selectedUser !== null && (
-        <div className="conversation">
-          <Title>{selectedUser.name}</Title>
-          <MessageList>
-            {messages[selectedUser.id].map((message, index) => (
-              <div key={index} className="message">
-                {message.text}
-              </div>
-            ))}
-          </MessageList>
-          {/* Add an input field and send button here for sending messages */}
-        </div>
-      )}
+  const selectedMessages = selectedUser 
+    ? messages[selectedUser.id] 
+    : selectedGroup
+      ? messages[selectedGroup.id]
+      : [];
 
-      {selectedGroup !== null && (
-        <div className="conversation">
-          <Title>{selectedGroup.name}</Title>
-          <MessageList>
-            {messages[selectedGroup.id].map((message, index) => (
-              <div key={index} className="message">
-                {message.text}
-              </div>
-            ))}
-          </MessageList>
-          {/* Add an input field and send button here for sending messages */}
-        </div>
-      )}
+  const title = selectedUser?.name || selectedGroup?.name;
+
+  return (
+    <MessageAreaContainer>
+      {title && <Title>{title}</Title>}
+
+      <MessageList>
+        {selectedMessages.map((message, index) => (
+          <div key={index} className="message">
+            {message.text}
+          </div>
+        ))}
+      </MessageList>
+
+      {/* Input and send message */}
+
     </MessageAreaContainer>
   );
 };
