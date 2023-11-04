@@ -5,24 +5,16 @@ import { useUserData } from '../context/UserDataContext';
 import moment from 'moment';
 import Cookies from 'js-cookie';
 import Modal from './UI/Modal';
-import MainButton from './UI/MainButton';
 import FlashMessageLevel from '../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../context/FlashMessagesContext';
-import MainInput from './UI/MainInput';
 import styled from 'styled-components';
 import Lottie from 'lottie-react';
 import OtpAnimationData from '../assets/lotties/otp.json';
-import { INVALID_OTP_ERROR, OTP_LENGTH } from '../constants/shared';
+import { INVALID_OTP_ERROR } from '../constants/shared';
 import LoadingFullscreen from './UI/LoadingFullscreen';
+import OtpSubmitForm from './shared/OtpSubmitForm';
 
 const OtpModal = styled(Modal)`
-  .action-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-  }
-
   .otp-lottie {
     width: 350px;
     height: 100%;
@@ -119,11 +111,6 @@ const Login: React.FC = (): JSX.Element => {
     }
   }, [navigate, location, setUserData, launchFlashMessage]);
 
-  // Function to handle changes in the OTP input
-  const handleOtpInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOtpValue(e.target.value);
-  };
-
   return (
     <>
       {isLoading && !showModal && <LoadingFullscreen />}
@@ -141,16 +128,11 @@ const Login: React.FC = (): JSX.Element => {
             className="otp-lottie"
             loop={false}
           />
-          <div className="action-container">
-            <MainInput
-              type="text"
-              placeholder="Enter OTP"
-              maxLength={OTP_LENGTH}
-              value={otpValue}
-              onChange={handleOtpInputChange} // Handle OTP input changes
-            />
-            <MainButton onClick={handleActivateWithOTP}>Sign In</MainButton>
-          </div>
+          <OtpSubmitForm
+            otpValue={otpValue}
+            setOtpValue={setOtpValue}
+            handleActivateWithOTP={handleActivateWithOTP}
+          />
         </OtpModal>
       )}
     </>
