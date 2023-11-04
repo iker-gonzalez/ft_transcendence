@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import ChatSidebar from '../components/Chat/ChatSidebar';
 import ChatMessageArea from '../components/Chat/ChatMessageArea';
+import Group from '../interfaces/chat-group.interface';
+import User from '../interfaces/chat-user.interface';
 
 // Define an interface for dummyMessages
 interface Message {
@@ -20,30 +22,30 @@ const dummyUsers = [
 ];
 
 const dummyGroups = [
-  { id: 101, name: 'Group 1' },
-  { id: 102, name: 'Group 2' },
+  { id: 101, name: 'NAUTILUS' },
+  { id: 102, name: 'MAGRATHEA' },
   // Add more groups here
 ];
 
 const dummyMessages: MessageData = {
     1: [
       { sender: 'John Doe', text: 'Hello, how are you?' },
-      { sender: 'User', text: "I'm doing great, thanks!" },
+      { sender: 'Sam Smith', text: "I'm doing great, thanks!" },
       // Add more messages for user 1
     ],
     2: [
       { sender: 'Alice Smith', text: 'Hi there!' },
-      { sender: 'User', text: "Hello! What's up?" },
+      { sender: 'David Becham', text: "Hello! What's up?" },
       // Add more messages for user 2
     ],
     101: [
-      { sender: 'Group 1', text: 'Welcome to our group!' },
-      { sender: 'User', text: 'Thank you! Glad to be here.' },
+      { sender: 'Pepe Rabales', text: 'Welcome to our group!' },
+      { sender: 'Paco Turio', text: 'Thank you! Glad to be here.' },
       // Add more messages for group 1
     ],
     102: [
-      { sender: 'Group 2', text: 'Group 2 chat' },
-      { sender: 'User', text: 'Another message in group 2.' },
+      { sender: 'Julio Mandiba', text: 'Hello, nice to meet you all!' },
+      { sender: 'Roberta Del Piero', text: 'Hi, my name is Roberta (:' },
       // Add more messages for group 2
     ],
     // Add more message arrays here
@@ -51,17 +53,17 @@ const dummyMessages: MessageData = {
   
 
 const ChatPage: React.FC = () => {
-  const [selectedUser, setSelectedUser] = useState<number | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null); 
+    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
-  const handleUserClick = (userId: number) => {
-    setSelectedUser(userId);
+  const handleUserClick = (user: User) => {
+    setSelectedUser(user); 
     setSelectedGroup(null);
   };
-
-  const handleGroupClick = (groupId: number) => {
+  
+  const handleGroupClick = (group: Group) => {
     setSelectedUser(null);
-    setSelectedGroup(groupId);
+    setSelectedGroup(group);
   };
 
   return (

@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import Group from '../../interfaces/chat-group.interface';
+import User from '../../interfaces/chat-user.interface';
 
 const MessageAreaContainer = styled.div`
   width: calc(75% - 10px); /* Subtract 10px for margin/padding */
@@ -45,20 +47,20 @@ interface MessageData {
   }
 
 
-interface ChatMessageAreaProps {
-  selectedUser: number | null;
-  selectedGroup: number | null;
-  messages: MessageData;
-}
+  interface ChatMessageAreaProps {
+    selectedUser: User | null;
+    selectedGroup: Group | null;
+    messages: MessageData;
+  } 
 
-const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({ selectedUser, selectedGroup, messages }) => {
+const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({ selectedUser, selectedGroup, messages}) => {
   return (
     <MessageAreaContainer   >
       {selectedUser !== null && (
         <div className="conversation">
-          <Title>Chat with User {selectedUser}</Title>
+          <Title>{selectedUser.name}</Title>
           <MessageList>
-            {messages[selectedUser].map((message, index) => (
+            {messages[selectedUser.id].map((message, index) => (
               <div key={index} className="message">
                 {message.text}
               </div>
@@ -70,9 +72,9 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({ selectedUser, selecte
 
       {selectedGroup !== null && (
         <div className="conversation">
-          <Title>Group Chat {selectedGroup}</Title>
+          <Title>{selectedGroup.name}</Title>
           <MessageList>
-            {messages[selectedGroup].map((message, index) => (
+            {messages[selectedGroup.id].map((message, index) => (
               <div key={index} className="message">
                 {message.text}
               </div>
