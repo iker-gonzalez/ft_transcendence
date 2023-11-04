@@ -33,10 +33,13 @@ export class ChatService {
     return conversationMessages;
   }
 
-    // Sens DM between two user, sorted by time created.
+    // Send DM between two user, sorted by time created.
     async getAllUserDMWith(userId: string):
     Promise<any[]>
   {
+    if (userId == null)
+      throw new BadRequestException('User Id not found in DB');
+
     const usersWithConversations = await this.prisma.directMessage.findMany({
       where: {
         OR: [
@@ -51,13 +54,13 @@ export class ChatService {
       },
     });
     
-    // Combina los valores de senderId y receiverId en una sola lista
+    // Juntar los mensajes de senderId y receiverId en un solo arrau
     const allUsers = [
       ...usersWithConversations.map((message) => message.senderId),
       ...usersWithConversations.map((message) => message.receiverId),
     ];
     
-    // Elimina duplicados y el propio usuario actual
+    // Eliminar los usruarios repetidos y el propio usuario
     const uniqueUsers = Array.from(new Set(allUsers)).filter((user) => user !== userId);
     
     return uniqueUsers;
@@ -68,7 +71,12 @@ export class ChatService {
     intraId: string,
     ): Promise<any[]> 
   {
-    const userWithMessage = await this.prisma.user.findUnique({
+
+    if (intraId == null)
+      throw new BadRequestException('User Id not found in DB');
+
+    const userWithMessage = await this.prisma.user.findUnique(
+    {
       where: { intraId: parseInt(intraId, 10)},
       include: {
        sentMessages: true,
@@ -76,8 +84,9 @@ export class ChatService {
       },
     });
 
-    if (!userWithMessage) {
-      throw new BadRequestException('User with ID ${id} not found');
+    if (!userWithMessage) 
+    {
+      throw new BadRequestException('User with ID ${id} not found in DB');
     }
 
     const sentMessages = userWithMessage.sentMessages || [];
@@ -105,12 +114,15 @@ export class ChatService {
     userSenderId: string,
     userReceiverId: string,
     content: string
-  ): Promise<void> 
+  ): Promise<boolean> 
   {
+    if (!userSenderId || !userReceiverId)
+      throw new BadRequestException('userSender or userReceiver does not exist in DB');
+
  //   const idSender = this.findUserIdByIntraId(parseInt(senderIntraId, 10));
  //   const idReceiver = this.findUserIdByIntraId(parseInt(receiverIntraId, 10));
-    try {
  //    const userSenderId = await idSender;
+    try {
  //    console.log("userSenderId");
  //    console.log(userSenderId);
 
@@ -140,7 +152,9 @@ export class ChatService {
       throw new BadRequestException(e);
     }
 
+    return true;
    };
+
   }
 
 
