@@ -55,6 +55,7 @@ export function drawBall(
   ctx.fill();
 
   ballTrail.push({ canvas: canvas, x: x, y: y, r: r, color: color });
+  sparksTrail.push();
 }
 
 export function drawBallTrail(canvas: HTMLCanvasElement, opacityGrade: number): void {
@@ -94,10 +95,10 @@ export function sparks(
   for (let i = 0; i < numSparks; i++) {
     const dx = (Math.random() - 0.5) * 15 * r * 0.5;
     const dy = (Math.random() - 0.5) * 15 * r * 0.5;
-    //drawSparksTrail(canvas, opacityGrade);
+    drawSparksTrail(canvas, opacityGrade);
     drawSparks(canvas, x + dx, y + dy, r, color);
   }
-  drawSparksTrail(canvas, opacityGrade);
+  //drawSparksTrail(canvas, opacityGrade);
 }
 
 export function drawSparks(
@@ -141,6 +142,10 @@ export function drawSparksTrail(
   });
 
   ctx.globalAlpha = 1;
+}
+
+export function sparksTrailClean(): void {
+  sparksTrail = [];
 }
 
 export function drawDashedLine(canvas: HTMLCanvasElement, net: INetData): void {

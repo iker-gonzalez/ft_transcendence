@@ -12,9 +12,11 @@ import {
   drawDashedLine,
   drawRect,
   drawSparks,
+  drawSparksTrail,
   drawText,
   isSoloMode,
   sparks,
+  sparksTrailClean,
 } from './game_pong.functions';
 import {
   IBallData,
@@ -82,7 +84,8 @@ export function render(
   drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
 
   drawBallTrail(canvas, 0.03);
-  //drawSparks(canvas, 0.3);
+  drawSparks(canvas, 0, 0, 0, RenderColor.Yellow);
+  drawSparksTrail(canvas, 0.3);
 
   drawText(
     canvas,
@@ -520,6 +523,7 @@ export function onGameEnd({
   sounds.music.stop();
 
   ballTrailClean();
+  sparksTrailClean();
 
   // In case of aborted match
   // We don't want to send match data to the API
