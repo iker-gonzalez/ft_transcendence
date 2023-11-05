@@ -4,6 +4,8 @@ import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import MessageInput from './ChatMessageInput';
 import useChatMessageSocket, {UseChatMessageSocket, } from './useChatMessageSocket';
+import { useUserData } from '../../context/UserDataContext';
+
 
 const MessageAreaContainer = styled.div`
   width: calc(75% - 10px); /* Subtract 10px for margin/padding */
@@ -36,6 +38,7 @@ const MessageItem = styled.li`
 
 interface Message {
   sender: string;
+  avatar: string;
   text: string;
 }
 
@@ -90,21 +93,25 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
+  
+  const { userData } = useUserData();
 
   const handleSendMessage = (newMessage: string) => {
     if (newMessage.trim() !== '') {
       // Implement logic to add the message to the chat or send it to the server
       const messageData: Message = {
-        sender: selectedUser ? selectedUser.name : selectedGroup ? selectedGroup.name : '',
+        sender: userData?.username || 'Anonymous',
+        avatar: userData?.avatar || 'Anonymous',
         text: newMessage,
       };
       console.log(messageData);
+      console.log('user Data:', userData?.intraId);
       // Update the message list by adding the new message
       setMessageList((prevMessages) => [...prevMessages, messageData]);
       // Send the message to the server using the socket
       chatMessageSocketRef.current.emit('privateMessage', {
-        receiverId: "9f880f95-df01-47ef-bfcb-7ceba199dcd5", // Replace with dynamically captured receiver's user ID
-        senderId: "c50ccdbe-5461-4496-b9ae-7a308d87e7b6", // Replace with dynamically captured sender's user ID
+        receiverId: "9f880f95-df01-47ef-bfcb-7ceba199dcd5", // Replace with dynamically captured receiver's intra ID
+        senderId: "c50ccdbe-5461-4496-b9ae-7a308d87e7b6", // Replace with dynamically captured sender's intra ID
         content: newMessage,
     });
       // Clear the input field
