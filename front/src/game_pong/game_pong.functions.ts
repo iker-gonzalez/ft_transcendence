@@ -166,6 +166,9 @@ export function drawText(
   const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
   if (!ctx) return;
 
+  //var myFont = new FontFace('myFont', 'url(../../assets/fonts/Dogica.ttf)');
+  //ctx.font = String(myFont);
+
   ctx.fillStyle = color;
   ctx.textAlign = align;
   ctx.font = font;
