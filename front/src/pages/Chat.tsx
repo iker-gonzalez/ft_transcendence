@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatSidebar from '../components/Chat/ChatSidebar';
 import ChatMessageArea from '../components/Chat/ChatMessageArea';
 import Group from '../interfaces/chat-group.interface';
 import User from '../interfaces/chat-user.interface';
 import Message from '../interfaces/chat-message.interface';
+import { fetchAuthorized, getBaseUrl } from '../utils/utils';
+import { useUserData } from '../context/UserDataContext';
+import Cookies from 'js-cookie';
   
 interface MessageData {
     [key: number]: Message[];
@@ -48,9 +51,28 @@ const dummyMessages: MessageData = {
   
 
 const ChatPage: React.FC = () => {
-    const [selectedUser, setSelectedUser] = useState<User | null>(null); 
-    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null); 
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [users, setUsers] = useState<User[]>([]); 
 
+  const { userData } = useUserData();
+  useEffect(() => {
+    // Fetch receiversName and update the state
+    if (userData) {
+      fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+      }).then((data) => {
+        console.log(data);
+        if (Array.isArray(data)) {
+          const receiverUsernames = data.map((item) => item.username);
+          setUsers(receiverUsernames);
+        }
+      });
+    }
+  }, [userData]);
+  
   const handleUserClick = (user: User) => {
     setSelectedUser(user); 
     setSelectedGroup(null);
@@ -64,7 +86,7 @@ const ChatPage: React.FC = () => {
   return (
     <div className="chat-page">
       <ChatSidebar
-        users={dummyUsers}
+        users={users}
         groups={dummyGroups}
         handleUserClick={handleUserClick}
         handleGroupClick={handleGroupClick}
