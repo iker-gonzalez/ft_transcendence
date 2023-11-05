@@ -6,6 +6,10 @@ import {
   user2Init,
   netInit,
   botUserData,
+  userSpeedInput,
+  thickness,
+  slit,
+  stepPaddle,
 } from './game_pong.constants';
 import {
   InitializeCanvasImages,
@@ -31,10 +35,10 @@ import GameTheme from '../interfaces/game-theme.interface';
 import GamePowerUp from '../interfaces/game-power-up.interface';
 
 const fps: number = 30;
-const computedFps: number = (1000 / fps) * 2;
-export const thickness: number = 10;
-export const slit: number = 3;
-const userSpeedInput: number = 10;
+let computedFps: number = (1000 / fps) * 2;
+//export const thickness: number = 10;
+//export const slit: number = 3;
+//const userSpeedInput: number = 20;
 let matchFinish: boolean = false;
 export const matchPoints: number = 5;
 let countDown: number = 5;
@@ -104,6 +108,7 @@ export async function gameLoop({
     thickness,
     ballData,
     slit,
+    stepPaddle,
   });
 
   eventList.forEach(
@@ -305,5 +310,6 @@ function game({
         canvasImages,
       });
     });
-  }, computedFps);
+  }, isSoloMode(usersData) ? (computedFps * 0.3) : (computedFps * 1))
+  
 }

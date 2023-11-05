@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io-client';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
-import { matchPoints, slit, thickness } from './game_pong';
-import { userSpeedInput } from './game_pong.constants';
+import { matchPoints } from './game_pong';
+import { userSpeedInput, slit, thickness } from './game_pong.constants';
 import {
   InitializeCanvasImages,
   ballTrailClean,
@@ -380,7 +380,7 @@ export function matchUser1(
     ballData.moveY = ballData.speed * Math.sin(angleRad);
 
     // Modify values to make it more difficult
-    ballData.speed += 0.1;
+    ballData.speed += 0.5;
     user1.height -= 2;
     user2.height -= 2;
 
