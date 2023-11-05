@@ -64,6 +64,9 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
 
+    // Store the message list in a state variable
+    const [messageList, setMessageList] = useState<Message[]>([]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
@@ -76,6 +79,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         text: newMessage,
       };
       console.log(messageData);
+        // Update the message list by adding the new message
+           setMessageList((prevMessages) => [...prevMessages, messageData]);
       // Add logic to handle new message submission
       // For example, you can update the message list
       // or send the message to the server here.
@@ -95,9 +100,11 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
           </MessageItem>
         ))}
         {/* Render the new message below the last message */}
-        <MessageItem>
-          {`${selectedUser?.name || selectedGroup?.name}: ${message}`}
-        </MessageItem>
+        {messageList.map((messageData, index) => (
+          <MessageItem key={index}>
+            {`${messageData.sender}: ${messageData.text}`}
+          </MessageItem>
+        ))}
       </MessageList>
 
       <MessageInput
