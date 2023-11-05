@@ -12,6 +12,8 @@ import logo42 from '../assets/svg/logo_42.svg';
 import CenteredLayout from '../components/UI/CenteredLayout';
 import { patchUserStatus } from '../utils/utils';
 import UserStatus from '../interfaces/user-status.interface';
+import RoundImg from '../components/UI/RoundImage';
+import { TEST_USERS_DATA } from '../constants/shared';
 
 const PageWrapperDiv = styled.div`
   min-height: 100vh;
@@ -21,16 +23,34 @@ const PageWrapperDiv = styled.div`
     margin-bottom: 30px;
   }
 
-  .links-container {
+  .signin-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
 
+    .links-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
     .signin-link {
       color: ${primaryLightColor};
-      text-decoration: underline;
+      text-decoration: none;
       cursor: pointer;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+
+      > img {
+        width: 75px;
+        object-fit: contain;
+      }
     }
   }
 
@@ -144,28 +164,28 @@ const SignIn: React.FC = (): JSX.Element => {
                   </MainButton>
                 </div>
               ) : (
-                <div className="links-container">
+                <div className="signin-container">
                   <MainButton type="button" onClick={handleSignIn}>
                     Sign In with 42
                   </MainButton>
-                  <Link
-                    to={`login?code=${process.env.REACT_APP_USER_TEST_1_CODE}`}
-                    className="signin-link"
-                  >
-                    Sign in with test user 1
-                  </Link>
-                  <Link
-                    to={`login?code=${process.env.REACT_APP_USER_TEST_2_CODE}`}
-                    className="signin-link"
-                  >
-                    Sign in with test user 2
-                  </Link>
-                  <Link
-                    to={`login?code=${process.env.REACT_APP_USER_TEST_3_CODE}`}
-                    className="signin-link"
-                  >
-                    Sign in with test user 3
-                  </Link>
+                  <div>
+                    <p className="mb-8">
+                      Or sign in with one of our ready-made test users
+                    </p>
+                    <div className="links-container">
+                      {TEST_USERS_DATA.map((testUser, index) => {
+                        return (
+                          <Link
+                            to={`login?code=${testUser.code}`}
+                            className="signin-link"
+                          >
+                            <RoundImg src={testUser.avatar} alt="" />
+                            User {index + 1}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               )}
             </>
