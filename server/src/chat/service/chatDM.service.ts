@@ -1,17 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
-import { GetDirectMessageDto } from './dto/get-direct-message.dto';
-import { AddMessageToUserDto } from './dto/add-message.dto';
-import { UserService } from 'src/user/user.service';
+import { DirectMessage, User } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
+import { GetDirectMessageDto } from './../dto/get-direct-message.dto';
+import { AddMessageToUserDto } from './../dto/add-message.dto';
+import { UserService } from '../../user/user.service';
+import { ConversationMessageDTO } from './../dto/conversation-message.dto';
+import { AllUsersDMWithDTO } from './../dto/all-users-DM-with.dto';
 
 @Injectable()
-export class ChatService {
+export class ChatDMService {
   constructor(private readonly prisma: PrismaService) {}
   
   // Sens DM between two user, sorted by time created.
   async getDMBetweenUsers(userId1: string, userId2: string):
-    Promise<any[]>
+    Promise<ConversationMessageDTO[]>
   {
     const conversationMessages = await this.prisma.directMessage.findMany({
       where: {
@@ -30,12 +32,27 @@ export class ChatService {
         createdAt: 'asc', // Ordenar por fecha de creación de forma ascendente
       },
     });
-    return conversationMessages;
+
+    // Para tener el avatar y el username de los usuarios, creo una DTO y se lo añado
+    const user1 = await this.prisma.user.findUnique({ where: { id: userId1 } });
+    const user2 = await this.prisma.user.findUnique({ where: { id: userId2 } });
+    // Mapea los objetos de mensajes a ConversationMessageDTO
+    const conversationDTO = [];
+    for (const message of conversationMessages )
+    {
+      if (message.senderId == userId1){
+        conversationDTO.push(new ConversationMessageDTO(message, user1, user2));
+      }
+      else
+        conversationDTO.push(new ConversationMessageDTO(message, user2, user1));
+
+    }
+    return conversationDTO;
   }
 
     // Send DM between two user, sorted by time created.
     async getAllUserDMWith(userId: string):
-    Promise<any[]>
+    Promise<AllUsersDMWithDTO[]>
   {
     if (userId == null)
       throw new BadRequestException('User Id not found in DB');
@@ -62,40 +79,27 @@ export class ChatService {
     
     // Eliminar los usruarios repetidos y el propio usuario
     const uniqueUsers = Array.from(new Set(allUsers)).filter((user) => user !== userId);
-    
-    return uniqueUsers;
-  }
 
-
-  async getMessagesByUser(
-    intraId: string,
-    ): Promise<any[]> 
-  {
-
-    if (intraId == null)
-      throw new BadRequestException('User Id not found in DB');
-
-    const userWithMessage = await this.prisma.user.findUnique(
+    // Crear DTO para enviar el is del usuario, el avartar y el nombre
+    const allUserDMWithDTO = [];
+    for (const userId of uniqueUsers )
     {
-      where: { intraId: parseInt(intraId, 10)},
-      include: {
-       sentMessages: true,
-       receivedMessages: true,
-      },
-    });
-
-    if (!userWithMessage) 
-    {
-      throw new BadRequestException('User with ID ${id} not found in DB');
+      const userObj = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          avatar: true,
+          username: true,
+        },
+      });
+      const userDTO = new  AllUsersDMWithDTO();
+      userDTO.id = userId;
+      userDTO.avatar = userObj.avatar;
+      userDTO.username = userObj.username;
+      allUserDMWithDTO.push(userDTO)
     }
 
-    const sentMessages = userWithMessage.sentMessages || [];
-    const receivedMessages = userWithMessage.receivedMessages || [];
-
-    // Join sended and received messages.
-    const allMessages = [...sentMessages, ...receivedMessages];
-
-    return allMessages;
+    
+    return allUserDMWithDTO;
   }
 
   async findUserIdByIntraId(intraId: number): Promise<string>
@@ -119,17 +123,7 @@ export class ChatService {
     if (!userSenderId || !userReceiverId)
       throw new BadRequestException('userSender or userReceiver does not exist in DB');
 
- //   const idSender = this.findUserIdByIntraId(parseInt(senderIntraId, 10));
- //   const idReceiver = this.findUserIdByIntraId(parseInt(receiverIntraId, 10));
- //    const userSenderId = await idSender;
     try {
- //    console.log("userSenderId");
- //    console.log(userSenderId);
-
- //    const userReceiverId = await idReceiver;
- //    console.log("userReceiverId");
- //    console.log(userReceiverId);
- //
       const existingMessage = await this.prisma.directMessage.findUnique({
         where: { id: userSenderId },
       });  
