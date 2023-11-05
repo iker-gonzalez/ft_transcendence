@@ -30,7 +30,7 @@ import { matchUser1, matchUser2, onGameEnd, render } from './game_pong.render';
 import GameTheme from '../interfaces/game-theme.interface';
 import GamePowerUp from '../interfaces/game-power-up.interface';
 
-const fps: number = 60;
+const fps: number = 30;
 const computedFps: number = (1000 / fps) * 2;
 export const thickness: number = 10;
 export const slit: number = 3;
