@@ -14,6 +14,7 @@ import Lottie from 'lottie-react';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import GameMatchQueueSession from './GameMatch/GameMatchQueueSession';
+import QueueAnimationData from '../../assets/lotties/queue.json';
 
 const INACTIVITY_TIMEOUT = 20_000;
 
@@ -46,6 +47,10 @@ const WrapperDiv = styled.div`
 
   .waiting-animation {
     width: 600px;
+  }
+
+  .queue-animation {
+    width: 550px;
   }
 `;
 
@@ -205,11 +210,17 @@ export default function GameQueue(): JSX.Element {
               return (
                 <>
                   <h1 className="title-1 mb-16">Find a peer to challenge</h1>
+                  <Lottie
+                    animationData={QueueAnimationData}
+                    loop={true}
+                    aria-hidden="true"
+                    className="mb-24 queue-animation"
+                  />
                   <MainButton
                     onClick={onJoinQueue}
                     disabled={!isSocketConnected}
                   >
-                    Join game
+                    Join game queue
                   </MainButton>
                 </>
               );
