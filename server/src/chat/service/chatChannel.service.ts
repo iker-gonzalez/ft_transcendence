@@ -10,6 +10,31 @@ export class ChatChannelService {
   constructor(private readonly prisma: PrismaService) {
   }
 
+  async channelExist(
+    channelName: string,
+  ) :  Promise<boolean> 
+  {
+    try
+    { 
+      if (!channelName)
+      throw new BadRequestException('channelName cannot be null');
+
+      const foundChatRoom = await this.prisma.chatRoom.findFirst({
+        where: { name: channelName,
+        },
+      });
+      if (!foundChatRoom)
+        return false;
+      else
+        return true;
+    }
+    catch(e)
+    {
+      throw new BadRequestException(e);
+    }
+  }
+
+  
   async createChannel(
     adminId: string,
     channelName: string,
@@ -53,6 +78,19 @@ export class ChatChannelService {
       });
       if (!foundChatRoom)
         throw new BadRequestException("This chatRoom does not exist");
+
+      // Buscar si ya esta en la Sala
+      const existingChatRoomUser = await this.prisma.chatRoomUser.findFirst({
+        where: {
+          userId: userIdToAdd,
+          roomId: foundChatRoom.id,
+        },
+      });
+
+      //Si ya esta en el ChatRoom no hay que añadirlo
+      if (existingChatRoomUser)
+        return;
+        
         console.log("foundCharRoom");
         console.log(foundChatRoom.users);
         console.log(foundChatRoom.id);
@@ -80,8 +118,8 @@ export class ChatChannelService {
     content: string
    ): Promise<void> 
    {
-    if (!channelRoom || !senderId)
-    throw new BadRequestException ("channelRoom or senderId not exist");
+    if (!channelRoom || !senderId || !content)
+    throw new BadRequestException ("channelRoom or senderId or content are null");
 
   // Get el Channel
     const foundChatRoom = await this.prisma.chatRoom.findFirst({
@@ -105,5 +143,44 @@ export class ChatChannelService {
     });  
     
 }
+/*
+async leaveUserFromChannel(
+  channelRoom: string,
+  userToLeaveId: string,
+ ): Promise<void> 
+ {
+  if (!channelRoom || !userToLeaveId )
+  throw new BadRequestException ("channelRoom or userToLeaveId or content are null");
+
+  // Get el Channel
+  const foundChatRoom = await this.prisma.chatRoom.findFirst({
+    where: { name: channelRoom,
+    },
+    include:{
+      users:true,
+    },
+  });
+
+  if (!foundChatRoom)
+  throw new BadRequestException ("channelRoom not exist");
+
+ // Buscar si ya esta en la Sala
+ const existingChatRoomUser = await this.prisma.chatRoomUser.findFirst({
+  where: {
+    userId: userToLeaveId,
+    roomId: foundChatRoom.id,
+  },
+  });
+   
+  if (existingChatRoomUser)
+  {
+    await this.prisma.chatRoomUser.delete({
+      where: {
+        userId: userToLeaveId,
+        roomId: foundChatRoom.id,
+      },
+    });
+  }
+ }*/
 }
 

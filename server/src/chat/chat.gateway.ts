@@ -33,28 +33,11 @@ export class ChatGateway implements OnGatewayConnection {
     console.log(payload.receiverId);
     try { 
       // Prueba para el get de lo DM
-
       const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
       const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
 
       const addMessageStatus =  await this.chatDMservice.addMessageToUser(senderId, receiverId, payload.content);
-    
-      // Pruebas de getters
-      //const allMD2 = await this.chatDMservice.getDMBetweenUsers(idSernder, idReceiver);
-      //console.log("allMD2", allMD2);
-
-      //const usersDM = await this.chatDMservice.getAllUserDMWith(idSernder);
-      //console.log("userDM", usersDM);
-
-      //Pruebas Post
-    //  await this.chatChannelservice.createChannel(idSernder, "CanalUno", "public");
-    //  await this.chatChannelservice.addUserToChannel
-    //  ("1cc83703-a2ed-4ec2-b021-c5db82bb3d94", "CanalUno");
-    //
-    //  await this.chatChannelservice.addUserToChannel
-    //  ("31f0dd9b-c8fa-4df3-a07c-6bd5e40c5643", "CanalUno");
-
-
+     
     } catch (error) {
       console.error("Error:", error);
     }
@@ -65,44 +48,55 @@ export class ChatGateway implements OnGatewayConnection {
 }
 
 @SubscribeMessage('joinRoom')
-handleJoinRoom(@ConnectedSocket() client: Socket, @MessageBody() roomName: string) {
+async handleJoinRoom(client: Socket, paydload) {
   // Unir al cliente a la sala
-  console.log("lkfjdfs");
-  client.join(roomName);
-}
+  console.log("joiRoom event");
+  console.log(paydload.roomName);
+  console.log(paydload.intraId);
 
-@SubscribeMessage('sendMessageToRoom')
-handleSendMessageToRoom(@ConnectedSocket() client: Socket, @MessageBody() message: string, @MessageBody() roomName: string) {
+  const userId = await this.chatDMservice.findUserIdByIntraId(paydload.intraId);
+  console.log(userId);
+  const channelExist = await this.chatChannelservice.channelExist(paydload.roomName);
+  if (!channelExist)
+  {
+    await this.chatChannelservice.createChannel(userId, paydload.roomName, "public");
+  }
+  await this.chatChannelservice.addUserToChannel(userId, paydload.roomName);
+
+ // Obtener la lista de clientes en la sala
+// const io = this.server;
+// const room = io.of('/').in(roomName) as any; // Afirmación de tipo
+// room.clients((error, clients) => {
+//   if (!error) {
+//     console.log(`Clientes en la sala ${roomName}:`, clients);
+//   }
+// });
+ 
+    client.join(paydload.roomName);
+    client.emit('joinedRoom', `Te has unido a la sala ${paydload.roomName}`);
+}
+ 
+@SubscribeMessage('sendMessageToRoom') 
+async handleSendMessageToRoom( client: Socket, payload) {
+  console.log("sendMessageToRoom event");
+  console.log(payload.roomName);
+  console.log(payload.message);
   // Enviar el mensaje a todos los clientes en la sala
-  this.server.to(roomName).emit('message', message);
-}
+  this.server.to(payload.roomName).emit('message', payload.message);
+  
+  // Actualizar la DB
+  const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+  console.log(userId);
 
-@SubscribeMessage('channelMessage')
-async handleChannelMessage(client, payload) {
-  console.log(payload);
-//
-//console.log("channelRoorm");
-// console.log(payload.channelRoorm);
-// console.log("senderId");
-// console.log(payload.senderId);
-// console.log("contents"); 
-// console.log(payload.content);  
-// 
-// try {
-//   // Prueba para el get de lo chanel
-//  await this.chatChannelservice.addChannelMessageToUser(payload.chatRoom, payload.senderId, payload.content);
-// 
-// } catch (error) {
-//   console.error("Error:", error);
-// }
+  await this.chatChannelservice.addChannelMessageToUser(payload.roomName ,userId, payload.message);
+ }
+ 
+ @SubscribeMessage('leaveRoom') 
+ async handleLeaveRoom(client: Socket, payload) {
 
-  // Emit signal to update the sender?receiver? chat frontend
-//const mess = payload.mes;
-  // Emitir el mensaje a todos los clientes en la sala
-  //client.to(payload.roomName).emit('newMessage', { mess, senderId: client.id });
-}
+  client.leave(payload.roomName);
+  // Actualizar la DB
+ // await this.chatChannelservice.leaveUserFromChannel(payload.roomName ,userId, payload.message);
 
-
-
-
+ }
 }
