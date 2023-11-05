@@ -253,6 +253,7 @@ export type InitializeEventListenersArgs = {
   thickness: number;
   ballData: IBallData;
   slit: number;
+  stepPaddle: number;
 };
 
 export function initializeEventListeners({
@@ -265,21 +266,22 @@ export function initializeEventListeners({
   thickness,
   ballData,
   slit,
+  stepPaddle,
 }: InitializeEventListenersArgs): any[] {
   function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
       if (event.key === ARROW_UP_KEY) {
-        user1.y -= userSpeedInput * 5;
+        user1.y -= userSpeedInput * stepPaddle;
       } else if (event.key === ARROW_DOWN_KEY) {
-        user1.y += userSpeedInput * 5;
+        user1.y += userSpeedInput * stepPaddle;
       }
     }
 
     if (!isPlayer1 && !isSoloMode(usersData)) {
       if (event.key === ARROW_UP_KEY) {
-        user2.y -= userSpeedInput * 5;
+        user2.y -= userSpeedInput * stepPaddle;
       } else if (event.key === ARROW_DOWN_KEY) {
-        user2.y += userSpeedInput * 5;
+        user2.y += userSpeedInput * stepPaddle;
       }
     }
   }
