@@ -116,7 +116,7 @@ const SignIn: React.FC = (): JSX.Element => {
       touchControls: true,
       gyroControls: false,
       scale: 1,
-      scaleMobile: 1.0,
+      scaleMobile: 0.75,
       backgroundColor: darkestBgColor,
       color: primaryAccentColor,
     });
