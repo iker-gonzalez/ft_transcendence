@@ -21,6 +21,7 @@ const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
 
 let ballTrail: any[] = [];
+let sparksTrail: any[] = [];
 export let isBallFrozen: boolean = true;
 
 export function drawRect(
@@ -54,9 +55,13 @@ export function drawBall(
   ctx.fill();
 
   ballTrail.push({ canvas: canvas, x: x, y: y, r: r, color: color });
+  sparksTrail.push();
 }
 
-export function drawBallTrail(canvas: HTMLCanvasElement, opacityGrade: number): void {
+export function drawBallTrail(
+  canvas: HTMLCanvasElement,
+  opacityGrade: number,
+): void {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   if (!ctx) return;
 
@@ -88,15 +93,59 @@ export function sparks(
   r: number,
   color: RenderColor,
   numSparks: number,
-  opacityGrade: number,
 ) {
-
   for (let i = 0; i < numSparks; i++) {
     const dx = (Math.random() - 0.5) * 15 * r * 0.5;
     const dy = (Math.random() - 0.5) * 15 * r * 0.5;
-    drawBallTrail(canvas, opacityGrade);
-    drawBall(canvas, x + dx, y + dy, r, color);
+    drawSparks(canvas, x + dx, y + dy, r, color);
   }
+}
+
+export function drawSparks(
+  canvas: HTMLCanvasElement,
+  x: number,
+  y: number,
+  r: number,
+  color: RenderColor,
+): void {
+  const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
+  if (!ctx) return;
+
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.fill();
+
+  sparksTrail.push({ canvas: canvas, x: x, y: y, r: r, color: color });
+}
+
+export function drawSparksTrail(
+  canvas: HTMLCanvasElement,
+  opacityGrade: number,
+): void {
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  if (!ctx) return;
+
+  const lastSparks = sparksTrail.slice(-100);
+
+  lastSparks.forEach((sparksTrail, index) => {
+    const opacity = (index / lastSparks.length) * opacityGrade;
+    const size = sparksTrail.r * (index / lastSparks.length) * 0.9;
+
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = sparksTrail.color;
+    ctx.beginPath();
+    ctx.arc(sparksTrail.x, sparksTrail.y, size, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fill();
+  });
+
+  ctx.globalAlpha = 1;
+}
+
+export function sparksTrailClean(): void {
+  sparksTrail = [];
 }
 
 export function drawDashedLine(canvas: HTMLCanvasElement, net: INetData): void {
@@ -163,7 +212,7 @@ export function initializeSounds(): ISounds {
   let botScore = new Audio(botScoreSound);
   let music = new Audio(musicBackground);
   music.loop = true;
-  music.volume = 0.5;
+  music.volume = 0.3;
 
   return { hit, wall, userScore, botScore, music };
 }
