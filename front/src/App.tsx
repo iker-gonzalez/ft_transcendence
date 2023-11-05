@@ -13,6 +13,7 @@ import { FlashMessagesProvider } from './context/FlashMessagesContext';
 import FlashMessagesContainer from './pages/FlashMessagesContainer';
 import Leaderboard from './pages/Leaderboard';
 import UserStats from './pages/UserStats';
+import GameSession from './components/Game/GameSession';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
               <Route path="game" element={<Game />}>
                 <Route index element={<GameIndex />} />
                 <Route path="queue" element={<GameQueue />} />
+                <Route path="session" element={<GameSession />} />
                 <Route path="match" element={<GameMatch />} />
               </Route>
               <Route path="stats" element={<UserStats />} />
