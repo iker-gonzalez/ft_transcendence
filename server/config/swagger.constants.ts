@@ -622,6 +622,34 @@ export const swaggerConstants = {
           status: 'ONLINE',
         },
       },
+    }, 
+    allusersDMWithDTO:
+    {
+    data : {
+      description: "User with id, avatar and username",
+      example:{
+        id: "31f0dd9b-c8fa-4df3-a07c-6bd5e40c5643",
+        avatar: "https://i.pravatar.cc/600?img=32",
+        username: "test2-"
+      }
+    }
+    },
+    conversationMessageDTO:
+    {
+    data : {
+      description: "conversation between two users. Who sent and who recevied the message",
+      example:{
+        id: "5ebe29e7-48e5-453e-b5d7-3958fa2bde16",
+        senderId: "623274f5-5fa1-4ad8-b7a1-c1edcb239af2",
+        receiverId: "1cc83703-a2ed-4ec2-b021-c5db82bb3d94",
+        content: "Soy el otro usuario 333",
+        createdAt: "2023-11-05T10:38:33.782Z",
+        senderName: "test3-",
+        receiverName: "test-",
+        senderAvatar: "https://i.pravatar.cc/600?img=35",
+        receiverAvatar: "https://i.pravatar.cc/600?img=8"
+      }
+    }
     },
   },
 };
