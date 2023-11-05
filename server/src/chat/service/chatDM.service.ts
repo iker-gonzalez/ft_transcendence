@@ -130,7 +130,7 @@ export class ChatDMService {
       
       if (!existingMessage || existingMessage) {
 
-        console.log("exisingMessage");
+        console.log("exisingMessage"); 
         // El registro no se encontró, así que créalo
         const newMessage = await this.prisma.directMessage.create({
           data: {
