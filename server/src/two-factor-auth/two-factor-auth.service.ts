@@ -22,9 +22,8 @@ export class TwoFactorAuthService {
     private readonly configService: ConfigService,
   ) {}
 
+  key: Buffer;
   iv = randomBytes(16);
-  salt = randomBytes(16).toString('hex');
-  cipherSecret = this.configService.get<string>('CIPHER_SECRET');
 
   _isTestUser(intraId: string): boolean {
     return (
@@ -51,24 +50,26 @@ export class TwoFactorAuthService {
       );
     }
 
-    const key = (await promisify(scrypt)(
-      this.cipherSecret,
-      this.salt,
-      32, // for aes256, it is 32 bytes.
+    // The key length is dependent on the algorithm.
+    // In this case for aes256, it is 32 bytes.
+    this.key = (await promisify(scrypt)(
+      this.configService.get<string>('CIPHER_SECRET'),
+      'salt',
+      32,
     )) as Buffer;
-    const cipher = createCipheriv('aes-256-ctr', key, this.iv);
+    const cipher = createCipheriv('aes-256-ctr', this.key, this.iv);
 
-    const encryptedSecret = Buffer.concat([
+    const encryptedText = Buffer.concat([
       cipher.update(secret),
       cipher.final(),
-    ]).toString('hex');
+    ]);
 
     await this.prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
-        twoFactorAuthSecret: encryptedSecret,
+        twoFactorAuthSecret: encryptedText.toString('hex'),
       },
     });
 
@@ -89,23 +90,15 @@ export class TwoFactorAuthService {
     twoFactorAuthenticationCode: string,
     user: User,
   ): Promise<boolean> {
-    // The key length is dependent on the algorithm.
-    // In this case for aes256, it is 32 bytes.
-    const key = (await promisify(scrypt)(
-      this.configService.get<string>('CIPHER_SECRET'),
-      this.salt,
-      32,
-    )) as Buffer;
-
-    const decipher = createDecipheriv('aes-256-ctr', key, this.iv);
-    const decryptedSecret = Buffer.concat([
+    const decipher = createDecipheriv('aes-256-ctr', this.key, this.iv);
+    const decryptedText = Buffer.concat([
       decipher.update(Buffer.from(user.twoFactorAuthSecret, 'hex')),
       decipher.final(),
-    ]).toString('hex');
+    ]);
 
     return authenticator.verify({
       token: twoFactorAuthenticationCode,
-      secret: decryptedSecret,
+      secret: decryptedText.toString(),
     });
   }
 
