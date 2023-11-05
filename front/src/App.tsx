@@ -1,7 +1,7 @@
 import React from 'react';
 import SignIn from './pages/Home';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navigation from './components/Navigation';
+import Navigation from './components/UI/Navigation';
 import UserProfile from './pages/UserProfile';
 import Game from './pages/Game';
 import GameMatch from './components/Game/GameMatch/GameMatch';
