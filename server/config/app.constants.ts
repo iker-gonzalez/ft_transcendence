@@ -1,7 +1,7 @@
 import { IntraUserDataDto } from 'src/auth/dto/intra-user-data.dto';
 
 export const testUserData: IntraUserDataDto = {
-  avatar: 'https://i.pravatar.cc/600?img=8',
+  avatar: process.env.FAKE_USER_1_AVATAR,
   email: 'test@42urduliz.com',
   intraId: 666,
   isTwoFactorAuthEnabled: false,
@@ -9,7 +9,7 @@ export const testUserData: IntraUserDataDto = {
 };
 
 export const testUser2Data: IntraUserDataDto = {
-  avatar: 'https://i.pravatar.cc/600?img=32',
+  avatar: process.env.FAKE_USER_2_AVATAR,
   email: 'test2@42urduliz.com',
   intraId: 667,
   isTwoFactorAuthEnabled: false,
@@ -17,7 +17,7 @@ export const testUser2Data: IntraUserDataDto = {
 };
 
 export const testUser3Data: IntraUserDataDto = {
-  avatar: 'https://i.pravatar.cc/600?img=35',
+  avatar: process.env.FAKE_USER_3_AVATAR,
   email: 'test3@42urduliz.com',
   intraId: 668,
   isTwoFactorAuthEnabled: false,
