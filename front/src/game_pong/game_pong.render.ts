@@ -95,7 +95,7 @@ export function render(
     usersData.user1.username,
     (canvas.width / 10) * 4,
     canvas.height / 10,
-    '20px Arial',
+    '20px Courier',
     'right',
     RenderColor.Yellow,
   );
