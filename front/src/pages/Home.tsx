@@ -214,6 +214,7 @@ const SignIn: React.FC = (): JSX.Element => {
                             <Link
                               to={`login?code=${testUser.code}`}
                               className="signin-link"
+                              key={testUser.code}
                             >
                               <RoundImg src={testUser.avatar} alt="" />
                               User {index + 1}
