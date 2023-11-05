@@ -2,7 +2,11 @@ import React, { useEffect } from 'react';
 import MainButton from '../components/UI/MainButton';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
-import { primaryLightColor } from '../constants/color-tokens';
+import {
+  darkestBgColor,
+  primaryAccentColor,
+  primaryLightColor,
+} from '../constants/color-tokens';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
@@ -12,25 +16,63 @@ import logo42 from '../assets/svg/logo_42.svg';
 import CenteredLayout from '../components/UI/CenteredLayout';
 import { patchUserStatus } from '../utils/utils';
 import UserStatus from '../interfaces/user-status.interface';
+import RoundImg from '../components/UI/RoundImage';
+import { TEST_USERS_DATA } from '../constants/shared';
+import NET from 'vanta/src/vanta.net';
+
+const VantaBg = styled.div`
+  opacity: 0.2;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+
+  min-height: 100vh;
+  height: 100%;
+  min-width: 100vw;
+  width: 100%;
+`;
 
 const PageWrapperDiv = styled.div`
   min-height: 100vh;
+
+  position: relative;
 
   .logo {
     width: 100px;
     margin-bottom: 30px;
   }
 
-  .links-container {
+  .signin-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
 
+    .links-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
     .signin-link {
       color: ${primaryLightColor};
-      text-decoration: underline;
+      text-decoration: none;
       cursor: pointer;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+
+      > img {
+        width: 75px;
+        object-fit: contain;
+      }
     }
   }
 
@@ -66,6 +108,18 @@ const SignIn: React.FC = (): JSX.Element => {
         fetchUserData(token);
       }
     }
+
+    // Vanta interactive background
+    NET({
+      el: '#vanta',
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      scale: 1,
+      scaleMobile: 1.0,
+      backgroundColor: darkestBgColor,
+      color: primaryAccentColor,
+    });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSignIn = () => {
@@ -74,105 +128,108 @@ const SignIn: React.FC = (): JSX.Element => {
   };
 
   return (
-    <PageWrapperDiv>
-      <CenteredLayout>
-        {(() => {
-          if (isUserDataFetching) return <LoadingFullscreen />;
+    <>
+      <PageWrapperDiv>
+        <VantaBg id="vanta" />
+        <CenteredLayout>
+          {(() => {
+            if (isUserDataFetching) return <LoadingFullscreen />;
 
-          return (
-            <>
-              <img src={logo42} alt="" className="logo" />
+            return (
+              <>
+                <img src={logo42} alt="" className="logo" />
 
-              <div className="mb-24 text-container">
-                <h1 className="title-1 mb-24">
-                  Welcome to our ft_transcendence project
-                </h1>
-                <img src={teamImage} alt="" className="team-image" />
-                <p className="mb-8">
-                  We are{' '}
-                  <a
-                    href="https://profile.intra.42.fr/users/dgerwig-"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="body-link"
-                  >
-                    dgerwig-
-                  </a>
-                  ,{' '}
-                  <a
-                    href="https://profile.intra.42.fr/users/ikgonzal"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="body-link"
-                  >
-                    ikgonzal
-                  </a>
-                  ,{' '}
-                  <a
-                    href="https://profile.intra.42.fr/users/ngasco"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="body-link"
-                  >
-                    ngasco
-                  </a>
-                  , and{' '}
-                  <a
-                    href="https://profile.intra.42.fr/users/zcanales"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="body-link"
-                  >
-                    zcanales
-                  </a>
-                  ,<br />
-                  students of the 42Urduliz campus in Bilbao, Spain
-                </p>
-                <p className="mb-8">Go ahead and explore our project 🤠</p>
-              </div>
-              {userData ? (
-                <div>
-                  <MainButton
-                    onClick={() => {
-                      patchUserStatus(UserStatus.OFFLINE);
-                      Cookies.remove('token');
-                      setUserData(null);
-                      sessionStorage.clear();
-                    }}
-                  >
-                    Log out
-                  </MainButton>
+                <div className="mb-24 text-container">
+                  <h1 className="title-1 mb-24">
+                    Welcome to our ft_transcendence project
+                  </h1>
+                  <img src={teamImage} alt="" className="team-image" />
+                  <p className="mb-8">
+                    We are{' '}
+                    <a
+                      href="https://profile.intra.42.fr/users/dgerwig-"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="body-link"
+                    >
+                      dgerwig-
+                    </a>
+                    ,{' '}
+                    <a
+                      href="https://profile.intra.42.fr/users/ikgonzal"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="body-link"
+                    >
+                      ikgonzal
+                    </a>
+                    ,{' '}
+                    <a
+                      href="https://profile.intra.42.fr/users/ngasco"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="body-link"
+                    >
+                      ngasco
+                    </a>
+                    , and{' '}
+                    <a
+                      href="https://profile.intra.42.fr/users/zcanales"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="body-link"
+                    >
+                      zcanales
+                    </a>
+                    ,<br />
+                    students of the 42Urduliz campus in Bilbao, Spain
+                  </p>
+                  <p className="mb-8">Go ahead and explore our project 🤠</p>
                 </div>
-              ) : (
-                <div className="links-container">
-                  <MainButton type="button" onClick={handleSignIn}>
-                    Sign In with 42
-                  </MainButton>
-                  <Link
-                    to={`login?code=${process.env.REACT_APP_USER_TEST_1_CODE}`}
-                    className="signin-link"
-                  >
-                    Sign in with test user 1
-                  </Link>
-                  <Link
-                    to={`login?code=${process.env.REACT_APP_USER_TEST_2_CODE}`}
-                    className="signin-link"
-                  >
-                    Sign in with test user 2
-                  </Link>
-                  <Link
-                    to={`login?code=${process.env.REACT_APP_USER_TEST_3_CODE}`}
-                    className="signin-link"
-                  >
-                    Sign in with test user 3
-                  </Link>
-                </div>
-              )}
-            </>
-          );
-        })()}
-      </CenteredLayout>
-    </PageWrapperDiv>
+                {userData ? (
+                  <div>
+                    <MainButton
+                      onClick={() => {
+                        patchUserStatus(UserStatus.OFFLINE);
+                        Cookies.remove('token');
+                        setUserData(null);
+                        sessionStorage.clear();
+                      }}
+                    >
+                      Log out
+                    </MainButton>
+                  </div>
+                ) : (
+                  <div className="signin-container">
+                    <MainButton type="button" onClick={handleSignIn}>
+                      Sign In with 42
+                    </MainButton>
+                    <div>
+                      <p className="mb-8">
+                        Or sign in with one of our ready-made test users
+                      </p>
+                      <div className="links-container">
+                        {TEST_USERS_DATA.map((testUser, index) => {
+                          return (
+                            <Link
+                              to={`login?code=${testUser.code}`}
+                              className="signin-link"
+                            >
+                              <RoundImg src={testUser.avatar} alt="" />
+                              User {index + 1}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </CenteredLayout>
+      </PageWrapperDiv>
+    </>
   );
 };
 

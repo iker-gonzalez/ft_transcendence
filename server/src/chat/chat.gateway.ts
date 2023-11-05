@@ -31,9 +31,13 @@ export class ChatGateway implements OnGatewayConnection {
   async handlePrivateMessage(client, payload) {
     console.log("receiverId");
     console.log(payload.receiverId);
-    try {
+    try { 
       // Prueba para el get de lo DM
-      const addMessageStatus =  await this.chatDMservice.addMessageToUser(payload.senderId, payload.receiverId, payload.content);
+
+      const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
+      const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
+
+      const addMessageStatus =  await this.chatDMservice.addMessageToUser(senderId, receiverId, payload.content);
     
       // Pruebas de getters
       //const allMD2 = await this.chatDMservice.getDMBetweenUsers(idSernder, idReceiver);
@@ -67,6 +71,11 @@ handleJoinRoom(@ConnectedSocket() client: Socket, @MessageBody() roomName: strin
   client.join(roomName);
 }
 
+@SubscribeMessage('sendMessageToRoom')
+handleSendMessageToRoom(@ConnectedSocket() client: Socket, @MessageBody() message: string, @MessageBody() roomName: string) {
+  // Enviar el mensaje a todos los clientes en la sala
+  this.server.to(roomName).emit('message', message);
+}
 
 @SubscribeMessage('channelMessage')
 async handleChannelMessage(client, payload) {
