@@ -105,7 +105,7 @@ export function render(
     String(user1.score),
     (canvas.width / 10) * 4,
     canvas.height / 6,
-    '40px Arial',
+    '40px Courier',
     'right',
     RenderColor.Red,
   );
@@ -116,7 +116,7 @@ export function render(
       'BOT',
       (canvas.width / 10) * 6,
       canvas.height / 10,
-      '20px Arial',
+      '20px Courier',
       'left',
       RenderColor.Yellow,
     );
@@ -126,7 +126,7 @@ export function render(
       usersData.user2!.username,
       (canvas.width / 10) * 6,
       canvas.height / 10,
-      '20px Arial',
+      '20px Courier',
       'left',
       RenderColor.Yellow,
     );
@@ -137,7 +137,7 @@ export function render(
     String(user2.score),
     (canvas.width / 10) * 6,
     canvas.height / 6,
-    '40px Arial',
+    '40px Courier',
     'left',
     RenderColor.Red,
   );
@@ -148,7 +148,7 @@ export function render(
       '🏆',
       (canvas.width / 10) * 4,
       canvas.height / 4.5,
-      '30px Arial',
+      '30px Courier',
       'right',
       RenderColor.Green,
     );
@@ -160,7 +160,7 @@ export function render(
       'GAME OVER',
       450,
       300,
-      '60px Verdana',
+      '60px Courier',
       'center',
       RenderColor.Red,
     );
@@ -172,7 +172,7 @@ export function render(
       usersData.user1.username + ' wins',
       450,
       410,
-      '40px Verdana',
+      '40px Courier',
       'center',
       RenderColor.Green,
     );
@@ -184,7 +184,7 @@ export function render(
       '🏆',
       (canvas.width / 10) * 6,
       canvas.height / 4.5,
-      '30px Arial',
+      '30px Courier',
       'left',
       RenderColor.Green,
     );
@@ -197,7 +197,7 @@ export function render(
         'GAME OVER',
         450,
         300,
-        '60px Verdana',
+        '60px Courier',
         'center',
         RenderColor.Red,
       );
@@ -210,7 +210,7 @@ export function render(
           usersData.user1.username + ' wins',
           450,
           410,
-          '40px Verdana',
+          '40px Courier',
           'center',
           RenderColor.Green,
         );
@@ -221,7 +221,7 @@ export function render(
             'BOT wins',
             450,
             410,
-            '40px Verdana',
+            '40px Courier',
             'center',
             RenderColor.Green,
           );
@@ -231,7 +231,7 @@ export function render(
             usersData.user2!.username + ' wins',
             450,
             410,
-            '40px Verdana',
+            '40px Courier',
             'center',
             RenderColor.Green,
           );
