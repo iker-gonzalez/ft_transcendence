@@ -81,14 +81,21 @@ async handleSendMessageToRoom( client: Socket, payload) {
   console.log("sendMessageToRoom event");
   console.log(payload.roomName);
   console.log(payload.message);
-  // Enviar el mensaje a todos los clientes en la sala
-  this.server.to(payload.roomName).emit('message', payload.message);
-  
-  // Actualizar la DB
-  const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
-  console.log(userId);
 
-  await this.chatChannelservice.addChannelMessageToUser(payload.roomName ,userId, payload.message);
+  try{
+
+    // Actualizar la DB
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    console.log(userId);
+    await this.chatChannelservice.addChannelMessageToUser(payload.roomName ,userId, payload.message);
+    
+    // Enviar el mensaje a todos los clientes en la sala
+    this.server.to(payload.roomName).emit('message', payload.message);
+
+  }
+  catch(error){
+    console.error("Error:", error);
+  }
  }
  
  @SubscribeMessage('leaveRoom') 
@@ -96,7 +103,8 @@ async handleSendMessageToRoom( client: Socket, payload) {
 
   client.leave(payload.roomName);
   // Actualizar la DB
- // await this.chatChannelservice.leaveUserFromChannel(payload.roomName ,userId, payload.message);
+  const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+  await this.chatChannelservice.leaveUserFromChannel(payload.roomName, userId);
 
  }
 }
