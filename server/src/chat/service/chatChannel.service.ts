@@ -133,6 +133,17 @@ export class ChatChannelService {
     if (!foundChatRoom)
       throw new BadRequestException ("channelRoom not exist");
 
+    // Buscar si ya esta en la Sala
+    const existingChatRoomUser = await this.prisma.chatRoomUser.findFirst({
+    where: {
+      userId: senderId,
+      roomId: foundChatRoom.id,
+    },
+    });
+
+    if (!existingChatRoomUser)
+      throw new BadRequestException ("user is not in the channel");
+
     const existingMessage = await this.prisma.chatMessage.create({
       data: 
       { 
@@ -143,7 +154,7 @@ export class ChatChannelService {
     });  
     
 }
-/*
+
 async leaveUserFromChannel(
   channelRoom: string,
   userToLeaveId: string,
@@ -176,11 +187,10 @@ async leaveUserFromChannel(
   {
     await this.prisma.chatRoomUser.delete({
       where: {
-        userId: userToLeaveId,
-        roomId: foundChatRoom.id,
+        id: existingChatRoomUser.id,
       },
     });
   }
- }*/
+ }
 }
 
