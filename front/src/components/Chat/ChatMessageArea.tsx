@@ -105,7 +105,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       setMessageList((prevMessages) => [...prevMessages, messageData]);
       // Send the message to the server using the socket
       chatMessageSocketRef.current.emit('privateMessage', {
-        receiverId: 667, // Replace with dynamically captured receiver's intra ID
+        receiverId: 668, // Replace with dynamically captured receiver's intra ID
         senderId: userData?.intraId, // Replace with dynamically captured sender's intra ID
         content: newMessage,
     });
