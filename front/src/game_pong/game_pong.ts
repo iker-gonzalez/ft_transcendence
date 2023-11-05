@@ -36,9 +36,6 @@ import GamePowerUp from '../interfaces/game-power-up.interface';
 
 const fps: number = 30;
 let computedFps: number = (1000 / fps) * 2;
-//export const thickness: number = 10;
-//export const slit: number = 3;
-//const userSpeedInput: number = 20;
 let matchFinish: boolean = false;
 export const matchPoints: number = 5;
 let countDown: number = 5;
