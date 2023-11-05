@@ -3,15 +3,9 @@ import ChatSidebar from '../components/Chat/ChatSidebar';
 import ChatMessageArea from '../components/Chat/ChatMessageArea';
 import Group from '../interfaces/chat-group.interface';
 import User from '../interfaces/chat-user.interface';
-
-// Define an interface for dummyMessages
-interface Message {
-    sender: string;
-    avatar: string;
-    text: string;
-  }
+import Message from '../interfaces/chat-message.interface';
   
-  interface MessageData {
+interface MessageData {
     [key: number]: Message[];
   }
 

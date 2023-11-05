@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
+import Message from '../../interfaces/chat-message.interface';
 import MessageInput from './ChatMessageInput';
 import useChatMessageSocket, {UseChatMessageSocket, } from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
@@ -35,12 +36,6 @@ const MessageList = styled.ul`
 const MessageItem = styled.li`
   margin: 10px 0;
 `;
-
-interface Message {
-  sender: string;
-  avatar: string;
-  text: string;
-}
 
 interface MessageData {
   [key: number]: Message[];
