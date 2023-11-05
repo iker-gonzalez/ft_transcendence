@@ -18,7 +18,7 @@ const WrapperDiv = styled.div`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 99;
+  z-index: 999;
 
   width: 100vw;
   height: 100vh;
@@ -36,9 +36,10 @@ const WrapperDiv = styled.div`
     position: relative;
     top: -10vh;
 
-    width: fit-content;
-    max-width: 75vw;
     min-width: 450px;
+    width: fit-content;
+    max-width: min(75vw, 550px);
+
     min-height: 250px;
 
     background-color: ${darkerBgColor};

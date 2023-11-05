@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {
   primaryLightColor,
   primaryAccentColor,
+  darkestBgColor,
 } from '../constants/color-tokens';
 import { Link } from 'react-router-dom';
 import { useUserData } from '../context/UserDataContext';
@@ -18,8 +19,10 @@ const NavbarContainer = styled.nav`
   top: 0;
   left: 0;
   width: 100vw;
+  z-index: 100;
 
   padding: 25px 30px;
+  background: ${darkestBgColor};
   box-shadow: rgba(0, 173, 181, 0.45) 0px 25px 20px -20px;
 
   .nav-list {
