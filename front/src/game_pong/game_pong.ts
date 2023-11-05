@@ -310,6 +310,6 @@ function game({
         canvasImages,
       });
     });
-  }, isSoloMode(usersData) ? (computedFps * 0.3) : (computedFps * 1))
+  }, isSoloMode(usersData) ? (computedFps * 0.6) : (computedFps * 1.1))
   
 }
