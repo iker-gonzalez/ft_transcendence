@@ -35,7 +35,11 @@ model User {
 
   sentMessages     DirectMessage[] @relation("sentMessages")
   receivedMessages DirectMessage[] @relation("receivedMessages")
-  connectStatus    Boolean         @default(false)
+  // Relación con las salas de chat
+  chatRooms        ChatRoomUser[]
+
+  connectStatus Boolean       @default(false)
+  ChatMessage   ChatMessage[]
 }
 
 model DirectMessage {
@@ -50,6 +54,36 @@ model DirectMessage {
 
   // Relación con el usuario destinatario
   receiver User? @relation("receivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+}
+
+model ChatRoom {
+  id       String         @id @unique @default(uuid())
+  name     String
+  // Relación con los mensajes en la sala
+  messages ChatMessage[]
+  // Relación con los usuarios en la sala
+  users    ChatRoomUser[]
+}
+
+model ChatRoomUser {
+  id     String   @id @default(uuid())
+  userId String
+  roomId String
+  user   User     @relation(fields: [userId], references: [id])
+  room   ChatRoom @relation(fields: [roomId], references: [id])
+  // Agregar cualquier otro dato relacionado con la sala de chat y los usuarios
+}
+
+model ChatMessage {
+  id        String   @id @unique @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  // Relación con la sala de chat
+  chatRoom  ChatRoom @relation(fields: [roomId], references: [id])
+  roomId    String
+  // Relación con el usuario que envió el mensaje
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  String
 }
 
 model UserGameSession {
