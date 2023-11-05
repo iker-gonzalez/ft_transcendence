@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import MessageInput from './ChatMessageInput';
+import useChatMessageSocket, {UseChatMessageSocket, } from './useChatMessageSocket';
 
 const MessageAreaContainer = styled.div`
   width: calc(75% - 10px); /* Subtract 10px for margin/padding */
@@ -64,6 +65,25 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
 
+    // Get the socket and related objects from the utility function
+    const {
+      chatMessageSocketRef,
+      isSocketConnected,
+      isConnectionError,
+    }: UseChatMessageSocket = useChatMessageSocket();
+  
+    // Add a listener for incoming messages
+    useEffect(() => {
+      if (isSocketConnected) {
+        chatMessageSocketRef.current.on('newMessage', (messageData: Message) => {
+          // Handle the incoming message, e.g., add it to your message list
+          console.log('Received a new message:', messageData);
+  
+          // You can update your message state or perform other actions here
+        });
+      }
+    }, [isSocketConnected, chatMessageSocketRef]);
+
     // Store the message list in a state variable
     const [messageList, setMessageList] = useState<Message[]>([]);
 
@@ -79,12 +99,14 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         text: newMessage,
       };
       console.log(messageData);
-        // Update the message list by adding the new message
-           setMessageList((prevMessages) => [...prevMessages, messageData]);
-      // Add logic to handle new message submission
-      // For example, you can update the message list
-      // or send the message to the server here.
-
+      // Update the message list by adding the new message
+      setMessageList((prevMessages) => [...prevMessages, messageData]);
+      // Send the message to the server using the socket
+      chatMessageSocketRef.current.emit('privateMessage', {
+        receiverId: "receiverUserId", // Replace with the actual receiver's user ID
+        senderId: selectedUser?.id, // Replace with the actual sender's user ID
+        content: newMessage,
+    });
       // Clear the input field
       setMessage('');
     }
