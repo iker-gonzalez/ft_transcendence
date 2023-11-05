@@ -33,7 +33,6 @@ const MessageItem = styled.li`
   margin: 10px 0;
 `;
 
-// Define an interface for dummyMessages
 interface Message {
   sender: string;
   text: string;
@@ -69,15 +68,18 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     setMessage(e.target.value);
   };
 
-  const handleSendMessage = () => {
-    if (message.trim() !== '') {
+  const handleSendMessage = (newMessage: string) => {
+    if (newMessage.trim() !== '') {
       // Implement logic to add the message to the chat or send it to the server
-      const newMessage: Message = {
+      const messageData: Message = {
         sender: selectedUser ? selectedUser.name : selectedGroup ? selectedGroup.name : '',
-        text: message,
+        text: newMessage,
       };
+      console.log(messageData);
       // Add logic to handle new message submission
-      
+      // For example, you can update the message list
+      // or send the message to the server here.
+
       // Clear the input field
       setMessage('');
     }
