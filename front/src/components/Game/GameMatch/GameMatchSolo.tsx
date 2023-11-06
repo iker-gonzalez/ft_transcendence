@@ -39,8 +39,9 @@ export default function GameMatchSolo(): JSX.Element {
   const [selectedTheme, setSelectedTheme] = React.useState<GameTheme>(
     gameThemes[0],
   );
-  const [selectedPowerUps, setSelectedPowerUps] =
-    React.useState<GamePowerUp[]>(gamePowerUps);
+  const [selectedPowerUps, setSelectedPowerUps] = React.useState<GamePowerUp[]>(
+    gamePowerUps.map((powerUp) => Object.assign({}, powerUp)),
+  );
   const sessionId = useRef<string>(uuidv4());
   const { socketRef, isConnectionError } = useGameDataSocket(sessionId.current);
   const navigate = useNavigate();

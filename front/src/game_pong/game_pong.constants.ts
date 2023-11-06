@@ -117,7 +117,7 @@ export const gamePowerUps: GamePowerUp[] = [
   },
   {
     id: 'paddle',
-    description: 'Paddle shrinks',
+    description: 'Paddles shrink',
     value: false,
   },
 ];
