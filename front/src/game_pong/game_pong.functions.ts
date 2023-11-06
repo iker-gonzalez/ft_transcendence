@@ -441,9 +441,10 @@ export function initializeSocketLogic({
       ballData = downloadedData.ball;
       user1 = downloadedData.user1;
 
-      // User1 keep tracks of user2 score
+      // User1 keep tracks of user2 score & paddle height
       const updatedUser2 = downloadedData.user2;
       user2.score = updatedUser2.score;
+      user2.height = updatedUser2.height;
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
         if (!matchFinish)

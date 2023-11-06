@@ -381,8 +381,8 @@ export function matchUser1(
 
     // Modify values to make it more difficult
     ballData.speed += 0.5;
-    user1.height -= 2;
-    user2.height -= 2;
+    user1.height -= 10;
+    user2.height -= 10;
 
     sounds.hit.play().catch(function (error: any) {});
 
