@@ -36,6 +36,8 @@ import GamePowerUp from '../interfaces/game-power-up.interface';
 
 const fps: number = 30;
 let computedFps: number = (1000 / fps) * 2;
+let computedFpsSoloMode: number = computedFps * 0.5;
+let computedFpsMultiMode: number = computedFps * 1;
 let matchFinish: boolean = false;
 export const matchPoints: number = 5;
 let countDown: number = 5;
@@ -307,6 +309,6 @@ function game({
         canvasImages,
       });
     });
-  }, isSoloMode(usersData) ? (computedFps * 0.6) : (computedFps * 1.1))
+  }, isSoloMode(usersData) ? (computedFpsSoloMode) : (computedFpsMultiMode))
   
 }
