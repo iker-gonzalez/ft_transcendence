@@ -1,4 +1,22 @@
-import { IsBoolean, IsString, IsUUID } from 'class-validator';
+import {
+  IsBoolean,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
+
+class GamePowerUp {
+  @IsUUID()
+  @IsString()
+  id: string;
+
+  @IsString()
+  description: string;
+
+  @IsBoolean()
+  value: boolean;
+}
 
 export class GameDataSetDto {
   @IsString()
@@ -13,4 +31,8 @@ export class GameDataSetDto {
 
   @IsBoolean()
   user2Ready: boolean;
+
+  @IsObject()
+  @IsOptional()
+  powerUps?: GamePowerUp | null;
 }
