@@ -5,7 +5,10 @@ import { useGameRouteContext } from '../../../pages/Game';
 import MainButton from '../../UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from '../../UI/CenteredLayout';
-import { primaryAccentColor } from '../../../constants/color-tokens';
+import {
+  darkestBgColor,
+  primaryAccentColor,
+} from '../../../constants/color-tokens';
 import useGameDataSocket, { UseGameDataSocket } from '../useGameDataSocket';
 import { useFlashMessages } from '../../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../../interfaces/flash-message-color.interface';
@@ -44,6 +47,12 @@ const WrapperDiv = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    margin-top: -100px;
+
+    background-color: ${darkestBgColor};
+    border-radius: 20px;
+    padding: 15px 20px;
 
     .waiting-animation {
       width: 200px;
@@ -279,7 +288,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
                         animationData={waitingAnimationData}
                         className="waiting-animation"
                       />
-                      <p>Awaiting opponent...</p>
+                      <p className="title-3">Awaiting opponent...</p>
                     </div>
                   );
                 }
