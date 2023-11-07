@@ -20,16 +20,9 @@ const NavBarContainerMobile = styled.div`
   left: 0;
   bottom: 0;
   width: 100vw;
-  min-height: 100vh;
-  height: 100%;
-
   z-index: 100;
 
   .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
     padding: 15px 15px;
 
     background: ${darkestBgColor};
@@ -42,11 +35,6 @@ const NavBarContainerMobile = styled.div`
       width: 30px;
       object-fit: contain;
       cursor: pointer;
-    }
-
-    .logo {
-      width: 30px;
-      object-fit: contain;
     }
   }
 
@@ -143,6 +131,23 @@ const Navbar = (): JSX.Element => {
     }, ANIMATION_DURATION * 1000);
   };
 
+  const onClosingSidebar = () => {
+    if (menuButtonRef.current && !isLottiePlay) {
+      setIsSidebarOpen((prevState) => {
+        if (prevState === true) startClosingAnimation();
+
+        return !prevState;
+      });
+
+      const midFrame = MENU_BUTTON_FRAMES / 2;
+      if (!isSidebarOpen) {
+        menuButtonRef.current.playSegments([0, midFrame]);
+      } else {
+        menuButtonRef.current.playSegments([midFrame, MENU_BUTTON_FRAMES]);
+      }
+    }
+  };
+
   return (
     <>
       <NavBarContainerMobile>
@@ -157,29 +162,10 @@ const Navbar = (): JSX.Element => {
             onComplete={() => {
               setIsLottiePlay(false);
             }}
-            onClick={() => {
-              if (menuButtonRef.current && !isLottiePlay) {
-                setIsSidebarOpen((prevState) => {
-                  if (prevState === true) startClosingAnimation();
-
-                  return !prevState;
-                });
-
-                const midFrame = MENU_BUTTON_FRAMES / 2;
-                if (!isSidebarOpen) {
-                  menuButtonRef.current.playSegments([0, midFrame]);
-                } else {
-                  menuButtonRef.current.playSegments([
-                    midFrame,
-                    MENU_BUTTON_FRAMES,
-                  ]);
-                }
-              }
-            }}
+            onClick={onClosingSidebar}
             lottieRef={menuButtonRef}
             className="menu-icon"
           />
-          <img src={Logo42} alt="" className="logo" />
         </div>
         {(isSidebarOpen || (!isSidebarOpen && isAnimationPlaying)) && (
           <div className="sidebar">
@@ -190,10 +176,7 @@ const Navbar = (): JSX.Element => {
             >
               <NavigationLinks
                 className="nav-list"
-                onClickLink={() => {
-                  setIsSidebarOpen(false);
-                  startClosingAnimation();
-                }}
+                onClickLink={onClosingSidebar}
               />
             </div>
             <div className="sidebar-bg animate__animated animate__fadeIn"></div>
