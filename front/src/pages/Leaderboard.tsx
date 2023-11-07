@@ -5,6 +5,7 @@ import LoadingFullscreen from '../components/UI/LoadingFullscreen';
 import RoundImg from '../components/UI/RoundImage';
 import styled from 'styled-components';
 import { primaryLightColor } from '../constants/color-tokens';
+import { sm } from '../constants/styles';
 
 const MainContent = styled.main`
   .avatar {
@@ -12,17 +13,26 @@ const MainContent = styled.main`
   }
 
   .table-container {
-    overflow: hidden;
+    width: 100%;
+    overflow-x: scroll;
   }
 
   table {
     th {
+      font-size: 0.6rem;
       font-weight: bold;
+
+      @media (width > ${sm}) {
+        font-size: unset;
+      }
     }
 
     tr {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 40px 2fr 1fr 1fr 1fr 1fr;
+      @media (width > ${sm}) {
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      }
 
       &:not(:last-of-type) {
         border-bottom: 1px ${primaryLightColor} solid;
@@ -30,7 +40,14 @@ const MainContent = styled.main`
     }
 
     td {
-      padding: 15px;
+      padding: 5px;
+      font-size: 0.6rem;
+      @media (width > ${sm}) {
+        padding: 15px;
+        font-size: inherit;
+      }
+
+      text-align: center;
 
       display: flex;
       justify-content: center;
@@ -38,10 +55,25 @@ const MainContent = styled.main`
     }
   }
 
+  .rank {
+    font-weight: bold;
+    font-size: 0.8rem;
+
+    @media (width > ${sm}) {
+      font-size: 1.3rem;
+    }
+  }
+
   .username {
     font-family: 'Dogica';
     font-weight: bold;
-    font-size: 1rem;
+
+    justify-content: flex-start;
+    font-size: 0.5rem;
+    @media (width > ${sm}) {
+      justify-content: inherit;
+      font-size: 0.9rem;
+    }
   }
 `;
 
@@ -78,17 +110,19 @@ const Leaderboard: React.FC = (): JSX.Element => {
                   <th>
                     <span className="sr-only">Rank</span>
                   </th>
-                  <th>
-                    <span className="sr-only">Avatar</span>
-                  </th>
+                  {window.innerWidth > parseInt(sm) && (
+                    <th>
+                      <span className="sr-only">Avatar</span>
+                    </th>
+                  )}
                   <th>
                     <span className="sr-only">Username</span>
                   </th>
                   <th>Level</th>
                   <th>Wins</th>
                   <th>Losses</th>
-                  <th>Win ratio</th>
-                  <th>Total game time</th>
+                  {window.innerWidth > parseInt(sm) && <th>Win ratio</th>}
+                  <th>Game time</th>
                 </tr>
               </thead>
               <tbody>
@@ -98,51 +132,34 @@ const Leaderboard: React.FC = (): JSX.Element => {
                       (leaderboardData: any, index) => {
                         return (
                           <tr key={`${leaderboardData.user.intraId}`}>
-                            <td className="title-1">
-                              #{index + 1}{' '}
-                              <span
-                                className={`${
-                                  index === 0 &&
-                                  'animate__animated animate__tada animate__delay-2s'
-                                }`}
-                              >
-                                {(() => {
-                                  switch (index) {
-                                    case 0:
-                                      return '🥇';
-                                    case 1:
-                                      return '🥈';
-                                    case 2:
-                                      return '🥉';
-                                    default:
-                                      return '';
-                                  }
-                                })()}
-                              </span>
-                            </td>
-                            <td>
-                              <RoundImg
-                                src={leaderboardData.user.avatar}
-                                alt=""
-                                className="avatar"
-                              />
-                            </td>
+                            <td className="rank">#{index + 1}</td>
+                            {window.innerWidth > parseInt(sm) && (
+                              <td>
+                                <RoundImg
+                                  src={leaderboardData.user.avatar}
+                                  alt=""
+                                  className="avatar"
+                                />
+                              </td>
+                            )}
                             <td className="title-3 username">
                               {leaderboardData.user.username}
                             </td>
                             <td className="title-3">
                               {leaderboardData.stats.rank}
                             </td>
-                            <td>{leaderboardData.stats.wins} wins</td>
-                            <td>{leaderboardData.stats.losses} losses</td>
-                            <td>
-                              {leaderboardData.stats.totalGames
-                                ? `${(
-                                    (leaderboardData.stats.wins * 100) /
-                                    leaderboardData.stats.totalGames
-                                  ).toFixed()}%`
-                                : '-'}
-                            </td>
+                            <td>{leaderboardData.stats.wins}</td>
+                            <td>{leaderboardData.stats.losses}</td>
+                            {window.innerWidth > parseInt(sm) && (
+                              <td>
+                                {leaderboardData.stats.totalGames
+                                  ? `${(
+                                      (leaderboardData.stats.wins * 100) /
+                                      leaderboardData.stats.totalGames
+                                    ).toFixed()}%`
+                                  : '-'}
+                              </td>
+                            )}
                             <td>
                               {leaderboardData.stats.totalGameTime
                                 ? formatMsToFullTime(
