@@ -5,7 +5,6 @@ import { sm } from '../../constants/styles';
 import ButtonAnimationData from '../../assets/lotties/menu-button.json';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import NavigationLinks from './NavigationLinks';
-import Logo42 from '../../assets/svg/logo_42.svg';
 
 const MENU_BUTTON_FRAMES = 140;
 const ANIMATION_DURATION = 0.5;
@@ -20,6 +19,7 @@ const NavBarContainerMobile = styled.div`
   left: 0;
   bottom: 0;
   width: 100vw;
+  height: fit-content;
   z-index: 100;
 
   .header {
