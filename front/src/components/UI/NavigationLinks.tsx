@@ -4,6 +4,7 @@ import HomeIcon from '../../assets/svg/home-icon.svg';
 import ProfileIcon from '../../assets/svg/profile-icon.svg';
 import PlayIcon from '../../assets/svg/play-icon.svg';
 import StatsIcon from '../../assets/svg/stats-icon.svg';
+import ChatIcon from '../../assets/svg/chat-icon.svg';
 import LeaderboardIcon from '../../assets/svg/leaderboard-icon.svg';
 import SVG from 'react-inlinesvg';
 import { useUserData } from '../../context/UserDataContext';
@@ -111,11 +112,11 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({
         Play
       </Link>
       <Link
-          to="/chat"
-          onClick={disableLink}
-          className={`${!isLogged && 'disabled'} link`}
-        >
-        <SVG src={PlayIcon} aria-hidden="true" className="icon" />
+        to="/chat"
+        onClick={disableLink}
+        className={`${!isLogged && 'disabled'} link`}
+      >
+        <SVG src={ChatIcon} aria-hidden="true" className="icon" />
         Chat
       </Link>
       <Link
