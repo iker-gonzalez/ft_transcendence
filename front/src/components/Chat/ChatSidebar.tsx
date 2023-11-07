@@ -42,7 +42,7 @@ const ListItem = styled.li`
 `;
 
 interface SidebarProps {
-  users: Array<{ id: number; name: string }>;
+  users: Array<{ id: number; username: string }>;
   groups: Array<{ id: number; name: string }>;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
@@ -56,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handl
         <List>
           {users.map((user) => (
             <li key={user.id} onClick={() => handleUserClick(user)}>
-              {user.name}
+              {user.username}
             </li>
           ))}
         </List>
