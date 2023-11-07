@@ -279,7 +279,6 @@ export function resetBall(
   newBallData.speed = userSpeedInput;
   newUserData1.height = 100;
   newUserData2.height = 100;
-  //newBallData.reset = false;
 
   // TODO Check setTimeout (async / await)
   setTimeout(() => {
