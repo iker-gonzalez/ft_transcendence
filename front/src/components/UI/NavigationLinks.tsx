@@ -111,6 +111,14 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({
         Play
       </Link>
       <Link
+          to="/chat"
+          onClick={disableLink}
+          className={`${!isLogged && 'disabled'} link`}
+        >
+        <SVG src={PlayIcon} aria-hidden="true" className="icon" />
+        Chat
+      </Link>
+      <Link
         to="/stats"
         onClick={disableLink}
         className={`${!isLogged && 'disabled'} link`}
