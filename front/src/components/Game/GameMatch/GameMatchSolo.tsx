@@ -28,6 +28,13 @@ import {
 } from '../../../game_pong/game_pong.constants';
 import GameTheme from '../../../interfaces/game-theme.interface';
 import GamePowerUp from '../../../interfaces/game-power-up.interface';
+import styled from 'styled-components';
+
+const WrapperDiv = styled.div`
+  .title {
+    text-align: center;
+  }
+`;
 
 export default function GameMatchSolo(): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -153,9 +160,9 @@ export default function GameMatchSolo(): JSX.Element {
   };
 
   return (
-    <div>
+    <WrapperDiv>
       <CenteredLayout>
-        <h2 className="title-1 mb-24">Be ready to challenge our AI 🦾</h2>
+        <h2 className="title title-1 mb-24">Be ready to challenge our AI 🦾</h2>
         <GameCanvasWithAction
           canvasRef={canvasRef}
           background={selectedTheme.backgroundImg}
@@ -186,6 +193,6 @@ export default function GameMatchSolo(): JSX.Element {
           }}
         />
       )}
-    </div>
+    </WrapperDiv>
   );
 }

@@ -11,6 +11,7 @@ import {
   darkestBgColor,
   primaryLightColor,
 } from '../../constants/color-tokens';
+import { sm } from '../../constants/styles';
 
 const WrapperDiv = styled.div`
   .game-page-section {
@@ -23,6 +24,7 @@ const WrapperDiv = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
     gap: 35px;
 
     .game-mode-gradient {
@@ -37,9 +39,16 @@ const WrapperDiv = styled.div`
     .game-mode {
       position: relative;
 
-      width: 450px;
-      height: 350px;
-      padding-bottom: 50px;
+      max-width: 450px;
+      aspect-ratio: 3/2;
+      @media (width > ${sm}) {
+        aspect-ratio: 4/3;
+      }
+
+      padding-bottom: 30px;
+      @media (width> ${sm}) {
+        padding-bottom: 50px;
+      }
 
       display: flex;
       justify-content: center;
@@ -59,8 +68,12 @@ const WrapperDiv = styled.div`
         color: ${primaryLightColor};
 
         font-family: 'Dogica';
-        font-size: 1.5rem;
         font-weight: bold;
+
+        font-size: 1rem;
+        @media (width > ${sm}) {
+          font-size: 1.5rem;
+        }
 
         position: absolute;
         bottom: 5px;
