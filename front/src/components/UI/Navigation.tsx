@@ -23,10 +23,6 @@ const NavBarContainerMobile = styled.div`
   z-index: 100;
 
   .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
     padding: 15px 15px;
 
     background: ${darkestBgColor};
@@ -39,11 +35,6 @@ const NavBarContainerMobile = styled.div`
       width: 30px;
       object-fit: contain;
       cursor: pointer;
-    }
-
-    .logo {
-      width: 30px;
-      object-fit: contain;
     }
   }
 
@@ -175,7 +166,6 @@ const Navbar = (): JSX.Element => {
             lottieRef={menuButtonRef}
             className="menu-icon"
           />
-          <img src={Logo42} alt="" className="logo" />
         </div>
         {(isSidebarOpen || (!isSidebarOpen && isAnimationPlaying)) && (
           <div className="sidebar">
