@@ -276,15 +276,16 @@ export function resetBall(
   const newUserData2: IUserData = user2;
   newBallData.reset = true;
 
+  newBallData.speed = userSpeedInput;
+  newUserData1.height = 100;
+  newUserData2.height = 100;
+
   // TODO Check setTimeout (async / await)
   setTimeout(() => {
     newBallData.x = canvas.width / 2;
     newBallData.y = canvas.height / 2;
     newBallData.moveX = newBallData.moveX * 1;
     newBallData.moveY = -newBallData.moveY * Math.random();
-    newBallData.speed = userSpeedInput;
-    newUserData1.height = 100;
-    newUserData2.height = 100;
     newBallData.reset = false;
   }, 2000);
 
