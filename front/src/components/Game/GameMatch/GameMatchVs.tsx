@@ -5,7 +5,10 @@ import { useGameRouteContext } from '../../../pages/Game';
 import MainButton from '../../UI/MainButton';
 import { styled } from 'styled-components';
 import CenteredLayout from '../../UI/CenteredLayout';
-import { primaryAccentColor } from '../../../constants/color-tokens';
+import {
+  darkestBgColor,
+  primaryAccentColor,
+} from '../../../constants/color-tokens';
 import useGameDataSocket, { UseGameDataSocket } from '../useGameDataSocket';
 import { useFlashMessages } from '../../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../../interfaces/flash-message-color.interface';
@@ -44,6 +47,12 @@ const WrapperDiv = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    margin-top: -100px;
+
+    background-color: ${darkestBgColor};
+    border-radius: 20px;
+    padding: 15px 20px;
 
     .waiting-animation {
       width: 200px;
@@ -107,8 +116,9 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
   const [selectedTheme, setSelectedTheme] = React.useState<GameTheme>(
     gameThemes[0],
   );
-  const [selectedPowerUps, setSelectedPowerUps] =
-    React.useState<GamePowerUp[]>(gamePowerUps);
+  const [selectedPowerUps, setSelectedPowerUps] = React.useState<GamePowerUp[]>(
+    gamePowerUps.map((powerUp) => Object.assign({}, powerUp)),
+  );
   const selectedThemeRef = useRef<GameTheme>(selectedTheme); // Required for socket logic on game start
   const [opponentLeft, setOpponentLeft] = useState<boolean>(false);
   const [players] = useState<GameSessionUser[]>(sessionDataState[0]?.players);
@@ -124,7 +134,9 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
 
     const socketCopy = socketRef.current;
 
-    socketRef.current.on(`allOpponentsReady/${sessionId}`, () => {
+    socketRef.current.on(`allOpponentsReady/${sessionId}`, (data) => {
+      const { powerUps } = JSON.parse(data);
+
       patchUserStatus(UserStatus.PLAYING);
 
       setShowCanvasChildren(false);
@@ -142,7 +154,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
           sessionId,
           usersData,
           theme: selectedThemeRef.current,
-          powerUps: selectedPowerUps,
+          powerUps,
         });
       }
     });
@@ -232,7 +244,11 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
   const onReadyToPlay = (): void => {
     socketRef.current.emit(
       'ready',
-      JSON.stringify({ gameDataId: sessionId, isUser1: isPlayer1 }),
+      JSON.stringify({
+        gameDataId: sessionId,
+        isUser1: isPlayer1,
+        powerUps: isPlayer1 ? selectedPowerUps : null,
+      }),
     );
     setIsAwaitingOpponent(true);
   };
@@ -272,7 +288,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
                         animationData={waitingAnimationData}
                         className="waiting-animation"
                       />
-                      <p>Awaiting opponent...</p>
+                      <p className="title-3">Awaiting opponent...</p>
                     </div>
                   );
                 }
@@ -282,7 +298,6 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
             </div>
           )}
         </GameCanvasWithAction>
-        <p>{selectedTheme.name}</p>
         {!opponentLeft && !isAwaitingOpponent && (
           <GameMatchCustomization
             selectedTheme={selectedTheme}
@@ -292,6 +307,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
             }}
             selectedPowerUps={selectedPowerUps}
             onPowerUpsChange={setSelectedPowerUps}
+            cannotActivatePowerUps={!isPlayer1}
           />
         )}
         {gameEnd && <GameMatchEndGameAction />}
