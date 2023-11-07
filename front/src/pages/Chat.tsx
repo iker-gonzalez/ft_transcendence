@@ -49,30 +49,38 @@ const dummyMessages: MessageData = {
     // Add more message arrays here
   };
   
-
-const ChatPage: React.FC = () => {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null); 
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-  const [users, setUsers] = useState<User[]>([]); 
-
-  const { userData } = useUserData();
-  useEffect(() => {
-    // Fetch receiversName and update the state
-    if (userData) {
-      fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}`, {
+  const ChatPage: React.FC = () => {
+    const [selectedUser, setSelectedUser] = useState<User | null>(null); 
+    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+    const [users, setUsers] = useState<User[]>([]); 
+    
+    const { userData } = useUserData();
+    console.log('userdataa:', userData);
+    useEffect(() => {
+      // Fetch username and update the state
+      if (userData) {
+        fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}`, {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
         },
-      }).then((data) => {
-        console.log(data);
-        if (Array.isArray(data)) {
-          const receiverUsernames = data.map((item) => item.username);
-          setUsers(receiverUsernames);
-        }
+      })
+      .then(response => response.json())
+      .then((data: User[]) => {
+      
+        const users = data.map(item => {
+          return {
+            id: item.id,  
+            username: item.username
+          }
+        });
+      
+        setUsers(users);
+
       });
-    }
-  }, [userData]);
-  
+      }
+    }, [userData]);
+
+  console.log('users:', users);
   const handleUserClick = (user: User) => {
     setSelectedUser(user); 
     setSelectedGroup(null);
