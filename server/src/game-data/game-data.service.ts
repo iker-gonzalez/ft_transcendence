@@ -28,7 +28,7 @@ export class GameDataService {
   }
 
   onPlayerReady(server: Server, data: string): void {
-    const { isUser1, gameDataId } = JSON.parse(data);
+    const { isUser1, gameDataId, powerUps } = JSON.parse(data);
 
     const gameDataIndex: number = this.gameDataSets.findIndex(
       (gameDataSet) => gameDataSet.gameDataId === gameDataId.toString(),
@@ -36,6 +36,10 @@ export class GameDataService {
 
     if (gameDataIndex === -1) {
       return;
+    }
+
+    if (powerUps) {
+      this.gameDataSets[gameDataIndex].powerUps = powerUps;
     }
 
     if (isUser1) {
@@ -54,7 +58,12 @@ export class GameDataService {
       this.gameDataSets[gameDataIndex].user1Ready &&
       this.gameDataSets[gameDataIndex].user2Ready
     ) {
-      server.emit(`allOpponentsReady/${gameDataId}`);
+      server.emit(
+        `allOpponentsReady/${gameDataId}`,
+        JSON.stringify({
+          powerUps: this.gameDataSets[gameDataIndex].powerUps || null,
+        }),
+      );
     } else {
       server.emit(`awaitingOpponent/${gameDataId}`);
     }

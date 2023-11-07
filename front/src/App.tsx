@@ -1,7 +1,7 @@
 import React from 'react';
 import SignIn from './pages/Home';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navigation from './components/Navigation';
+import Navigation from './components/UI/Navigation';
 import UserProfile from './pages/UserProfile';
 import Game from './pages/Game';
 import GameMatch from './components/Game/GameMatch/GameMatch';
@@ -14,6 +14,7 @@ import FlashMessagesContainer from './pages/FlashMessagesContainer';
 import Leaderboard from './pages/Leaderboard';
 import UserStats from './pages/UserStats';
 import Chat from './pages/Chat';
+import GameSession from './components/Game/GameSession';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
               <Route path="game" element={<Game />}>
                 <Route index element={<GameIndex />} />
                 <Route path="queue" element={<GameQueue />} />
+                <Route path="session" element={<GameSession />} />
                 <Route path="match" element={<GameMatch />} />
               </Route>
               <Route path="stats" element={<UserStats />} />
