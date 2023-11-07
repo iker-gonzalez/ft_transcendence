@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { ChatRoom, ChatRoomUser, User } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { GetDirectMessageDto } from './../dto/get-direct-message.dto';
 import { AddMessageToUserDto } from './../dto/add-message.dto';
@@ -9,7 +9,85 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 export class ChatChannelService {
   constructor(private readonly prisma: PrismaService) {
   }
+  /********************************************************** */
+  //                     END POINT GETTER                     //
+  /********************************************************** */
+    // Get all the DM conversation the user had had with other users
+    async getAllUserChannelIn(userId: string):
+    Promise<any[]>
+  {
+    if (userId == null)
+      throw new BadRequestException('User Id not found in DB');
 
+      const userChatRooms = await this.prisma.chatRoomUser.findMany({
+        where: {
+          userId: userId, // El ID del usuario del que deseas encontrar los ChatRooms
+        },
+        select: {
+          room: {
+            select: {
+              name: true,
+              // Otros campos de ChatRoom que desees incluir
+            },
+          },
+        },
+      });
+  
+      if (userChatRooms) {
+        const chatRooms = userChatRooms.map((entry) => entry.room);
+        return chatRooms;
+      }
+
+      return [];
+  }
+
+  async getMessageInRoom(roomName: string):
+  Promise<any[]>
+  {
+    if (roomName == null)
+      throw new BadRequestException('User Id not found in DB');
+  
+      const chatRoom = await this.prisma.chatRoom.findFirst({
+        where: {
+          name: roomName,
+        },
+      });
+      if (!chatRoom)
+       {
+        // La sala de chat con el nombre especificado no fue encontrada
+        throw new BadRequestException('roomName not found in DB');
+      }
+    
+      const conversations = await this.prisma.chatMessage.findMany({
+        where: {
+          roomId: chatRoom.id,
+        },
+        select: {
+          content: true,
+          createdAt: true,
+          sender: {
+            select: {
+              username: true,
+              avatar: true,
+              connectStatus: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+      
+      // El objeto `conversations` contendrá todas las conversaciones relacionadas con el canal, incluyendo el contenido de los mensajes
+    
+    return conversations;
+  }
+
+
+
+  /********************************************************** */
+  //                     CHANEL FUNCIONALITY                  //
+  /********************************************************** */
   async channelExist(
     channelName: string,
   ) :  Promise<boolean> 
@@ -32,7 +110,7 @@ export class ChatChannelService {
     {
       throw new BadRequestException(e);
     }
-  }
+  } 
 
   
   async createChannel(
@@ -192,5 +270,13 @@ async leaveUserFromChannel(
     });
   }
  }
+
+  /********************************************************** */
+  //                     ADMIN FUNCIONALITY                   //
+  /********************************************************** */
+
+  /********************************************************** */
+  //                     ACCESS FUNCIONALITY                  //
+  /********************************************************** */
 }
 
