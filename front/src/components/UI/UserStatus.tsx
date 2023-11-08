@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import UserStatus from '../../interfaces/user-status.interface';
+import { sm } from '../../constants/styles';
 
 type UserStatusInfoProps = {
   intraId?: number;
@@ -55,9 +56,16 @@ const UserStatusInfo: React.FC<UserStatusInfoProps> = ({
 
   if (statusInfo) {
     return (
-      <p>
-        {statusInfo.status} <span aria-hidden="true">{statusInfo.icon}</span>
-      </p>
+      <>
+        {window.innerWidth > parseInt(sm) ? (
+          <p>
+            {statusInfo.status}{' '}
+            <span aria-hidden="true">{statusInfo.icon}</span>
+          </p>
+        ) : (
+          <p aria-label={statusInfo.status}>{statusInfo.icon}</p>
+        )}
+      </>
     );
   }
 
