@@ -42,7 +42,7 @@ const ListItem = styled.li`
 `;
 
 interface SidebarProps {
-  users: Array<{ id: number; username: string }>;
+  users: Array<{ id: number; avatar: string; username: string }>;
   groups: Array<{ id: number; name: string }>;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;

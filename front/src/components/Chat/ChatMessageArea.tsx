@@ -37,14 +37,10 @@ const MessageItem = styled.li`
   margin: 10px 0;
 `;
 
-interface MessageData {
-  [key: number]: Message[];
-}
-
 interface ChatMessageAreaProps {
   selectedUser: User | null;
   selectedGroup: Group | null;
-  messages: MessageData;
+  messages: Message[];
 }
 
 const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
@@ -94,12 +90,12 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   const handleSendMessage = (newMessage: string) => {
     if (newMessage.trim() !== '') {
       // Implement logic to add the message to the chat or send it to the server
-      const messageData: Message = {
-        sender: userData?.username || 'Anonymous',
-        avatar: userData?.avatar || 'Anonymous',
-        text: newMessage,
+      const Message = {
+        senderName: userData?.username || 'Anonymous',
+        senderAvatar: userData?.avatar || 'Anonymous',
+        content: newMessage,
       };
-      console.log(messageData);
+      console.log(Message);
       console.log('user Data:', userData?.intraId);
       // Update the message list by adding the new message
       setMessageList((prevMessages) => [...prevMessages, messageData]);
