@@ -11,18 +11,29 @@ import Toggle from '../../UI/Toggle';
 import GamePowerUp from '../../../interfaces/game-power-up.interface';
 import ContrastPanel from '../../UI/ContrastPanel';
 import ForbiddenIcon from '../../../assets/svg/forbidden.svg';
+import { sm } from '../../../constants/styles';
 
 const WrapperDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 100px;
+  flex-wrap: wrap;
+
+  gap: 50px;
+  @media (width > ${sm}) {
+    gap: 100px;
+  }
 
   .themes-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 25px;
+
+    gap: 15px;
+
+    @media (width > ${sm}) {
+      gap: 25px;
+    }
   }
 
   .customization-container {
@@ -30,7 +41,6 @@ const WrapperDiv = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
 
     .toggle-container {
       display: flex;
@@ -56,8 +66,13 @@ const WrapperDiv = styled.div`
 `;
 
 const ThemeSelector = styled.div<{ $backgroundImg: string }>`
-  width: 150px;
-  aspect-ratio: 3/2;
+  width: 80px;
+  aspect-ratio: 1/1;
+
+  @media (width > ${sm}) {
+    width: 150px;
+    aspect-ratio: 3/2;
+  }
 
   background: transparent;
   border: 3px ${darkBgColor} solid;
@@ -66,6 +81,8 @@ const ThemeSelector = styled.div<{ $backgroundImg: string }>`
   transition: all 0.3s ease-in-out;
 
   display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:has(input:checked) {
     border-color: ${primaryColor};
@@ -84,8 +101,11 @@ const ThemeSelector = styled.div<{ $backgroundImg: string }>`
 
     cursor: pointer;
 
+    font-weight: bold;
+
     background-image: url(${(props) => props.$backgroundImg});
     background-size: cover;
+    background-position: center;
   }
 `;
 
@@ -119,7 +139,12 @@ const GameMatchCustomization: React.FC<GameMatchCustomizationProps> = ({
                   $backgroundImg={theme.backgroundImg}
                   key={theme.id}
                 >
-                  <label htmlFor={theme.id} className="title-3">
+                  <label
+                    htmlFor={theme.id}
+                    className={`${
+                      window.innerWidth > parseInt(sm) ? 'title-3' : 'small'
+                    }`}
+                  >
                     {theme.name}
                     <input
                       type="radio"
