@@ -48,11 +48,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   selectedGroup,
   messages,
 }) => {
-  const selectedMessages = selectedUser
-    ? messages[selectedUser.id]
-    : selectedGroup
-    ? messages[selectedGroup.id]
-    : [];
 
   const title = selectedUser?.username || selectedGroup?.name;
 
@@ -98,10 +93,10 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       console.log(Message);
       console.log('user Data:', userData?.intraId);
       // Update the message list by adding the new message
-      setMessageList((prevMessages) => [...prevMessages, messageData]);
+      //setMessageList((prevMessages) => [...prevMessages, newMessage]);
       // Send the message to the server using the socket
       chatMessageSocketRef.current.emit('privateMessage', {
-        receiverId: 667, // Replace with dynamically captured receiver's intra ID
+        receiverId: selectedUser?.id, // Replace with dynamically captured receiver's intra ID
         senderId: userData?.intraId, // Replace with dynamically captured sender's intra ID
         content: newMessage,
     });
@@ -114,15 +109,15 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     <MessageAreaContainer>
       {title && <Title>{title}</Title>}
       <MessageList>
-        {selectedMessages.map((message, index) => (
+        {messages.map((message, index) => (
           <MessageItem key={index}>
-            {`${message.sender}: ${message.text}`}
+            {`${message.senderName}: ${message.content}`}
           </MessageItem>
         ))}
         {/* Render the new message below the last message */}
         {messageList.map((messageData, index) => (
           <MessageItem key={index}>
-            {`${messageData.sender}: ${messageData.text}`}
+            {`${messageData.senderName}: ${messageData.content}`}
           </MessageItem>
         ))}
       </MessageList>
