@@ -7,11 +7,8 @@ import Message from '../interfaces/chat-message.interface';
 import { fetchAuthorized, getBaseUrl } from '../utils/utils';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
+import { timeStamp } from 'console';
   
-interface MessageData {
-    [key: number]: Message[];
-  }
-
 // Dummy data for users and messages
 const dummyUsers = [
   { id: 1, name: 'John Doe' },
@@ -25,29 +22,36 @@ const dummyGroups = [
   // Add more groups here
 ];
 
-const dummyMessages: MessageData = {
-    1: [
-      { sender: 'John Doe', avatar: 'https://i.pravatar.cc/600?img=8', text: 'Hello, how are you?' },
-      { sender: 'Sam Smith', avatar: 'https://i.pravatar.cc/600?img=8',text: "I'm doing great, thanks!" },
-      // Add more messages for user 1
-    ],
-    2: [
-      { sender: 'Alice Smith', avatar: 'https://i.pravatar.cc/600?img=8',text: 'As they rounded a bend in the path that ran beside the river, Lara recognized the silhouette of a fig tree atop a nearby hill. The weather was hot and the days were long. The fig tree was in full leaf, but not yet bearing fruit      Soon Lara spotted other landmarks—an outcropping of limestone beside the path that had a silhouette like a man’s face, a marshy spot beside the river where the waterfowl were easily startled, a tall tree that looked like a man with his arms upraised. They were drawing near to the place where there was an island in the river. The island was a good spot to make camp. They would sleep on the island tonight.      Lara had been back and forth along the river path many times in her short life. Her people had not created the path—it had always been there, like the river—but their deerskin-shod feet and the wooden wheels of their handcarts kept the path well worn. Lara’s people were salt traders, and their livelihood took them on a continual journey.' },  
-      { sender: 'David Becham', avatar: 'https://i.pravatar.cc/600?img=8',text: "Hello! What's up?" },
-      // Add more messages for user 2
-    ],
-    101: [
-      { sender: 'Pepe Rabales', avatar: 'https://i.pravatar.cc/600?img=8',text: 'Welcome to our group!' },
-      { sender: 'Paco Turio', avatar: 'https://i.pravatar.cc/600?img=8',text: 'Thank you! Glad to be here.' },
-      // Add more messages for group 1
-    ],
-    102: [
-      { sender: 'Julio Mandiba', avatar: 'https://i.pravatar.cc/600?img=8',text: 'Hello, nice to meet you all!' },
-      { sender: 'Roberta Del Piero', avatar: 'https://i.pravatar.cc/600?img=8',text: 'Hi, my name is Roberta (:' },
-      // Add more messages for group 2
-    ],
-    // Add more message arrays here
-  };
+const dummyMessages: Message[] = [
+  {
+    id: "1",
+    senderName: 'John Doe',
+    senderAvatar: 'https://i.pravatar.cc/600?img=1', 
+    content: 'Hi there!',
+    timestamp: "2023-11-08T09:00:00Z"
+  },
+  {
+    id: "2",
+    senderName: 'Jane Smith',
+    senderAvatar: 'https://i.pravatar.cc/600?img=2',
+    content: 'Hello to you too!',
+    timestamp: "2023-11-08T09:01:00Z"
+  },
+  {
+    id: "3", 
+    senderName: 'John Doe',
+    senderAvatar: 'https://i.pravatar.cc/600?img=1',
+    content: 'How are you today?',
+    timestamp: "2023-11-08T09:02:00Z"
+  },
+  {
+    id: "4",
+    senderName: 'Jane Smith', 
+    senderAvatar: 'https://i.pravatar.cc/600?img=2',
+    content: 'I am doing great, thanks!',
+    timestamp: "2023-11-08T09:03:00Z"
+  }
+];
   
   const ChatPage: React.FC = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null); 
@@ -69,7 +73,8 @@ const dummyMessages: MessageData = {
       
         const users = data.map(item => {
           return {
-            id: item.id,  
+            id: item.id,
+            avatar: item.avatar,
             username: item.username
           }
         });
@@ -82,10 +87,42 @@ const dummyMessages: MessageData = {
 
   console.log('users:', users);
   const handleUserClick = (user: User) => {
-    setSelectedUser(user); 
-    setSelectedGroup(null);
-  };
+
+    fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/${user.id}`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+    })
+    
+    .then(response => response.json())
+    
+    .then(response => {
   
+      const messages = response.map((item: Message) => {
+        return {
+          id: item.id,
+          senderName: item.senderName, 
+          senderAvatar: item.senderAvatar,
+          content: item.content,
+          timestamp: item.timestamp  
+        }
+      });
+  
+      setSelectedUser(user);
+      setSelectedGroup(null);
+  
+      return (
+        <ChatMessageArea 
+          selectedUser={user}
+          selectedGroup={selectedGroup}
+          messages={messages}  
+        />
+      )
+  
+    })
+  
+  }
+
   const handleGroupClick = (group: Group) => {
     setSelectedUser(null);
     setSelectedGroup(group);
@@ -103,7 +140,7 @@ const dummyMessages: MessageData = {
       <ChatMessageArea
         selectedUser={selectedUser}
         selectedGroup={selectedGroup}
-        messages={dummyMessages}
+        messages={dummyMessages} //here should be messages with the most recent one
       />
     </div>
   );

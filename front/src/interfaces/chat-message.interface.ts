@@ -1,5 +1,7 @@
 export default interface Message {
-    sender: string;
-    avatar: string;
-    text: string; 
-  }
+  id: string;
+  senderName: string;
+  senderAvatar: string;
+  content: string;
+  timestamp: string;
+}
