@@ -57,7 +57,7 @@ const WrapperDiv = styled.div`
         white-space: nowrap;
 
         .level-highlight {
-          font-size: 60px;
+          font-size: 50px;
           font-weight: bold;
         }
       }
@@ -67,9 +67,10 @@ const WrapperDiv = styled.div`
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 25px;
 
       p {
-        font-size: 20px;
+        font-size: 16px;
       }
     }
   }
