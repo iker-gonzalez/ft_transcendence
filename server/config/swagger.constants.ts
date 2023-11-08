@@ -210,7 +210,19 @@ export const swaggerConstants = {
       ok:{
         description: 'Return Direct messages sorted by time'
       }
-  },
+    },
+    channel:{
+      summary: 'Return all channel users is in',
+      ok:{
+        description: 'Return all channel users is in'
+      }
+    },
+    channelMess:{
+        summary: 'Return all the messages that have been sent in the channel ',
+        ok:{
+          description: 'Return contet, username, data'
+        }
+    }
   },
   dto: {
     intraSignin: {

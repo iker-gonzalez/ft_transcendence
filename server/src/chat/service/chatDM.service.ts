@@ -11,6 +11,9 @@ import { AllUsersDMWithDTO } from './../dto/all-users-DM-with.dto';
 export class ChatDMService {
   constructor(private readonly prisma: PrismaService) {}
   
+  /********************************************************** */
+  //                     END POINT GETTER                     //
+  /********************************************************** */
   // Sens DM between two user, sorted by time created.
   async getDMBetweenUsers(userId1: string, userId2: string):
     Promise<ConversationMessageDTO[]>
@@ -50,7 +53,7 @@ export class ChatDMService {
     return conversationDTO;
   }
 
-    // Send DM between two user, sorted by time created.
+    // Get all the DM conversation the user had had with other users
     async getAllUserDMWith(userId: string):
     Promise<AllUsersDMWithDTO[]>
   {
@@ -102,7 +105,8 @@ export class ChatDMService {
     return allUserDMWithDTO;
   }
 
-  async findUserIdByIntraId(intraId: number): Promise<string>
+
+ async findUserIdByIntraId(intraId: number): Promise<string>
   {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -113,7 +117,9 @@ export class ChatDMService {
     return user ? user.id : null;
   }
 
-
+  /********************************************************** */
+  //                     DM FUNCIONALITY                      //
+  /********************************************************** */
   async addMessageToUser(
     userSenderId: string,
     userReceiverId: string,

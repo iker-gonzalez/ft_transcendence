@@ -15,11 +15,14 @@ const WrapperDiv = styled.div`
     display: flex;
     justify-content: center;
     align-items: stretch;
+    flex-wrap: wrap;
     gap: 40px;
-  }
 
-  .stats-container {
-    max-width: 400px;
+    > div {
+      width: 100%;
+      min-width: 350px;
+      max-width: 450px;
+    }
   }
 `;
 
@@ -47,11 +50,11 @@ const UserStats: React.FC = (): JSX.Element => {
 
   if (userData) {
     return (
-      <CenteredLayout>
-        <WrapperDiv>
+      <WrapperDiv>
+        <CenteredLayout>
           <h1 className="title-1 mb-24">Game dashboard</h1>
           <div className="container">
-            <ContrastPanel className="stats-container">
+            <ContrastPanel>
               <UserStatsInfo />
             </ContrastPanel>
             <ContrastPanel>
@@ -61,8 +64,8 @@ const UserStats: React.FC = (): JSX.Element => {
               />
             </ContrastPanel>
           </div>
-        </WrapperDiv>
-      </CenteredLayout>
+        </CenteredLayout>
+      </WrapperDiv>
     );
   }
 
