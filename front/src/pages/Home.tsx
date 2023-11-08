@@ -19,6 +19,7 @@ import UserStatus from '../interfaces/user-status.interface';
 import RoundImg from '../components/UI/RoundImage';
 import { TEST_USERS_DATA } from '../constants/shared';
 import NET from 'vanta/src/vanta.net';
+import { sm } from '../constants/styles';
 
 const VantaBg = styled.div`
   opacity: 0.2;
@@ -33,6 +34,8 @@ const VantaBg = styled.div`
   height: 100%;
   min-width: 100vw;
   width: 100%;
+
+  overflow: hidden;
 `;
 
 const PageWrapperDiv = styled.div`
@@ -41,7 +44,11 @@ const PageWrapperDiv = styled.div`
   position: relative;
 
   .logo {
-    width: 100px;
+    width: 75px;
+    @media (width > ${sm}) {
+      width: 100px;
+    }
+
     margin-bottom: 30px;
   }
 
@@ -49,7 +56,10 @@ const PageWrapperDiv = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 20px;
+
+    text-align: center;
 
     .links-container {
       display: flex;
@@ -73,17 +83,33 @@ const PageWrapperDiv = styled.div`
         width: 75px;
         object-fit: contain;
       }
+
+      &:hover {
+        > img {
+          box-shadow: rgba(0, 173, 181, 0.3) 0px 19px 38px,
+            rgba(0, 173, 181, 0.22) 0px 15px 12px;
+        }
+      }
     }
   }
 
   .team-image {
-    width: 400px;
+    width: 100%;
+    max-width: min(300px, 75vw);
+
     margin-bottom: 50px;
     border-radius: 50px;
   }
 
   .text-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
     text-align: center;
+
+    width: 100%;
     max-width: 550px;
   }
 `;
@@ -128,109 +154,107 @@ const SignIn: React.FC = (): JSX.Element => {
   };
 
   return (
-    <>
-      <PageWrapperDiv>
-        <VantaBg id="vanta" />
-        <CenteredLayout>
-          {(() => {
-            if (isUserDataFetching) return <LoadingFullscreen />;
+    <PageWrapperDiv>
+      <VantaBg id="vanta" />
+      <CenteredLayout>
+        {(() => {
+          if (isUserDataFetching) return <LoadingFullscreen />;
 
-            return (
-              <>
-                <img src={logo42} alt="" className="logo" />
+          return (
+            <>
+              <img src={logo42} alt="" className="logo" />
 
-                <div className="mb-24 text-container">
-                  <h1 className="title-1 mb-24">
-                    Welcome to our ft_transcendence project
-                  </h1>
-                  <img src={teamImage} alt="" className="team-image" />
-                  <p className="mb-8">
-                    We are{' '}
-                    <a
-                      href="https://profile.intra.42.fr/users/dgerwig-"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="body-link"
-                    >
-                      dgerwig-
-                    </a>
-                    ,{' '}
-                    <a
-                      href="https://profile.intra.42.fr/users/ikgonzal"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="body-link"
-                    >
-                      ikgonzal
-                    </a>
-                    ,{' '}
-                    <a
-                      href="https://profile.intra.42.fr/users/ngasco"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="body-link"
-                    >
-                      ngasco
-                    </a>
-                    , and{' '}
-                    <a
-                      href="https://profile.intra.42.fr/users/zcanales"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="body-link"
-                    >
-                      zcanales
-                    </a>
-                    ,<br />
-                    students of the 42Urduliz campus in Bilbao, Spain
-                  </p>
-                  <p className="mb-8">Go ahead and explore our project 🤠</p>
+              <div className="mb-24 text-container">
+                <h1 className="title-1 mb-24">
+                  Welcome to our ft_transcendence project
+                </h1>
+                <img src={teamImage} alt="" className="team-image" />
+                <p className="mb-8">
+                  We are{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/dgerwig-"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    dgerwig-
+                  </a>
+                  ,{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/ikgonzal"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    ikgonzal
+                  </a>
+                  ,{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/ngasco"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    ngasco
+                  </a>
+                  , and{' '}
+                  <a
+                    href="https://profile.intra.42.fr/users/zcanales"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    zcanales
+                  </a>
+                  ,<br />
+                  students of the 42Urduliz campus in Bilbao, Spain
+                </p>
+                <p className="mb-8">Go ahead and explore our project 🤠</p>
+              </div>
+              {userData ? (
+                <div>
+                  <MainButton
+                    onClick={() => {
+                      patchUserStatus(UserStatus.OFFLINE);
+                      Cookies.remove('token');
+                      setUserData(null);
+                      sessionStorage.clear();
+                    }}
+                  >
+                    Log out
+                  </MainButton>
                 </div>
-                {userData ? (
+              ) : (
+                <div className="signin-container">
+                  <MainButton type="button" onClick={handleSignIn}>
+                    Sign In with 42
+                  </MainButton>
                   <div>
-                    <MainButton
-                      onClick={() => {
-                        patchUserStatus(UserStatus.OFFLINE);
-                        Cookies.remove('token');
-                        setUserData(null);
-                        sessionStorage.clear();
-                      }}
-                    >
-                      Log out
-                    </MainButton>
-                  </div>
-                ) : (
-                  <div className="signin-container">
-                    <MainButton type="button" onClick={handleSignIn}>
-                      Sign In with 42
-                    </MainButton>
-                    <div>
-                      <p className="mb-8">
-                        Or sign in with one of our ready-made test users
-                      </p>
-                      <div className="links-container">
-                        {TEST_USERS_DATA.map((testUser, index) => {
-                          return (
-                            <Link
-                              to={`login?code=${testUser.code}`}
-                              className="signin-link"
-                              key={testUser.code}
-                            >
-                              <RoundImg src={testUser.avatar} alt="" />
-                              User {index + 1}
-                            </Link>
-                          );
-                        })}
-                      </div>
+                    <p className="mb-8">
+                      Or sign in with one of our ready-made test users
+                    </p>
+                    <div className="links-container">
+                      {TEST_USERS_DATA.map((testUser, index) => {
+                        return (
+                          <Link
+                            to={`login?code=${testUser.code}`}
+                            className="signin-link"
+                            key={testUser.code}
+                          >
+                            <RoundImg src={testUser.avatar} alt="" />
+                            User {index + 1}
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
-                )}
-              </>
-            );
-          })()}
-        </CenteredLayout>
-      </PageWrapperDiv>
-    </>
+                </div>
+              )}
+            </>
+          );
+        })()}
+      </CenteredLayout>
+    </PageWrapperDiv>
   );
 };
 
