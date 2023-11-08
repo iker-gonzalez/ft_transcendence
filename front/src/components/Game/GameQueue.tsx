@@ -27,6 +27,8 @@ type GameSessionRes = {
 };
 
 const WrapperDiv = styled.div`
+  text-align: center;
+
   .highlighted {
     color: ${primaryAccentColor};
     font-weight: bold;
@@ -45,11 +47,11 @@ const WrapperDiv = styled.div`
   }
 
   .waiting-animation {
-    width: 600px;
+    width: min(100%, 600px);
   }
 
   .queue-animation {
-    width: 550px;
+    width: min(100%, 550px);
   }
 `;
 
