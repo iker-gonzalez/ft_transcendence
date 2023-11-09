@@ -4,19 +4,12 @@ import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import Modal from '../UI/Modal';
 import { useUserFriends } from '../../context/UserDataContext';
+import ContrastPanel from '../UI/ContrastPanel';
 
-const SidebarContainer = styled.div`
-  width: calc(25% - 10px); /* Subtract 10px for margin/padding */
-  background-color: black;
-  color: white;
+const SidebarContainer = styled(ContrastPanel)`
+  flex-basis: 30%;
   padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   border: 2px solid yellow;
-  position: absolute;
-  top: 100px; /* Adjust the offset as needed */
-  left: 0; /* Position on the left */
-  bottom: 0; /* Occupy the full height */
-  overflow-y: auto; /* Add scroll behavior when content overflows */
 `;
 
 const UserList = styled.div`

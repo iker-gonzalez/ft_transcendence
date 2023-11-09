@@ -9,6 +9,17 @@ import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
 import { getIntraId } from '../utils/utils';
 import GroupMessage from '../interfaces/chat-group-message.interface';
+import CenteredLayout from '../components/UI/CenteredLayout';
+import styled from 'styled-components';
+
+const WrapperDiv = styled.div`
+  width: 100%;
+  min-height: 70vh; /* TODO adjust this */
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 40px;
+`;
 
 /**
  * ChatPage component that displays the chat sidebar and message area.
@@ -129,19 +140,21 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className="chat-page">
-      <ChatSidebar
-        users={users}
-        groups={groups}
-        handleUserClick={handleUserClick}
-        handleGroupClick={handleGroupClick}
-      />
-      <ChatMessageArea
-        selectedUser={selectedUser}
-        selectedGroup={selectedGroup}
-        messages={messages} //here should be messages with the most recent one
-      />
-    </div>
+    <CenteredLayout>
+      <WrapperDiv>
+        <ChatSidebar
+          users={users}
+          groups={groups}
+          handleUserClick={handleUserClick}
+          handleGroupClick={handleGroupClick}
+        />
+        <ChatMessageArea
+          selectedUser={selectedUser}
+          selectedGroup={selectedGroup}
+          messages={messages} //here should be messages with the most recent one
+        />
+      </WrapperDiv>
+    </CenteredLayout>
   );
 };
 
