@@ -212,7 +212,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
             </SecondaryButton>
           </div>
         </div>
-        {showAddNewFriendFlow && Boolean(userFriends.length) && (
+        {showAddNewFriendFlow && (
           <AddNewFriendFlow
             setShowAddNewFriendFlow={setShowAddNewFriendFlow}
             onUpdateFriendsList={onUpdateFriendsList}
