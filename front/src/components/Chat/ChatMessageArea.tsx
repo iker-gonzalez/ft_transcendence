@@ -4,7 +4,9 @@ import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import Message from '../../interfaces/chat-dm-message.interface';
 import MessageInput from './ChatMessageInput';
-import useChatMessageSocket, {UseChatMessageSocket, } from './useChatMessageSocket';
+import useChatMessageSocket, {
+  UseChatMessageSocket,
+} from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
 import { getIntraId } from '../../utils/utils';
 
@@ -63,46 +65,44 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   selectedGroup,
   messages,
 }) => {
-
-  
   const title = selectedUser?.username || selectedGroup?.name;
-  
+
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
-  
+
   // Get the socket and related objects from the utility function
   const {
     chatMessageSocketRef,
     isSocketConnected,
     isConnectionError,
   }: UseChatMessageSocket = useChatMessageSocket();
-  
+
   // Add a listener for incoming messages
   useEffect(() => {
     if (isSocketConnected) {
       chatMessageSocketRef.current.on('newMessage', (messageData: Message) => {
         // Handle the incoming message, e.g., add it to your message list
         console.log('Received a new message:', messageData);
-        
+
         // You can update your message state or perform other actions here
       });
     }
   }, [isSocketConnected, chatMessageSocketRef]);
-  
-    // Store the message list in a state variable
-    const [newMessageList, setNewMessageList] = useState<Message[]>([]);
+
+  // Store the message list in a state variable
+  const [newMessageList, setNewMessageList] = useState<Message[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
-  
+
   const { userData } = useUserData();
 
   const handleSendMessage = (newMessage: string) => {
     if (newMessage.trim() !== '') {
       // Implement logic to add the message to the chat or send it to the server
       const message: Message = {
-        id: "pepe", //substitute with real random id
+        id: 'pepe', //substitute with real random id
         senderName: userData?.username || 'Anonymous',
         senderAvatar: userData?.avatar || 'Anonymous',
         content: newMessage,
@@ -117,7 +117,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         receiverId: receiverId, // temporary until endpoint is fixed
         senderId: userData?.intraId,
         content: newMessage,
-    });
+      });
       // Clear the input field
       setMessage('');
     }
@@ -125,36 +125,38 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   return (
     <MessageAreaContainer>
-      {(selectedUser || selectedGroup) ? (
-      <>
-      {title && <Title>{title}</Title>}
-      <MessageList>
-        {messages.map((message) => (
-          <MessageItem key={message.id}>
-            {`${message.senderName}: ${message.content}`}
-          </MessageItem>
-        ))}
-        {/* Render the new message below the last message */}
-        {newMessageList.map((messageData, index) => (
-          <MessageItem key={index}>
-            {`${messageData.senderName}: ${messageData.content}`}
-          </MessageItem>
-        ))}
-      </MessageList>
-  
-      <MessageInput
-        message={message}
-        onInputChange={handleInputChange}
-        onMessageSubmit={handleSendMessage}
-      />
-      </>
-    ) : (
-      <CenteredContainer>
-        <StyledParagraph >Chat with your friends or participate in our community groups!</StyledParagraph>
-      </CenteredContainer>
-    )}
+      {selectedUser || selectedGroup ? (
+        <>
+          {title && <Title>{title}</Title>}
+          <MessageList>
+            {messages.map((message) => (
+              <MessageItem key={message.id}>
+                {`${message.senderName}: ${message.content}`}
+              </MessageItem>
+            ))}
+            {/* Render the new message below the last message */}
+            {newMessageList.map((messageData, index) => (
+              <MessageItem key={index}>
+                {`${messageData.senderName}: ${messageData.content}`}
+              </MessageItem>
+            ))}
+          </MessageList>
+
+          <MessageInput
+            message={message}
+            onInputChange={handleInputChange}
+            onMessageSubmit={handleSendMessage}
+          />
+        </>
+      ) : (
+        <CenteredContainer>
+          <StyledParagraph>
+            Chat with your friends or participate in our community groups!
+          </StyledParagraph>
+        </CenteredContainer>
+      )}
     </MessageAreaContainer>
   );
-}
+};
 
 export default ChatMessageArea;
