@@ -20,7 +20,19 @@ overflow-y: auto; /* Add scroll behavior when content overflows */
 `;
 
 const UserList = styled.div`
-margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin-bottom: 20px;
+`;
+
+const PlusSign = styled.span`
+font-size: 28px;
+color: yellow;
+cursor: pointer;
+margin-left: 10px;
+position: relative;
+top: -5px;
 `;
 
 const Title = styled.h2`
@@ -54,12 +66,19 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handleGroupClick }) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const { userFriends } = useUserFriends();
+  const userFriendsConverted = userFriends.map(friend => ({
+    id: friend.intraId,
+    avatar: friend.avatar,
+    username: friend.username
+  }));
   console.log('friends:', userFriends);
   return (
     <SidebarContainer>
       <UserList>
-        <Title>Direct Messages</Title>
-        <span style={{ marginLeft: '10px', cursor: 'pointer' }} onClick={() => setPopupVisible(true)}>+</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <Title>Direct Messages</Title>
+          <PlusSign onClick={() => setPopupVisible(true)}>+</PlusSign>
+        </div>
         <List>
           {users.map((user) => (
             <ListItem key={user.id} onClick={() => handleUserClick(user)}>
@@ -71,8 +90,14 @@ const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handl
       {isPopupVisible && (
         <Modal dismissModalAction={() => setPopupVisible(false)}>
           <List>
-            {userFriends.map((friend, index) => (
-              <ListItem key={index}>
+            {userFriendsConverted.map((friend, index) => (
+              <ListItem 
+                key={index} 
+                onClick={() => {
+                  handleUserClick(friend)
+                  setPopupVisible(false);
+                }}
+              >
                 {friend.username}
               </ListItem>
             ))}
