@@ -4,9 +4,10 @@ import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import Message from '../../interfaces/chat-message.interface';
 import MessageInput from './ChatMessageInput';
-import useChatMessageSocket, {UseChatMessageSocket, } from './useChatMessageSocket';
+import useChatMessageSocket, {
+  UseChatMessageSocket,
+} from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
-
 
 const MessageAreaContainer = styled.div`
   width: calc(75% - 10px); /* Subtract 10px for margin/padding */
@@ -63,32 +64,32 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
 
-    // Get the socket and related objects from the utility function
-    const {
-      chatMessageSocketRef,
-      isSocketConnected,
-      isConnectionError,
-    }: UseChatMessageSocket = useChatMessageSocket();
-  
-    // Add a listener for incoming messages
-    useEffect(() => {
-      if (isSocketConnected) {
-        chatMessageSocketRef.current.on('newMessage', (messageData: Message) => {
-          // Handle the incoming message, e.g., add it to your message list
-          console.log('Received a new message:', messageData);
-  
-          // You can update your message state or perform other actions here
-        });
-      }
-    }, [isSocketConnected, chatMessageSocketRef]);
+  // Get the socket and related objects from the utility function
+  const {
+    chatMessageSocketRef,
+    isSocketConnected,
+    isConnectionError,
+  }: UseChatMessageSocket = useChatMessageSocket();
 
-    // Store the message list in a state variable
-    const [messageList, setMessageList] = useState<Message[]>([]);
+  // Add a listener for incoming messages
+  useEffect(() => {
+    if (isSocketConnected) {
+      chatMessageSocketRef.current.on('newMessage', (messageData: Message) => {
+        // Handle the incoming message, e.g., add it to your message list
+        console.log('Received a new message:', messageData);
+
+        // You can update your message state or perform other actions here
+      });
+    }
+  }, [isSocketConnected, chatMessageSocketRef]);
+
+  // Store the message list in a state variable
+  const [messageList, setMessageList] = useState<Message[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
-  
+
   const { userData } = useUserData();
 
   const handleSendMessage = (newMessage: string) => {
@@ -108,7 +109,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         receiverId: 668, // Replace with dynamically captured receiver's intra ID
         senderId: userData?.intraId, // Replace with dynamically captured sender's intra ID
         content: newMessage,
-    });
+      });
       // Clear the input field
       setMessage('');
     }

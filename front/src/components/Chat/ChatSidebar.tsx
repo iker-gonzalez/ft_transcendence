@@ -48,7 +48,12 @@ interface SidebarProps {
   handleGroupClick: (group: Group) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handleGroupClick }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  users,
+  groups,
+  handleUserClick,
+  handleGroupClick,
+}) => {
   return (
     <SidebarContainer>
       <UserList>
@@ -69,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handl
             </li>
           ))}
         </List>
-        </UserList>
+      </UserList>
     </SidebarContainer>
   );
 };
