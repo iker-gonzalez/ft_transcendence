@@ -98,7 +98,7 @@ const NavbarContainerDesktop = styled.nav`
   .nav-list {
     padding: 0;
 
-    gap: 45px;
+    gap: 30px;
 
     max-width: 1000px;
     margin: 0 auto;
