@@ -37,6 +37,21 @@ const MessageItem = styled.li`
   margin: 10px 0;
 `;
 
+const CenteredContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+`;
+
+const StyledParagraph = styled.p`
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+`;
+
 interface ChatMessageAreaProps {
   selectedUser: User | null;
   selectedGroup: Group | null;
@@ -49,30 +64,31 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   messages,
 }) => {
 
+  
   const title = selectedUser?.username || selectedGroup?.name;
-
+  
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
-
-    // Get the socket and related objects from the utility function
-    const {
-      chatMessageSocketRef,
-      isSocketConnected,
-      isConnectionError,
-    }: UseChatMessageSocket = useChatMessageSocket();
   
-    // Add a listener for incoming messages
-    useEffect(() => {
-      if (isSocketConnected) {
-        chatMessageSocketRef.current.on('newMessage', (messageData: Message) => {
-          // Handle the incoming message, e.g., add it to your message list
-          console.log('Received a new message:', messageData);
+  // Get the socket and related objects from the utility function
+  const {
+    chatMessageSocketRef,
+    isSocketConnected,
+    isConnectionError,
+  }: UseChatMessageSocket = useChatMessageSocket();
   
-          // You can update your message state or perform other actions here
-        });
-      }
-    }, [isSocketConnected, chatMessageSocketRef]);
-
+  // Add a listener for incoming messages
+  useEffect(() => {
+    if (isSocketConnected) {
+      chatMessageSocketRef.current.on('newMessage', (messageData: Message) => {
+        // Handle the incoming message, e.g., add it to your message list
+        console.log('Received a new message:', messageData);
+        
+        // You can update your message state or perform other actions here
+      });
+    }
+  }, [isSocketConnected, chatMessageSocketRef]);
+  
     // Store the message list in a state variable
     const [newMessageList, setNewMessageList] = useState<Message[]>([]);
 
@@ -109,6 +125,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   return (
     <MessageAreaContainer>
+      {(selectedUser || selectedGroup) ? (
+      <>
       {title && <Title>{title}</Title>}
       <MessageList>
         {messages.map((message) => (
@@ -123,14 +141,20 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
           </MessageItem>
         ))}
       </MessageList>
-
+  
       <MessageInput
         message={message}
         onInputChange={handleInputChange}
         onMessageSubmit={handleSendMessage}
       />
+      </>
+    ) : (
+      <CenteredContainer>
+        <StyledParagraph >Chat with your friends or participate in our community groups!</StyledParagraph>
+      </CenteredContainer>
+    )}
     </MessageAreaContainer>
   );
-};
+}
 
 export default ChatMessageArea;
