@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
-import StartChatPopup from './StartChatPopup';
 import Modal from '../UI/Modal';
 import { useUserFriends } from '../../context/UserDataContext';
 
