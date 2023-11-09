@@ -8,19 +8,12 @@ import useChatMessageSocket, {
   UseChatMessageSocket,
 } from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
+import ContrastPanel from '../UI/ContrastPanel';
 
-const MessageAreaContainer = styled.div`
-  width: calc(75% - 10px); /* Subtract 10px for margin/padding */
-  background-color: black;
-  color: white;
+const MessageAreaContainer = styled(ContrastPanel)`
+  width: 100%;
   padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   border: 2px solid yellow;
-  position: absolute;
-  top: 100px; /* Adjust the offset as needed */
-  right: 0; /* Position on the right */
-  bottom: 0; /* Occupy the full height */
-  overflow-y: auto; /* Add scroll behavior when content overflows */
 `;
 
 const Title = styled.h2`

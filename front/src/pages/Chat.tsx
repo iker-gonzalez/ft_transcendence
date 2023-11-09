@@ -7,6 +7,8 @@ import Message from '../interfaces/chat-message.interface';
 import { fetchAuthorized, getBaseUrl } from '../utils/utils';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
+import CenteredLayout from '../components/UI/CenteredLayout';
+import styled from 'styled-components';
 
 interface MessageData {
   [key: number]: Message[];
@@ -81,6 +83,16 @@ const dummyMessages: MessageData = {
   // Add more message arrays here
 };
 
+const WrapperDiv = styled.div`
+  width: 100%;
+  min-height: 70vh; /* TODO adjust this */
+
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 40px;
+`;
+
 const ChatPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
@@ -115,20 +127,22 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className="chat-page">
-      <ChatSidebar
-        users={users}
-        groups={dummyGroups}
-        handleUserClick={handleUserClick}
-        handleGroupClick={handleGroupClick}
-      />
+    <CenteredLayout>
+      <WrapperDiv>
+        <ChatSidebar
+          users={users}
+          groups={dummyGroups}
+          handleUserClick={handleUserClick}
+          handleGroupClick={handleGroupClick}
+        />
 
-      <ChatMessageArea
-        selectedUser={selectedUser}
-        selectedGroup={selectedGroup}
-        messages={dummyMessages}
-      />
-    </div>
+        <ChatMessageArea
+          selectedUser={selectedUser}
+          selectedGroup={selectedGroup}
+          messages={dummyMessages}
+        />
+      </WrapperDiv>
+    </CenteredLayout>
   );
 };
 
