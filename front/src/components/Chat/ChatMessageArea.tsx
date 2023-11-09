@@ -85,7 +85,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   const handleSendMessage = (newMessage: string) => {
     if (newMessage.trim() !== '') {
       // Implement logic to add the message to the chat or send it to the server
-      const Message = {
+      const message: Message = {
+        id: message
         senderName: userData?.username || 'Anonymous',
         senderAvatar: userData?.avatar || 'Anonymous',
         content: newMessage,
@@ -93,7 +94,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       console.log(Message);
       console.log('user Data:', userData?.intraId);
       // Update the message list by adding the new message
-      //setMessageList((prevMessages) => [...prevMessages, newMessage]);
+      setMessageList((prevMessages) => [...prevMessages, message]);
       // Send the message to the server using the socket
       chatMessageSocketRef.current.emit('privateMessage', {
         receiverId: selectedUser?.id, // Replace with dynamically captured receiver's intra ID
