@@ -57,7 +57,8 @@ const dummyMessages: Message[] = [
   const ChatPage: React.FC = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null); 
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-    const [users, setUsers] = useState<User[]>([]); 
+    const [users, setUsers] = useState<User[]>([]);
+    const [messages, setMessages] = useState<Message[]>([]); 
     
     const { userData } = useUserData();
     console.log('userdataa:', userData);
@@ -88,40 +89,26 @@ const dummyMessages: Message[] = [
 
   console.log('users:', users);
   const handleUserClick = (user: User) => {
-
-    fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/${user.id}`, {
+    fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/667/DM`, /*TODO: change 667 to user.intraid */{
       headers: {
         Authorization: `Bearer ${Cookies.get('token')}`,
       },
     })
-    
     .then(response => response.json())
-    
-    .then(response => {
-  
-      const messages = response.map((item: Message) => {
+    .then((data: Message[]) => {
+      const messages = data.map((item: Message) => {
         return {
           id: item.id,
-          senderName: item.senderName, 
+          senderName: item.senderName,
           senderAvatar: item.senderAvatar,
           content: item.content,
           timestamp: item.timestamp  
         }
       });
-  
       setSelectedUser(user);
       setSelectedGroup(null);
-  
-      return (
-        <ChatMessageArea 
-          selectedUser={user}
-          selectedGroup={selectedGroup}
-          messages={messages}  
-        />
-      )
-  
+      setMessages(messages);
     })
-  
   }
 
   const handleGroupClick = (group: Group) => {
@@ -137,7 +124,6 @@ const dummyMessages: Message[] = [
         handleUserClick={handleUserClick}
         handleGroupClick={handleGroupClick}
       />
-
       <ChatMessageArea
         selectedUser={selectedUser}
         selectedGroup={selectedGroup}
