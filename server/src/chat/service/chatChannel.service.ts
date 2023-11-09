@@ -126,7 +126,8 @@ export class ChatChannelService {
       // Crear el Channel
       await this.prisma.chatRoom.create({
           data:{
-            name: channelName
+            name: channelName,
+            ownerId: adminId
           }
         })
     }
@@ -274,6 +275,51 @@ async leaveUserFromChannel(
   /********************************************************** */
   //                     ADMIN FUNCIONALITY                   //
   /********************************************************** */
+  async addAddminToCahnner(
+    channelRoom: string,
+    ownerId: string,
+    newAdminId: string
+   ): Promise<void> 
+{
+ 
+  if (!channelRoom || !ownerId || !newAdminId)
+  throw new BadRequestException ("channelRoom or ownerId or newAdminId  are null");
+
+  // Get el Channel
+  const foundChatRoom = await this.prisma.chatRoom.findFirst({
+    where: { name: channelRoom,
+    },
+    include:{
+      users:true,
+    },
+  });
+
+  if (!foundChatRoom)
+  throw new BadRequestException ("channelRoom not exist");
+
+  if (ownerId != foundChatRoom.ownerId)
+  throw new BadRequestException ("It is not the owner of the channel, not premissions to do this");
+
+  try{
+
+    // Agregar el usuario como administrador de la sala de chat
+    const updatedChatRoom = await this.prisma.chatRoom.update({
+      where: { id: foundChatRoom.id },
+      data: {
+        adminUsers: {
+          connect: {
+            id: newAdminId,
+          },
+        },
+      },
+    });
+  }
+  catch(error){
+    console.error("Error:", error);
+  }
+
+}
+
 
   /********************************************************** */
   //                     ACCESS FUNCIONALITY                  //
