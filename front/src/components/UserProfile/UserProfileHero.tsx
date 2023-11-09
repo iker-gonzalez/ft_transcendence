@@ -4,6 +4,7 @@ import ContrastPanel from '../UI/ContrastPanel';
 import UserData from '../../interfaces/user-data.interface';
 import UserProfileSettingsAvatar from './UserProfileSettingsAvatar';
 import UserStatsInfo from '../shared/UserStatsInfo';
+import { sm } from '../../constants/styles';
 
 const WrapperDiv = styled.div`
   .avatar-container {
@@ -15,8 +16,13 @@ const WrapperDiv = styled.div`
     align-items: center;
 
     .avatar {
-      width: 250px;
-      height: 250px;
+      width: 200px;
+      height: 200px;
+
+      @media (width > ${sm}) {
+        width: 250px;
+        height: 250px;
+      }
 
       object-fit: cover;
       object-position: center;
@@ -49,7 +55,7 @@ const UserProfileHero: React.FC<{ userData: UserData }> = ({
             userData={userData}
           />
         </div>
-        <h3 className="title-1 mb-16">Hello, {userData.username}!</h3>
+        <h3 className="title-2 mb-16">Hello, {userData.username}!</h3>
         <p className="email mb-24">{userData.email}</p>
         <UserStatsInfo showOnlyEssentialStats={true} />
       </WrapperDiv>

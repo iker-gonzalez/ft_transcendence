@@ -25,10 +25,18 @@ const WrapperDiv = styled.div`
   .title-box {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 24px;
+    align-items: flex-start;
+    gap: 30px;
 
     margin-bottom: 24px;
+
+    .title {
+      white-space: nowrap;
+    }
+
+    .timestamp {
+      text-align: right;
+    }
   }
 
   .players-box {
@@ -162,10 +170,10 @@ const UserStatsMatchList: React.FC<UserStatsMatchListProps> = ({
               return (
                 <div key={game.sessionId} className="session-box">
                   <div className="title-box">
-                    <h3 className="title-3">Match #{index + 1}</h3>
-                    <p className="small">
+                    <h3 className="title-3 title">Match #{index + 1}</h3>
+                    <p className="small timestamp">
                       Played on {formattedDate} at {formattedTime} for{' '}
-                      {formatMsToFullTime(game.elapsedTime)}.
+                      {formatMsToFullTime(game.elapsedTime)}
                     </p>
                   </div>
                   <div className="players-box">

@@ -9,6 +9,7 @@ import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import LoadingFullscreen from '../components/UI/LoadingFullscreen';
+import { sm } from '../constants/styles';
 
 const WrapperDiv = styled.div`
   .container {
@@ -20,8 +21,10 @@ const WrapperDiv = styled.div`
 
     > div {
       width: 100%;
-      min-width: 350px;
-      max-width: 450px;
+      @media (width > ${sm}) {
+        min-width: 350px;
+        max-width: 450px;
+      }
     }
   }
 `;
@@ -52,7 +55,7 @@ const UserStats: React.FC = (): JSX.Element => {
     return (
       <WrapperDiv>
         <CenteredLayout>
-          <h1 className="title-1 mb-24">Game dashboard</h1>
+          <h1 className="title-1 mb-24">Game stats</h1>
           <div className="container">
             <ContrastPanel>
               <UserStatsInfo />
