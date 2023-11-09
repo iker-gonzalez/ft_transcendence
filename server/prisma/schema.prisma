@@ -16,6 +16,12 @@ enum UserStatus {
   PLAYING
 }
 
+enum ChannelType {
+  PUBLIC
+  PRIVATE
+  PASSWORD
+}
+
 model User {
   id        String   @id @unique @default(uuid())
   createdAt DateTime @default(now())
@@ -40,6 +46,9 @@ model User {
 
   connectStatus Boolean       @default(false)
   ChatMessage   ChatMessage[]
+
+  // DM blocked users
+  blockList String[] @db.Uuid
 }
 
 model DirectMessage {
@@ -57,21 +66,45 @@ model DirectMessage {
 }
 
 model ChatRoom {
-  id       String         @id @unique @default(uuid())
-  name     String
+  id        String   @id @unique @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  //
+  ownerId String
+
   // Relación con los mensajes en la sala
   messages ChatMessage[]
   // Relación con los usuarios en la sala
   users    ChatRoomUser[]
+
+  // Privacy
+  type ChannelType @default(PUBLIC)
+
+  // admin
+  admins String[] @db.Uuid
+  bans   String[] @db.Uuid
+  mute   String[] @db.Uuid
+
+  // Relación con usuarios silenciados en esta sala
+  adminUsers ChatRoomUser[] @relation("adminRooms")
+  mutedUsers ChatRoomUser[] @relation("mutedRooms")
 }
 
 model ChatRoomUser {
-  id     String   @id @default(uuid())
+  id     String @id @default(uuid())
   userId String
   roomId String
-  user   User     @relation(fields: [userId], references: [id])
-  room   ChatRoom @relation(fields: [roomId], references: [id])
+
+  mute   Boolean @default(false)
+  admins Boolean @default(false)
+
+  user       User       @relation(fields: [userId], references: [id])
+  room       ChatRoom   @relation(fields: [roomId], references: [id])
   // Agregar cualquier otro dato relacionado con la sala de chat y los usuarios
+  // Relación con salas de chat silenciadas por este usuario
+  mutedRooms ChatRoom[] @relation("mutedRooms")
+  adminRooms ChatRoom[] @relation("adminRooms")
 }
 
 model ChatMessage {
