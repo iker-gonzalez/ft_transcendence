@@ -52,7 +52,7 @@ cursor: pointer;
 transition: background-color 0.2s;
 
 &:hover {
-  background-color: #e0e0e0;
+  background-color: #888802;
 }
 `;
 
@@ -89,6 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handl
       </UserList>
       {isPopupVisible && (
         <Modal dismissModalAction={() => setPopupVisible(false)}>
+          <Title>Chat with one of your friends</Title>
           <List>
             {userFriendsConverted.map((friend, index) => (
               <ListItem 
