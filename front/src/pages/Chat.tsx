@@ -3,11 +3,12 @@ import ChatSidebar from '../components/Chat/ChatSidebar';
 import ChatMessageArea from '../components/Chat/ChatMessageArea';
 import Group from '../interfaces/chat-group.interface';
 import User from '../interfaces/chat-user.interface';
-import Message from '../interfaces/chat-message.interface';
+import Message from '../interfaces/chat-dm-message.interface';
 import { fetchAuthorized, getBaseUrl } from '../utils/utils';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
 import { getIntraId } from '../utils/utils';
+import GroupMessage from '../interfaces/chat-group-message.interface';
   
 /**
  * ChatPage component that displays the chat sidebar and message area.
@@ -21,6 +22,7 @@ const ChatPage: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
 
   const [messages, setMessages] = useState<Message[]>([]); 
+  const [groupMessages, setGroupMessages] = useState<GroupMessage[]>([]);
   
   const { userData } = useUserData();
 
@@ -97,13 +99,30 @@ const ChatPage: React.FC = () => {
 
   /**
    * Handles the click event on a group in the chat sidebar.
+   * Fetches the messages between the signed in user and the selected group.
    * Sets the selected group and clears the selected user.
    * @param group - The selected group.
    */
   const handleGroupClick = (group: Group) => {
+    fetchAuthorized(`${getBaseUrl()}/chat/${group.name}/allChannel`, /* temporary until endpoint is fixed */{
+      headers: {
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+    })
+    .then(response => response.json())
+    .then((data: GroupMessage[]) => {
+      // const groupsMessages = data.map((item: GroupMessage) => {
+      //   return {
+      //     content: item.content,
+      //     timestamp: item.timestamp ,
+      //     sender: item.sender
+      //   }
+      // });
     setSelectedUser(null);
     setSelectedGroup(group);
-  };
+    setGroupMessages(data);
+  })
+}
 
   return (
     <div className="chat-page">
