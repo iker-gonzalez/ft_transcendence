@@ -22,7 +22,6 @@ const ChatPage: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
 
   const [messages, setMessages] = useState<Message[]>([]); 
-  const [groupMessages, setGroupMessages] = useState<GroupMessage[]>([]);
   
   const { userData } = useUserData();
 
@@ -111,16 +110,18 @@ const ChatPage: React.FC = () => {
     })
     .then(response => response.json())
     .then((data: GroupMessage[]) => {
-      // const groupsMessages = data.map((item: GroupMessage) => {
-      //   return {
-      //     content: item.content,
-      //     timestamp: item.timestamp ,
-      //     sender: item.sender
-      //   }
-      // });
+      const messages = data.map((item: GroupMessage) => {
+        return {
+          id: "dssdsfd", //temporary until id is incorporated in endpoint or Message interface is armonized
+          senderName: item.sender.username,
+          senderAvatar: item.sender.avatar,
+          content: item.content,
+          timestamp: item.timestamp  
+        }
+      });
     setSelectedUser(null);
     setSelectedGroup(group);
-    setGroupMessages(data);
+    setMessages(messages);
   })
 }
 
