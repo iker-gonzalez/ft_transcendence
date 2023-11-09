@@ -7,8 +7,6 @@ import UserProfileSettingsUsername from './UserProfileSettingsUsername';
 import UserProfileSettingsOTP from './UserProfileSettingsOTP';
 
 const WrapperDiv = styled.div`
-  width: 650px;
-
   .settings-item {
     display: flex;
     justify-content: space-between;
