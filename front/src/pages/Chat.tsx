@@ -52,6 +52,7 @@ const dummyMessages: Message[] = [
     timestamp: "2023-11-08T09:03:00Z"
   }
 ];
+
   
   const ChatPage: React.FC = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null); 
@@ -63,7 +64,7 @@ const dummyMessages: Message[] = [
     useEffect(() => {
       // Fetch username and update the state
       if (userData) {
-        fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}`, {
+        fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/DM`, {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
         },
@@ -71,13 +72,13 @@ const dummyMessages: Message[] = [
       .then(response => response.json())
       .then((data: User[]) => {
       
-        const users = data.map(item => {
-          return {
-            id: item.id,
-            avatar: item.avatar,
-            username: item.username
-          }
-        });
+      const users = data.map(item => {
+        return {
+          id: item.id,
+          avatar: item.avatar,
+          username: item.username
+        }
+      });
       
         setUsers(users);
 
