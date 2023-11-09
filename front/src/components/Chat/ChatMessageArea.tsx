@@ -114,7 +114,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       // Send the message to the server using the socket
       const receiverId = getIntraId(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
       chatMessageSocketRef.current.emit('privateMessage', {
-        receiverId: 666, // temporary until endpoint is fixed
+        receiverId: receiverId, // temporary until endpoint is fixed
         senderId: userData?.intraId,
         content: newMessage,
     });
