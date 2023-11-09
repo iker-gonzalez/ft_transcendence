@@ -7,7 +7,6 @@ import MessageInput from './ChatMessageInput';
 import useChatMessageSocket, {UseChatMessageSocket, } from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
 import { getIntraId } from '../../utils/utils';
-import { get } from 'http';
 
 const MessageAreaContainer = styled.div`
   width: calc(75% - 10px); /* Subtract 10px for margin/padding */
@@ -87,22 +86,19 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     if (newMessage.trim() !== '') {
       // Implement logic to add the message to the chat or send it to the server
       const message: Message = {
-        id: "pepe",
+        id: "pepe", //substitute with real random id
         senderName: userData?.username || 'Anonymous',
         senderAvatar: userData?.avatar || 'Anonymous',
         content: newMessage,
         timestamp: new Date().toString(),
       };
       console.log(message);
-      console.log('user Data:', userData?.intraId);
       // Update the message list by adding the new message
       setNewMessageList((prevMessages) => [...prevMessages, message]);
       // Send the message to the server using the socket
-      console.log('receiverId:', selectedUser?.id);
-      console.log('senderId:', userData?.intraId);
       const receiverId = getIntraId(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
       chatMessageSocketRef.current.emit('privateMessage', {
-        receiverId: receiverId, // temporary until endpoint is fixed
+        receiverId: 666, // temporary until endpoint is fixed
         senderId: userData?.intraId,
         content: newMessage,
     });
