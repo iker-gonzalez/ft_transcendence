@@ -101,6 +101,9 @@ const ThemeSelector = styled.div<{ $backgroundImg: string }>`
 
     cursor: pointer;
 
+    @media (width <= ${sm}) {
+      font-size: 12px;
+    }
     font-weight: bold;
 
     background-image: url(${(props) => props.$backgroundImg});
