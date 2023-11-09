@@ -86,12 +86,13 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     if (newMessage.trim() !== '') {
       // Implement logic to add the message to the chat or send it to the server
       const message: Message = {
-        id: message
+        id: "pepe",
         senderName: userData?.username || 'Anonymous',
         senderAvatar: userData?.avatar || 'Anonymous',
         content: newMessage,
+        timestamp: new Date().toString(),
       };
-      console.log(Message);
+      console.log(message);
       console.log('user Data:', userData?.intraId);
       // Update the message list by adding the new message
       setMessageList((prevMessages) => [...prevMessages, message]);
