@@ -7,7 +7,6 @@ import MessageInput from './ChatMessageInput';
 import useChatMessageSocket, {UseChatMessageSocket, } from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
 
-
 const MessageAreaContainer = styled.div`
   width: calc(75% - 10px); /* Subtract 10px for margin/padding */
   background-color: black;
@@ -74,7 +73,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     }, [isSocketConnected, chatMessageSocketRef]);
 
     // Store the message list in a state variable
-    const [messageList, setMessageList] = useState<Message[]>([]);
+    const [newMessageList, setNewMessageList] = useState<Message[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
@@ -95,11 +94,13 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       console.log(message);
       console.log('user Data:', userData?.intraId);
       // Update the message list by adding the new message
-      setMessageList((prevMessages) => [...prevMessages, message]);
+      setNewMessageList((prevMessages) => [...prevMessages, message]);
       // Send the message to the server using the socket
+      console.log('receiverId:', selectedUser?.id);
+      console.log('senderId:', userData?.intraId);
       chatMessageSocketRef.current.emit('privateMessage', {
-        receiverId: selectedUser?.id, // Replace with dynamically captured receiver's intra ID
-        senderId: userData?.intraId, // Replace with dynamically captured sender's intra ID
+        receiverId: 667, //TODO: change 667 to user.intraid
+        senderId: userData?.intraId,
         content: newMessage,
     });
       // Clear the input field
@@ -111,13 +112,13 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     <MessageAreaContainer>
       {title && <Title>{title}</Title>}
       <MessageList>
-        {messages.map((message, index) => (
-          <MessageItem key={index}>
+        {messages.map((message) => (
+          <MessageItem key={message.id}>
             {`${message.senderName}: ${message.content}`}
           </MessageItem>
         ))}
         {/* Render the new message below the last message */}
-        {messageList.map((messageData, index) => (
+        {newMessageList.map((messageData, index) => (
           <MessageItem key={index}>
             {`${messageData.senderName}: ${messageData.content}`}
           </MessageItem>
