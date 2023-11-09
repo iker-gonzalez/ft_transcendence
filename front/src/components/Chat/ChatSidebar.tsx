@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
+import StartChatPopup from './StartChatPopup';
 
 const SidebarContainer = styled.div`
   width: calc(25% - 10px); /* Subtract 10px for margin/padding */
@@ -49,10 +50,13 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handleGroupClick }) => {
+  const [isPopupVisible, setPopupVisible] = useState(false);
   return (
     <SidebarContainer>
+      {isPopupVisible && <StartChatPopup onClose={() => setPopupVisible(false)} />}
       <UserList>
         <Title>Direct Messages</Title>
+        <span style={{ marginLeft: '10px', cursor: 'pointer' }} onClick={() => setPopupVisible(true)}>+</span>
         <List>
           {users.map((user) => (
             <li key={user.id} onClick={() => handleUserClick(user)}>
