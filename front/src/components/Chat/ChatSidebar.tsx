@@ -3,43 +3,46 @@ import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import StartChatPopup from './StartChatPopup';
+import Modal from '../UI/Modal';
+import { useUserFriends } from '../../context/UserDataContext';
 
 const SidebarContainer = styled.div`
-  width: calc(25% - 10px); /* Subtract 10px for margin/padding */
-  background-color: black;
-  color: white;
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  border: 2px solid yellow;
-  position: absolute;
-  top: 100px; /* Adjust the offset as needed */
-  left: 0; /* Position on the left */
-  bottom: 0; /* Occupy the full height */
-  overflow-y: auto; /* Add scroll behavior when content overflows */
+width: calc(25% - 10px); /* Subtract 10px for margin/padding */
+background-color: black;
+color: white;
+padding: 20px;
+box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+border: 2px solid yellow;
+position: absolute;
+top: 100px; /* Adjust the offset as needed */
+left: 0; /* Position on the left */
+bottom: 0; /* Occupy the full height */
+overflow-y: auto; /* Add scroll behavior when content overflows */
 `;
 
 const UserList = styled.div`
-  margin-bottom: 20px;
+margin-bottom: 20px;
 `;
 
 const Title = styled.h2`
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 10px;
+font-size: 28px;
+font-weight: bold;
+margin-bottom: 10px;
 `;
 
 const List = styled.ul`
-  list-style: none;
+list-style: none;
 `;
 
 const ListItem = styled.li`
-  padding: 8px 0;
-  cursor: pointer;
-  transition: background-color 0.2s;
+padding: 8px 0;
+font-size: 20px;
+cursor: pointer;
+transition: background-color 0.2s;
 
-  &:hover {
-    background-color: #e0e0e0;
-  }
+&:hover {
+  background-color: #e0e0e0;
+}
 `;
 
 interface SidebarProps {
@@ -51,31 +54,44 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ users, groups, handleUserClick, handleGroupClick }) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const { userFriends } = useUserFriends();
+  console.log('friends:', userFriends);
   return (
     <SidebarContainer>
-      {isPopupVisible && <StartChatPopup onClose={() => setPopupVisible(false)} />}
       <UserList>
         <Title>Direct Messages</Title>
         <span style={{ marginLeft: '10px', cursor: 'pointer' }} onClick={() => setPopupVisible(true)}>+</span>
         <List>
           {users.map((user) => (
-            <li key={user.id} onClick={() => handleUserClick(user)}>
+            <ListItem key={user.id} onClick={() => handleUserClick(user)}>
               {user.username}
-            </li>
+            </ListItem>
           ))}
         </List>
-        <br />
+      </UserList>
+      {isPopupVisible && (
+        <Modal dismissModalAction={() => setPopupVisible(false)}>
+          <List>
+            {userFriends.map((friend, index) => (
+              <ListItem key={index}>
+                {friend.username}
+              </ListItem>
+            ))}
+          </List>
+        </Modal>
+      )}
+      <UserList>
         <Title>Group Chats</Title>
         <List>
           {groups.map((group) => (
-            <li key={group.id} onClick={() => handleGroupClick(group)}>
+            <ListItem key={group.id} onClick={() => handleGroupClick(group)}>
               {group.name}
-            </li>
+            </ListItem>
           ))}
         </List>
-        </UserList>
+      </UserList>
     </SidebarContainer>
   );
-};
+}
 
 export default Sidebar;
