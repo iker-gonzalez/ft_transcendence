@@ -90,3 +90,15 @@ export function getIsPlayer1(
 
   return playerIndex === 0;
 }
+
+// Temporary function to get the intra ID of a user from their username until endpoint is implemented
+export function getIntraId(username: string) {
+  if (username == 'ikgonzal')
+    return 88036;
+  else if (username == 'test-')
+    return 666;
+  else if (username == 'test2-')
+    return 667;
+  else if (username == 'test3-')
+    return 668;
+}

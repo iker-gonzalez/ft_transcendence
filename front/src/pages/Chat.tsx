@@ -7,6 +7,7 @@ import Message from '../interfaces/chat-message.interface';
 import { fetchAuthorized, getBaseUrl } from '../utils/utils';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
+import { getIntraId } from '../utils/utils';
 
 const dummyGroups = [
   { id: 101, name: 'NAUTILUS' },
@@ -49,7 +50,8 @@ const dummyGroups = [
 
   console.log('users:', users);
   const handleUserClick = (user: User) => {
-    fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/668/DM`, /*TODO: change 667 to user.intraid */{
+    const userIntraId = getIntraId(user.username); //temporary until endpoint is fixed
+    fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/${userIntraId}/DM`, /* temporary until endpoint is fixed */{
       headers: {
         Authorization: `Bearer ${Cookies.get('token')}`,
       },

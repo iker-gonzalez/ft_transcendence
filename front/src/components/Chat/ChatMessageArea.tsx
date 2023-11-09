@@ -6,6 +6,8 @@ import Message from '../../interfaces/chat-message.interface';
 import MessageInput from './ChatMessageInput';
 import useChatMessageSocket, {UseChatMessageSocket, } from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
+import { getIntraId } from '../../utils/utils';
+import { get } from 'http';
 
 const MessageAreaContainer = styled.div`
   width: calc(75% - 10px); /* Subtract 10px for margin/padding */
@@ -98,8 +100,9 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       // Send the message to the server using the socket
       console.log('receiverId:', selectedUser?.id);
       console.log('senderId:', userData?.intraId);
+      const receiverId = getIntraId(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
       chatMessageSocketRef.current.emit('privateMessage', {
-        receiverId: 667, //TODO: change 667 to user.intraid
+        receiverId: receiverId, // temporary until endpoint is fixed
         senderId: userData?.intraId,
         content: newMessage,
     });
