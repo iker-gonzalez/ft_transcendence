@@ -40,7 +40,7 @@ For the official subject of the project:
 - [X] Your website must be a single-page application. The user should be able to use the Back and Forward buttons of the browser.
 - [x] Your website must be compatible with the latest stable up-to-date version of Google Chrome and one additional web browser of your choice.
 - [ ] The user should encounter no unhandled errors and no warnings when browsing the website. -> TO CHECK BEFORE SUBMISSION
-- [ ] Everything has to be launch by a single call to: `docker-compose up --build`
+- [x] Everything has to be launch by a single call to: `docker-compose up --build`
 ### Security concerns
 - [ ] Any password stored in your database must be hashed. --> CHECK CHAT PASSWORD
 - [x] Your website must be protected against SQL injections.
