@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
-import Message from '../../interfaces/chat-message.interface';
+import Message from '../../interfaces/chat-dm-message.interface';
 import MessageInput from './ChatMessageInput';
 import useChatMessageSocket, {UseChatMessageSocket, } from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
