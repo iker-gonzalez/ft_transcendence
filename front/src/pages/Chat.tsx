@@ -15,14 +15,14 @@ const dummyGroups = [
   // Add more groups here
 ];
   
-  const ChatPage: React.FC = () => {
+const ChatPage: React.FC = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null); 
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const [users, setUsers] = useState<User[]>([]);
     const [messages, setMessages] = useState<Message[]>([]); 
     
     const { userData } = useUserData();
-    console.log('userdataa:', userData);
+
     useEffect(() => {
       // Fetch username and update the state
       if (userData) {
@@ -48,7 +48,6 @@ const dummyGroups = [
       }
     }, [userData]);
 
-  console.log('users:', users);
   const handleUserClick = (user: User) => {
     const userIntraId = getIntraId(user.username); //temporary until endpoint is fixed
     fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/${userIntraId}/DM`, /* temporary until endpoint is fixed */{
