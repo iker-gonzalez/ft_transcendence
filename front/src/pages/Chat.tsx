@@ -8,46 +8,69 @@ import { fetchAuthorized, getBaseUrl } from '../utils/utils';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
 import { getIntraId } from '../utils/utils';
-
-const dummyGroups = [
-  { id: 101, name: 'NAUTILUS' },
-  { id: 102, name: 'MAGRATHEA' },
-  // Add more groups here
-];
   
+/**
+ * ChatPage component that displays the chat sidebar and message area.
+ * @returns React functional component.
+ */
 const ChatPage: React.FC = () => {
-    const [selectedUser, setSelectedUser] = useState<User | null>(null); 
-    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-    const [users, setUsers] = useState<User[]>([]);
-    const [messages, setMessages] = useState<Message[]>([]); 
+  const [selectedUser, setSelectedUser] = useState<User | null>(null); 
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  
+  const [users, setUsers] = useState<User[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
+
+  const [messages, setMessages] = useState<Message[]>([]); 
+  
+  const { userData } = useUserData();
+
+  useEffect(() => {
+    // Fetch all users that the signed in user has chatted with privately
+    if (userData) {
+      fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/DM`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+    })
+    .then(response => response.json())
+    .then((data: User[]) => {
     
-    const { userData } = useUserData();
-
-    useEffect(() => {
-      // Fetch username and update the state
-      if (userData) {
-        fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/DM`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      })
-      .then(response => response.json())
-      .then((data: User[]) => {
-      
-      const users = data.map(item => {
-        return {
-          id: item.id,
-          avatar: item.avatar,
-          username: item.username
-        }
-      });
-      
-        setUsers(users);
-
-      });
+    const users = data.map(item => {
+      return {
+        id: item.id,
+        avatar: item.avatar,
+        username: item.username
       }
-    }, [userData]);
+    });
+      setUsers(users);
+    });
+    
+    // Fetch all groups that the signed in user has chatted in
+    fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/CM`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+    })
+    .then(response => response.json())
+    .then((data: Group[]) => {
+    
+    const groups = data.map(item => {
+      return {
+        id: item.id,
+        name: item.name
+      }
+    });
+      setGroups(groups);
+    })
+  }
+  }, [userData])
 
+
+  /**
+   * Handles the click event on a user in the chat sidebar.
+   * Fetches the messages between the signed in user and the selected user.
+   * @param user - The selected user.
+   */
   const handleUserClick = (user: User) => {
     const userIntraId = getIntraId(user.username); //temporary until endpoint is fixed
     fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/${userIntraId}/DM`, /* temporary until endpoint is fixed */{
@@ -72,6 +95,11 @@ const ChatPage: React.FC = () => {
     })
   }
 
+  /**
+   * Handles the click event on a group in the chat sidebar.
+   * Sets the selected group and clears the selected user.
+   * @param group - The selected group.
+   */
   const handleGroupClick = (group: Group) => {
     setSelectedUser(null);
     setSelectedGroup(group);
@@ -81,7 +109,7 @@ const ChatPage: React.FC = () => {
     <div className="chat-page">
       <ChatSidebar
         users={users}
-        groups={dummyGroups}
+        groups={groups}
         handleUserClick={handleUserClick}
         handleGroupClick={handleGroupClick}
       />
