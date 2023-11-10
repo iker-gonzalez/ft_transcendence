@@ -19,7 +19,7 @@ const WrapperDiv = styled.div`
   position: absolute;
   bottom: 80px;
   left: 60px;
-  z-index: 100;
+  z-index: 9999;
 
   width: fit-content;
   min-width: 300px;

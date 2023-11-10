@@ -11,8 +11,7 @@ import { toFileStream } from 'qrcode';
 import { OtpAuthUrlDto } from './dto/otp-auth-url.dto';
 import { ActivateOtpResponseDto } from './dto/activate-otp-response.dto';
 import { ActivateOtpDto } from './dto/activate-otp.dto';
-import { createCipheriv, randomBytes, scrypt } from 'crypto';
-import { promisify } from 'util';
+import { createCipheriv } from 'crypto';
 import { createDecipheriv } from 'crypto';
 
 @Injectable()
@@ -22,8 +21,8 @@ export class TwoFactorAuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  key: Buffer;
-  iv = randomBytes(16);
+  key = 'a9a2c446fc3a2e2627202dcedf1ef358';
+  iv = '9491960c7bd9e96e';
 
   _isTestUser(intraId: string): boolean {
     return (
@@ -50,13 +49,6 @@ export class TwoFactorAuthService {
       );
     }
 
-    // The key length is dependent on the algorithm.
-    // In this case for aes256, it is 32 bytes.
-    this.key = (await promisify(scrypt)(
-      this.configService.get<string>('CIPHER_SECRET'),
-      'salt',
-      32,
-    )) as Buffer;
     const cipher = createCipheriv('aes-256-ctr', this.key, this.iv);
 
     const encryptedText = Buffer.concat([
@@ -69,7 +61,7 @@ export class TwoFactorAuthService {
         id: user.id,
       },
       data: {
-        twoFactorAuthSecret: encryptedText.toString('hex'),
+        twoFactorAuthSecret: encryptedText,
       },
     });
 
@@ -92,7 +84,7 @@ export class TwoFactorAuthService {
   ): Promise<boolean> {
     const decipher = createDecipheriv('aes-256-ctr', this.key, this.iv);
     const decryptedText = Buffer.concat([
-      decipher.update(Buffer.from(user.twoFactorAuthSecret, 'hex')),
+      decipher.update(Buffer.from(user.twoFactorAuthSecret)),
       decipher.final(),
     ]);
 
