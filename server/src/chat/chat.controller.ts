@@ -15,7 +15,7 @@ import {
     ApiUnauthorizedResponse,
   } from '@nestjs/swagger';
 import { ChatDMService } from './service/chatDM.service';
-import { swaggerConstants } from 'config/swagger.constants';
+import { swaggerConstants } from '../../config/swagger.constants';
 import { ChatChannelService } from './service/chatChannel.service';
 
 @ApiTags('Chat')
