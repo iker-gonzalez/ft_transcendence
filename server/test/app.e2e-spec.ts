@@ -183,8 +183,8 @@ describe('App e2e', () => {
 
         jest
           .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
-          .mockImplementation((): boolean => {
-            return true;
+          .mockImplementation((): Promise<boolean> => {
+            return Promise.resolve(true);
           });
 
         const reqBody = {
@@ -262,8 +262,8 @@ describe('App e2e', () => {
 
         jest
           .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
-          .mockImplementation((): boolean => {
-            return false;
+          .mockImplementation((): Promise<boolean> => {
+            return Promise.resolve(false);
           });
 
         const reqBody = {
@@ -364,8 +364,8 @@ describe('App e2e', () => {
 
       jest
         .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
-        .mockImplementation((): boolean => {
-          return true;
+        .mockImplementation((): Promise<boolean> => {
+          return Promise.resolve(true);
         });
 
       const reqBody = {
@@ -3093,7 +3093,7 @@ describe('App e2e', () => {
               });
 
               socket.on(
-                `gameAborted/user1/${dataSetInitial.gameDataId}`,
+                `gameAborted/user2/${dataSetInitial.gameDataId}`,
                 () => {
                   expect(gameDataService.gameDataSets).toHaveLength(0);
 
