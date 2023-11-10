@@ -10,11 +10,16 @@ import useChatMessageSocket, {
 import { useUserData } from '../../context/UserDataContext';
 import { getIntraId } from '../../utils/utils';
 import ContrastPanel from '../UI/ContrastPanel';
+import GradientBorder from '../UI/GradientBorder'; //Use GradientBorder in MessageArea component
+import {
+  darkerBgColor,
+  darkestBgColor,
+  primaryLightColor,
+} from '../../constants/color-tokens';
 
 const MessageAreaContainer = styled(ContrastPanel)`
   width: 100%;
   padding: 20px;
-  border: 2px solid yellow;
 `;
 
 const Title = styled.h2`
@@ -38,6 +43,12 @@ const CenteredContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
+
+  .chat-mode-gradient {
+    background: #00aeb5;
+    background: linear-gradient(180deg, #ffd369 0%, #00aeb5 100%);
+    border-radius: 25px;
+  }
 `;
 
 const StyledParagraph = styled.p`
@@ -46,6 +57,10 @@ const StyledParagraph = styled.p`
   color: white;
   text-align: center;
 `;
+
+
+
+// Use GradientBorder in your component
 
 interface ChatMessageAreaProps {
   selectedUser: User | null;
