@@ -122,4 +122,34 @@ export class TwoFactorAuthService {
       updated: 1,
     };
   }
+
+  async deactivateTwoFactorAuthentication(
+    deactivateOtpDto: ActivateOtpDto,
+    user: User,
+  ): Promise<ActivateOtpResponseDto> {
+    const { otp: twoFactorAuthenticationCode } = deactivateOtpDto;
+
+    const isCodeValid = await this.isTwoFactorAuthenticationCodeValid(
+      twoFactorAuthenticationCode,
+      user,
+    );
+
+    if (!isCodeValid) {
+      throw new BadRequestException('Invalid two factor authentication code');
+    }
+
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        isTwoFactorAuthEnabled: false,
+        twoFactorAuthSecret: null,
+      },
+    });
+
+    return {
+      updated: 1,
+    };
+  }
 }
