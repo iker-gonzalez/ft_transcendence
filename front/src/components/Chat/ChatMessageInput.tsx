@@ -7,7 +7,7 @@ const InputContainer = styled.div`
 `;
 
 const InputField = styled.input`
-  width: 90%;
+  width: 80%;
   padding: 10px;
   margin-right: 20px;
   border: 1px solid #ccc;
