@@ -8,6 +8,7 @@ type OtpSubmitFormProps = {
   otpValue: string;
   setOtpValue: React.Dispatch<React.SetStateAction<string>>;
   handleActivateWithOTP: () => void;
+  calloutText?: string;
 };
 
 const StyledForm = styled.form`
@@ -21,6 +22,7 @@ const OtpSubmitForm: React.FC<OtpSubmitFormProps> = ({
   otpValue,
   setOtpValue,
   handleActivateWithOTP,
+  calloutText,
 }): JSX.Element => {
   return (
     <StyledForm
@@ -44,7 +46,7 @@ const OtpSubmitForm: React.FC<OtpSubmitFormProps> = ({
           }
         }} // Update state on input change
       />
-      <MainButton type="submit">Sign In</MainButton>
+      <MainButton type="submit">{calloutText ?? 'Sign In'}</MainButton>
     </StyledForm>
   );
 };
