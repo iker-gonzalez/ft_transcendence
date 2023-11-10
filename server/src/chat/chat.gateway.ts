@@ -107,4 +107,6 @@ async handleSendMessageToRoom( client: Socket, payload) {
   await this.chatChannelservice.leaveUserFromChannel(payload.roomName, userId);
 
  }
+
+ 
 }

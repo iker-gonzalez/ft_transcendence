@@ -4,6 +4,7 @@ import { GetDirectMessageDto } from './../dto/get-direct-message.dto';
 import { AddMessageToUserDto } from './../dto/add-message.dto';
 import { UserService } from '../../user/user.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConversationMessageDTO } from '../dto/conversation-message.dto';
 
 @Injectable()
 export class ChatChannelService {
@@ -58,7 +59,7 @@ export class ChatChannelService {
         throw new BadRequestException('roomName not found in DB');
       }
     
-      const conversations = await this.prisma.chatMessage.findMany({
+      const conversationsChannel = await this.prisma.chatMessage.findMany({
         where: {
           roomId: chatRoom.id,
         },
@@ -67,6 +68,7 @@ export class ChatChannelService {
           createdAt: true,
           sender: {
             select: {
+              id: true,
               username: true,
               avatar: true,
               connectStatus: true,
@@ -79,10 +81,27 @@ export class ChatChannelService {
       });
       
       // El objeto `conversations` contendrá todas las conversaciones relacionadas con el canal, incluyendo el contenido de los mensajes
-    
-    return conversations;
+      const conversationDTO = [];
+      for (const message of conversationsChannel )
+      {
+          conversationDTO.push(new ConversationMessageDTO(message, message.sender, null));
+  
+      }
+    return conversationDTO;
   }
 
+
+  async getAllExistingChannels(
+  ) :  Promise< any [] > 
+  {
+    const allExistingChannels = await this.prisma.chatRoom.findMany({
+      select: {
+        name: true,
+        type: true, // Asegúrate de tener el campo "type" en tu modelo de ChatRoom
+      },
+    });
+    return allExistingChannels;
+  }
 
 
   /********************************************************** */
