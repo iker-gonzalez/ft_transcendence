@@ -9,12 +9,18 @@ import useChatMessageSocket, {
 } from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
 import { getIntraId } from '../../utils/utils';
-import ContrastPanel from '../UI/ContrastPanel';
+import GradientBorder from '../UI/GradientBorder';
+import { darkerBgColor } from '../../constants/color-tokens';
 
-const MessageAreaContainer = styled(ContrastPanel)`
+const MessageAreaContainer = styled.div`
   width: 100%;
-  padding: 20px;
-  border: 2px solid yellow;
+  display: flex;
+
+  .gradient-border {
+    background-color: ${darkerBgColor};
+    padding: 20px;
+    flex: 1;
+  }
 `;
 
 const Title = styled.h2`
@@ -118,36 +124,38 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   return (
     <MessageAreaContainer>
-      {selectedUser || selectedGroup ? (
-        <>
-          {title && <Title>{title}</Title>}
-          <MessageList>
-            {messages.map((message) => (
-              <MessageItem key={message.id}>
-                {`${message.senderName}: ${message.content}`}
-              </MessageItem>
-            ))}
-            {/* Render the new message below the last message */}
-            {newMessageList.map((messageData, index) => (
-              <MessageItem key={index}>
-                {`${messageData.senderName}: ${messageData.content}`}
-              </MessageItem>
-            ))}
-          </MessageList>
+      <GradientBorder className="gradient-border">
+        {selectedUser || selectedGroup ? (
+          <>
+            {title && <Title>{title}</Title>}
+            <MessageList>
+              {messages.map((message) => (
+                <MessageItem key={message.id}>
+                  {`${message.senderName}: ${message.content}`}
+                </MessageItem>
+              ))}
+              {/* Render the new message below the last message */}
+              {newMessageList.map((messageData, index) => (
+                <MessageItem key={index}>
+                  {`${messageData.senderName}: ${messageData.content}`}
+                </MessageItem>
+              ))}
+            </MessageList>
 
-          <MessageInput
-            message={message}
-            onInputChange={handleInputChange}
-            onMessageSubmit={handleSendMessage}
-          />
-        </>
-      ) : (
-        <CenteredContainer>
-          <StyledParagraph>
-            Chat with your friends or participate in our community groups!
-          </StyledParagraph>
-        </CenteredContainer>
-      )}
+            <MessageInput
+              message={message}
+              onInputChange={handleInputChange}
+              onMessageSubmit={handleSendMessage}
+            />
+          </>
+        ) : (
+          <CenteredContainer>
+            <StyledParagraph>
+              Chat with your friends or participate in our community groups!
+            </StyledParagraph>
+          </CenteredContainer>
+        )}
+      </GradientBorder>
     </MessageAreaContainer>
   );
 };
