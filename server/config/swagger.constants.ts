@@ -217,6 +217,9 @@ export const swaggerConstants = {
         description: 'Return all channel users is in'
       }
     },
+    allExistingChannel:{
+      summary: 'Return all existing channel un DB. The name and its privacy',
+    },
     channelMess:{
         summary: 'Return all the messages that have been sent in the channel ',
         ok:{
