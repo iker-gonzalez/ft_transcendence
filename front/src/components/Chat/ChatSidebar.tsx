@@ -29,7 +29,7 @@ const PlusSign = styled.span`
 `;
 
 const Title = styled.h2`
-  font-size: 28px;
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 10px;
 `;
@@ -40,12 +40,12 @@ const List = styled.ul`
 
 const ListItem = styled.li`
   padding: 8px 0;
-  font-size: 20px;
+  font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #888802;
+    color: #888802;
   }
 `;
 
