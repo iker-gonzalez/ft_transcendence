@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,58 +7,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserStatus {
-  ONLINE
-  OFFLINE
-  PLAYING
-}
-
 model User {
-  id        String   @id @unique @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  twoFactorAuthSecret    String?
-  isTwoFactorAuthEnabled Boolean @default(false)
-
-  intraId  Int    @unique
-  username String @unique @db.VarChar(12)
-  avatar   String
-  email    String @unique
-
-  friends Friend[]
-
-  status UserStatus @default(OFFLINE)
-
-  sentMessages     DirectMessage[] @relation("sentMessages")
-  receivedMessages DirectMessage[] @relation("receivedMessages")
-  // Relación con las salas de chat
-  chatRooms        ChatRoomUser[]
-
-  connectStatus Boolean       @default(false)
-  ChatMessage   ChatMessage[]
+  id                     String          @id @unique @default(uuid())
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  intraId                Int             @unique
+  username               String          @unique @db.VarChar(12)
+  avatar                 String
+  email                  String          @unique
+  isTwoFactorAuthEnabled Boolean         @default(false)
+  connectStatus          Boolean         @default(false)
+  status                 UserStatus      @default(OFFLINE)
+  twoFactorAuthSecret    Bytes?
+  ChatMessage            ChatMessage[]
+  chatRooms              ChatRoomUser[]
+  receivedMessages       DirectMessage[] @relation("receivedMessages")
+  sentMessages           DirectMessage[] @relation("sentMessages")
+  friends                Friend[]
 }
 
 model DirectMessage {
   id         String   @id @unique @default(uuid())
-  senderId   String? // ID del remitente del mensaje
-  receiverId String? // ID del destinatario del mensaje
-  content    String // Contenido  del mensaje
-  createdAt  DateTime @default(now()) // Fecha y hora de creación del mensaje
-
-  // Relación con el usuario remitente
-  sender User? @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-
-  // Relación con el usuario destinatario
-  receiver User? @relation("receivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  senderId   String?
+  receiverId String?
+  content    String
+  createdAt  DateTime @default(now())
+  receiver   User?    @relation("receivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender     User?    @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 }
 
 model ChatRoom {
   id       String         @id @unique @default(uuid())
   name     String
-  // Relación con los mensajes en la sala
   messages ChatMessage[]
-  // Relación con los usuarios en la sala
   users    ChatRoomUser[]
 }
 
@@ -69,52 +47,44 @@ model ChatRoomUser {
   id     String   @id @default(uuid())
   userId String
   roomId String
-  user   User     @relation(fields: [userId], references: [id])
   room   ChatRoom @relation(fields: [roomId], references: [id])
-  // Agregar cualquier otro dato relacionado con la sala de chat y los usuarios
+  user   User     @relation(fields: [userId], references: [id])
 }
 
 model ChatMessage {
   id        String   @id @unique @default(uuid())
   content   String
   createdAt DateTime @default(now())
-  // Relación con la sala de chat
-  chatRoom  ChatRoom @relation(fields: [roomId], references: [id])
   roomId    String
-  // Relación con el usuario que envió el mensaje
-  sender    User     @relation(fields: [senderId], references: [id])
   senderId  String
+  chatRoom  ChatRoom @relation(fields: [roomId], references: [id])
+  sender    User     @relation(fields: [senderId], references: [id])
 }
 
 model UserGameSession {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-
-  players UserIntraData[]
+  id        String          @id @default(uuid())
+  createdAt DateTime        @default(now())
+  players   UserIntraData[]
 }
 
 model UserIntraData {
-  id String @id @unique @default(uuid())
-
-  intraId  Int
-  username String
-  avatar   String
-  email    String
-
-  UserGameSession   UserGameSession? @relation(fields: [userGameSessionId], references: [id], onDelete: Cascade)
+  id                String           @id @unique @default(uuid())
+  intraId           Int
+  username          String
+  avatar            String
+  email             String
   userGameSessionId String?
+  UserGameSession   UserGameSession? @relation(fields: [userGameSessionId], references: [id], onDelete: Cascade)
 }
 
 model Friend {
-  id      String @id @unique @default(uuid())
-  intraId Int
-
-  User   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String?
-
+  userId   String?
+  intraId  Int
   avatar   String
-  username String
   email    String
+  username String
+  id       String  @id @unique @default(uuid())
+  User     User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model GameDataSetPlayer {
@@ -124,14 +94,20 @@ model GameDataSetPlayer {
   isWinner      Boolean
   avatar        String
   username      String
-  GameDataSet   GameDataSet? @relation(fields: [gameDataSetId], references: [id], onDelete: Cascade)
   gameDataSetId String?
+  GameDataSet   GameDataSet? @relation(fields: [gameDataSetId], references: [id], onDelete: Cascade)
 }
 
 model GameDataSet {
   id          String              @id @unique @default(uuid())
-  sessionId   String
   startedAt   DateTime
   elapsedTime Int
+  sessionId   String
   players     GameDataSetPlayer[]
+}
+
+enum UserStatus {
+  ONLINE
+  OFFLINE
+  PLAYING
 }

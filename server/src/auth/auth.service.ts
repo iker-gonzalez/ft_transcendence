@@ -80,6 +80,12 @@ export class AuthService {
         user.isTwoFactorAuthEnabled &&
         !this._isTestUser(intraId.toString())
       ) {
+        if (!otp) {
+          throw new UnauthorizedException(
+            'Two-factor authentication is enabled',
+          );
+        }
+
         const isOtpCodeValid =
           await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
             otp,
