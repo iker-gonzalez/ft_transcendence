@@ -20,6 +20,7 @@ import {
 const MessageAreaContainer = styled(ContrastPanel)`
   width: 100%;
   padding: 20px;
+  position: relative; 
 `;
 
 const Title = styled.h2`
@@ -58,9 +59,12 @@ const StyledParagraph = styled.p`
   text-align: center;
 `;
 
+const MessageInputWrapper = styled.div`
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+`;
 
-
-// Use GradientBorder in your component
 
 interface ChatMessageAreaProps {
   selectedUser: User | null;
@@ -149,12 +153,13 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               </MessageItem>
             ))}
           </MessageList>
-
+          <MessageInputWrapper>
           <MessageInput
             message={message}
             onInputChange={handleInputChange}
             onMessageSubmit={handleSendMessage}
           />
+          </MessageInputWrapper>
         </>
       ) : (
         <CenteredContainer>
