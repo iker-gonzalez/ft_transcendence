@@ -78,19 +78,19 @@ export class TwoFactorAuthController {
   }
 
   @Delete('deactivate')
-  // @ApiOperation({
-  //   summary: swaggerConstants.twofa.activate.summary,
-  // })
-  // @ApiOkResponse({
-  //   description: swaggerConstants.twofa.activate.ok.description,
-  //   type: ActivateOtpResponseDto,
-  // })
-  // @ApiUnauthorizedResponse({
-  //   description: swaggerConstants.twofa.activate.unauthorized.description,
-  // })
-  // @ApiBadRequestResponse({
-  //   description: swaggerConstants.twofa.activate.bad.description,
-  // })
+  @ApiOperation({
+    summary: swaggerConstants.twofa.deactivate.summary,
+  })
+  @ApiOkResponse({
+    description: swaggerConstants.twofa.deactivate.ok.description,
+    type: ActivateOtpResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: swaggerConstants.twofa.deactivate.unauthorized.description,
+  })
+  @ApiBadRequestResponse({
+    description: swaggerConstants.twofa.deactivate.bad.description,
+  })
   async turnOffTwoFactorAuthentication(
     @GetUser() user: User,
     @Body() deactivateOtpDto: ActivateOtpDto,
