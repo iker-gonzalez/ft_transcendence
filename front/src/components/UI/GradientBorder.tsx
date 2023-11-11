@@ -7,6 +7,7 @@ const WrapperDiv = styled.div`
   background: linear-gradient(180deg, #ffd369 0%, #00aeb5 100%);
   border-radius: 25px;
   display: flex;
+  flex: 1;
 
   .container {
     border-radius: inherit;
