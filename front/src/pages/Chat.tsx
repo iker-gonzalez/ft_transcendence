@@ -94,7 +94,6 @@ const ChatPage: React.FC = () => {
       .then((data: Message[]) => {
         const messages = data.map((item: Message) => {
           return {
-            id: item.id,
             senderName: item.senderName,
             senderAvatar: item.senderAvatar,
             content: item.content,
