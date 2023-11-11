@@ -94,7 +94,7 @@ export class TwoFactorAuthService {
     });
   }
 
-  async activaTwoFactorAuthentication(
+  async activateTwoFactorAuthentication(
     activateOtpDto: ActivateOtpDto,
     user: User,
   ): Promise<ActivateOtpResponseDto> {
