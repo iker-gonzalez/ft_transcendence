@@ -6,6 +6,11 @@ import Modal from '../UI/Modal';
 import { useUserFriends } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
+import MainButton from '../UI/MainButton';
+import RoundImg from '../UI/RoundImage';
+import UserStatusInfo from '../UI/UserStatus';
+
+
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -38,6 +43,10 @@ const Title = styled.h2`
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
+
+  ${props => props.className === 'friends-modal' && `
+    font-size: 25px;
+  `}
 `;
 
 const List = styled.ul`
@@ -55,6 +64,27 @@ const ListItem = styled.li`
   }
 `;
 
+const RoundImgStyled = styled(RoundImg)`
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+`;
+
+const UserInfo = styled.div`
+  flex: 1;
+  margin-right: 10px;
+`;
+
+const Username = styled.h3`
+  font-size: 1.5em;
+`;
+
+const MainButtonStyled = styled(MainButton)`
+  padding: 5px 10px;
+  font-size: 0.8em;
+  margin-left: 20px;
+`;
+
 interface SidebarProps {
   users: Array<{ id: number; avatar: string; username: string }>;
   groups: Array<{ id: string; name: string }>;
@@ -69,6 +99,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   handleGroupClick,
 }) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const [activeModalContent, setActiveModalContent] = useState<'directMessages' | 'groupChats'>('directMessages');
+
 
   const { userFriends, fetchFriendsList } =
   useUserFriends();
@@ -95,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             }}
           >
             <Title>Direct Messages</Title>
-            <PlusSign onClick={() => setPopupVisible(true)}>+</PlusSign>
+            <PlusSign onClick={() => { setPopupVisible(true); setActiveModalContent('directMessages'); }}>+</PlusSign>
           </div>
           <List>
             {users.map((user) => (
@@ -107,31 +139,61 @@ const Sidebar: React.FC<SidebarProps> = ({
         </UserList>
         {isPopupVisible && (
           <Modal dismissModalAction={() => setPopupVisible(false)}>
-            <Title>Chat with one of your friends</Title>
-            <List>
-              {userFriendsConverted.length > 0 ? (
-                userFriendsConverted.map((friend, index) => (
-                  <ListItem
-                    key={index}
-                    onClick={() => {
-                      handleUserClick(friend);
-                      setPopupVisible(false);
-                    }}
-                  >
-                    {friend.username}
-                  </ListItem>
-                ))
-              ) : (
-                <p>
-                  It seems you do not have any friends yet. 
-                  Go to your profile and find some friends to chat with!
-                </p>
-              )}
-            </List>
+            {activeModalContent === 'directMessages' ? (
+              <>
+                <Title className='friends-modal'>Chat with one of your friends</Title>
+                <br></br>
+                <List>
+                {userFriendsConverted.length > 0 ? (
+                  userFriendsConverted.map((friend, index) => (
+                    <li key={friend.id} className="user-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                      <RoundImgStyled
+                        src={friend.avatar}
+                        alt=""
+                      />
+                      <UserInfo>
+                        <Username className="title-2 mb-8">
+                          {friend.username}
+                        </Username>
+                      </UserInfo>
+                      <UserStatusInfo intraId={friend.id} />
+                      <MainButtonStyled
+                        onClick={() => {
+                        handleUserClick(friend);
+                        setPopupVisible(false);
+                      }}
+                      >
+                        Chat
+                      </MainButtonStyled>
+                    </li>
+                  ))
+                ) : (
+                  <p>
+                    It seems you do not have any friends yet. 
+                    Go to your profile and find some friends to chat with!
+                  </p>
+                )}
+                </List>
+              </>
+            ) : (
+              <>
+                <Title>Create a new group chat or join an existing one</Title>
+                {/* ... */}
+              </>
+            )}
           </Modal>
         )}
         <UserList>
-          <Title>Group Chats</Title>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}
+          >
+            <Title>Group Chats</Title>
+            <PlusSign onClick={() => { setPopupVisible(true); setActiveModalContent('groupChats'); }}>+</PlusSign>
+          </div>
           <List>
             {groups.map((group) => (
               <ListItem key={group.id} onClick={() => handleGroupClick(group)}>
@@ -143,6 +205,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       </GradientBorder>
     </SidebarContainer>
   );
-};
+}
 
 export default Sidebar;
