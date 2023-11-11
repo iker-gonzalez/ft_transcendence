@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
@@ -31,11 +31,11 @@ const PlusSign = styled.span`
   cursor: pointer;
   margin-left: 10px;
   position: relative;
-  top: -5px;
+  top: -8px;
 `;
 
 const Title = styled.h2`
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
 `;
@@ -46,12 +46,12 @@ const List = styled.ul`
 
 const ListItem = styled.li`
   padding: 8px 0;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s;
 
   &:hover {
-    color: #888802;
+    color: yellow;
   }
 `;
 
@@ -69,7 +69,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   handleGroupClick,
 }) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const { userFriends } = useUserFriends();
+
+  const { userFriends, fetchFriendsList } =
+  useUserFriends();
+
+  useEffect(() => {
+    fetchFriendsList();
+  }, []);
+
   const userFriendsConverted = userFriends.map((friend) => ({
     id: friend.intraId,
     avatar: friend.avatar,
@@ -102,17 +109,24 @@ const Sidebar: React.FC<SidebarProps> = ({
           <Modal dismissModalAction={() => setPopupVisible(false)}>
             <Title>Chat with one of your friends</Title>
             <List>
-              {userFriendsConverted.map((friend, index) => (
-                <ListItem
-                  key={index}
-                  onClick={() => {
-                    handleUserClick(friend);
-                    setPopupVisible(false);
-                  }}
-                >
-                  {friend.username}
-                </ListItem>
-              ))}
+              {userFriendsConverted.length > 0 ? (
+                userFriendsConverted.map((friend, index) => (
+                  <ListItem
+                    key={index}
+                    onClick={() => {
+                      handleUserClick(friend);
+                      setPopupVisible(false);
+                    }}
+                  >
+                    {friend.username}
+                  </ListItem>
+                ))
+              ) : (
+                <p>
+                  It seems you do not have any friends yet. 
+                  Go to your profile and find some friends to chat with!
+                </p>
+              )}
             </List>
           </Modal>
         )}
