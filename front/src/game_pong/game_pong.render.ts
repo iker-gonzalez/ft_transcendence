@@ -385,12 +385,10 @@ export function matchUser1(
     ballData.moveX = direction * ballData.speed * Math.cos(angleRad);
     ballData.moveY = ballData.speed * Math.sin(angleRad);
 
-    // Modify values to make it more difficult
+    // Modify values (ball speed % paddle height) to make it more difficult
     gamePowerUps[0].value ? (ballData.speed += 0.5) : (ballData.speed += 0);
-
     gamePowerUps[1].value ? (user1.height -= 10) : (user1.height -= 0);
     gamePowerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
-    console.log(gamePowerUps[0].value, gamePowerUps[1].value)
 
     sounds.hit.play().catch(function (error: any) {});
 
