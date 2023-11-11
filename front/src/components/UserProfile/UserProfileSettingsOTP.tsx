@@ -8,9 +8,8 @@ import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import styled from 'styled-components';
 import { primaryAccentColor } from '../../constants/color-tokens';
-import Checkmark from '../../assets/svg/checkmark.svg';
-import SVG from 'react-inlinesvg';
 import OtpSubmitForm from '../shared/OtpSubmitForm';
+import SecondaryButton from '../UI/SecondaryButton';
 
 interface UserProfileSettingsOTPProps {
   userData: UserData;
@@ -46,6 +45,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
   const [isTestUser, setIsTestUser] = useState(false);
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
+  const [isDeactivating, setIsDeactivating] = useState(false);
   const [is2FAOn, set2FAOn] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null); // State to store the QR code image URL
   const [otpValue, setOtpValue] = useState(''); // State to store OTP input value
@@ -89,10 +89,6 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
     }
   }, [isGeneratingQR, launchFlashMessage]);
 
-  const handleActivate = () => {
-    setIsGeneratingQR(true);
-  };
-
   const handleActivateWithOTP = async () => {
     try {
       // Make a POST request to the /2fa/activate endpoint with the OTP value.
@@ -116,6 +112,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
         );
       } else {
         console.error('Failed to activate 2FA.');
+        setIsActivating(false);
         launchFlashMessage(
           'Failed to activate 2FA. Try again.',
           FlashMessageLevel.ERROR,
@@ -127,14 +124,62 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
     }
   };
 
+  const handleDeactivateWithOtp = async () => {
+    try {
+      // Make a POST request to the /2fa/activate endpoint with the OTP value.
+      const response = await fetchAuthorized(`${getBaseUrl()}/2fa/deactivate`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify({ otp: otpValue }),
+      });
+
+      if (response.ok) {
+        console.log('2FA deactivated');
+        setIsDeactivating(false);
+        set2FAOn(false);
+        launchFlashMessage(
+          '2FA deactivated successfully',
+          FlashMessageLevel.SUCCESS,
+        );
+      } else {
+        console.error('Failed to deactivate 2FA.');
+        launchFlashMessage(
+          'Failed to deactivate 2FA. Try again.',
+          FlashMessageLevel.ERROR,
+        );
+        setOtpValue('');
+      }
+    } catch (error: any) {
+      console.error('Error:', error);
+    } finally {
+      setOtpValue('');
+    }
+  };
+
   return (
     <>
       <WrapperDiv className={className}>
         <h3 className="title-3">OTP</h3>
         {userData.isTwoFactorAuthEnabled || is2FAOn ? (
-          <SVG src={Checkmark} title="activated" className="checkmark-icon" />
+          <SecondaryButton
+            onClick={() => {
+              setIsDeactivating(true);
+            }}
+            disabled={isTestUser}
+          >
+            Deactivate
+          </SecondaryButton>
         ) : (
-          <MainButton onClick={handleActivate} disabled={isTestUser}>
+          <MainButton
+            onClick={() => {
+              setIsGeneratingQR(true);
+            }}
+            disabled={isTestUser}
+          >
             Activate
           </MainButton>
         )}
@@ -163,6 +208,28 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
               />
             </>
           )}
+        </OtpModal>
+      )}
+      {isDeactivating && (
+        <OtpModal
+          dismissModalAction={() => {
+            setIsDeactivating(false);
+          }}
+          className="qr-modal"
+        >
+          <div className="qr-container mb-24">
+            <h1 className="title-1 mb-24">Deactivate OTP</h1>
+            <p>
+              Deactivating OTP on your profile makes your account less secure.
+              If you are sure you want to proceed, insert your OTP below.
+            </p>
+          </div>
+          <OtpSubmitForm
+            otpValue={otpValue}
+            setOtpValue={setOtpValue}
+            handleActivateWithOTP={handleDeactivateWithOtp}
+            calloutText="Deactivate"
+          />
         </OtpModal>
       )}
     </>

@@ -9,18 +9,13 @@ import useChatMessageSocket, {
 } from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
 import { getIntraId } from '../../utils/utils';
-import ContrastPanel from '../UI/ContrastPanel';
-import GradientBorder from '../UI/GradientBorder'; //Use GradientBorder in MessageArea component
-import {
-  darkerBgColor,
-  darkestBgColor,
-  primaryLightColor,
-} from '../../constants/color-tokens';
+import GradientBorder from '../UI/GradientBorder';
+import { darkerBgColor } from '../../constants/color-tokens';
 
-const MessageAreaContainer = styled(ContrastPanel)`
+const MessageAreaContainer = styled.div`
   width: 100%;
   padding: 20px;
-  position: relative; 
+  border: 2px solid yellow;
 `;
 
 const Title = styled.h2`
@@ -137,37 +132,38 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   return (
     <MessageAreaContainer>
-      {selectedUser || selectedGroup ? (
-        <>
-          {title && <Title>{title}</Title>}
-          <MessageList>
-            {messages.map((message) => (
-              <MessageItem key={message.id}>
-                {`${message.senderName}: ${message.content}`}
-              </MessageItem>
-            ))}
-            {/* Render the new message below the last message */}
-            {newMessageList.map((messageData, index) => (
-              <MessageItem key={index}>
-                {`${messageData.senderName}: ${messageData.content}`}
-              </MessageItem>
-            ))}
-          </MessageList>
-          <MessageInputWrapper>
-          <MessageInput
-            message={message}
-            onInputChange={handleInputChange}
-            onMessageSubmit={handleSendMessage}
-          />
-          </MessageInputWrapper>
-        </>
-      ) : (
-        <CenteredContainer>
-          <StyledParagraph>
-            Chat with your friends or participate in our community groups!
-          </StyledParagraph>
-        </CenteredContainer>
-      )}
+      <GradientBorder className="gradient-border">
+        {selectedUser || selectedGroup ? (
+          <>
+            {title && <Title>{title}</Title>}
+            <MessageList>
+              {messages.map((message) => (
+                <MessageItem key={message.id}>
+                  {`${message.senderName}: ${message.content}`}
+                </MessageItem>
+              ))}
+              {/* Render the new message below the last message */}
+              {newMessageList.map((messageData, index) => (
+                <MessageItem key={index}>
+                  {`${messageData.senderName}: ${messageData.content}`}
+                </MessageItem>
+              ))}
+            </MessageList>
+
+            <MessageInput
+              message={message}
+              onInputChange={handleInputChange}
+              onMessageSubmit={handleSendMessage}
+            />
+          </>
+        ) : (
+          <CenteredContainer>
+            <StyledParagraph>
+              Chat with your friends or participate in our community groups!
+            </StyledParagraph>
+          </CenteredContainer>
+        )}
+      </GradientBorder>
     </MessageAreaContainer>
   );
 };
