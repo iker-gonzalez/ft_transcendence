@@ -97,7 +97,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   const { userData } = useUserData();
 
-  const handleSendMessage = (newMessage: string) => {
+  const handlePrivateMessage = (newMessage: string) => {
+    console.log('private message');
     if (newMessage.trim() !== '') {
       // Implement logic to add the message to the chat or send it to the server
       const message: Message = {
@@ -118,6 +119,28 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         content: newMessage,
       });
       // Clear the input field
+      setMessage('');
+    }
+  };
+
+  const handleSendRoomMessage = (newMessage: string) => {
+    console.log('room message');
+    console.log('room:', selectedGroup?.name);
+    console.log('intraId:', userData?.intraId);
+    if (newMessage.trim() !== '') {
+      const message: Message = {
+        id: 'pepe', //substitute with real random id
+        senderName: userData?.username || 'Anonymous',
+        senderAvatar: userData?.avatar || 'Anonymous',
+        content: newMessage,
+        timestamp: new Date().toString(),
+      };
+      setNewMessageList((prevMessages) => [...prevMessages, message]);
+      chatMessageSocketRef.current.emit('sendMessageToRoom', {
+        roomName: selectedGroup?.name, // replace with your actual room name variable
+        intraId: userData?.intraId,
+        message: newMessage,
+      });
       setMessage('');
     }
   };
@@ -145,7 +168,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
             <MessageInput
               message={message}
               onInputChange={handleInputChange}
-              onMessageSubmit={handleSendMessage}
+              onMessageSubmit={selectedGroup ? handleSendRoomMessage : handlePrivateMessage}
             />
           </>
         ) : (
