@@ -2,7 +2,12 @@ import { Socket } from 'socket.io-client';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
 import { matchPoints } from './game_pong';
-import { userSpeedInput, slit, thickness } from './game_pong.constants';
+import {
+  userSpeedInput,
+  slit,
+  thickness,
+  gamePowerUps,
+} from './game_pong.constants';
 import {
   InitializeCanvasImages,
   ballTrailClean,
@@ -380,10 +385,10 @@ export function matchUser1(
     ballData.moveX = direction * ballData.speed * Math.cos(angleRad);
     ballData.moveY = ballData.speed * Math.sin(angleRad);
 
-    // Modify values to make it more difficult
-    ballData.speed += 0.5;
-    user1.height -= 10;
-    user2.height -= 10;
+    // Modify values (ball speed % paddle height) to make it more difficult
+    gamePowerUps[0].value ? (ballData.speed += 0.5) : (ballData.speed += 0);
+    gamePowerUps[1].value ? (user1.height -= 10) : (user1.height -= 0);
+    gamePowerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
 
     sounds.hit.play().catch(function (error: any) {});
 
