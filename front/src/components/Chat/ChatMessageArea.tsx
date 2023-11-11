@@ -53,7 +53,7 @@ const CenteredContainer = styled.div`
 `;
 
 const StyledParagraph = styled.p`
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
   color: white;
   text-align: center;
