@@ -3,14 +3,18 @@ import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import Modal from '../UI/Modal';
-import { useUserFriends } from '../../context/UserDataContext';
+import { useUserFriends, useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
 import MainButton from '../UI/MainButton';
 import RoundImg from '../UI/RoundImage';
 import UserStatusInfo from '../UI/UserStatus';
-
-
+import useChatMessageSocket, {
+  UseChatMessageSocket,
+} from './useChatMessageSocket';
+import Cookies from 'js-cookie';
+import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -55,13 +59,10 @@ const List = styled.ul`
 
 const ListItem = styled.li`
   padding: 8px 0;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
-
-  &:hover {
-    color: yellow;
-  }
+  marginBottom: '20px';
 `;
 
 const RoundImgStyled = styled(RoundImg)`
@@ -98,16 +99,51 @@ const Sidebar: React.FC<SidebarProps> = ({
   handleUserClick,
   handleGroupClick,
 }) => {
+
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [activeModalContent, setActiveModalContent] = useState<'directMessages' | 'groupChats'>('directMessages');
-
-
+  const [roomName, setRoomName] = useState('');
   const { userFriends, fetchFriendsList } =
   useUserFriends();
+  const { userData, fetchUserData } =
+  useUserData();
+  const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
     fetchFriendsList();
+    const token = Cookies.get('token');
+    fetchUserData(token as string);
   }, []);
+  
+  // Get the socket and related objects from the utility function
+  const {
+    chatMessageSocketRef,
+    isSocketConnected,
+    isConnectionError,
+  }: UseChatMessageSocket = useChatMessageSocket();
+
+  // Add a listener for incoming messages
+  useEffect(() => {
+    if (isSocketConnected) {
+      chatMessageSocketRef.current.on('newMessage', (messageData: string) => {
+        // Handle the incoming message, e.g., add it to your message list
+        console.log('Received a new message:', messageData);
+
+        // You can update your message state or perform other actions here
+      });
+    }
+  }, [isSocketConnected, chatMessageSocketRef]);
+
+  const handleJoinRoom = () => {
+    if (roomName.trim() !== '') {
+      chatMessageSocketRef.current.emit('joinRoom', { roomName, intraId: userData?.intraId });
+      setPopupVisible(false);
+      launchFlashMessage(
+        `You have successfully joined the room ${roomName}!`,
+        FlashMessageLevel.SUCCESS,
+      );
+    }
+  };
 
   const userFriendsConverted = userFriends.map((friend) => ({
     id: friend.intraId,
@@ -145,14 +181,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <br></br>
                 <List>
                 {userFriendsConverted.length > 0 ? (
-                  userFriendsConverted.map((friend, index) => (
-                    <li key={friend.id} className="user-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                  userFriendsConverted.map((friend) => (
+                    <ListItem key={friend.id} style={{ display: 'flex', alignItems: 'center' }}>
                       <RoundImgStyled
                         src={friend.avatar}
                         alt=""
                       />
                       <UserInfo>
-                        <Username className="title-2 mb-8">
+                        <Username>
                           {friend.username}
                         </Username>
                       </UserInfo>
@@ -165,7 +201,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       >
                         Chat
                       </MainButtonStyled>
-                    </li>
+                    </ListItem>
                   ))
                 ) : (
                   <p>
@@ -178,6 +214,13 @@ const Sidebar: React.FC<SidebarProps> = ({
             ) : (
               <>
                 <Title>Create a new group chat or join an existing one</Title>
+                <input 
+                  type="text" 
+                  value={roomName} 
+                  onChange={(e) => setRoomName(e.target.value)} 
+                  placeholder="Enter room name"
+                />
+                <MainButton onClick={handleJoinRoom}>Join Room</MainButton>
                 {/* ... */}
               </>
             )}
