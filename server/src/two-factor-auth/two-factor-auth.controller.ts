@@ -71,7 +71,7 @@ export class TwoFactorAuthController {
     @GetUser() user: User,
     @Body() activateOtpDto: ActivateOtpDto,
   ): Promise<ActivateOtpResponseDto> {
-    return this.twoFactorAuthService.activaTwoFactorAuthentication(
+    return this.twoFactorAuthService.activateTwoFactorAuthentication(
       activateOtpDto,
       user,
     );
