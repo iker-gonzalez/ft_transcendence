@@ -14,8 +14,13 @@ import { darkerBgColor } from '../../constants/color-tokens';
 
 const MessageAreaContainer = styled.div`
   width: 100%;
-  padding: 20px;
-  border: 2px solid yellow;
+  display: flex;
+
+  .gradient-border {
+    background-color: ${darkerBgColor};
+    padding: 20px;
+    flex: 1;
+  }
 `;
 
 const Title = styled.h2`
@@ -39,27 +44,14 @@ const CenteredContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
-
-  .chat-mode-gradient {
-    background: #00aeb5;
-    background: linear-gradient(180deg, #ffd369 0%, #00aeb5 100%);
-    border-radius: 25px;
-  }
 `;
 
 const StyledParagraph = styled.p`
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
   color: white;
   text-align: center;
 `;
-
-const MessageInputWrapper = styled.div`
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
-`;
-
 
 interface ChatMessageAreaProps {
   selectedUser: User | null;
