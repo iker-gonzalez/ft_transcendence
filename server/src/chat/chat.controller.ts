@@ -58,7 +58,7 @@ export class ChatController {
     async getAllUserDMWith(
       @Param('userId') userIntraId: string
       ):Promise<any[]> {
-      const userId = await this.chatDMService.findUserIdByIntraId(parseInt(userIntraId, 10));
+      const userId = await this.chatDMService. findUserIdByIntraId(parseInt(userIntraId, 10));
 
       console.log("getAllUserDMWith get");
       console.log(userId);

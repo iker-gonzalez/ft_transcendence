@@ -40,6 +40,18 @@ export const swaggerConstants = {
         description: 'OTP code is invalid.',
       },
     },
+    deactivate: {
+      summary: 'Deactivate 2FA on user profile. Receives OTP code as input.',
+      ok: {
+        description: 'OTP gets deactivated.',
+      },
+      unauthorized: {
+        description: 'JWT token is invalid or expired or OTP code is invalid.',
+      },
+      bad: {
+        description: 'OTP code is invalid.',
+      },
+    },
   },
   users: {
     me: {
