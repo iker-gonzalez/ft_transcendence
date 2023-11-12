@@ -31,6 +31,7 @@ import {
   IUserData,
   RenderColor,
 } from './game_pong.interfaces';
+import GameTheme from '../interfaces/game-theme.interface';
 
 export function render(
   canvas: HTMLCanvasElement,
@@ -46,14 +47,18 @@ export function render(
   canvasImages: InitializeCanvasImages,
   thickness: number,
   sounds: any,
+  theme: GameTheme,
 ) {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   // To clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   //Background
-  drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
-
+  // console.log('All themes -> ', gameThemes);
+  // console.log('Selected theme -> ', theme);
+  //
+  // if (theme.id === 'classic') {
+  //   console.log('****** theme is classic');
   // drawImg(
   //   canvas,
   //   canvasImages.canvasBgImage,
@@ -62,6 +67,14 @@ export function render(
   //   canvas.width,
   //   canvas.height,
   // );
+  // } else if (theme.id === 'star-wars') {
+  //   console.log('****** theme is star wars');
+  // } else if (theme.id === 'football') {
+  //   console.log('****** theme is football');
+  // } else {
+  //   console.log('****** theme is default');
+  //   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
+  // }
 
   // Above wall
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
@@ -77,22 +90,42 @@ export function render(
   );
 
   // Net line
-  drawDashedLine(canvas, net);
+  if (theme.id !== 'classic') {
+    drawDashedLine(canvas, net);
+  }
 
   // Paddle user1
-  drawRect(canvas, user1.x, user1.y, user1.width, user1.height, user1.color);
+  drawRect(
+    canvas,
+    user1.x,
+    user1.y,
+    user1.width,
+    user1.height,
+    theme.ballColor,
+  );
 
   //Paddle user2
-  drawRect(canvas, user2.x, user2.y, user2.width, user2.height, user2.color);
+  drawRect(
+    canvas,
+    user2.x,
+    user2.y,
+    user2.width,
+    user2.height,
+    theme.ballColor,
+  );
 
   //Ball
-  drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
+  drawBall(canvas, ballData.x, ballData.y, ballData.radius, theme.ballColor);
 
   //Ball trail
   drawBallTrail(canvas, 0.025);
 
   //Sparks effect
-  drawSparks(canvas, 0, 0, 0, RenderColor.Yellow);
+  if (theme.id === 'star-wars') {
+    drawSparks(canvas, 0, 0, 0, RenderColor.Green);
+  } else {
+    drawSparks(canvas, 0, 0, 0, RenderColor.Yellow);
+  }
   drawSparksTrail(canvas, 0.3);
 
   drawText(
@@ -313,6 +346,7 @@ export function matchUser1(
   user1: IUserData,
   user2: IUserData,
   sounds: ISounds,
+  theme: any,
 ) {
   // Ball motion
   ballData.x += ballData.moveX;
@@ -390,17 +424,29 @@ export function matchUser1(
     gamePowerUps[1].value ? (user1.height -= 10) : (user1.height -= 0);
     gamePowerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
 
-    sounds.hit.play().catch(function (error: any) {});
+    let themeSound = new Audio(theme.hitSound);
+    themeSound.play().catch(function (error: any) {});
 
     // Sparks effect when the ball hits the paddle
-    sparks(
-      canvas,
-      ballData.x,
-      ballData.y,
-      ballData.radius,
-      RenderColor.Yellow,
-      50,
-    );
+    if (theme.id === 'star-wars') {
+      sparks(
+        canvas,
+        ballData.x,
+        ballData.y,
+        ballData.radius,
+        RenderColor.Green,
+        50,
+      );
+    } else {
+      sparks(
+        canvas,
+        ballData.x,
+        ballData.y,
+        ballData.radius,
+        RenderColor.Yellow,
+        50,
+      );
+    }
   }
 }
 
@@ -410,6 +456,7 @@ export function matchUser2(
   user1: IUserData,
   user2: IUserData,
   sounds: ISounds,
+  theme: any,
   isSoloMode: boolean = false,
 ) {
   // Paddle motion in 1 player mode (bot movements)
@@ -434,14 +481,25 @@ export function matchUser2(
   // Detect if the ball hits the paddle & bounce the ball
   if (checkCollision(ballData, player)) {
     // Sparks effect when the ball hits the paddle
-    sparks(
-      canvas,
-      ballData.x,
-      ballData.y,
-      ballData.radius,
-      RenderColor.Yellow,
-      50,
-    );
+    if (theme.id === 'star-wars') {
+      sparks(
+        canvas,
+        ballData.x,
+        ballData.y,
+        ballData.radius,
+        RenderColor.Green,
+        50,
+      );
+    } else {
+      sparks(
+        canvas,
+        ballData.x,
+        ballData.y,
+        ballData.radius,
+        RenderColor.Yellow,
+        50,
+      );
+    }
   }
 }
 
@@ -456,6 +514,7 @@ type OnGameEndArgs = {
   sounds: any;
   isAbortedMatch?: boolean;
 };
+
 export function onGameEnd({
   canvas,
   eventList,

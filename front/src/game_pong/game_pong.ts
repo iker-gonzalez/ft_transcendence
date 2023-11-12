@@ -137,6 +137,7 @@ export async function gameLoop({
       net,
       canvasImages,
       thickness,
+      theme,
     });
   }
 
@@ -155,6 +156,7 @@ export async function gameLoop({
     startedAt,
     eventList,
     canvasImages,
+    theme,
   });
 }
 
@@ -176,6 +178,7 @@ type GameFunctionParams = {
   startedAt: Date;
   eventList: any[];
   canvasImages: InitializeCanvasImages;
+  theme: GameTheme;
 };
 
 function game({
@@ -193,6 +196,7 @@ function game({
   startedAt,
   eventList,
   canvasImages,
+  theme,
 }: GameFunctionParams) {
   // Clean up if one of the players leaves the game
   const isAbortedMatch = true;
@@ -231,8 +235,8 @@ function game({
 
   setTimeout(() => {
     if (isSoloMode(usersData)) {
-      matchUser1(canvas, ballData, user1, user2, sounds);
-      matchUser2(canvas, ballData, user1, user2, sounds, true);
+      matchUser1(canvas, ballData, user1, user2, sounds, theme);
+      matchUser2(canvas, ballData, user1, user2, sounds, theme, true);
 
       render(
         canvas,
@@ -245,6 +249,7 @@ function game({
         canvasImages,
         thickness,
         sounds,
+        theme,
       );
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
@@ -307,6 +312,7 @@ function game({
         startedAt,
         eventList,
         canvasImages,
+        theme,
       });
     });
   }, isSoloMode(usersData) ? (computedFpsSoloMode) : (computedFpsMultiMode))

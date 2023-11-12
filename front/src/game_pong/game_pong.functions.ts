@@ -16,6 +16,7 @@ import BgImageGrass from './images/grass.jpg';
 import { matchUser1, matchUser2, onGameEnd } from './game_pong.render';
 import { Socket } from 'socket.io-client';
 import { render } from './game_pong.render';
+import GameTheme from '../interfaces/game-theme.interface';
 
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
@@ -358,6 +359,7 @@ export type InitializeSocketLogicArgs = {
   net: INetData;
   canvasImages: InitializeCanvasImages;
   thickness: number;
+  theme: GameTheme;
 };
 
 export function initializeSocketLogic({
@@ -377,6 +379,7 @@ export function initializeSocketLogic({
   net,
   canvasImages,
   thickness,
+  theme,
 }: InitializeSocketLogicArgs) {
   socket.emit(
     'upload',
@@ -409,7 +412,7 @@ export function initializeSocketLogic({
         matchFinish = true;
       }
 
-      matchUser1(canvas, ballData, user1, user2, sounds);
+      matchUser1(canvas, ballData, user1, user2, sounds, theme);
 
       render(
         canvas,
@@ -422,6 +425,7 @@ export function initializeSocketLogic({
         canvasImages,
         thickness,
         sounds,
+        theme,
       );
 
       socket.emit(
@@ -461,7 +465,7 @@ export function initializeSocketLogic({
         matchFinish = true;
       }
 
-      matchUser2(canvas, ballData, user1, user2, sounds);
+      matchUser2(canvas, ballData, user1, user2, sounds, theme);
 
       render(
         canvas,
@@ -474,6 +478,7 @@ export function initializeSocketLogic({
         canvasImages,
         thickness,
         sounds,
+        theme,
       );
 
       socket.emit(
