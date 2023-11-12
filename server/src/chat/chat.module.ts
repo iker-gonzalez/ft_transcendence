@@ -8,7 +8,7 @@ import { UserModule } from '../user/user.module';
 
 @Module({
   controllers : [ChatController],
-  imports: [UserModule],
+  imports: [UserModule], 
   providers: [ChatGateway, ChatDMService, ChatChannelService, UserService],
 })
 export class ChatModule {}

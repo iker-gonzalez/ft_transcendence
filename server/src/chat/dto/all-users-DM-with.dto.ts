@@ -1,4 +1,4 @@
-import { IsUUID, IsString } from 'class-validator';
+import { IsUUID, IsString, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { swaggerConstants } from '../../../config/swagger.constants';
 
@@ -17,6 +17,9 @@ export class AllUsersDMWithDTO {
 
     @IsString()
     username: string;
+
+    @IsNumber()
+    intraId: number;
 
 }
   
