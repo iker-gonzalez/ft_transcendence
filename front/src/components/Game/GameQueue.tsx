@@ -8,13 +8,12 @@ import SessionData from '../../interfaces/game-session-data.interface';
 import useMatchmakingSocket, {
   UseMatchmakingSocket,
 } from './useMatchmakingSocket';
-import ContrastPanel from '../UI/ContrastPanel';
 import waitingAnimationData from '../../assets/lotties/playing.json';
 import Lottie from 'lottie-react';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
-import GameMatchQueueSession from './GameMatch/GameMatchQueueSession';
 import QueueAnimationData from '../../assets/lotties/queue.json';
+import { useNavigate } from 'react-router-dom';
 
 const INACTIVITY_TIMEOUT = 20_000;
 
@@ -28,6 +27,8 @@ type GameSessionRes = {
 };
 
 const WrapperDiv = styled.div`
+  text-align: center;
+
   .highlighted {
     color: ${primaryAccentColor};
     font-weight: bold;
@@ -46,11 +47,11 @@ const WrapperDiv = styled.div`
   }
 
   .waiting-animation {
-    width: 600px;
+    width: min(100%, 600px);
   }
 
   .queue-animation {
-    width: 550px;
+    width: min(100%, 550px);
   }
 `;
 
@@ -58,10 +59,10 @@ export default function GameQueue(): JSX.Element {
   const { sessionDataState, userData } = useGameRouteContext();
 
   const [isQueued, setIsQueued] = useState<boolean>(false);
-  const [isSessionCreated, setIsSessionCreated] = useState<boolean>(false);
   const [countdownValue, setCountdownValue] =
     useState<number>(INACTIVITY_TIMEOUT);
   const inactivityTimeoutRef = useRef<number>(0);
+  const navigate = useNavigate();
 
   const {
     matchmakingSocketRef,
@@ -94,9 +95,8 @@ export default function GameQueue(): JSX.Element {
             const setSessionData = sessionDataState[1];
             setSessionData(newSessionRes.data);
 
-            setIsSessionCreated(true);
-
             window.clearInterval(inactivityTimeoutRef.current);
+            navigate('/game/session');
           } else {
             console.warn('error creating session');
           }
@@ -173,59 +173,42 @@ export default function GameQueue(): JSX.Element {
             );
           }
 
-          if (isSessionCreated) {
+          if (isQueued) {
             return (
               <>
-                <h2 className="title-1 mb-24">This is your new session</h2>
-                <ContrastPanel className="session-box mb-16">
-                  <GameMatchQueueSession
-                    sessionId={sessionDataState[0].id}
-                    players={sessionDataState[0].players}
-                  />
-                </ContrastPanel>
+                <h1 className="title-1 mb-16">Your opponent is on the way</h1>
+                <p>
+                  You will be thrown out of the current queue in{' '}
+                  {countdownValue > 1
+                    ? `${countdownValue} seconds`
+                    : `${countdownValue} second`}
+                  ...
+                </p>
+                <Lottie
+                  animationData={waitingAnimationData}
+                  className="waiting-animation mb-24"
+                />
+                <MainButton onClick={onRemoveFromQueue}>
+                  Remove from queue
+                </MainButton>
               </>
             );
-          } else {
-            if (isQueued) {
-              return (
-                <>
-                  <h1 className="title-1 mb-16">Your opponent is on the way</h1>
-                  <p>
-                    You will be thrown out of the current queue in{' '}
-                    {countdownValue > 1
-                      ? `${countdownValue} seconds`
-                      : `${countdownValue} second`}
-                    ...
-                  </p>
-                  <Lottie
-                    animationData={waitingAnimationData}
-                    className="waiting-animation mb-24"
-                  />
-                  <MainButton onClick={onRemoveFromQueue}>
-                    Remove from queue
-                  </MainButton>
-                </>
-              );
-            } else {
-              return (
-                <>
-                  <h1 className="title-1 mb-16">Find a peer to challenge</h1>
-                  <Lottie
-                    animationData={QueueAnimationData}
-                    loop={true}
-                    aria-hidden="true"
-                    className="mb-24 queue-animation"
-                  />
-                  <MainButton
-                    onClick={onJoinQueue}
-                    disabled={!isSocketConnected}
-                  >
-                    Join game queue
-                  </MainButton>
-                </>
-              );
-            }
           }
+
+          return (
+            <>
+              <h1 className="title-1 mb-16">Find a peer to challenge</h1>
+              <Lottie
+                animationData={QueueAnimationData}
+                loop={true}
+                aria-hidden="true"
+                className="mb-24 queue-animation"
+              />
+              <MainButton onClick={onJoinQueue} disabled={!isSocketConnected}>
+                Join game queue
+              </MainButton>
+            </>
+          );
         })()}
       </CenteredLayout>
     </WrapperDiv>

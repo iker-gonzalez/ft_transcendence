@@ -10,18 +10,30 @@ import GameTheme from '../../../interfaces/game-theme.interface';
 import Toggle from '../../UI/Toggle';
 import GamePowerUp from '../../../interfaces/game-power-up.interface';
 import ContrastPanel from '../../UI/ContrastPanel';
+import ForbiddenIcon from '../../../assets/svg/forbidden.svg';
+import { sm } from '../../../constants/styles';
 
 const WrapperDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 100px;
+  flex-wrap: wrap;
+
+  gap: 50px;
+  @media (width > ${sm}) {
+    gap: 100px;
+  }
 
   .themes-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 25px;
+
+    gap: 15px;
+
+    @media (width > ${sm}) {
+      gap: 25px;
+    }
   }
 
   .customization-container {
@@ -29,7 +41,6 @@ const WrapperDiv = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
 
     .toggle-container {
       display: flex;
@@ -37,16 +48,31 @@ const WrapperDiv = styled.div`
       gap: 16px;
 
       .toggle {
-        display: grid;
-        grid-template-columns: 3fr 1fr;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 60px;
+
+        .forbidden-icon {
+          width: 24px;
+          object-fit: contain;
+          margin-left: auto;
+
+          cursor: help;
+        }
       }
     }
   }
 `;
 
 const ThemeSelector = styled.div<{ $backgroundImg: string }>`
-  width: 150px;
-  aspect-ratio: 3/2;
+  width: 80px;
+  aspect-ratio: 1/1;
+
+  @media (width > ${sm}) {
+    width: 150px;
+    aspect-ratio: 3/2;
+  }
 
   background: transparent;
   border: 3px ${darkBgColor} solid;
@@ -55,6 +81,8 @@ const ThemeSelector = styled.div<{ $backgroundImg: string }>`
   transition: all 0.3s ease-in-out;
 
   display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:has(input:checked) {
     border-color: ${primaryColor};
@@ -73,8 +101,14 @@ const ThemeSelector = styled.div<{ $backgroundImg: string }>`
 
     cursor: pointer;
 
+    @media (width <= ${sm}) {
+      font-size: 12px;
+    }
+    font-weight: bold;
+
     background-image: url(${(props) => props.$backgroundImg});
     background-size: cover;
+    background-position: center;
   }
 `;
 
@@ -85,6 +119,7 @@ type GameMatchCustomizationProps = {
     | ((theme: GameTheme) => void);
   selectedPowerUps: GamePowerUp[];
   onPowerUpsChange: React.Dispatch<React.SetStateAction<GamePowerUp[]>>;
+  cannotActivatePowerUps?: boolean;
 };
 
 const GameMatchCustomization: React.FC<GameMatchCustomizationProps> = ({
@@ -92,6 +127,7 @@ const GameMatchCustomization: React.FC<GameMatchCustomizationProps> = ({
   onThemeChange,
   selectedPowerUps,
   onPowerUpsChange,
+  cannotActivatePowerUps,
 }: GameMatchCustomizationProps): JSX.Element => {
   return (
     <ContrastPanel>
@@ -106,7 +142,12 @@ const GameMatchCustomization: React.FC<GameMatchCustomizationProps> = ({
                   $backgroundImg={theme.backgroundImg}
                   key={theme.id}
                 >
-                  <label htmlFor={theme.id} className="title-3">
+                  <label
+                    htmlFor={theme.id}
+                    className={`${
+                      window.innerWidth > parseInt(sm) ? 'title-3' : 'small'
+                    }`}
+                  >
                     {theme.name}
                     <input
                       type="radio"
@@ -132,30 +173,39 @@ const GameMatchCustomization: React.FC<GameMatchCustomizationProps> = ({
                 return (
                   <div className="toggle" key={powerUp.id}>
                     <p>{powerUp.description}</p>
-                    <Toggle>
-                      <label htmlFor={powerUp.id}>
-                        <span className="sr-only">{powerUp.description}</span>
-                        <input
-                          type="checkbox"
-                          id={powerUp.id}
-                          name={powerUp.id}
-                          className="sr-only"
-                          checked={powerUp.value}
-                          onChange={(e) => {
-                            onPowerUpsChange((prevState) => {
-                              const powerUpIndex = prevState.findIndex(
-                                (powerUp: any) => powerUp.id === e.target.id,
-                              );
+                    {cannotActivatePowerUps ? (
+                      <img
+                        src={ForbiddenIcon}
+                        alt="Forbidden"
+                        className="forbidden-icon"
+                        title="Only the session leader can customize the game."
+                      />
+                    ) : (
+                      <Toggle>
+                        <label htmlFor={powerUp.id}>
+                          <span className="sr-only">{powerUp.description}</span>
+                          <input
+                            type="checkbox"
+                            id={powerUp.id}
+                            name={powerUp.id}
+                            className="sr-only"
+                            checked={powerUp.value}
+                            onChange={(e) => {
+                              onPowerUpsChange((prevState) => {
+                                const powerUpIndex = prevState.findIndex(
+                                  (powerUp: any) => powerUp.id === e.target.id,
+                                );
 
-                              const newState = [...prevState];
-                              newState[powerUpIndex].value = e.target.checked;
+                                const newState = [...prevState];
+                                newState[powerUpIndex].value = e.target.checked;
 
-                              return newState;
-                            });
-                          }}
-                        />
-                      </label>
-                    </Toggle>
+                                return newState;
+                              });
+                            }}
+                          />
+                        </label>
+                      </Toggle>
+                    )}
                   </div>
                 );
               })}

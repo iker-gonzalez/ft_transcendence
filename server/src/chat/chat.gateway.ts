@@ -5,8 +5,6 @@ import { ChatDMService } from './service/chatDM.service';
 import { ChatChannelService } from './service/chatChannel.service';
 import { UserService } from '../user/user.service';
 import { Socket } from 'socket.io';
-
-
 // Create a Map to store user sockets
 const userSockets = new Map();
 
@@ -42,7 +40,7 @@ export class ChatGateway implements OnGatewayConnection {
       console.error("Error:", error);
     }
 
-    // Emit signal to update the sender?receiver? chat frontend
+    // Emit signal to update the receiver chat frontend
     this.server.emit(`privateMessageReceived/${payload.receiverId}`,
                       JSON.stringify(payload))
 }

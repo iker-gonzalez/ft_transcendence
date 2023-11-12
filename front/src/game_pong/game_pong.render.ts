@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io-client';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
-import { matchPoints, slit, thickness } from './game_pong';
-import { userSpeedInput } from './game_pong.constants';
+import { matchPoints } from './game_pong';
+import { userSpeedInput, slit, thickness } from './game_pong.constants';
 import {
   InitializeCanvasImages,
   ballTrailClean,
@@ -105,7 +105,7 @@ export function render(
     String(user1.score),
     (canvas.width / 10) * 4,
     canvas.height / 6,
-    '40px Arial',
+    '40px Courier',
     'right',
     RenderColor.Red,
   );
@@ -116,7 +116,7 @@ export function render(
       'BOT',
       (canvas.width / 10) * 6,
       canvas.height / 10,
-      '20px Arial',
+      '20px Courier',
       'left',
       RenderColor.Yellow,
     );
@@ -126,7 +126,7 @@ export function render(
       usersData.user2!.username,
       (canvas.width / 10) * 6,
       canvas.height / 10,
-      '20px Arial',
+      '20px Courier',
       'left',
       RenderColor.Yellow,
     );
@@ -137,7 +137,7 @@ export function render(
     String(user2.score),
     (canvas.width / 10) * 6,
     canvas.height / 6,
-    '40px Arial',
+    '40px Courier',
     'left',
     RenderColor.Red,
   );
@@ -148,7 +148,7 @@ export function render(
       '🏆',
       (canvas.width / 10) * 4,
       canvas.height / 4.5,
-      '30px Arial',
+      '30px Courier',
       'right',
       RenderColor.Green,
     );
@@ -160,7 +160,7 @@ export function render(
       'GAME OVER',
       450,
       300,
-      '60px Verdana',
+      '60px Courier',
       'center',
       RenderColor.Red,
     );
@@ -172,7 +172,7 @@ export function render(
       usersData.user1.username + ' wins',
       450,
       410,
-      '40px Verdana',
+      '40px Courier',
       'center',
       RenderColor.Green,
     );
@@ -184,7 +184,7 @@ export function render(
       '🏆',
       (canvas.width / 10) * 6,
       canvas.height / 4.5,
-      '30px Arial',
+      '30px Courier',
       'left',
       RenderColor.Green,
     );
@@ -197,7 +197,7 @@ export function render(
         'GAME OVER',
         450,
         300,
-        '60px Verdana',
+        '60px Courier',
         'center',
         RenderColor.Red,
       );
@@ -210,7 +210,7 @@ export function render(
           usersData.user1.username + ' wins',
           450,
           410,
-          '40px Verdana',
+          '40px Courier',
           'center',
           RenderColor.Green,
         );
@@ -221,7 +221,7 @@ export function render(
             'BOT wins',
             450,
             410,
-            '40px Verdana',
+            '40px Courier',
             'center',
             RenderColor.Green,
           );
@@ -231,7 +231,7 @@ export function render(
             usersData.user2!.username + ' wins',
             450,
             410,
-            '40px Verdana',
+            '40px Courier',
             'center',
             RenderColor.Green,
           );
@@ -276,15 +276,16 @@ export function resetBall(
   const newUserData2: IUserData = user2;
   newBallData.reset = true;
 
+  newBallData.speed = userSpeedInput;
+  newUserData1.height = 100;
+  newUserData2.height = 100;
+
   // TODO Check setTimeout (async / await)
   setTimeout(() => {
     newBallData.x = canvas.width / 2;
     newBallData.y = canvas.height / 2;
     newBallData.moveX = newBallData.moveX * 1;
     newBallData.moveY = -newBallData.moveY * Math.random();
-    newBallData.speed = userSpeedInput;
-    newUserData1.height = 100;
-    newUserData2.height = 100;
     newBallData.reset = false;
   }, 2000);
 
@@ -380,9 +381,9 @@ export function matchUser1(
     ballData.moveY = ballData.speed * Math.sin(angleRad);
 
     // Modify values to make it more difficult
-    ballData.speed += 0.1;
-    user1.height -= 2;
-    user2.height -= 2;
+    ballData.speed += 0.5;
+    user1.height -= 10;
+    user2.height -= 10;
 
     sounds.hit.play().catch(function (error: any) {});
 
