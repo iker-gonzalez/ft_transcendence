@@ -345,6 +345,7 @@ export function matchUser1(
   user1: IUserData,
   user2: IUserData,
   sounds: ISounds,
+  theme: any,
 ) {
   // Ball motion
   ballData.x += ballData.moveX;
@@ -425,14 +426,25 @@ export function matchUser1(
     sounds.hit.play().catch(function (error: any) {});
 
     // Sparks effect when the ball hits the paddle
-    sparks(
-      canvas,
-      ballData.x,
-      ballData.y,
-      ballData.radius,
-      RenderColor.Yellow,
-      50,
-    );
+    if (theme.id === 'star-wars') {
+      sparks(
+        canvas,
+        ballData.x,
+        ballData.y,
+        ballData.radius,
+        RenderColor.Green,
+        50,
+      );
+    } else {
+      sparks(
+        canvas,
+        ballData.x,
+        ballData.y,
+        ballData.radius,
+        RenderColor.Yellow,
+        50,
+      );
+    }
   }
 }
 
@@ -442,6 +454,7 @@ export function matchUser2(
   user1: IUserData,
   user2: IUserData,
   sounds: ISounds,
+  theme: any,
   isSoloMode: boolean = false,
 ) {
   // Paddle motion in 1 player mode (bot movements)
@@ -466,14 +479,25 @@ export function matchUser2(
   // Detect if the ball hits the paddle & bounce the ball
   if (checkCollision(ballData, player)) {
     // Sparks effect when the ball hits the paddle
-    sparks(
-      canvas,
-      ballData.x,
-      ballData.y,
-      ballData.radius,
-      RenderColor.Yellow,
-      50,
-    );
+    if (theme.id === 'star-wars') {
+      sparks(
+        canvas,
+        ballData.x,
+        ballData.y,
+        ballData.radius,
+        RenderColor.Green,
+        50,
+      );
+    } else {
+      sparks(
+        canvas,
+        ballData.x,
+        ballData.y,
+        ballData.radius,
+        RenderColor.Yellow,
+        50,
+      );
+    }
   }
 }
 
@@ -488,6 +512,7 @@ type OnGameEndArgs = {
   sounds: any;
   isAbortedMatch?: boolean;
 };
+
 export function onGameEnd({
   canvas,
   eventList,
