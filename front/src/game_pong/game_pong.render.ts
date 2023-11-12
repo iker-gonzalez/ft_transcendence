@@ -94,13 +94,26 @@ export function render(
   drawDashedLine(canvas, net);
 
   // Paddle user1
-  drawRect(canvas, user1.x, user1.y, user1.width, user1.height, user1.color);
+  drawRect(
+    canvas,
+    user1.x,
+    user1.y,
+    user1.width,
+    user1.height,
+    theme.ballColor,
+  );
 
   //Paddle user2
-  drawRect(canvas, user2.x, user2.y, user2.width, user2.height, user2.color);
+  drawRect(
+    canvas,
+    user2.x,
+    user2.y,
+    user2.width,
+    user2.height,
+    theme.ballColor,
+  );
 
   //Ball
-  //drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
   drawBall(canvas, ballData.x, ballData.y, ballData.radius, theme.ballColor);
 
   //Ball trail
