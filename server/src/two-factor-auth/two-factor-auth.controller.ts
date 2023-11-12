@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   HttpCode,
   HttpStatus,
   Post,
@@ -70,8 +71,32 @@ export class TwoFactorAuthController {
     @GetUser() user: User,
     @Body() activateOtpDto: ActivateOtpDto,
   ): Promise<ActivateOtpResponseDto> {
-    return this.twoFactorAuthService.activaTwoFactorAuthentication(
+    return this.twoFactorAuthService.activateTwoFactorAuthentication(
       activateOtpDto,
+      user,
+    );
+  }
+
+  @Delete('deactivate')
+  @ApiOperation({
+    summary: swaggerConstants.twofa.deactivate.summary,
+  })
+  @ApiOkResponse({
+    description: swaggerConstants.twofa.deactivate.ok.description,
+    type: ActivateOtpResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: swaggerConstants.twofa.deactivate.unauthorized.description,
+  })
+  @ApiBadRequestResponse({
+    description: swaggerConstants.twofa.deactivate.bad.description,
+  })
+  async turnOffTwoFactorAuthentication(
+    @GetUser() user: User,
+    @Body() deactivateOtpDto: ActivateOtpDto,
+  ): Promise<ActivateOtpResponseDto> {
+    return this.twoFactorAuthService.deactivateTwoFactorAuthentication(
+      deactivateOtpDto,
       user,
     );
   }
