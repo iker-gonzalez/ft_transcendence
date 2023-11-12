@@ -1,8 +1,10 @@
+import { RenderColor } from "../game_pong/game_pong.interfaces";
+
 type GameTheme = {
   name: string;
   id: string;
   backgroundImg: string;
-  ballColor: string;
+  ballColor: RenderColor;
   hitSound: string;
 };
 
