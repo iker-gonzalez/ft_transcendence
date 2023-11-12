@@ -7,7 +7,6 @@ export class ConversationMessageDTO {
         example: swaggerConstants.dto.conversationMessageDTO.data.example,
       })
       
-    id: string;
     senderId: string | null;
     receiverId: string | null;
     content: string;
@@ -18,7 +17,6 @@ export class ConversationMessageDTO {
     receiverAvatar: string | null;
   
     constructor(message: DirectMessage | any , sender: any | null, receiver: User | null) {
-      this.id = message.id;
      // this.senderId = message.senderId || null;
      // this.receiverId = message.receiverId || null;
       this.content = message.content;

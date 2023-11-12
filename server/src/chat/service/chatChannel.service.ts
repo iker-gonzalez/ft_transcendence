@@ -1,8 +1,11 @@
 import { ChatRoom, ChatRoomUser, User } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { GetDirectMessageDto } from './../dto/get-direct-message.dto';
+import { AllExistingChannelsDTO } from './../dto/all-existing-channel.dto';
+import { AllUserChannelInDTO } from './../dto/all-user-channel-in.dto';
 import { AddMessageToUserDto } from './../dto/add-message.dto';
 import { UserService } from '../../user/user.service';
+
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConversationMessageDTO } from '../dto/conversation-message.dto';
 
@@ -15,7 +18,7 @@ export class ChatChannelService {
   /********************************************************** */
     // Get all the DM conversation the user had had with other users
     async getAllUserChannelIn(userId: string):
-    Promise<any[]>
+    Promise<AllUserChannelInDTO[]>
   {
     if (userId == null)
       throw new BadRequestException('User Id not found in DB');
@@ -92,7 +95,7 @@ export class ChatChannelService {
 
 
   async getAllExistingChannels(
-  ) :  Promise< any [] > 
+  ) :  Promise< AllExistingChannelsDTO[] > 
   {
     const allExistingChannels = await this.prisma.chatRoom.findMany({
       select: {
@@ -100,7 +103,17 @@ export class ChatChannelService {
         type: true, // Asegúrate de tener el campo "type" en tu modelo de ChatRoom
       },
     });
-    return allExistingChannels;
+
+    const allExistingChannelsDTO = [];
+    for (const channel of allExistingChannels )
+    {
+      const existingChannelsDTO = new  AllExistingChannelsDTO();
+      existingChannelsDTO.name = channel.name;
+      existingChannelsDTO.type = channel.type;
+      allExistingChannelsDTO.push(existingChannelsDTO);
+
+    }
+    return allExistingChannelsDTO;
   }
 
 
