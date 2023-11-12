@@ -7,7 +7,6 @@ import {
   slit,
   thickness,
   gamePowerUps,
-  gameThemes,
 } from './game_pong.constants';
 import {
   InitializeCanvasImages,
@@ -425,8 +424,8 @@ export function matchUser1(
     gamePowerUps[1].value ? (user1.height -= 10) : (user1.height -= 0);
     gamePowerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
 
-    //sounds.hit.play().catch(function (error: any) {});
-    //theme.hitSound.play().catch(function (error: any) {});
+    let themeSound = new Audio(theme.hitSound);
+    themeSound.play().catch(function (error: any) {});
 
     // Sparks effect when the ball hits the paddle
     if (theme.id === 'star-wars') {
