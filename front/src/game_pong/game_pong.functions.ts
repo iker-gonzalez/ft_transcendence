@@ -253,6 +253,7 @@ export type InitializeEventListenersArgs = {
   thickness: number;
   ballData: IBallData;
   slit: number;
+  stepPaddle: number;
 };
 
 export function initializeEventListeners({
@@ -265,21 +266,22 @@ export function initializeEventListeners({
   thickness,
   ballData,
   slit,
+  stepPaddle,
 }: InitializeEventListenersArgs): any[] {
   function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
       if (event.key === ARROW_UP_KEY) {
-        user1.y -= userSpeedInput * 5;
+        user1.y -= userSpeedInput * stepPaddle;
       } else if (event.key === ARROW_DOWN_KEY) {
-        user1.y += userSpeedInput * 5;
+        user1.y += userSpeedInput * stepPaddle;
       }
     }
 
     if (!isPlayer1 && !isSoloMode(usersData)) {
       if (event.key === ARROW_UP_KEY) {
-        user2.y -= userSpeedInput * 5;
+        user2.y -= userSpeedInput * stepPaddle;
       } else if (event.key === ARROW_DOWN_KEY) {
-        user2.y += userSpeedInput * 5;
+        user2.y += userSpeedInput * stepPaddle;
       }
     }
   }
@@ -439,9 +441,10 @@ export function initializeSocketLogic({
       ballData = downloadedData.ball;
       user1 = downloadedData.user1;
 
-      // User1 keep tracks of user2 score
+      // User1 keep tracks of user2 score & paddle height
       const updatedUser2 = downloadedData.user2;
       user2.score = updatedUser2.score;
+      user2.height = updatedUser2.height;
 
       if (user1.score >= matchPoints || user2.score >= matchPoints) {
         if (!matchFinish)

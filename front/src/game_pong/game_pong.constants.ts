@@ -21,11 +21,12 @@ import GamePowerUp from '../interfaces/game-power-up.interface';
 
 export const thickness: number = 10;
 export const slit: number = 3;
-export const userSpeedInput: number = 5;
+export const userSpeedInput: number = 20;
+export const stepPaddle: number = 5;
 const BALL_SIZE_RATIO: number = 60;
 const USER_SIZE_RATIO: number = 90;
 export const NET_SIZE_RATIO: number = 90;
-export const BALL_VELOCITY: number = 5;
+export const BALL_VELOCITY: number = userSpeedInput;
 
 export const ballDataInit: IBallData = {
   x: 0,
@@ -116,7 +117,7 @@ export const gamePowerUps: GamePowerUp[] = [
   },
   {
     id: 'paddle',
-    description: 'Paddle shrinks',
+    description: 'Paddles shrink',
     value: false,
   },
 ];

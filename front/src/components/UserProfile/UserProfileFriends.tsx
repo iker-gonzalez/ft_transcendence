@@ -16,10 +16,10 @@ import LoadingSpinner from '../UI/LoadingSpinner';
 import PaginatedSection from '../UI/PaginatedSection';
 import UserStatusInfo from '../UI/UserStatus';
 import RefreshIcon from '../../assets/svg/refresh.svg';
+import { sm } from '../../constants/styles';
 
 const WrapperDiv = styled.div`
   position: relative;
-  width: 650px;
 
   .title-container {
     width: 100%;
@@ -67,8 +67,13 @@ const WrapperDiv = styled.div`
 
       margin-right: auto;
       .avatar {
-        width: 75px;
-        height: auto;
+        display: none;
+
+        @media (width > ${sm}) {
+          display: block;
+          width: 75px;
+          height: auto;
+        }
       }
     }
   }
@@ -85,6 +90,7 @@ const WrapperDiv = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 30px;
 
     margin-top: 25px;
   }
@@ -165,7 +171,11 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                           <MainButton
                             onClick={() => setFriendProfileToShow(friend)}
                           >
-                            See profile
+                            {window.innerWidth > parseInt(sm) ? (
+                              'View profile'
+                            ) : (
+                              <span aria-label="view-profile">👤</span>
+                            )}
                           </MainButton>
                         </li>
                       );
@@ -192,17 +202,17 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
         })()}
         <div>
           <div className="search-friends-container">
-            <h3 className="title-3">On the lookout for new game mates?</h3>
+            <h3>On the lookout for new game mates?</h3>
             <SecondaryButton
               onClick={() => {
                 setShowAddNewFriendFlow(true);
               }}
             >
-              Search now
+              Search
             </SecondaryButton>
           </div>
         </div>
-        {showAddNewFriendFlow && Boolean(userFriends.length) && (
+        {showAddNewFriendFlow && (
           <AddNewFriendFlow
             setShowAddNewFriendFlow={setShowAddNewFriendFlow}
             onUpdateFriendsList={onUpdateFriendsList}

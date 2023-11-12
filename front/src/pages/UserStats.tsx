@@ -9,17 +9,23 @@ import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import LoadingFullscreen from '../components/UI/LoadingFullscreen';
+import { sm } from '../constants/styles';
 
 const WrapperDiv = styled.div`
   .container {
     display: flex;
     justify-content: center;
     align-items: stretch;
+    flex-wrap: wrap;
     gap: 40px;
-  }
 
-  .stats-container {
-    max-width: 400px;
+    > div {
+      width: 100%;
+      @media (width > ${sm}) {
+        min-width: 350px;
+        max-width: 450px;
+      }
+    }
   }
 `;
 
@@ -47,11 +53,11 @@ const UserStats: React.FC = (): JSX.Element => {
 
   if (userData) {
     return (
-      <CenteredLayout>
-        <WrapperDiv>
-          <h1 className="title-1 mb-24">Game dashboard</h1>
+      <WrapperDiv>
+        <CenteredLayout>
+          <h1 className="title-1 mb-24">Game stats</h1>
           <div className="container">
-            <ContrastPanel className="stats-container">
+            <ContrastPanel>
               <UserStatsInfo />
             </ContrastPanel>
             <ContrastPanel>
@@ -61,8 +67,8 @@ const UserStats: React.FC = (): JSX.Element => {
               />
             </ContrastPanel>
           </div>
-        </WrapperDiv>
-      </CenteredLayout>
+        </CenteredLayout>
+      </WrapperDiv>
     );
   }
 

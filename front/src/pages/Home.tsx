@@ -2,7 +2,11 @@ import React, { useEffect } from 'react';
 import MainButton from '../components/UI/MainButton';
 import { styled } from 'styled-components';
 import { Link } from 'react-router-dom';
-import { primaryLightColor } from '../constants/color-tokens';
+import {
+  darkestBgColor,
+  primaryAccentColor,
+  primaryLightColor,
+} from '../constants/color-tokens';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
@@ -14,12 +18,37 @@ import { patchUserStatus } from '../utils/utils';
 import UserStatus from '../interfaces/user-status.interface';
 import RoundImg from '../components/UI/RoundImage';
 import { TEST_USERS_DATA } from '../constants/shared';
+import NET from 'vanta/src/vanta.net';
+import { sm } from '../constants/styles';
+
+const VantaBg = styled.div`
+  opacity: 0.2;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+
+  min-height: 100vh;
+  height: 100%;
+  min-width: 100vw;
+  width: 100%;
+
+  overflow: hidden;
+`;
 
 const PageWrapperDiv = styled.div`
   min-height: 100vh;
 
+  position: relative;
+
   .logo {
-    width: 100px;
+    width: 75px;
+    @media (width > ${sm}) {
+      width: 100px;
+    }
+
     margin-bottom: 30px;
   }
 
@@ -27,7 +56,10 @@ const PageWrapperDiv = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 20px;
+
+    text-align: center;
 
     .links-container {
       display: flex;
@@ -51,17 +83,33 @@ const PageWrapperDiv = styled.div`
         width: 75px;
         object-fit: contain;
       }
+
+      &:hover {
+        > img {
+          box-shadow: rgba(0, 173, 181, 0.3) 0px 19px 38px,
+            rgba(0, 173, 181, 0.22) 0px 15px 12px;
+        }
+      }
     }
   }
 
   .team-image {
-    width: 400px;
+    width: 100%;
+    max-width: min(300px, 75vw);
+
     margin-bottom: 50px;
     border-radius: 50px;
   }
 
   .text-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
     text-align: center;
+
+    width: 100%;
     max-width: 550px;
   }
 `;
@@ -86,6 +134,18 @@ const SignIn: React.FC = (): JSX.Element => {
         fetchUserData(token);
       }
     }
+
+    // Vanta interactive background
+    NET({
+      el: '#vanta',
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      scale: 1,
+      scaleMobile: 0.75,
+      backgroundColor: darkestBgColor,
+      color: primaryAccentColor,
+    });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSignIn = () => {
@@ -95,6 +155,7 @@ const SignIn: React.FC = (): JSX.Element => {
 
   return (
     <PageWrapperDiv>
+      <VantaBg id="vanta" />
       <CenteredLayout>
         {(() => {
           if (isUserDataFetching) return <LoadingFullscreen />;
@@ -178,6 +239,7 @@ const SignIn: React.FC = (): JSX.Element => {
                           <Link
                             to={`login?code=${testUser.code}`}
                             className="signin-link"
+                            key={testUser.code}
                           >
                             <RoundImg src={testUser.avatar} alt="" />
                             User {index + 1}

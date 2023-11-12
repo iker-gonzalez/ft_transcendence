@@ -11,7 +11,7 @@ export const swaggerConstants = {
         description: 'State value does not match or provided code is invalid.',
       },
       unauthorized: {
-        description: 'OTP code is invalid.',
+        description: 'OTP code is invalid.', 
       },
       body: {
         description: 'OTP must be provided only if 2FA is enabled.',
@@ -198,34 +198,34 @@ export const swaggerConstants = {
       },
     },
   },
-  chat:{
-      data:{
-        summary: 'Return all the DM between two users',
-        ok:{
-          description: 'Return Direct messages sorted by time'
-        }
+  chat: {
+    data: {
+      summary: 'Return all the DM between two users',
+      ok: {
+        description: 'Return Direct messages sorted by time',
+      },
     },
-    all:{
+    all: {
       summary: 'Return all the users which had DM',
-      ok:{
-        description: 'Return Direct messages sorted by time'
-      }
+      ok: {
+        description: 'Return Direct messages sorted by time',
+      },
     },
-    channel:{
+    channel: {
       summary: 'Return all channel users is in',
-      ok:{
-        description: 'Return all channel users is in'
-      }
+      ok: {
+        description: 'Return all channel users is in',
+      },
     },
     allExistingChannel:{
       summary: 'Return all existing channel un DB. The name and its privacy',
     },
-    channelMess:{
-        summary: 'Return all the messages that have been sent in the channel ',
-        ok:{
-          description: 'Return contet, username, data'
-        }
-    }
+    channelMess: {
+      summary: 'Return all the messages that have been sent in the channel ',
+      ok: {
+        description: 'Return contet, username, data',
+      },
+    },
   },
   dto: {
     intraSignin: {
@@ -326,11 +326,15 @@ export const swaggerConstants = {
               intraId: 12346,
               avatar: 'https://cdn.intra.42.fr/users/jdoe.jpg',
               userId: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+              username: 'jdoe',
+              email: 'jdoe@gmail.com',
             },
             {
               intraId: 12347,
               avatar: 'https://cdn.intra.42.fr/users/jdoe.jpg',
               userId: 'c024ef2-fb79-400c-8f97-ce0e49d7dc68',
+              username: 'jdoe2',
+              email: 'jdoe@gmail.com',
             },
           ],
         },
@@ -606,7 +610,7 @@ export const swaggerConstants = {
             user: {
               username: 'test2-',
               intraId: 667,
-              avatar: 'https://i.pravatar.cc/600?img=10',
+              avatar: 'https://i.pravatar.cc/600?img=10', 
             },
             stats: {
               rank: 1,
@@ -637,34 +641,33 @@ export const swaggerConstants = {
           status: 'ONLINE',
         },
       },
-    }, 
-    allusersDMWithDTO:
-    {
-    data : {
-      description: "User with id, avatar and username",
-      example:{
-        id: "31f0dd9b-c8fa-4df3-a07c-6bd5e40c5643",
-        avatar: "https://i.pravatar.cc/600?img=32",
-        username: "test2-"
-      }
-    }
     },
-    conversationMessageDTO:
-    {
-    data : {
-      description: "conversation between two users. Who sent and who recevied the message",
-      example:{
-        id: "5ebe29e7-48e5-453e-b5d7-3958fa2bde16",
-        senderId: "623274f5-5fa1-4ad8-b7a1-c1edcb239af2",
-        receiverId: "1cc83703-a2ed-4ec2-b021-c5db82bb3d94",
-        content: "Soy el otro usuario 333",
-        createdAt: "2023-11-05T10:38:33.782Z",
-        senderName: "test3-",
-        receiverName: "test-",
-        senderAvatar: "https://i.pravatar.cc/600?img=35",
-        receiverAvatar: "https://i.pravatar.cc/600?img=8"
-      }
-    }
+    allusersDMWithDTO: {
+      data: {
+        description: 'User with id, avatar and username',
+        example: {
+          id: '31f0dd9b-c8fa-4df3-a07c-6bd5e40c5643',
+          avatar: 'https://i.pravatar.cc/600?img=32',
+          username: 'test2-',
+        },
+      },
+    },
+    conversationMessageDTO: {
+      data: {
+        description:
+          'conversation between two users. Who sent and who recevied the message',
+        example: {
+          id: '5ebe29e7-48e5-453e-b5d7-3958fa2bde16',
+          senderId: '623274f5-5fa1-4ad8-b7a1-c1edcb239af2',
+          receiverId: '1cc83703-a2ed-4ec2-b021-c5db82bb3d94',
+          content: 'Soy el otro usuario 333',
+          createdAt: '2023-11-05T10:38:33.782Z',
+          senderName: 'test3-',
+          receiverName: 'test-',
+          senderAvatar: 'https://i.pravatar.cc/600?img=35',
+          receiverAvatar: 'https://i.pravatar.cc/600?img=8',
+        },
+      },
     },
   },
 };
