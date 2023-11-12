@@ -5,8 +5,6 @@ import { ChatDMService } from './service/chatDM.service';
 import { ChatChannelService } from './service/chatChannel.service';
 import { UserService } from '../user/user.service';
 import { Socket } from 'socket.io';
-
-
 // Create a Map to store user sockets
 const userSockets = new Map();
 
@@ -107,4 +105,6 @@ async handleSendMessageToRoom( client: Socket, payload) {
   await this.chatChannelservice.leaveUserFromChannel(payload.roomName, userId);
 
  }
+
+ 
 }

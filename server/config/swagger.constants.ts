@@ -11,7 +11,7 @@ export const swaggerConstants = {
         description: 'State value does not match or provided code is invalid.',
       },
       unauthorized: {
-        description: 'OTP code is invalid.',
+        description: 'OTP code is invalid.', 
       },
       body: {
         description: 'OTP must be provided only if 2FA is enabled.',
@@ -228,6 +228,9 @@ export const swaggerConstants = {
       ok: {
         description: 'Return all channel users is in',
       },
+    },
+    allExistingChannel:{
+      summary: 'Return all existing channel un DB. The name and its privacy',
     },
     channelMess: {
       summary: 'Return all the messages that have been sent in the channel ',
@@ -619,7 +622,7 @@ export const swaggerConstants = {
             user: {
               username: 'test2-',
               intraId: 667,
-              avatar: 'https://i.pravatar.cc/600?img=10',
+              avatar: 'https://i.pravatar.cc/600?img=10', 
             },
             stats: {
               rank: 1,

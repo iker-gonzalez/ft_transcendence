@@ -4,6 +4,7 @@ import { GetDirectMessageDto } from './../dto/get-direct-message.dto';
 import { AddMessageToUserDto } from './../dto/add-message.dto';
 import { UserService } from '../../user/user.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConversationMessageDTO } from '../dto/conversation-message.dto';
 
 @Injectable()
 export class ChatChannelService {
@@ -58,7 +59,7 @@ export class ChatChannelService {
         throw new BadRequestException('roomName not found in DB');
       }
     
-      const conversations = await this.prisma.chatMessage.findMany({
+      const conversationsChannel = await this.prisma.chatMessage.findMany({
         where: {
           roomId: chatRoom.id,
         },
@@ -67,6 +68,7 @@ export class ChatChannelService {
           createdAt: true,
           sender: {
             select: {
+              id: true,
               username: true,
               avatar: true,
               connectStatus: true,
@@ -79,10 +81,27 @@ export class ChatChannelService {
       });
       
       // El objeto `conversations` contendrá todas las conversaciones relacionadas con el canal, incluyendo el contenido de los mensajes
-    
-    return conversations;
+      const conversationDTO = [];
+      for (const message of conversationsChannel )
+      {
+          conversationDTO.push(new ConversationMessageDTO(message, message.sender, null));
+  
+      }
+    return conversationDTO;
   }
 
+
+  async getAllExistingChannels(
+  ) :  Promise< any [] > 
+  {
+    const allExistingChannels = await this.prisma.chatRoom.findMany({
+      select: {
+        name: true,
+        type: true, // Asegúrate de tener el campo "type" en tu modelo de ChatRoom
+      },
+    });
+    return allExistingChannels;
+  }
 
 
   /********************************************************** */
@@ -126,7 +145,8 @@ export class ChatChannelService {
       // Crear el Channel
       await this.prisma.chatRoom.create({
           data:{
-            name: channelName
+            name: channelName,
+            ownerId: adminId
           }
         })
     }
@@ -274,6 +294,51 @@ async leaveUserFromChannel(
   /********************************************************** */
   //                     ADMIN FUNCIONALITY                   //
   /********************************************************** */
+  async addAddminToCahnner(
+    channelRoom: string,
+    ownerId: string,
+    newAdminId: string
+   ): Promise<void> 
+{
+ 
+  if (!channelRoom || !ownerId || !newAdminId)
+  throw new BadRequestException ("channelRoom or ownerId or newAdminId  are null");
+
+  // Get el Channel
+  const foundChatRoom = await this.prisma.chatRoom.findFirst({
+    where: { name: channelRoom,
+    },
+    include:{
+      users:true,
+    },
+  });
+
+  if (!foundChatRoom)
+  throw new BadRequestException ("channelRoom not exist");
+
+  if (ownerId != foundChatRoom.ownerId)
+  throw new BadRequestException ("It is not the owner of the channel, not premissions to do this");
+
+  try{
+
+    // Agregar el usuario como administrador de la sala de chat
+    const updatedChatRoom = await this.prisma.chatRoom.update({
+      where: { id: foundChatRoom.id },
+      data: {
+        adminUsers: {
+          connect: {
+            id: newAdminId,
+          },
+        },
+      },
+    });
+  }
+  catch(error){
+    console.error("Error:", error);
+  }
+
+}
+
 
   /********************************************************** */
   //                     ACCESS FUNCIONALITY                  //
