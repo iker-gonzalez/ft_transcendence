@@ -7,6 +7,7 @@ import {
   slit,
   thickness,
   gamePowerUps,
+  gameThemes,
 } from './game_pong.constants';
 import {
   InitializeCanvasImages,
@@ -31,6 +32,7 @@ import {
   IUserData,
   RenderColor,
 } from './game_pong.interfaces';
+import GameTheme from '../interfaces/game-theme.interface';
 
 export function render(
   canvas: HTMLCanvasElement,
@@ -46,12 +48,16 @@ export function render(
   canvasImages: InitializeCanvasImages,
   thickness: number,
   sounds: any,
+  theme: GameTheme,
 ) {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   // To clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   //Background
+  console.log('All themes -> ', gameThemes);
+  console.log('Selected theme -> ', theme)
+
   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
 
   // drawImg(
