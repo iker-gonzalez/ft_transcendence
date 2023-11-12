@@ -55,19 +55,27 @@ export function render(
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   //Background
-  console.log('All themes -> ', gameThemes);
-  console.log('Selected theme -> ', theme)
-
-  drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
-
-  // drawImg(
-  //   canvas,
-  //   canvasImages.canvasBgImage,
-  //   0,
-  //   0,
-  //   canvas.width,
-  //   canvas.height,
-  // );
+  // console.log('All themes -> ', gameThemes);
+  // console.log('Selected theme -> ', theme);
+  //
+  // if (theme.id === 'classic') {
+  //   console.log('****** theme is classic');
+    // drawImg(
+    //   canvas,
+    //   canvasImages.canvasBgImage,
+    //   0,
+    //   0,
+    //   canvas.width,
+    //   canvas.height,
+    // );
+  // } else if (theme.id === 'star-wars') {
+  //   console.log('****** theme is star wars');
+  // } else if (theme.id === 'football') {
+  //   console.log('****** theme is football');
+  // } else {
+  //   console.log('****** theme is default');
+  //   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
+  // }
 
   // Above wall
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
