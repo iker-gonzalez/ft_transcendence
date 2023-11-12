@@ -60,14 +60,14 @@ export function render(
   //
   // if (theme.id === 'classic') {
   //   console.log('****** theme is classic');
-    // drawImg(
-    //   canvas,
-    //   canvasImages.canvasBgImage,
-    //   0,
-    //   0,
-    //   canvas.width,
-    //   canvas.height,
-    // );
+  // drawImg(
+  //   canvas,
+  //   canvasImages.canvasBgImage,
+  //   0,
+  //   0,
+  //   canvas.width,
+  //   canvas.height,
+  // );
   // } else if (theme.id === 'star-wars') {
   //   console.log('****** theme is star wars');
   // } else if (theme.id === 'football') {
@@ -120,7 +120,11 @@ export function render(
   drawBallTrail(canvas, 0.025);
 
   //Sparks effect
-  drawSparks(canvas, 0, 0, 0, RenderColor.Yellow);
+  if (theme.id === 'star-wars') {
+    drawSparks(canvas, 0, 0, 0, RenderColor.Green);
+  } else {
+    drawSparks(canvas, 0, 0, 0, RenderColor.Yellow);
+  }
   drawSparksTrail(canvas, 0.3);
 
   drawText(
