@@ -235,8 +235,8 @@ function game({
 
   setTimeout(() => {
     if (isSoloMode(usersData)) {
-      matchUser1(canvas, ballData, user1, user2, sounds);
-      matchUser2(canvas, ballData, user1, user2, sounds, true);
+      matchUser1(canvas, ballData, user1, user2, sounds, theme);
+      matchUser2(canvas, ballData, user1, user2, sounds, theme);
 
       render(
         canvas,

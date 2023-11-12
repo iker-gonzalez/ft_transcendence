@@ -412,7 +412,7 @@ export function initializeSocketLogic({
         matchFinish = true;
       }
 
-      matchUser1(canvas, ballData, user1, user2, sounds);
+      matchUser1(canvas, ballData, user1, user2, sounds, theme);
 
       render(
         canvas,
@@ -465,7 +465,7 @@ export function initializeSocketLogic({
         matchFinish = true;
       }
 
-      matchUser2(canvas, ballData, user1, user2, sounds);
+      matchUser2(canvas, ballData, user1, user2, sounds, theme);
 
       render(
         canvas,

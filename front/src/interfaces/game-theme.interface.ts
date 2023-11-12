@@ -5,7 +5,7 @@ type GameTheme = {
   id: string;
   backgroundImg: string;
   ballColor: RenderColor;
-  hitSound: string;
+  hitSound: HTMLAudioElement;
 };
 
 export default GameTheme;
