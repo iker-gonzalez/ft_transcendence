@@ -231,6 +231,15 @@ export const swaggerConstants = {
     },
     allExistingChannel:{
       summary: 'Return all existing channel un DB. The name and its privacy',
+      ok: {
+        description: 'Return all exisitng channel ins the DB. Private, protected and public',
+      },
+    },
+    allUserChannelIn:{
+      summary: 'Return all existing channel un DB. The name and its privacy',
+      ok: {
+        description: 'Return all exisitng channel ins the DB. Private, protected and public',
+      },
     },
     channelMess: {
       summary: 'Return all the messages that have been sent in the channel ',
@@ -664,12 +673,20 @@ export const swaggerConstants = {
         },
       },
     },
+      allExistingChannelsDTO: {
+        data: {
+          description: 'Room name and privacy type',
+          example: {
+            name: 'roomZal6',
+            type: 'PUBLIC',
+          },
+        },
+    },
     conversationMessageDTO: {
       data: {
         description:
           'conversation between two users. Who sent and who recevied the message',
         example: {
-          id: '5ebe29e7-48e5-453e-b5d7-3958fa2bde16',
           senderId: '623274f5-5fa1-4ad8-b7a1-c1edcb239af2',
           receiverId: '1cc83703-a2ed-4ec2-b021-c5db82bb3d94',
           content: 'Soy el otro usuario 333',
@@ -681,5 +698,15 @@ export const swaggerConstants = {
         },
       },
     },
+    allUserChannelInDTO: {
+      data: {
+        description:
+          'The name of all channel a user is in',
+        example: {
+          name: 'roomZal6',
+        },
+      },
+    },
+
   },
 };
