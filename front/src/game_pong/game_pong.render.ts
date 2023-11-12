@@ -100,7 +100,8 @@ export function render(
   drawRect(canvas, user2.x, user2.y, user2.width, user2.height, user2.color);
 
   //Ball
-  drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
+  //drawBall(canvas, ballData.x, ballData.y, ballData.radius, ballData.color);
+  drawBall(canvas, ballData.x, ballData.y, ballData.radius, theme.ballColor);
 
   //Ball trail
   drawBallTrail(canvas, 0.025);
