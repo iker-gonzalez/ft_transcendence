@@ -91,7 +91,9 @@ export function render(
   );
 
   // Net line
-  drawDashedLine(canvas, net);
+  if (theme.id !== 'classic') {
+    drawDashedLine(canvas, net);
+  }
 
   // Paddle user1
   drawRect(
@@ -423,7 +425,8 @@ export function matchUser1(
     gamePowerUps[1].value ? (user1.height -= 10) : (user1.height -= 0);
     gamePowerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
 
-    sounds.hit.play().catch(function (error: any) {});
+    //sounds.hit.play().catch(function (error: any) {});
+    //theme.hitSound.play().catch(function (error: any) {});
 
     // Sparks effect when the ball hits the paddle
     if (theme.id === 'star-wars') {
