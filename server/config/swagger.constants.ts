@@ -11,7 +11,7 @@ export const swaggerConstants = {
         description: 'State value does not match or provided code is invalid.',
       },
       unauthorized: {
-        description: 'OTP code is invalid.',
+        description: 'OTP code is invalid.', 
       },
       body: {
         description: 'OTP must be provided only if 2FA is enabled.',
@@ -32,6 +32,18 @@ export const swaggerConstants = {
       summary: 'Activate 2FA on user profile. Receives OTP code as input.',
       ok: {
         description: 'Returns updated user data.',
+      },
+      unauthorized: {
+        description: 'JWT token is invalid or expired or OTP code is invalid.',
+      },
+      bad: {
+        description: 'OTP code is invalid.',
+      },
+    },
+    deactivate: {
+      summary: 'Deactivate 2FA on user profile. Receives OTP code as input.',
+      ok: {
+        description: 'OTP gets deactivated.',
       },
       unauthorized: {
         description: 'JWT token is invalid or expired or OTP code is invalid.',
@@ -215,6 +227,18 @@ export const swaggerConstants = {
       summary: 'Return all channel users is in',
       ok: {
         description: 'Return all channel users is in',
+      },
+    },
+    allExistingChannel:{
+      summary: 'Return all existing channel un DB. The name and its privacy',
+      ok: {
+        description: 'Return all exisitng channel ins the DB. Private, protected and public',
+      },
+    },
+    allUserChannelIn:{
+      summary: 'Return all existing channel un DB. The name and its privacy',
+      ok: {
+        description: 'Return all exisitng channel ins the DB. Private, protected and public',
       },
     },
     channelMess: {
@@ -607,7 +631,7 @@ export const swaggerConstants = {
             user: {
               username: 'test2-',
               intraId: 667,
-              avatar: 'https://i.pravatar.cc/600?img=10',
+              avatar: 'https://i.pravatar.cc/600?img=10', 
             },
             stats: {
               rank: 1,
@@ -649,12 +673,20 @@ export const swaggerConstants = {
         },
       },
     },
+      allExistingChannelsDTO: {
+        data: {
+          description: 'Room name and privacy type',
+          example: {
+            name: 'roomZal6',
+            type: 'PUBLIC',
+          },
+        },
+    },
     conversationMessageDTO: {
       data: {
         description:
           'conversation between two users. Who sent and who recevied the message',
         example: {
-          id: '5ebe29e7-48e5-453e-b5d7-3958fa2bde16',
           senderId: '623274f5-5fa1-4ad8-b7a1-c1edcb239af2',
           receiverId: '1cc83703-a2ed-4ec2-b021-c5db82bb3d94',
           content: 'Soy el otro usuario 333',
@@ -666,5 +698,15 @@ export const swaggerConstants = {
         },
       },
     },
+    allUserChannelInDTO: {
+      data: {
+        description:
+          'The name of all channel a user is in',
+        example: {
+          name: 'roomZal6',
+        },
+      },
+    },
+
   },
 };
