@@ -18,6 +18,7 @@ import { Socket } from 'socket.io-client';
 import { render } from './game_pong.render';
 import GameTheme from '../interfaces/game-theme.interface';
 
+
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
 
@@ -360,6 +361,8 @@ export type InitializeSocketLogicArgs = {
   canvasImages: InitializeCanvasImages;
   thickness: number;
   theme: GameTheme;
+  isFirstRun: boolean;
+  countDown: number;
 };
 
 export function initializeSocketLogic({
@@ -380,6 +383,8 @@ export function initializeSocketLogic({
   canvasImages,
   thickness,
   theme,
+  isFirstRun,
+  countDown,
 }: InitializeSocketLogicArgs) {
   socket.emit(
     'upload',
@@ -408,8 +413,12 @@ export function initializeSocketLogic({
             player: user1,
             userData: usersData.user1,
             sounds,
+            isFirstRun,
+            countDown,
           });
         matchFinish = true;
+      //  isFirstRun = true;
+      //  countDown = 3;
       }
 
       matchUser1(canvas, ballData, user1, user2, sounds, theme);
@@ -461,6 +470,8 @@ export function initializeSocketLogic({
             player: user2,
             userData: usersData.user2,
             sounds,
+            isFirstRun,
+            countDown,
           });
         matchFinish = true;
       }
@@ -509,6 +520,7 @@ export async function countDownToStart(countDown: number): Promise<void> {
   return await new Promise((resolve) => {
     const countDownInterval = setInterval(() => {
       countDown--;
+      console.log('Count down value -> ', countDown);
       if (countDown === 0) {
         resolve();
         isBallFrozen = false;
