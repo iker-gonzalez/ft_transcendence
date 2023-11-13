@@ -19,6 +19,7 @@ import {
   drawSparks,
   drawSparksTrail,
   drawText,
+  isBallFrozen,
   isSoloMode,
   sparks,
   sparksTrailClean,
@@ -349,8 +350,10 @@ export function matchUser1(
   theme: any,
 ) {
   // Ball motion
-  ballData.x += ballData.moveX;
-  ballData.y += ballData.moveY;
+  if (!isBallFrozen) {
+    ballData.x += ballData.moveX;
+    ballData.y += ballData.moveY;
+  }
 
   // Limit paddle vertical motion
   if (user1.y < thickness + ballData.radius * slit) {
@@ -513,6 +516,8 @@ type OnGameEndArgs = {
   userData: any;
   sounds: any;
   isAbortedMatch?: boolean;
+  isFirstRun: boolean;
+  countDown: number;
 };
 
 export function onGameEnd({
@@ -525,6 +530,8 @@ export function onGameEnd({
   userData,
   sounds,
   isAbortedMatch = false,
+  isFirstRun,
+  countDown,
 }: OnGameEndArgs) {
   // TODO check this, looks like it's not working
   eventList.forEach(function ({ typeEvent, handler }) {
@@ -539,6 +546,9 @@ export function onGameEnd({
 
   ballTrailClean();
   sparksTrailClean();
+
+  isFirstRun = true;
+  countDown = 3;
 
   // In case of aborted match
   // We don't want to send match data to the API
