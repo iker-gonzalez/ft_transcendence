@@ -353,40 +353,197 @@ describe('App e2e', () => {
   });
 
   describe('2FA', () => {
-    it('it should activate 2FA', async () => {
-      // Create user first
-      const user = await createUser(
-        prisma,
-        intraService,
-        intraUserToken,
-        userData,
-      );
+    describe('activation', () => {
+      it('it should activate 2FA', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
 
-      jest
-        .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
-        .mockImplementation((): Promise<boolean> => {
-          return Promise.resolve(true);
+        jest
+          .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
+          .mockImplementation((): Promise<boolean> => {
+            return Promise.resolve(true);
+          });
+
+        const reqBody = {
+          otp: '123456',
+        };
+
+        await pactum
+          .spec()
+          .post('/2fa/activate')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody(reqBody)
+          .expectStatus(200)
+          .expectJson({
+            updated: 1,
+          });
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
         });
 
-      const reqBody = {
-        otp: '123456',
-      };
-
-      await pactum
-        .spec()
-        .post('/2fa/activate')
-        .withHeaders({ Authorization: 'Bearer $S{userAt}' })
-        .withBody(reqBody)
-        .expectStatus(200)
-        .expectJson({
-          updated: 1,
-        });
-
-      const updatedUser = await prisma.user.findUnique({
-        where: { id: user.id },
+        expect(updatedUser.isTwoFactorAuthEnabled).toBe(true);
       });
 
-      expect(updatedUser.isTwoFactorAuthEnabled).toBe(true);
+      it('it should return 400 if OTP is invalid', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        jest
+          .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
+          .mockImplementation((): Promise<boolean> => {
+            return Promise.resolve(false);
+          });
+
+        const reqBody = {
+          otp: '123456',
+        };
+
+        await pactum
+          .spec()
+          .post('/2fa/activate')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody(reqBody)
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+
+        expect(updatedUser.isTwoFactorAuthEnabled).toBe(false);
+      });
+
+      it('it should return 401 if token is invalid', async () => {
+        jest
+          .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
+          .mockImplementation((): Promise<boolean> => {
+            return Promise.resolve(true);
+          });
+
+        const reqBody = {
+          otp: '123456',
+        };
+
+        await pactum
+          .spec()
+          .post('/2fa/activate')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody(reqBody)
+          .expectStatus(401);
+      });
+    });
+
+    describe('deactivation', () => {
+      it('it should deactivate 2FA', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            isTwoFactorAuthEnabled: true,
+          },
+        });
+
+        jest
+          .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
+          .mockImplementation((): Promise<boolean> => {
+            return Promise.resolve(true);
+          });
+
+        const reqBody = {
+          otp: '123456',
+        };
+
+        await pactum
+          .spec()
+          .delete('/2fa/deactivate')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody(reqBody)
+          .expectStatus(200)
+          .expectJson({
+            updated: 1,
+          });
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        expect(updatedUser.isTwoFactorAuthEnabled).toBe(false);
+        expect(updatedUser.twoFactorAuthSecret).toBeNull();
+      });
+
+      it('it should return 400 if OTP is invalid', async () => {
+        // Create user first
+        const user = await createUser(
+          prisma,
+          intraService,
+          intraUserToken,
+          userData,
+        );
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            isTwoFactorAuthEnabled: true,
+          },
+        });
+
+        jest
+          .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
+          .mockImplementation((): Promise<boolean> => {
+            return Promise.resolve(false);
+          });
+
+        const reqBody = {
+          otp: '123456',
+        };
+
+        await pactum
+          .spec()
+          .delete('/2fa/deactivate')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody(reqBody)
+          .expectStatus(400);
+
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        expect(updatedUser.isTwoFactorAuthEnabled).toBe(true);
+      });
+
+      it('it should return 401 if token is invalid', async () => {
+        jest
+          .spyOn(twoFactorAuthService, 'isTwoFactorAuthenticationCodeValid')
+          .mockImplementation((): Promise<boolean> => {
+            return Promise.resolve(false);
+          });
+
+        const reqBody = {
+          otp: '123456',
+        };
+
+        await pactum
+          .spec()
+          .delete('/2fa/deactivate')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withBody(reqBody)
+          .expectStatus(401);
+      });
     });
   });
 

@@ -91,6 +91,7 @@ export class ChatDMService {
         where: { id: userId },
         select: {
           avatar: true,
+          intraId: true,
           username: true,
         },
       });
@@ -98,6 +99,7 @@ export class ChatDMService {
       userDTO.id = userId;
       userDTO.avatar = userObj.avatar;
       userDTO.username = userObj.username;
+      userDTO.intraId = userObj.intraId;
       allUserDMWithDTO.push(userDTO)
     }
 

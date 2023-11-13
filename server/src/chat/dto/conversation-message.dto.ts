@@ -1,4 +1,4 @@
-import { DirectMessage, User } from '@prisma/client';
+import { ChatMessage, DirectMessage, User } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { swaggerConstants } from '../../../config/swagger.constants';
 export class ConversationMessageDTO {
@@ -7,7 +7,6 @@ export class ConversationMessageDTO {
         example: swaggerConstants.dto.conversationMessageDTO.data.example,
       })
       
-    id: string;
     senderId: string | null;
     receiverId: string | null;
     content: string;
@@ -17,10 +16,9 @@ export class ConversationMessageDTO {
     senderAvatar: string | null;
     receiverAvatar: string | null;
   
-    constructor(message: DirectMessage, sender: User | null, receiver: User | null) {
-      this.id = message.id;
-      this.senderId = message.senderId || null;
-      this.receiverId = message.receiverId || null;
+    constructor(message: DirectMessage | any , sender: any | null, receiver: User | null) {
+     // this.senderId = message.senderId || null;
+     // this.receiverId = message.receiverId || null;
       this.content = message.content;
       this.createdAt = message.createdAt;
       this.senderName = sender?.username || null;
