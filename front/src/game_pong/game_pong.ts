@@ -40,7 +40,7 @@ let computedFpsSoloMode: number = computedFps * 0.55;
 let computedFpsMultiMode: number = computedFps * 1;
 let matchFinish: boolean = false;
 export const matchPoints: number = 5;
-let countDown: number = 5;
+let countDown: number = 3;
 let isFirstRun: boolean = true;
 
 type GameLoopFunctionParams = {
@@ -138,6 +138,8 @@ export async function gameLoop({
       canvasImages,
       thickness,
       theme,
+      isFirstRun,
+      countDown,
     });
   }
 
@@ -212,6 +214,8 @@ function game({
       userData: usersData.user1,
       sounds,
       isAbortedMatch,
+      isFirstRun,
+      countDown,
     });
   });
   socket.on(`gameAborted/user2/${sessionId}`, () => {
@@ -226,6 +230,8 @@ function game({
       userData: usersData.user2,
       sounds,
       isAbortedMatch,
+      isFirstRun,
+      countDown,
     });
   });
 
@@ -233,88 +239,94 @@ function game({
     return;
   }
 
-  setTimeout(() => {
-    if (isSoloMode(usersData)) {
-      matchUser1(canvas, ballData, user1, user2, sounds, theme);
-      matchUser2(canvas, ballData, user1, user2, sounds, theme, true);
+  setTimeout(
+    () => {
+      if (isSoloMode(usersData)) {
+        matchUser1(canvas, ballData, user1, user2, sounds, theme);
+        matchUser2(canvas, ballData, user1, user2, sounds, theme, true);
 
-      render(
-        canvas,
-        ballData,
-        user1,
-        user2,
-        net,
-        matchPoints,
-        usersData,
-        canvasImages,
-        thickness,
-        sounds,
-        theme,
-      );
-
-      if (user1.score >= matchPoints || user2.score >= matchPoints) {
-        // First save data of player 1
-        onGameEnd({
+        render(
           canvas,
-          eventList,
-          socket,
-          sessionId,
-          startedAt,
-          player: user1,
-          userData: usersData.user1,
+          ballData,
+          user1,
+          user2,
+          net,
+          matchPoints,
+          usersData,
+          canvasImages,
+          thickness,
           sounds,
-        });
-        // Then of bot
-        // Delay is required by the server to process the data
-        setTimeout(() => {
+          theme,
+        );
+
+        if (user1.score >= matchPoints || user2.score >= matchPoints) {
+          // First save data of player 1
           onGameEnd({
             canvas,
             eventList,
             socket,
             sessionId,
             startedAt,
-            player: user2,
-            userData: botUserData,
+            player: user1,
+            userData: usersData.user1,
             sounds,
+            isFirstRun,
+            countDown,
           });
-        }, 100);
-        matchFinish = true;
+          // Then of bot
+          // Delay is required by the server to process the data
+          setTimeout(() => {
+            onGameEnd({
+              canvas,
+              eventList,
+              socket,
+              sessionId,
+              startedAt,
+              player: user2,
+              userData: botUserData,
+              sounds,
+              isFirstRun,
+              countDown,
+            });
+          }, 100);
+          matchFinish = true;
+        }
+      } else {
+        socket.emit(
+          'download',
+          JSON.stringify({
+            isUser1: isPlayer1,
+            gameDataId: sessionId,
+          }),
+        );
       }
-    } else {
-      socket.emit(
-        'download',
-        JSON.stringify({
-          isUser1: isPlayer1,
-          gameDataId: sessionId,
-        }),
-      );
-    }
 
-    console.log('Is Ball Frozen? ', isBallFrozen);
-    if (isFirstRun) {
-      countDownToStart(countDown);
-      isFirstRun = false;
-    }
+      console.log('Is Ball Frozen? ', isBallFrozen);
+      if (isFirstRun) {
+        countDownToStart(countDown);
+        isFirstRun = false;
+      }
 
-    requestAnimationFrame(function () {
-      game({
-        canvas,
-        ballData,
-        sounds,
-        user1,
-        user2,
-        usersData,
-        net,
-        socket,
-        isPlayer1,
-        matchPoints,
-        sessionId,
-        startedAt,
-        eventList,
-        canvasImages,
-        theme,
+      requestAnimationFrame(function () {
+        game({
+          canvas,
+          ballData,
+          sounds,
+          user1,
+          user2,
+          usersData,
+          net,
+          socket,
+          isPlayer1,
+          matchPoints,
+          sessionId,
+          startedAt,
+          eventList,
+          canvasImages,
+          theme,
+        });
       });
-    });
-  }, isSoloMode(usersData) ? (computedFpsSoloMode) : (computedFpsMultiMode))
-  
+    },
+    isSoloMode(usersData) ? computedFpsSoloMode : computedFpsMultiMode,
+  );
 }
