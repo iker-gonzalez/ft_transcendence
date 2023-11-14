@@ -17,6 +17,7 @@ import {
 type NavigationLinksProps = {
   className?: string;
   onClickLink?: () => void;
+  isAnimationPlaying?: boolean;
 };
 
 const StyledNav = styled.nav`
@@ -35,6 +36,7 @@ const StyledNav = styled.nav`
 
     &.disabled {
       cursor: not-allowed;
+      pointer-events: none;
       opacity: 0.5;
     }
 
@@ -61,6 +63,7 @@ const StyledNav = styled.nav`
 const NavigationLinks: React.FC<NavigationLinksProps> = ({
   className,
   onClickLink,
+  isAnimationPlaying,
 }): JSX.Element => {
   const { userData } = useUserData();
 
@@ -70,75 +73,74 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({
     setIsLogged(!!userData);
   }, [userData]);
 
-  const disableLink = (e: any) => {
-    if (!isLogged) {
-      e.preventDefault();
-      return;
-    }
-
-    if (onClickLink) {
-      onClickLink();
-    }
-  };
+  const links: {
+    to: string;
+    isPermanent: boolean;
+    icon: string;
+    text: string;
+  }[] = [
+    { to: '/', isPermanent: true, icon: HomeIcon, text: 'Home' },
+    {
+      to: '/profile',
+      isPermanent: false,
+      icon: ProfileIcon,
+      text: 'Profile',
+    },
+    {
+      to: '/game',
+      isPermanent: false,
+      icon: PlayIcon,
+      text: 'Play',
+    },
+    {
+      to: '/chat',
+      isPermanent: false,
+      icon: ChatIcon,
+      text: 'Chat',
+    },
+    {
+      to: '/stats',
+      isPermanent: false,
+      icon: StatsIcon,
+      text: 'Stats',
+    },
+    {
+      to: '/leaderboard',
+      isPermanent: true,
+      icon: LeaderboardIcon,
+      text: 'Leaderboard',
+    },
+  ];
 
   return (
     <StyledNav className={`nav-list ${className}`}>
-      <Link
-        to="/"
-        className="link"
-        onClick={() => {
-          if (onClickLink) {
-            onClickLink();
-          }
-        }}
-      >
-        <SVG src={HomeIcon} aria-hidden="true" className="icon" />
-        Home
-      </Link>
-      <Link
-        to="/profile"
-        onClick={disableLink}
-        className={`${!isLogged && 'disabled'} link`}
-      >
-        <SVG src={ProfileIcon} aria-hidden="true" className="icon" />
-        Profile
-      </Link>
-      <Link
-        to="/game"
-        onClick={disableLink}
-        className={`${!isLogged && 'disabled'} link`}
-      >
-        <SVG src={PlayIcon} aria-hidden="true" className="icon" />
-        Play
-      </Link>
-      <Link
-        to="/chat"
-        onClick={disableLink}
-        className={`${!isLogged && 'disabled'} link`}
-      >
-        <SVG src={ChatIcon} aria-hidden="true" className="icon" />
-        Chat
-      </Link>
-      <Link
-        to="/stats"
-        onClick={disableLink}
-        className={`${!isLogged && 'disabled'} link`}
-      >
-        <SVG src={StatsIcon} aria-hidden="true" className="icon" />
-        Stats
-      </Link>
-      <Link
-        to="/leaderboard"
-        className="link"
-        onClick={() => {
-          if (onClickLink) {
-            onClickLink();
-          }
-        }}
-      >
-        <SVG src={LeaderboardIcon} aria-hidden="true" className="icon" />
-        Leaderboard
-      </Link>
+      {links.map((link) => {
+        return (
+          <Link
+            to={link.to}
+            className={`${
+              !link.isPermanent &&
+              (!isLogged || isAnimationPlaying) &&
+              'disabled'
+            } link`}
+            onClick={(e) => {
+              if (!link.isPermanent) {
+                if (!isLogged) {
+                  e.preventDefault();
+                  return;
+                }
+              }
+
+              if (onClickLink) {
+                onClickLink();
+              }
+            }}
+          >
+            <SVG src={link.icon} aria-hidden="true" className="icon" />
+            {link.text}
+          </Link>
+        );
+      })}
     </StyledNav>
   );
 };
