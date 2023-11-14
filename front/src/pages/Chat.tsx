@@ -14,7 +14,7 @@ import styled from 'styled-components';
 
 const WrapperDiv = styled.div`
   width: 100%;
-  min-height: 70vh; /* TODO adjust this */
+  height: 80vh; /* TODO adjust this */
   display: flex;
   justify-content: center;
   align-items: stretch;
