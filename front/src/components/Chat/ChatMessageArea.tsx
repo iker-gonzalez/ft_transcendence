@@ -15,12 +15,36 @@ import { darkerBgColor } from '../../constants/color-tokens';
 const MessageAreaContainer = styled.div`
   width: 100%;
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 
   .gradient-border {
+    height: 80vh;
     background-color: ${darkerBgColor};
     padding: 20px;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto; /* Add scroll behavior when content overflows */
   }
+`;
+
+const WrapperDiv = styled.div`
+justify-content: flex-start;
+
+
+
+
+`;
+
+const WrapperDiv2 = styled.div`
+justify-content: flex-start;
+
+
+
+
 `;
 
 const Title = styled.h2`
@@ -148,12 +172,13 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     <GradientBorder className="gradient-border">
       {selectedUser || selectedGroup ? (
         <>
+        <WrapperDiv>
           {title && <Title>{title}</Title>}
           <MessageList>
             {messages.map((message) => (
                 <MessageItem key={message.timestamp}>
                   {`${message.senderName}: ${message.content}`}
-                </MessageItem>
+          </MessageItem>
             ))}
             {(selectedUser && messagesByChat[selectedUser.username] || selectedGroup && messagesByChat[selectedGroup.name] || []).map((messageData, index) => (
               <MessageItem key={index}>
@@ -161,12 +186,14 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               </MessageItem>
             ))}
           </MessageList>
-
+        </WrapperDiv>
+        <WrapperDiv2>
           <MessageInput
             message={message}
             onInputChange={handleInputChange}
             onMessageSubmit={selectedGroup ? handleSendRoomMessage : handlePrivateMessage}
           />
+        </WrapperDiv2>
         </>
         ) : (
           <CenteredContainer>
