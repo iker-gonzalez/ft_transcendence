@@ -119,7 +119,7 @@ const NavbarContainerDesktop = styled.nav`
 
 const Navbar = (): JSX.Element => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState<boolean>(false);
-  const [isLottiePlay, setIsLottiePlay] = React.useState<boolean>(false);
+  const [isLottiePlaying, setIsLottiePlayinging] = React.useState<boolean>(false);
   const [isAnimationPlaying, setIsAnimationPlaying] =
     React.useState<boolean>(false);
   const menuButtonRef = useRef<LottieRefCurrentProps>(null);
@@ -132,7 +132,7 @@ const Navbar = (): JSX.Element => {
   };
 
   const onClosingSidebar = () => {
-    if (menuButtonRef.current && !isLottiePlay) {
+    if (menuButtonRef.current && !isLottiePlaying) {
       setIsSidebarOpen((prevState) => {
         if (prevState === true) startClosingAnimation();
 
@@ -157,10 +157,10 @@ const Navbar = (): JSX.Element => {
             loop={false}
             autoplay={false}
             onSegmentStart={() => {
-              setIsLottiePlay(true);
+              setIsLottiePlayinging(true);
             }}
             onComplete={() => {
-              setIsLottiePlay(false);
+              setIsLottiePlayinging(false);
             }}
             onClick={onClosingSidebar}
             lottieRef={menuButtonRef}
@@ -177,6 +177,7 @@ const Navbar = (): JSX.Element => {
               <NavigationLinks
                 className="nav-list"
                 onClickLink={onClosingSidebar}
+                isAnimationPlaying={isLottiePlaying}
               />
             </div>
             <div className="sidebar-bg animate__animated animate__fadeIn"></div>
