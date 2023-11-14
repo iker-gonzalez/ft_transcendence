@@ -49,6 +49,8 @@ export function render(
   thickness: number,
   sounds: any,
   theme: GameTheme,
+  isBallFrozen: boolean,
+  countDown: number,
 ) {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   // To clear the canvas
@@ -229,6 +231,7 @@ export function render(
     );
 
     if (user1.score >= matchPoints || user2.score >= matchPoints) {
+      //isBallFrozen = true;
       drawRect(canvas, 200, 200, 500, 150, RenderColor.Grey);
 
       drawText(
@@ -278,7 +281,7 @@ export function render(
       }
     }
   }
-
+  
   const speedRender: number = ballData.speed * 0.1;
 
   drawText(
@@ -518,6 +521,7 @@ type OnGameEndArgs = {
   isAbortedMatch?: boolean;
   isFirstRun: boolean;
   countDown: number;
+  isBallFrozen: boolean;
 };
 
 export function onGameEnd({
@@ -532,6 +536,7 @@ export function onGameEnd({
   isAbortedMatch = false,
   isFirstRun,
   countDown,
+  isBallFrozen,
 }: OnGameEndArgs) {
   // TODO check this, looks like it's not working
   eventList.forEach(function ({ typeEvent, handler }) {
