@@ -530,32 +530,35 @@ export async function countDownToStart(
   return await new Promise((resolve) => {
     const countDownInterval = setInterval(() => {
       if (countDown === 3) {
-        drawRect(
-          canvas,
-          canvas.width / 2 - 100,
-          canvas.height / 2 - 100,
-          200,
-          200,
-          RenderColor.Red,
-        );
+        for (let i = 0; i < 15; i++) {
+          drawBall(
+            canvas,
+            canvas.width / 2,
+            canvas.height / 2,
+            200,
+            RenderColor.Red,
+          );
+        }
       } else if (countDown === 2) {
-        drawRect(
-          canvas,
-          canvas.width / 2 - 100,
-          canvas.height / 2 - 100,
-          200,
-          200,
-          RenderColor.Yellow,
-        );
+        for (let j = 0; j < 15; j++) {
+          drawBall(
+            canvas,
+            canvas.width / 2,
+            canvas.height / 2,
+            200,
+            RenderColor.Yellow,
+          );
+        }
       } else if (countDown === 1) {
-        drawRect(
-          canvas,
-          canvas.width / 2 - 100,
-          canvas.height / 2 - 100,
-          200,
-          200,
-          RenderColor.Green,
-        );
+        for (let k = 0; k < 15; k++) {
+          drawBall(
+            canvas,
+            canvas.width / 2,
+            canvas.height / 2,
+            200,
+            RenderColor.Green,
+          );
+        }
       }
       countDown--;
       console.log('Count down value -> ', countDown);
