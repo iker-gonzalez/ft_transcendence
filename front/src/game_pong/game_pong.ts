@@ -119,6 +119,12 @@ export async function gameLoop({
     },
   );
 
+  console.log('Is Ball Frozen? ', isBallFrozen);
+  if (isFirstRun) {
+    countDownToStart(countDown, canvas);
+    isFirstRun = false;
+  }
+
   // Abort game if the user closes the tab
   onAbortGame(socket, sessionId, isPlayer1);
 
@@ -310,11 +316,11 @@ function game({
         );
       }
 
-      console.log('Is Ball Frozen? ', isBallFrozen);
-      if (isFirstRun) {
-        countDownToStart(countDown, canvas);
-        isFirstRun = false;
-      }
+      // console.log('Is Ball Frozen? ', isBallFrozen);
+      // if (isFirstRun) {
+      //   countDownToStart(countDown, canvas);
+      //   isFirstRun = false;
+      // }
 
       requestAnimationFrame(function () {
         game({
