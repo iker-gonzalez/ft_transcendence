@@ -81,23 +81,29 @@ interface ChatMessageAreaProps {
   selectedUser: User | null;
   selectedGroup: Group | null;
   messages: Message[];
+  setMessagesByChat: React.Dispatch<React.SetStateAction<{ [key: string]: Message[] }>>;
+  messagesByChat: { [key: string]: Message[] };
 }
 
-// Define the MessagesByChat type
-type MessagesByChat = {
-  [key: string]: Message[];
-};
+/**
+ * ChatMessageArea component that displays the messages of the selected chat.
+ * @param selectedUser The selected user to chat with.
+ * @param selectedGroup The selected group to chat in.
+ * @param messages The messages of the selected chat.
+ * @returns React functional component.
+ */
 
 const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   selectedUser,
   selectedGroup,
   messages,
+  setMessagesByChat,
+  messagesByChat,
 }) => {
   const title = selectedUser?.username || selectedGroup?.name;
 
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
-  const [messagesByChat, setMessagesByChat] = useState<MessagesByChat>({});
 
   // Get the socket and related objects from the utility function
   const {

@@ -21,6 +21,11 @@ const WrapperDiv = styled.div`
   gap: 40px;
 `;
 
+// Define the MessagesByChat type
+type MessagesByChat = {
+  [key: string]: Message[];
+};
+
 /**
  * ChatPage component that displays the chat sidebar and message area.
  * @returns React functional component.
@@ -33,6 +38,7 @@ const ChatPage: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
 
   const [messages, setMessages] = useState<Message[]>([]);
+  const [messagesByChat, setMessagesByChat] = useState<MessagesByChat>({});
 
   const { userData } = useUserData();
 
@@ -103,6 +109,7 @@ const ChatPage: React.FC = () => {
         setSelectedUser(user);
         setSelectedGroup(null);
         setMessages(messages);
+        setMessagesByChat({}); 
       });
   };
 
@@ -150,7 +157,9 @@ const ChatPage: React.FC = () => {
         <ChatMessageArea
           selectedUser={selectedUser}
           selectedGroup={selectedGroup}
-          messages={messages} //here should be messages with the most recent one
+          messages={messages}
+          messagesByChat={messagesByChat}
+          setMessagesByChat={setMessagesByChat} //here should be messages with the most recent one
         />
       </WrapperDiv>
     </CenteredLayout>
