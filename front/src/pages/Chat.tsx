@@ -113,7 +113,7 @@ const ChatPage: React.FC = () => {
         setUsers((prevUsers) => {
           // Check if the user already exists in the array
           const userExists = prevUsers.some((prevUser) => prevUser.id === user.id);
-        
+          console.log('userExists:', userExists);
           // If the user doesn't exist, add them to the array
           if (!userExists) {
             return [...prevUsers, user];
@@ -142,6 +142,7 @@ const ChatPage: React.FC = () => {
     )
       .then((response) => response.json())
       .then((data: GroupMessage[]) => {
+        if (data.length > 0) {
         const messages = data.map((item: GroupMessage) => {
           console.log('item:', item);
           return {
@@ -152,10 +153,24 @@ const ChatPage: React.FC = () => {
             timestamp: item.timestamp,
           };
         });
+      }
         setSelectedUser(null);
         setSelectedGroup(group);
         setMessages(messages);
-        setMessagesByChat({}); 
+        setMessagesByChat({});
+        setGroups((prevGroups) => {
+          // Check if the group already exists in the array
+          const groupExists = prevGroups.some((prevGroup) => prevGroup.id === group.id);
+        
+          // If the group doesn't exist, add them to the array
+          if (!groupExists) {
+            console.log('group does not exist');
+            return [...prevGroups, group];
+          }
+        
+          // If the group does exist, return the previous state
+          return prevGroups;
+        });
       });
   };
 
