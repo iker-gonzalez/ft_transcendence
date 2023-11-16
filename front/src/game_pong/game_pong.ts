@@ -14,6 +14,8 @@ import {
 import {
   InitializeCanvasImages,
   countDownToStart,
+  drawRect,
+  drawText,
   initializeCanvasImages,
   initializeEventListeners,
   initializeSocketLogic,
@@ -27,6 +29,7 @@ import {
   INetData,
   ISounds,
   IUserData,
+  RenderColor,
 } from './game_pong.interfaces';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
@@ -115,6 +118,12 @@ export async function gameLoop({
       window.addEventListener(typeEvent, handler);
     },
   );
+
+  console.log('Is Ball Frozen? ', isBallFrozen);
+  if (isFirstRun) {
+    countDownToStart(countDown, canvas);
+    isFirstRun = false;
+  }
 
   // Abort game if the user closes the tab
   onAbortGame(socket, sessionId, isPlayer1);
@@ -216,6 +225,7 @@ function game({
       isAbortedMatch,
       isFirstRun,
       countDown,
+      isBallFrozen,
     });
   });
   socket.on(`gameAborted/user2/${sessionId}`, () => {
@@ -232,6 +242,7 @@ function game({
       isAbortedMatch,
       isFirstRun,
       countDown,
+      isBallFrozen,
     });
   });
 
@@ -257,6 +268,8 @@ function game({
           thickness,
           sounds,
           theme,
+          isBallFrozen,
+          countDown,
         );
 
         if (user1.score >= matchPoints || user2.score >= matchPoints) {
@@ -272,6 +285,7 @@ function game({
             sounds,
             isFirstRun,
             countDown,
+            isBallFrozen,
           });
           // Then of bot
           // Delay is required by the server to process the data
@@ -287,6 +301,7 @@ function game({
               sounds,
               isFirstRun,
               countDown,
+              isBallFrozen,
             });
           }, 100);
           matchFinish = true;
@@ -301,11 +316,11 @@ function game({
         );
       }
 
-      console.log('Is Ball Frozen? ', isBallFrozen);
-      if (isFirstRun) {
-        countDownToStart(countDown);
-        isFirstRun = false;
-      }
+      // console.log('Is Ball Frozen? ', isBallFrozen);
+      // if (isFirstRun) {
+      //   countDownToStart(countDown, canvas);
+      //   isFirstRun = false;
+      // }
 
       requestAnimationFrame(function () {
         game({
