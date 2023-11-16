@@ -19,6 +19,8 @@ import { useFlashMessages } from '../../context/FlashMessagesContext';
 const SidebarContainer = styled.div`
   flex-basis: 30%;
   display: flex;
+  height: 81vh;
+  
 
   .gradient-border {
     flex-grow: 1;
@@ -217,11 +219,22 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <input 
                   type="text" 
                   value={roomName} 
-                  onChange={(e) => setRoomName(e.target.value)} 
+                  onChange={(e) => {
+                    if (e.target.value.length <= 15) {
+                      setRoomName(e.target.value);
+                    }
+                  }}  
                   placeholder="Enter room name"
                 />
-                <MainButton onClick={handleJoinRoom}>Join Room</MainButton>
-                {/* ... */}
+                <MainButton onClick={() => {
+                  handleGroupClick({
+                    id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), 
+                    name: roomName
+                  });
+                  handleJoinRoom();
+                }}>
+                  Join Room
+                </MainButton>
               </>
             )}
           </Modal>
