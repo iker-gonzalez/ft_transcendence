@@ -131,10 +131,11 @@ const ChatPage: React.FC = () => {
       .then((response) => response.json())
       .then((data: GroupMessage[]) => {
         const messages = data.map((item: GroupMessage) => {
+          console.log('item:', item);
           return {
             id: 'dssdsfd', //temporary until id is incorporated in endpoint or Message interface is armonized
-            senderName: item.sender.username,
-            senderAvatar: item.sender.avatar,
+            senderName: item.senderName,
+            senderAvatar: item.senderAvatar,
             content: item.content,
             timestamp: item.timestamp,
           };
@@ -142,6 +143,7 @@ const ChatPage: React.FC = () => {
         setSelectedUser(null);
         setSelectedGroup(group);
         setMessages(messages);
+        setMessagesByChat({}); 
       });
   };
 
