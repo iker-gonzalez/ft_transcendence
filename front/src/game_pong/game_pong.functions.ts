@@ -18,7 +18,6 @@ import { Socket } from 'socket.io-client';
 import { render } from './game_pong.render';
 import GameTheme from '../interfaces/game-theme.interface';
 
-
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
 
@@ -415,10 +414,12 @@ export function initializeSocketLogic({
             sounds,
             isFirstRun,
             countDown,
+            isBallFrozen,
           });
         matchFinish = true;
-      //  isFirstRun = true;
-      //  countDown = 3;
+        isBallFrozen = true;
+        //  isFirstRun = true;
+        //  countDown = 3;
       }
 
       matchUser1(canvas, ballData, user1, user2, sounds, theme);
@@ -435,6 +436,8 @@ export function initializeSocketLogic({
         thickness,
         sounds,
         theme,
+        isBallFrozen,
+        countDown,
       );
 
       socket.emit(
@@ -472,8 +475,10 @@ export function initializeSocketLogic({
             sounds,
             isFirstRun,
             countDown,
+            isBallFrozen,
           });
         matchFinish = true;
+        isBallFrozen = true;
       }
 
       matchUser2(canvas, ballData, user1, user2, sounds, theme);
@@ -490,6 +495,8 @@ export function initializeSocketLogic({
         thickness,
         sounds,
         theme,
+        isBallFrozen,
+        countDown,
       );
 
       socket.emit(
@@ -516,9 +523,43 @@ export function onAbortGame(
   };
 }
 
-export async function countDownToStart(countDown: number): Promise<void> {
+export async function countDownToStart(
+  countDown: number,
+  canvas: HTMLCanvasElement,
+): Promise<void> {
   return await new Promise((resolve) => {
     const countDownInterval = setInterval(() => {
+      if (countDown === 3) {
+        for (let i = 0; i < 15; i++) {
+          drawBall(
+            canvas,
+            canvas.width / 2,
+            canvas.height / 2,
+            200,
+            RenderColor.Red,
+          );
+        }
+      } else if (countDown === 2) {
+        for (let j = 0; j < 15; j++) {
+          drawBall(
+            canvas,
+            canvas.width / 2,
+            canvas.height / 2,
+            200,
+            RenderColor.Yellow,
+          );
+        }
+      } else if (countDown === 1) {
+        for (let k = 0; k < 15; k++) {
+          drawBall(
+            canvas,
+            canvas.width / 2,
+            canvas.height / 2,
+            200,
+            RenderColor.Green,
+          );
+        }
+      }
       countDown--;
       console.log('Count down value -> ', countDown);
       if (countDown === 0) {
