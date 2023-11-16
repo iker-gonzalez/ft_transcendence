@@ -153,10 +153,12 @@ const ChatPage: React.FC = () => {
             timestamp: item.timestamp,
           };
         });
+        setMessages(messages);
       }
+        else
+          setMessages([]);
         setSelectedUser(null);
         setSelectedGroup(group);
-        setMessages(messages);
         setMessagesByChat({});
         setGroups((prevGroups) => {
           // Check if the group already exists in the array
