@@ -109,7 +109,19 @@ const ChatPage: React.FC = () => {
         setSelectedUser(user);
         setSelectedGroup(null);
         setMessages(messages);
-        setMessagesByChat({}); 
+        setMessagesByChat({});
+        setUsers((prevUsers) => {
+          // Check if the user already exists in the array
+          const userExists = prevUsers.some((prevUser) => prevUser.id === user.id);
+        
+          // If the user doesn't exist, add them to the array
+          if (!userExists) {
+            return [...prevUsers, user];
+          }
+        
+          // If the user does exist, return the previous state
+          return prevUsers;
+        });
       });
   };
 
