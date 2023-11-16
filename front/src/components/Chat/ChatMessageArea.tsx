@@ -164,6 +164,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         ...prevMessages,
         [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), message]
       }));
+      console.log('sending message to room');
       chatMessageSocketRef.current.emit('sendMessageToRoom', {
         roomName: selectedGroup?.name,
         intraId: userData?.intraId,
