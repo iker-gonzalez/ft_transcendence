@@ -289,13 +289,14 @@ export function initializeEventListeners({
         user2.y += userSpeedInput * stepPaddle;
       }
     }
+
+    //Adjust the volume of music
     try {
       if (sounds.music.volume < 1 && event.key === VOLUME_UP_KEY) {
         sounds.music.volume = Math.min(1, sounds.music.volume + 0.1);
       } else if (sounds.music.volume > 0 && event.key === VOLUME_DOWN_KEY) {
         sounds.music.volume = Math.max(0, sounds.music.volume - 0.1);
       }
-      console.log(sounds.music.volume);
     } catch (err) {}
   }
 
