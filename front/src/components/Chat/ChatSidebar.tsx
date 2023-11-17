@@ -146,6 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         `You have successfully joined the room ${roomName}!`,
         FlashMessageLevel.SUCCESS,
       );
+      
     }
   };
 
