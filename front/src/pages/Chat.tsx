@@ -42,6 +42,9 @@ const ChatPage: React.FC = () => {
 
   const { userData } = useUserData();
 
+  const [allGroups, setAllGroups] = useState<Group[]>([]);
+
+
   useEffect(() => {
     // Fetch all users that the signed in user has chatted with privately
     if (userData) {
@@ -77,6 +80,23 @@ const ChatPage: React.FC = () => {
             };
           });
           setGroups(groups);
+        });
+
+      // Fetch all existing groups in the database
+      fetchAuthorized(`${getBaseUrl()}/chat/allExistingChannel`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data: Group[]) => {
+          const allGroups = data.map((item) => {
+            return {
+              id: item.id,
+              name: item.name,
+            };
+          });
+          setAllGroups(allGroups);
         });
     }
   }, [userData]);
@@ -182,6 +202,7 @@ const ChatPage: React.FC = () => {
         <ChatSidebar
           users={users}
           groups={groups}
+          allGroups={allGroups}
           handleUserClick={handleUserClick}
           handleGroupClick={handleGroupClick}
         />

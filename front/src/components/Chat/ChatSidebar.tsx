@@ -91,6 +91,7 @@ const MainButtonStyled = styled(MainButton)`
 interface SidebarProps {
   users: Array<{ id: number; avatar: string; username: string }>;
   groups: Array<{ id: string; name: string }>;
+  allGroups: Array<{ id: string; name: string }>;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
 }
@@ -98,6 +99,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({
   users,
   groups,
+  allGroups,
   handleUserClick,
   handleGroupClick,
 }) => {
@@ -136,7 +138,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   }, [isSocketConnected, chatMessageSocketRef]);
 
-  const handleJoinRoom = () => {
+  const handleJoinRoom = (roomName: string) => {
     if (roomName.trim() !== '') {
       chatMessageSocketRef.current.emit('joinRoom', { roomName, intraId: userData?.intraId });
       setPopupVisible(false);
@@ -231,10 +233,25 @@ const Sidebar: React.FC<SidebarProps> = ({
                     id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), 
                     name: roomName
                   });
-                  handleJoinRoom();
+                  handleJoinRoom(roomName);
                 }}>
                   Join Room
                 </MainButton>
+                <Title>Or join an existing one</Title>
+                <List>
+                  {allGroups.map((group) => (
+                    <ListItem 
+                      key={group.id} 
+                      onClick={() => {
+                        handleGroupClick(group);
+                        setPopupVisible(false);
+                        handleJoinRoom(group.name);
+                      }}
+                    >
+                      {group.name}
+                    </ListItem>
+                  ))}
+                </List>
               </>
             )}
           </Modal>
