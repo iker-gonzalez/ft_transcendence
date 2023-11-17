@@ -153,5 +153,38 @@ export class ChatController {
       catch (error) {
           console.error("Error:", error);
       }
+    } 
+
+  /********************************************************** */
+  //                     ADMIN FUNCIONALITY                   //
+  /********************************************************** */ 
+
+
+    @Get(':channelRoom/:ownerIntra/:newAdminIntra/addAdmin') 
+    @ApiParam({ name: 'roomName' })
+    @ApiOperation({
+      summary: swaggerConstants.chat.channelMess.summary,
+    })
+    @ApiOkResponse({
+      description: swaggerConstants.chat.data.ok.description,
+      type: ConversationMessageDTO,
+    })
+    async getAddAddminToChannel( 
+      @Param('channelRoom') channelRoom: string,
+      @Param('ownerIntra') ownerIntra: string,
+      @Param('newAdminIntra') newAdminIntra: string,
+    ) : Promise<void> { 
+      console.log("getAddAddminToChannel get");
+      console.log(channelRoom);
+      console.log(ownerIntra);
+      console.log(newAdminIntra);
+      try{
+        const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
+        const newAdminId = await this.chatDMService.findUserIdByIntraId(parseInt(newAdminIntra, 10));
+        this.chatChannelService.addAddminToChannel(channelRoom, ownerId, newAdminId);
+      }
+      catch (error) {
+          console.error("Error:", error);
+      }
     }  
 }
