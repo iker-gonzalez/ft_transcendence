@@ -20,6 +20,8 @@ import GameTheme from '../interfaces/game-theme.interface';
 
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
+const VOLUME_UP_KEY = 'h';
+const VOLUME_DOWN_KEY = 'l';
 
 let ballTrail: any[] = [];
 let sparksTrail: any[] = [];
@@ -255,6 +257,7 @@ export type InitializeEventListenersArgs = {
   ballData: IBallData;
   slit: number;
   stepPaddle: number;
+  sounds: ISounds;
 };
 
 export function initializeEventListeners({
@@ -268,6 +271,7 @@ export function initializeEventListeners({
   ballData,
   slit,
   stepPaddle,
+  sounds,
 }: InitializeEventListenersArgs): any[] {
   function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
@@ -285,6 +289,14 @@ export function initializeEventListeners({
         user2.y += userSpeedInput * stepPaddle;
       }
     }
+    try {
+      if (sounds.music.volume < 1 && event.key === VOLUME_UP_KEY) {
+        sounds.music.volume = Math.min(1, sounds.music.volume + 0.1);
+      } else if (sounds.music.volume > 0 && event.key === VOLUME_DOWN_KEY) {
+        sounds.music.volume = Math.max(0, sounds.music.volume - 0.1);
+      }
+      console.log(sounds.music.volume);
+    } catch (err) {}
   }
 
   function onMouseMove(event: MouseEvent) {
