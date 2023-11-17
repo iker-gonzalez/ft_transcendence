@@ -35,7 +35,7 @@ const ChatPage: React.FC = () => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   const [users, setUsers] = useState<User[]>([]);
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [userGroups, setUserGroups] = useState<Group[]>([]);
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [messagesByChat, setMessagesByChat] = useState<MessagesByChat>({});
@@ -79,7 +79,7 @@ const ChatPage: React.FC = () => {
               name: item.name,
             };
           });
-          setGroups(groups);
+          setUserGroups(groups);
         });
 
       // Fetch all existing groups in the database
@@ -181,7 +181,7 @@ const ChatPage: React.FC = () => {
         setSelectedUser(null);
         setSelectedGroup(group);
         setMessagesByChat({});
-        setGroups((prevGroups) => {
+        setUserGroups((prevGroups) => {
           // Check if the group already exists in the array
           const groupExists = prevGroups.some((prevGroup) => prevGroup.name === group.name);
         
@@ -201,7 +201,7 @@ const ChatPage: React.FC = () => {
       <WrapperDiv>
         <ChatSidebar
           users={users}
-          groups={groups}
+          userGroups={userGroups}
           allGroups={allGroups}
           handleUserClick={handleUserClick}
           handleGroupClick={handleGroupClick}
