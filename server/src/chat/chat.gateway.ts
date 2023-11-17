@@ -99,12 +99,15 @@ async handleSendMessageToRoom( client: Socket, payload) {
  @SubscribeMessage('leaveRoom') 
  async handleLeaveRoom(client: Socket, payload) {
 
-  client.leave(payload.roomName);
-  // Actualizar la DB
-  const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
-  await this.chatChannelservice.leaveUserFromChannel(payload.roomName, userId);
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    await this.chatChannelservice.leaveUserFromChannel(payload.roomName, userId);
+    client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
 
  }
 
- 
 }
