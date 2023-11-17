@@ -152,6 +152,7 @@ const ChatPage: React.FC = () => {
    * @param group - The selected group.
    */
   const handleGroupClick = (group: Group) => {
+    console.log('i am here baby');
     fetchAuthorized(
       `${getBaseUrl()}/chat/${group.name}/allChannel`,
       /* temporary until endpoint is fixed */ {
@@ -182,14 +183,13 @@ const ChatPage: React.FC = () => {
         setMessagesByChat({});
         setGroups((prevGroups) => {
           // Check if the group already exists in the array
-          const groupExists = prevGroups.some((prevGroup) => prevGroup.id === group.id);
+          const groupExists = prevGroups.some((prevGroup) => prevGroup.name === group.name);
         
           // If the group doesn't exist, add them to the array
           if (!groupExists) {
             console.log('group does not exist');
             return [...prevGroups, group];
           }
-        
           // If the group does exist, return the previous state
           return prevGroups;
         });
