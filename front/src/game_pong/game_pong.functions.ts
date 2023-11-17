@@ -22,6 +22,10 @@ const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
 const VOLUME_UP_KEY = 'h';
 const VOLUME_DOWN_KEY = 'l';
+const MUTE_KEY = 'm';
+const UNMUTE_KEY = 'u';
+
+
 
 let ballTrail: any[] = [];
 let sparksTrail: any[] = [];
@@ -296,6 +300,15 @@ export function initializeEventListeners({
         sounds.music.volume = Math.min(1, sounds.music.volume + 0.1);
       } else if (sounds.music.volume > 0 && event.key === VOLUME_DOWN_KEY) {
         sounds.music.volume = Math.max(0, sounds.music.volume - 0.1);
+      }
+    } catch (err) {}
+
+    //Mute all sounds
+    try {
+      if (event.key === MUTE_KEY) {
+        sounds.music.volume = 0;
+      } else if (event.key === UNMUTE_KEY) {
+        sounds.music.volume = 0.3;
       }
     } catch (err) {}
   }
