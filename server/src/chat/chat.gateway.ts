@@ -110,4 +110,46 @@ async handleSendMessageToRoom( client: Socket, payload) {
 
  }
 
+ @SubscribeMessage('muteUser') 
+ async handleMuteUser(client: Socket, payload) {
+
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
+    await this.chatChannelservice.muteUserInChannel(payload.roomName, addminId, userId);
+   // client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+
+ @SubscribeMessage('unmuteUser') 
+ async handleUnmuteUser(client: Socket, payload) {
+
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
+    await this.chatChannelservice.unmuteUserInChannel(payload.roomName, addminId, userId);
+ //   client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+
+ @SubscribeMessage('kickUser') 
+ async handleKickUser(client: Socket, payload) {
+
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
+    await this.chatChannelservice.kickUserInChannel(payload.roomName, addminId, userId);
+    client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+
 }
