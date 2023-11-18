@@ -51,6 +51,7 @@ async handleJoinRoom(client: Socket, paydload) {
   console.log("joiRoom event");
   console.log(paydload.roomName);
   console.log(paydload.intraId);
+  try { 
 
   const userId = await this.chatDMservice.findUserIdByIntraId(paydload.intraId);
   console.log(userId);
@@ -61,6 +62,13 @@ async handleJoinRoom(client: Socket, paydload) {
   }
   await this.chatChannelservice.addUserToChannel(userId, paydload.roomName);
 
+  client.join(paydload.roomName);
+  client.emit('joinedRoom', `Te has unido a la sala ${paydload.roomName}`);
+  
+} catch (error) {
+  console.error("Error:", error);
+}
+
  // Obtener la lista de clientes en la sala
 // const io = this.server;
 // const room = io.of('/').in(roomName) as any; // Afirmación de tipo
@@ -70,8 +78,7 @@ async handleJoinRoom(client: Socket, paydload) {
 //   }
 // });
  
-    client.join(paydload.roomName);
-    client.emit('joinedRoom', `Te has unido a la sala ${paydload.roomName}`);
+
 }
  
 @SubscribeMessage('sendMessageToRoom') 
@@ -79,6 +86,7 @@ async handleSendMessageToRoom( client: Socket, payload) {
   console.log("sendMessageToRoom event");
   console.log('roomName:', payload.roomName);
   console.log('message:', payload.message);
+
 
   try{
 
