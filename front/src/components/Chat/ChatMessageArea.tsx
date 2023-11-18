@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import Message from '../../interfaces/chat-dm-message.interface';
-import MessageInput from './ChatMessageInput';
+import MessageInput from './ChatMessageAreaInput';
+import ChatMessageAreaHeader from './ChatMessageAreaHeader';
 import useChatMessageSocket, {
   UseChatMessageSocket,
 } from './useChatMessageSocket';
@@ -180,7 +181,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       {selectedUser || selectedGroup ? (
         <>
         <WrapperDiv>
-          {title && <Title>{title}</Title>}
+          <ChatMessageAreaHeader name={selectedUser?.username || selectedGroup?.name || ''} avatarSrc={selectedUser?.avatar || ''} />
           <MessageList>
             {messages.map((message) => (
                 <MessageItem key={message.timestamp}>
