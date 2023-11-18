@@ -432,8 +432,6 @@ export function matchUser1(
 
     let themeSound = new Audio(theme.hitSound);
     themeSound.play().catch(function (error: any) { });
-    console.log('matcUser1 MUTED? -> ', themeSound.muted);
-    
 
     // Sparks effect when the ball hits the paddle
     if (theme.id === 'star-wars') {
