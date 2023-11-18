@@ -20,7 +20,6 @@ import {
   drawSparksTrail,
   drawText,
   isBallFrozen,
-  isMuted,
   isSoloMode,
   sparks,
   sparksTrailClean,
@@ -132,29 +131,68 @@ export function render(
   }
   drawSparksTrail(canvas, 0.3);
 
-  if (isMuted) {
-     drawText(
-       canvas,
-       '✅ mute',
-       (canvas.width / 10) * 4,
-       canvas.height / 10,
-       '20px Courier',
-       'right',
-       RenderColor.Yellow,
-     );
-  } else {
-   drawText(
-     canvas,
-     '❌ unmute',
-     (canvas.width / 10) * 4,
-     canvas.height / 10,
-     '20px Courier',
-     'right',
-     RenderColor.Yellow,
-   );
-    
+  //Draw volume icon
+  if (sounds.music.volume === 0) {
+    drawText(
+      canvas,
+      '🔕',
+      canvas.width / 2,
+      canvas.height / 8,
+      '30px Courier',
+      'center',
+      RenderColor.White,
+    );
+  } else if (sounds.music.volume > 0 && sounds.music.volume < 0.2) {
+    drawText(
+      canvas,
+      '🔔',
+      canvas.width / 2,
+      canvas.height / 8,
+      '30px Courier',
+      'center',
+      RenderColor.White,
+    );
+  } else if (sounds.music.volume >= 0.2 && sounds.music.volume < 0.4) {
+    drawText(
+      canvas,
+      '🔔',
+      canvas.width / 2,
+      canvas.height / 8,
+      '40px Courier',
+      'center',
+      RenderColor.White,
+    );
+  } else if (sounds.music.volume >= 0.4 && sounds.music.volume < 0.6) {
+    drawText(
+      canvas,
+      '🔔',
+      canvas.width / 2,
+      canvas.height / 8,
+      '50px Courier',
+      'center',
+      RenderColor.White,
+    );
+  } else if (sounds.music.volume >= 0.6 && sounds.music.volume < 0.8) {
+    drawText(
+      canvas,
+      '🔔',
+      canvas.width / 2,
+      canvas.height / 8,
+      '60px Courier',
+      'center',
+      RenderColor.White,
+    );
+  } else if (sounds.music.volume >= 0.8) {
+    drawText(
+      canvas,
+      '🔔',
+      canvas.width / 2,
+      canvas.height / 8,
+      '70px Courier',
+      'center',
+      RenderColor.White,
+    );
   }
- 
 
   drawText(
     canvas,
