@@ -20,6 +20,7 @@ import {
   drawSparksTrail,
   drawText,
   isBallFrozen,
+  isMuted,
   isSoloMode,
   sparks,
   sparksTrailClean,
@@ -130,6 +131,30 @@ export function render(
     drawSparks(canvas, 0, 0, 0, RenderColor.Yellow);
   }
   drawSparksTrail(canvas, 0.3);
+
+  if (isMuted) {
+     drawText(
+       canvas,
+       '✅ mute',
+       (canvas.width / 10) * 4,
+       canvas.height / 10,
+       '20px Courier',
+       'right',
+       RenderColor.Yellow,
+     );
+  } else {
+   drawText(
+     canvas,
+     '❌ unmute',
+     (canvas.width / 10) * 4,
+     canvas.height / 10,
+     '20px Courier',
+     'right',
+     RenderColor.Yellow,
+   );
+    
+  }
+ 
 
   drawText(
     canvas,
@@ -281,7 +306,7 @@ export function render(
       }
     }
   }
-  
+
   const speedRender: number = ballData.speed * 0.1;
 
   drawText(
@@ -431,7 +456,7 @@ export function matchUser1(
     gamePowerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
 
     let themeSound = new Audio(theme.hitSound);
-    themeSound.play().catch(function (error: any) { });
+    themeSound.play().catch(function (error: any) {});
 
     // Sparks effect when the ball hits the paddle
     if (theme.id === 'star-wars') {
