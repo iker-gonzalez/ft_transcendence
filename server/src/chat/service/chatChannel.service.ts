@@ -441,14 +441,149 @@ private async isUserAdmin(chatRoomId: string, userId: string):  Promise<boolean>
   });
     
    // Verificar si el usuario está en la lista de adminUsers
+ //  for (const userAdmin of chatRoom.adminUsers)
+ //  {
+ //   console.log("For:");
+ //   console.log(userAdmin.userId);
+ //   if (userAdmin.userId == userId)
+ //   return true;
+ //  }
+ //  return false;
    const isUserAdmin = chatRoom.adminUsers.some((adminUser) => adminUser.userId === userId);
    console.log(isUserAdmin);
    return isUserAdmin;
 }
 
+async muteUserInChannel(
+  channelRoom: string,
+  ownerId: string,
+  muteUserId: string
+ ): Promise<void> 
+{
 
+try{
+
+  if (!channelRoom || !ownerId || !muteUserId)
+  throw new BadRequestException ("channelRoom or ownerId or muteUserId  are null");
+
+  // Get el Channel
+  const foundChatRoom = await this.prisma.chatRoom.findFirst({
+    where: { name: channelRoom,},
+    include:{
+      users:true },});
+  if (!foundChatRoom)
+  throw new BadRequestException ("channelRoom not exist");
+
+  // Check permision
+  const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
+  if (!isAdmin && ownerId != foundChatRoom.ownerId)
+    throw new BadRequestException ("It is not the owner or admin of the channel, not premissions to do this");
+
+  // Buscar el ChatRoomUser por userId
+  const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
+     where: { userId: muteUserId },});
+  if (!chatRoomUser)
+      throw new BadRequestException ("User is not in the chatRoom");
+
+
+    // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
+         const updatedChatRoom = await this.prisma.chatRoom.update({
+          where: { id: foundChatRoom.id },
+          data: {
+            mutedUsers: {
+              connect: { id: chatRoomUser.id },
+            },
+          },
+        });
+  }
+catch(error){
+    console.error("Error:", error);
+}
+
+}
+async unmuteUserInChannel(
+  channelRoom: string,
+  ownerId: string,
+  unmuteUserId: string
+ ): Promise<void> 
+{
+
+try{
+
+  if (!channelRoom || !ownerId || !unmuteUserId)
+  throw new BadRequestException ("channelRoom or ownerId or unmuteUserId  are null");
+
+  // Get el Channel
+  const foundChatRoom = await this.prisma.chatRoom.findFirst({
+    where: { name: channelRoom,},
+    include:{
+      users:true },});
+  if (!foundChatRoom)
+  throw new BadRequestException ("channelRoom not exist");
+
+  // Check permision
+  const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
+  if (!isAdmin && ownerId != foundChatRoom.ownerId)
+    throw new BadRequestException ("It is not the owner or admin of the channel, not premissions to do this");
+
+  // Buscar el ChatRoomUser por userId
+  const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
+     where: { userId: unmuteUserId },});
+  if (!chatRoomUser)
+      throw new BadRequestException ("User is not in the chatRoom");
+
+
+    // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
+         const updatedChatRoom = await this.prisma.chatRoom.update({
+          where: { id: foundChatRoom.id },
+          data: {
+            mutedUsers: {
+              disconnect: { id: chatRoomUser.id },
+            },
+          },
+        });
+  }
+  catch(error){
+    console.error("Error:", error);
+  }
+}
+
+async kickUserInChannel(
+  channelRoom: string,
+  ownerId: string,
+  kickUserId: string
+ ): Promise<void> 
+{
+
+try{
+
+  if (!channelRoom || !ownerId || !kickUserId)
+  throw new BadRequestException ("channelRoom or ownerId or kickUserId  are null");
+
+  // Get el Channel
+  const foundChatRoom = await this.prisma.chatRoom.findFirst({
+    where: { name: channelRoom,},
+    include:{
+      users:true },});
+  if (!foundChatRoom)
+    throw new BadRequestException ("channelRoom not exist");
+
+  // Check permision
+  const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
+  if (!isAdmin && ownerId != foundChatRoom.ownerId)
+    throw new BadRequestException ("It is not the owner or admin of the channel, not premissions to do this");
+
+  await this.leaveUserFromChannel(channelRoom, kickUserId);
+  }
+  catch(error){
+    console.error("Error:", error);
+  }
+}
 // Delete admin from channel
 // Mute User
+
+
+
 // Unmute user
 // Banner user
 // Unbanned user
