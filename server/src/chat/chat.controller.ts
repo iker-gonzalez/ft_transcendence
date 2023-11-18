@@ -140,7 +140,7 @@ export class ChatController {
       summary: swaggerConstants.chat.channelMess.summary,
     })
     @ApiOkResponse({
-      description: swaggerConstants.chat.data.ok.description,
+      description: swaggerConstants.chat.channelMess.ok.description,
       type: ConversationMessageDTO,
     })
     async getMessageInRoom( 
@@ -160,13 +160,41 @@ export class ChatController {
   /********************************************************** */ 
 
 
+    @Get(':channelRoom/:ownerIntra/:deleteAdminIntra/deleteAdmin') 
+    @ApiParam({ name: 'roomName' })
+    @ApiOperation({
+      summary: swaggerConstants.chat.deleteAdmin.summary,
+    })
+    @ApiOkResponse({
+      description: swaggerConstants.chat.deleteAdmin.ok.description,
+      type: ConversationMessageDTO,
+    })
+    async getdeleteAddminToChannel( 
+      @Param('channelRoom') channelRoom: string,
+      @Param('ownerIntra') ownerIntra: string,
+      @Param('deleteAdminIntra') deleteAdminIntra: string,
+    ) : Promise<void> { 
+      console.log("deleteAddminToChannel get");
+      console.log(channelRoom);
+      console.log(ownerIntra);
+      console.log(deleteAdminIntra);
+      try{
+        const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
+        const deleteAdminId = await this.chatDMService.findUserIdByIntraId(parseInt(deleteAdminIntra, 10));
+        this.chatChannelService.deleteAddminToChannel(channelRoom, ownerId, deleteAdminId);
+      }
+      catch (error) {
+          console.error("Error:", error);
+      }
+    }
+
     @Get(':channelRoom/:ownerIntra/:newAdminIntra/addAdmin') 
     @ApiParam({ name: 'roomName' })
     @ApiOperation({
-      summary: swaggerConstants.chat.channelMess.summary,
+      summary: swaggerConstants.chat.addAdmin.summary,
     })
     @ApiOkResponse({
-      description: swaggerConstants.chat.data.ok.description,
+      description: swaggerConstants.chat.addAdmin.ok.description,
       type: ConversationMessageDTO,
     })
     async getAddAddminToChannel( 
