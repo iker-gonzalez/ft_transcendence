@@ -355,7 +355,7 @@ async leaveUserFromChannel(
     newAdminId: string
    ): Promise<void> 
 {
-  
+
 try{
   if (!channelRoom || !ownerId || !newAdminId)
   throw new BadRequestException ("channelRoom or ownerId or newAdminId  are null");

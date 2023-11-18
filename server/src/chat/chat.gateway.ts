@@ -64,7 +64,7 @@ async handleJoinRoom(client: Socket, paydload) {
 
   client.join(paydload.roomName);
   client.emit('joinedRoom', `Te has unido a la sala ${paydload.roomName}`);
-  
+
 } catch (error) {
   console.error("Error:", error);
 }
@@ -77,7 +77,6 @@ async handleJoinRoom(client: Socket, paydload) {
 //     console.log(`Clientes en la sala ${roomName}:`, clients);
 //   }
 // });
- 
 
 }
  
@@ -125,7 +124,8 @@ async handleSendMessageToRoom( client: Socket, payload) {
     const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
     const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
     await this.chatChannelservice.muteUserInChannel(payload.roomName, addminId, userId);
-   // client.leave(payload.roomName);
+    this.server.to(payload.roomName).emit('mutedUserUpdate', payload);
+
   }
    catch (error) {
     console.error("Error:", error);
@@ -139,7 +139,7 @@ async handleSendMessageToRoom( client: Socket, payload) {
     const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
     const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
     await this.chatChannelservice.unmuteUserInChannel(payload.roomName, addminId, userId);
- //   client.leave(payload.roomName);
+    this.server.to(payload.roomName).emit('unmutedUserUpdate', payload);
   }
    catch (error) {
     console.error("Error:", error);
@@ -154,6 +154,33 @@ async handleSendMessageToRoom( client: Socket, payload) {
     const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
     await this.chatChannelservice.kickUserInChannel(payload.roomName, addminId, userId);
     client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+
+ @SubscribeMessage('banUser') 
+ async handleBanUser(client: Socket, payload) {
+
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
+    await this.chatChannelservice.banUserInChannel(payload.roomName, addminId, userId);
+    client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+
+ @SubscribeMessage('UnBanUser') 
+ async handleUnBanUser(client: Socket, payload) {
+
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
+    await this.chatChannelservice.unbanUserInChannel(payload.roomName, addminId, userId);
   }
    catch (error) {
     console.error("Error:", error);
