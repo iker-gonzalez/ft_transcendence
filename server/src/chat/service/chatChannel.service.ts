@@ -294,11 +294,34 @@ async leaveUserFromChannel(
   },
   });
    
-  if (existingChatRoomUser)
-  {
+  if (!existingChatRoomUser)
+    throw new BadRequestException ("user in not in the channel");
+  
+    // Delete user
     await this.prisma.chatRoomUser.delete({
       where: {
         id: existingChatRoomUser.id,
+      },
+    });
+
+
+  // Verificar si la sala de chat no tiene más usuarios
+  const remainingUsers = await this.prisma.chatRoomUser.count({
+    where: {
+      roomId: foundChatRoom.id,
+    },
+  });
+
+  console.log("foundChatRoom.ownerId");
+  console.log(foundChatRoom.ownerId);
+  console.log("userToLeaveId");
+  console.log(userToLeaveId);
+
+  // Si no hay más usuarios o el que se va es el owner(!!esto hay que debatir), eliminar la sala de chat
+  if (remainingUsers === 0 || foundChatRoom.ownerId == userToLeaveId) {
+    await this.prisma.chatRoom.delete({
+      where: {
+        id: foundChatRoom.id,
       },
     });
   }
