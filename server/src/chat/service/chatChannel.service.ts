@@ -355,7 +355,8 @@ async leaveUserFromChannel(
     newAdminId: string
    ): Promise<void> 
 {
- 
+  
+try{
   if (!channelRoom || !ownerId || !newAdminId)
   throw new BadRequestException ("channelRoom or ownerId or newAdminId  are null");
 
@@ -378,7 +379,6 @@ async leaveUserFromChannel(
   const existingUser = await this.prisma.chatRoomUser.findFirst({
     where: { roomId: foundChatRoom.id, userId: newAdminId },
      });
-try{
 
     // Si el usuario al que se quiere hacer administrador no es un usuario del chatRomm, añadirle a este.
     if (!existingUser)
