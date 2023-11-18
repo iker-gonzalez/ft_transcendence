@@ -73,8 +73,9 @@ model ChatRoom {
   mute   String[] @db.Uuid
 
   // Relación con usuarios silenciados en esta sala
-  adminUsers ChatRoomUser[] @relation("adminRooms")
-  mutedUsers ChatRoomUser[] @relation("mutedRooms")
+  adminUsers  ChatRoomUser[] @relation("adminRooms")
+  mutedUsers  ChatRoomUser[] @relation("mutedRooms")
+  bannedUsers ChatRoomUser[] @relation("bannedRooms")
 }
 
 model ChatRoomUser {
@@ -85,12 +86,13 @@ model ChatRoomUser {
   mute   Boolean @default(false)
   admins Boolean @default(false)
 
-  user       User       @relation(fields: [userId], references: [id])
-  room       ChatRoom   @relation(fields: [roomId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
+  room        ChatRoom   @relation(fields: [roomId], references: [id])
   // Agregar cualquier otro dato relacionado con la sala de chat y los usuarios
   // Relación con salas de chat silenciadas por este usuario
-  mutedRooms ChatRoom[] @relation("mutedRooms")
-  adminRooms ChatRoom[] @relation("adminRooms")
+  mutedRooms  ChatRoom[] @relation("mutedRooms")
+  adminRooms  ChatRoom[] @relation("adminRooms")
+  bannedRooms ChatRoom[] @relation("bannedRooms")
 }
 
 model ChatMessage {
