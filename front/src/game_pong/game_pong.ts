@@ -14,6 +14,8 @@ import {
 import {
   InitializeCanvasImages,
   countDownToStart,
+  drawRect,
+  drawText,
   initializeCanvasImages,
   initializeEventListeners,
   initializeSocketLogic,
@@ -27,6 +29,7 @@ import {
   INetData,
   ISounds,
   IUserData,
+  RenderColor,
 } from './game_pong.interfaces';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
@@ -40,7 +43,7 @@ let computedFpsSoloMode: number = computedFps * 0.55;
 let computedFpsMultiMode: number = computedFps * 1;
 let matchFinish: boolean = false;
 export const matchPoints: number = 5;
-let countDown: number = 5;
+let countDown: number = 3;
 let isFirstRun: boolean = true;
 
 type GameLoopFunctionParams = {
@@ -108,6 +111,8 @@ export async function gameLoop({
     ballData,
     slit,
     stepPaddle,
+    sounds,
+    theme,
   });
 
   eventList.forEach(
@@ -115,6 +120,12 @@ export async function gameLoop({
       window.addEventListener(typeEvent, handler);
     },
   );
+
+  console.log('Is Ball Frozen? ', isBallFrozen);
+  if (isFirstRun) {
+    countDownToStart(countDown, canvas);
+    isFirstRun = false;
+  }
 
   // Abort game if the user closes the tab
   onAbortGame(socket, sessionId, isPlayer1);
@@ -137,6 +148,9 @@ export async function gameLoop({
       net,
       canvasImages,
       thickness,
+      theme,
+      isFirstRun,
+      countDown,
     });
   }
 
@@ -155,6 +169,7 @@ export async function gameLoop({
     startedAt,
     eventList,
     canvasImages,
+    theme,
   });
 }
 
@@ -176,6 +191,7 @@ type GameFunctionParams = {
   startedAt: Date;
   eventList: any[];
   canvasImages: InitializeCanvasImages;
+  theme: GameTheme;
 };
 
 function game({
@@ -193,6 +209,7 @@ function game({
   startedAt,
   eventList,
   canvasImages,
+  theme,
 }: GameFunctionParams) {
   // Clean up if one of the players leaves the game
   const isAbortedMatch = true;
@@ -208,6 +225,9 @@ function game({
       userData: usersData.user1,
       sounds,
       isAbortedMatch,
+      isFirstRun,
+      countDown,
+      isBallFrozen,
     });
   });
   socket.on(`gameAborted/user2/${sessionId}`, () => {
@@ -222,6 +242,9 @@ function game({
       userData: usersData.user2,
       sounds,
       isAbortedMatch,
+      isFirstRun,
+      countDown,
+      isBallFrozen,
     });
   });
 
@@ -229,86 +252,98 @@ function game({
     return;
   }
 
-  setTimeout(() => {
-    if (isSoloMode(usersData)) {
-      matchUser1(canvas, ballData, user1, user2, sounds);
-      matchUser2(canvas, ballData, user1, user2, sounds, true);
+  setTimeout(
+    () => {
+      if (isSoloMode(usersData)) {
+        matchUser1(canvas, ballData, user1, user2, sounds, theme);
+        matchUser2(canvas, ballData, user1, user2, sounds, theme, true);
 
-      render(
-        canvas,
-        ballData,
-        user1,
-        user2,
-        net,
-        matchPoints,
-        usersData,
-        canvasImages,
-        thickness,
-        sounds,
-      );
-
-      if (user1.score >= matchPoints || user2.score >= matchPoints) {
-        // First save data of player 1
-        onGameEnd({
+        render(
           canvas,
-          eventList,
-          socket,
-          sessionId,
-          startedAt,
-          player: user1,
-          userData: usersData.user1,
+          ballData,
+          user1,
+          user2,
+          net,
+          matchPoints,
+          usersData,
+          canvasImages,
+          thickness,
           sounds,
-        });
-        // Then of bot
-        // Delay is required by the server to process the data
-        setTimeout(() => {
+          theme,
+          isBallFrozen,
+          countDown,
+        );
+
+        if (user1.score >= matchPoints || user2.score >= matchPoints) {
+          // First save data of player 1
           onGameEnd({
             canvas,
             eventList,
             socket,
             sessionId,
             startedAt,
-            player: user2,
-            userData: botUserData,
+            player: user1,
+            userData: usersData.user1,
             sounds,
+            isFirstRun,
+            countDown,
+            isBallFrozen,
           });
-        }, 100);
-        matchFinish = true;
+          // Then of bot
+          // Delay is required by the server to process the data
+          setTimeout(() => {
+            onGameEnd({
+              canvas,
+              eventList,
+              socket,
+              sessionId,
+              startedAt,
+              player: user2,
+              userData: botUserData,
+              sounds,
+              isFirstRun,
+              countDown,
+              isBallFrozen,
+            });
+          }, 100);
+          matchFinish = true;
+        }
+      } else {
+        socket.emit(
+          'download',
+          JSON.stringify({
+            isUser1: isPlayer1,
+            gameDataId: sessionId,
+          }),
+        );
       }
-    } else {
-      socket.emit(
-        'download',
-        JSON.stringify({
-          isUser1: isPlayer1,
-          gameDataId: sessionId,
-        }),
-      );
-    }
 
-    console.log('Is Ball Frozen? ', isBallFrozen);
-    if (isFirstRun) {
-      countDownToStart(countDown);
-      isFirstRun = false;
-    }
+      // console.log('Is Ball Frozen? ', isBallFrozen);
+      // if (isFirstRun) {
+      //   countDownToStart(countDown, canvas);
+      //   isFirstRun = false;
+      // }
 
-    requestAnimationFrame(function () {
-      game({
-        canvas,
-        ballData,
-        sounds,
-        user1,
-        user2,
-        usersData,
-        net,
-        socket,
-        isPlayer1,
-        matchPoints,
-        sessionId,
-        startedAt,
-        eventList,
-        canvasImages,
+      requestAnimationFrame(function () {
+        game({
+          canvas,
+          ballData,
+          sounds,
+          user1,
+          user2,
+          usersData,
+          net,
+          socket,
+          isPlayer1,
+          matchPoints,
+          sessionId,
+          startedAt,
+          eventList,
+          canvasImages,
+          theme,
+        });
       });
-    });
-  }, isSoloMode(usersData) ? (computedFpsSoloMode) : (computedFpsMultiMode))
-  
+    },
+    isSoloMode(usersData) ? computedFpsSoloMode : computedFpsMultiMode,
+  );
 }

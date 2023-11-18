@@ -16,9 +16,14 @@ import BgImageGrass from './images/grass.jpg';
 import { matchUser1, matchUser2, onGameEnd } from './game_pong.render';
 import { Socket } from 'socket.io-client';
 import { render } from './game_pong.render';
+import GameTheme from '../interfaces/game-theme.interface';
 
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
+const VOLUME_UP_KEY = 'h';
+const VOLUME_DOWN_KEY = 'l';
+const MUTE_KEY = 'm';
+const UNMUTE_KEY = 'u';
 
 let ballTrail: any[] = [];
 let sparksTrail: any[] = [];
@@ -254,6 +259,8 @@ export type InitializeEventListenersArgs = {
   ballData: IBallData;
   slit: number;
   stepPaddle: number;
+  sounds: ISounds;
+  theme: any;
 };
 
 export function initializeEventListeners({
@@ -267,6 +274,8 @@ export function initializeEventListeners({
   ballData,
   slit,
   stepPaddle,
+  sounds,
+  theme,
 }: InitializeEventListenersArgs): any[] {
   function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
@@ -284,6 +293,24 @@ export function initializeEventListeners({
         user2.y += userSpeedInput * stepPaddle;
       }
     }
+
+    //Adjust the volume of background music
+    try {
+      if (sounds.music.volume < 1 && event.key === VOLUME_UP_KEY) {
+        sounds.music.volume = Math.min(1, sounds.music.volume + 0.1);
+      } else if (sounds.music.volume > 0 && event.key === VOLUME_DOWN_KEY) {
+        sounds.music.volume = Math.max(0, sounds.music.volume - 0.1);
+      }
+    } catch (err) {}
+
+    //Mute & unmute background music
+    try {
+      if (event.key === MUTE_KEY) {
+        sounds.music.volume = 0;
+      } else if (event.key === UNMUTE_KEY) {
+        sounds.music.volume = 0.3;
+      }
+    } catch (err) {}
   }
 
   function onMouseMove(event: MouseEvent) {
@@ -358,6 +385,9 @@ export type InitializeSocketLogicArgs = {
   net: INetData;
   canvasImages: InitializeCanvasImages;
   thickness: number;
+  theme: GameTheme;
+  isFirstRun: boolean;
+  countDown: number;
 };
 
 export function initializeSocketLogic({
@@ -377,6 +407,9 @@ export function initializeSocketLogic({
   net,
   canvasImages,
   thickness,
+  theme,
+  isFirstRun,
+  countDown,
 }: InitializeSocketLogicArgs) {
   socket.emit(
     'upload',
@@ -405,11 +438,17 @@ export function initializeSocketLogic({
             player: user1,
             userData: usersData.user1,
             sounds,
+            isFirstRun,
+            countDown,
+            isBallFrozen,
           });
         matchFinish = true;
+        isBallFrozen = true;
+        //  isFirstRun = true;
+        //  countDown = 3;
       }
 
-      matchUser1(canvas, ballData, user1, user2, sounds);
+      matchUser1(canvas, ballData, user1, user2, sounds, theme);
 
       render(
         canvas,
@@ -422,6 +461,9 @@ export function initializeSocketLogic({
         canvasImages,
         thickness,
         sounds,
+        theme,
+        isBallFrozen,
+        countDown,
       );
 
       socket.emit(
@@ -457,11 +499,15 @@ export function initializeSocketLogic({
             player: user2,
             userData: usersData.user2,
             sounds,
+            isFirstRun,
+            countDown,
+            isBallFrozen,
           });
         matchFinish = true;
+        isBallFrozen = true;
       }
 
-      matchUser2(canvas, ballData, user1, user2, sounds);
+      matchUser2(canvas, ballData, user1, user2, sounds, theme);
 
       render(
         canvas,
@@ -474,6 +520,9 @@ export function initializeSocketLogic({
         canvasImages,
         thickness,
         sounds,
+        theme,
+        isBallFrozen,
+        countDown,
       );
 
       socket.emit(
@@ -500,10 +549,45 @@ export function onAbortGame(
   };
 }
 
-export async function countDownToStart(countDown: number): Promise<void> {
+export async function countDownToStart(
+  countDown: number,
+  canvas: HTMLCanvasElement,
+): Promise<void> {
   return await new Promise((resolve) => {
     const countDownInterval = setInterval(() => {
+      if (countDown === 3) {
+        for (let i = 0; i < 15; i++) {
+          drawBall(
+            canvas,
+            canvas.width / 2,
+            canvas.height / 2,
+            200,
+            RenderColor.Red,
+          );
+        }
+      } else if (countDown === 2) {
+        for (let j = 0; j < 15; j++) {
+          drawBall(
+            canvas,
+            canvas.width / 2,
+            canvas.height / 2,
+            200,
+            RenderColor.Yellow,
+          );
+        }
+      } else if (countDown === 1) {
+        for (let k = 0; k < 15; k++) {
+          drawBall(
+            canvas,
+            canvas.width / 2,
+            canvas.height / 2,
+            200,
+            RenderColor.Green,
+          );
+        }
+      }
       countDown--;
+      console.log('Count down value -> ', countDown);
       if (countDown === 0) {
         resolve();
         isBallFrozen = false;

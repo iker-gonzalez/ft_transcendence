@@ -27,7 +27,7 @@ export class ChatGateway implements OnGatewayConnection {
 
   @SubscribeMessage('privateMessage')
   async handlePrivateMessage(client, payload) {
-    console.log("receiverId");
+    console.log("receiverId:");
     console.log(payload.receiverId);
     try { 
       // Prueba para el get de lo DM
@@ -77,8 +77,8 @@ async handleJoinRoom(client: Socket, paydload) {
 @SubscribeMessage('sendMessageToRoom') 
 async handleSendMessageToRoom( client: Socket, payload) {
   console.log("sendMessageToRoom event");
-  console.log(payload.roomName);
-  console.log(payload.message);
+  console.log('roomName:', payload.roomName);
+  console.log('message:', payload.message);
 
   try{
 
