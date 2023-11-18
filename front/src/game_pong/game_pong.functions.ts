@@ -12,6 +12,9 @@ import wallSound from './sounds/punch.wav';
 import userScoreSound from './sounds/strike.wav';
 import botScoreSound from './sounds/goal.wav';
 import musicBackground from './sounds/music.mp3';
+import countdownSound from './sounds/countdown.mp3';
+import beepShortSound from './sounds/beep_short.mp3';
+import beepLongSound from './sounds/beep_long.mp3';
 import BgImageGrass from './images/grass.jpg';
 import { matchUser1, matchUser2, onGameEnd } from './game_pong.render';
 import { Socket } from 'socket.io-client';
@@ -219,10 +222,25 @@ export function initializeSounds(): ISounds {
   let userScore = new Audio(userScoreSound);
   let botScore = new Audio(botScoreSound);
   let music = new Audio(musicBackground);
+  let countdown = new Audio(countdownSound);
+  let beepShort = new Audio(beepShortSound);
+  let beepLong = new Audio(beepLongSound);
+
   music.loop = true;
   music.volume = 0.3;
+  beepShort.volume = 1;
+  beepLong.volume = 1;
 
-  return { hit, wall, userScore, botScore, music };
+  return {
+    hit,
+    wall,
+    userScore,
+    botScore,
+    music,
+    countdown,
+    beepShort,
+    beepLong,
+  };
 }
 
 export function isSoloMode(usersData: {
@@ -552,10 +570,12 @@ export function onAbortGame(
 export async function countDownToStart(
   countDown: number,
   canvas: HTMLCanvasElement,
+  sounds: ISounds,
 ): Promise<void> {
   return await new Promise((resolve) => {
     const countDownInterval = setInterval(() => {
       if (countDown === 3) {
+        sounds.beepShort.play().catch(function (error: any) {});
         for (let i = 0; i < 15; i++) {
           drawBall(
             canvas,
@@ -566,6 +586,7 @@ export async function countDownToStart(
           );
         }
       } else if (countDown === 2) {
+        sounds.beepShort.play().catch(function (error: any) {});
         for (let j = 0; j < 15; j++) {
           drawBall(
             canvas,
@@ -576,6 +597,7 @@ export async function countDownToStart(
           );
         }
       } else if (countDown === 1) {
+        sounds.beepLong.play().catch(function (error: any) {});
         for (let k = 0; k < 15; k++) {
           drawBall(
             canvas,
