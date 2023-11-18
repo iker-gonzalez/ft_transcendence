@@ -14,12 +14,17 @@ import styled from 'styled-components';
 
 const WrapperDiv = styled.div`
   width: 100%;
-  min-height: 70vh; /* TODO adjust this */
+  height: 80vh; /* TODO adjust this */
   display: flex;
   justify-content: center;
   align-items: stretch;
   gap: 40px;
 `;
+
+// Define the MessagesByChat type
+type MessagesByChat = {
+  [key: string]: Message[];
+};
 
 /**
  * ChatPage component that displays the chat sidebar and message area.
@@ -30,11 +35,15 @@ const ChatPage: React.FC = () => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   const [users, setUsers] = useState<User[]>([]);
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [userGroups, setUserGroups] = useState<Group[]>([]);
 
   const [messages, setMessages] = useState<Message[]>([]);
+  const [messagesByChat, setMessagesByChat] = useState<MessagesByChat>({});
 
   const { userData } = useUserData();
+
+  const [allGroups, setAllGroups] = useState<Group[]>([]);
+
 
   useEffect(() => {
     // Fetch all users that the signed in user has chatted with privately
@@ -70,7 +79,24 @@ const ChatPage: React.FC = () => {
               name: item.name,
             };
           });
-          setGroups(groups);
+          setUserGroups(groups);
+        });
+
+      // Fetch all existing groups in the database
+      fetchAuthorized(`${getBaseUrl()}/chat/allExistingChannel`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data: Group[]) => {
+          const allGroups = data.map((item) => {
+            return {
+              id: item.id,
+              name: item.name,
+            };
+          });
+          setAllGroups(allGroups);
         });
     }
   }, [userData]);
@@ -94,7 +120,6 @@ const ChatPage: React.FC = () => {
       .then((data: Message[]) => {
         const messages = data.map((item: Message) => {
           return {
-            id: item.id,
             senderName: item.senderName,
             senderAvatar: item.senderAvatar,
             content: item.content,
@@ -104,6 +129,19 @@ const ChatPage: React.FC = () => {
         setSelectedUser(user);
         setSelectedGroup(null);
         setMessages(messages);
+        setMessagesByChat({});
+        setUsers((prevUsers) => {
+          // Check if the user already exists in the array
+          const userExists = prevUsers.some((prevUser) => prevUser.id === user.id);
+          console.log('userExists:', userExists);
+          // If the user doesn't exist, add them to the array
+          if (!userExists) {
+            return [...prevUsers, user];
+          }
+        
+          // If the user does exist, return the previous state
+          return prevUsers;
+        });
       });
   };
 
@@ -114,6 +152,7 @@ const ChatPage: React.FC = () => {
    * @param group - The selected group.
    */
   const handleGroupClick = (group: Group) => {
+    console.log('i am here baby');
     fetchAuthorized(
       `${getBaseUrl()}/chat/${group.name}/allChannel`,
       /* temporary until endpoint is fixed */ {
@@ -124,18 +163,36 @@ const ChatPage: React.FC = () => {
     )
       .then((response) => response.json())
       .then((data: GroupMessage[]) => {
+        if (data.length > 0) {
         const messages = data.map((item: GroupMessage) => {
+          console.log('item:', item);
           return {
             id: 'dssdsfd', //temporary until id is incorporated in endpoint or Message interface is armonized
-            senderName: item.sender.username,
-            senderAvatar: item.sender.avatar,
+            senderName: item.senderName,
+            senderAvatar: item.senderAvatar,
             content: item.content,
             timestamp: item.timestamp,
           };
         });
+        setMessages(messages);
+      }
+        else
+          setMessages([]);
         setSelectedUser(null);
         setSelectedGroup(group);
-        setMessages(messages);
+        setMessagesByChat({});
+        setUserGroups((prevGroups) => {
+          // Check if the group already exists in the array
+          const groupExists = prevGroups.some((prevGroup) => prevGroup.name === group.name);
+        
+          // If the group doesn't exist, add them to the array
+          if (!groupExists) {
+            console.log('group does not exist');
+            return [...prevGroups, group];
+          }
+          // If the group does exist, return the previous state
+          return prevGroups;
+        });
       });
   };
 
@@ -144,14 +201,17 @@ const ChatPage: React.FC = () => {
       <WrapperDiv>
         <ChatSidebar
           users={users}
-          groups={groups}
+          userGroups={userGroups}
+          allGroups={allGroups}
           handleUserClick={handleUserClick}
           handleGroupClick={handleGroupClick}
         />
         <ChatMessageArea
           selectedUser={selectedUser}
           selectedGroup={selectedGroup}
-          messages={messages} //here should be messages with the most recent one
+          messages={messages}
+          messagesByChat={messagesByChat}
+          setMessagesByChat={setMessagesByChat} //here should be messages with the most recent one
         />
       </WrapperDiv>
     </CenteredLayout>

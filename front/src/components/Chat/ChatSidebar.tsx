@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import Modal from '../UI/Modal';
-import { useUserFriends } from '../../context/UserDataContext';
+import { useUserFriends, useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
+import MainButton from '../UI/MainButton';
+import RoundImg from '../UI/RoundImage';
+import UserStatusInfo from '../UI/UserStatus';
+import useChatMessageSocket, {
+  UseChatMessageSocket,
+} from './useChatMessageSocket';
+import Cookies from 'js-cookie';
+import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
   display: flex;
+  height: 81vh;
+  
 
   .gradient-border {
     flex-grow: 1;
     background-color: ${darkerBgColor};
     padding: 20px;
+    overflow-y: auto;
   }
 `;
 
@@ -31,13 +43,17 @@ const PlusSign = styled.span`
   cursor: pointer;
   margin-left: 10px;
   position: relative;
-  top: -5px;
+  top: -8px;
 `;
 
 const Title = styled.h2`
-  font-size: 28px;
+  font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
+
+  ${props => props.className === 'friends-modal' && `
+    font-size: 25px;
+  `}
 `;
 
 const List = styled.ul`
@@ -46,36 +62,106 @@ const List = styled.ul`
 
 const ListItem = styled.li`
   padding: 8px 0;
-  font-size: 20px;
+  font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
+  marginBottom: '20px';
+`;
 
-  &:hover {
-    background-color: #888802;
-  }
+const RoundImgStyled = styled(RoundImg)`
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+`;
+
+const UserInfo = styled.div`
+  flex: 1;
+  margin-right: 10px;
+`;
+
+const Username = styled.h3`
+  font-size: 1.5em;
+`;
+
+const MainButtonStyled = styled(MainButton)`
+  padding: 5px 10px;
+  font-size: 0.8em;
+  margin-left: 20px;
 `;
 
 interface SidebarProps {
   users: Array<{ id: number; avatar: string; username: string }>;
-  groups: Array<{ id: string; name: string }>;
+  userGroups: Array<{ id: string; name: string }>;
+  allGroups: Array<{ id: string; name: string }>;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
   users,
-  groups,
+  userGroups,
+  allGroups,
   handleUserClick,
   handleGroupClick,
 }) => {
+
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const { userFriends } = useUserFriends();
+  const [activeModalContent, setActiveModalContent] = useState<'directMessages' | 'groupChats'>('directMessages');
+  const [roomName, setRoomName] = useState('');
+  const { userFriends, fetchFriendsList } =
+  useUserFriends();
+  const { userData, fetchUserData } =
+  useUserData();
+  const { launchFlashMessage } = useFlashMessages();
+
+  useEffect(() => {
+    fetchFriendsList();
+    const token = Cookies.get('token');
+    fetchUserData(token as string);
+  }, []);
+  
+  // Get the socket and related objects from the utility function
+  const {
+    chatMessageSocketRef,
+    isSocketConnected,
+    isConnectionError,
+  }: UseChatMessageSocket = useChatMessageSocket();
+
+  // Add a listener for incoming messages
+  useEffect(() => {
+    if (isSocketConnected) {
+      chatMessageSocketRef.current.on('newMessage', (messageData: string) => {
+        // Handle the incoming message, e.g., add it to your message list
+        console.log('Received a new message:', messageData);
+
+        // You can update your message state or perform other actions here
+      });
+    }
+  }, [isSocketConnected, chatMessageSocketRef]);
+
+  const handleJoinRoom = (roomName: string) => {
+    if (roomName.trim() !== '' && roomName) {
+      if (userGroups.some(group => group.name === roomName)) {
+        launchFlashMessage(
+          `The group name ${roomName} already exists. Please choose a different name.`,
+          FlashMessageLevel.ERROR,
+        );
+      } else {
+        chatMessageSocketRef.current.emit('joinRoom', { roomName, intraId: userData?.intraId });
+        setPopupVisible(false);
+        launchFlashMessage(
+          `You have successfully joined the room ${roomName}!`,
+          FlashMessageLevel.SUCCESS,
+        );
+      }
+    }
+  };
+
   const userFriendsConverted = userFriends.map((friend) => ({
     id: friend.intraId,
     avatar: friend.avatar,
     username: friend.username,
   }));
-  console.log('friends:', userFriends);
   return (
     <SidebarContainer>
       <GradientBorder className="gradient-border">
@@ -88,7 +174,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             }}
           >
             <Title>Direct Messages</Title>
-            <PlusSign onClick={() => setPopupVisible(true)}>+</PlusSign>
+            <PlusSign onClick={() => { setPopupVisible(true); setActiveModalContent('directMessages'); }}>+</PlusSign>
           </div>
           <List>
             {users.map((user) => (
@@ -100,26 +186,97 @@ const Sidebar: React.FC<SidebarProps> = ({
         </UserList>
         {isPopupVisible && (
           <Modal dismissModalAction={() => setPopupVisible(false)}>
-            <Title>Chat with one of your friends</Title>
-            <List>
-              {userFriendsConverted.map((friend, index) => (
-                <ListItem
-                  key={index}
-                  onClick={() => {
-                    handleUserClick(friend);
-                    setPopupVisible(false);
-                  }}
-                >
-                  {friend.username}
-                </ListItem>
-              ))}
-            </List>
+            {activeModalContent === 'directMessages' ? (
+              <>
+                <Title className='friends-modal'>Chat with one of your friends</Title>
+                <br></br>
+                <List>
+                {userFriendsConverted.length > 0 ? (
+                  userFriendsConverted.map((friend) => (
+                    <ListItem key={friend.id} style={{ display: 'flex', alignItems: 'center' }}>
+                      <RoundImgStyled
+                        src={friend.avatar}
+                        alt=""
+                      />
+                      <UserInfo>
+                        <Username>
+                          {friend.username}
+                        </Username>
+                      </UserInfo>
+                      <UserStatusInfo intraId={friend.id} />
+                      <MainButtonStyled
+                        onClick={() => {
+                        handleUserClick(friend);
+                        setPopupVisible(false);
+                      }}
+                      >
+                        Chat
+                      </MainButtonStyled>
+                    </ListItem>
+                  ))
+                ) : (
+                  <p>
+                    It seems you do not have any friends yet. 
+                    Go to your profile and find some friends to chat with!
+                  </p>
+                )}
+                </List>
+              </>
+            ) : (
+              <>
+                <Title>Create a new group chat</Title>
+                <input 
+                  type="text" 
+                  value={roomName} 
+                  onChange={(e) => {
+                    if (e.target.value.length <= 10) {
+                      setRoomName(e.target.value);
+                    }
+                  }}  
+                  placeholder="Enter room name"
+                />
+                <MainButton onClick={() => {
+                  handleGroupClick({
+                    id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), 
+                    name: roomName
+                  });
+                  handleJoinRoom(roomName);
+                  setRoomName('');
+                }}>
+                  Join Room
+                </MainButton>
+                <Title>Or join an existing one</Title>
+                  <List>
+                    {allGroups.filter(group => !userGroups.some(userGroup => userGroup.name === group.name)).map((group) => (
+                      <ListItem 
+                        key={group.name} 
+                        onClick={() => {
+                          handleGroupClick(group);
+                          setPopupVisible(false);
+                          handleJoinRoom(group.name);
+                        }}
+                      >
+                        {group.name}
+                      </ListItem>
+                    ))}
+                  </List>
+              </>
+            )}
           </Modal>
         )}
         <UserList>
-          <Title>Group Chats</Title>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}
+          >
+            <Title>Group Chats</Title>
+            <PlusSign onClick={() => { setPopupVisible(true); setActiveModalContent('groupChats'); }}>+</PlusSign>
+          </div>
           <List>
-            {groups.map((group) => (
+            {userGroups.map((group) => (
               <ListItem key={group.id} onClick={() => handleGroupClick(group)}>
                 {group.name}
               </ListItem>
@@ -129,6 +286,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       </GradientBorder>
     </SidebarContainer>
   );
-};
+}
 
 export default Sidebar;

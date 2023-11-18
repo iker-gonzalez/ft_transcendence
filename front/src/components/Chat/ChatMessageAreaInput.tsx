@@ -4,10 +4,11 @@ import MainButton from '../UI/MainButton';
 
 const InputContainer = styled.div`
   margin-top: 20px;
+
 `;
 
 const InputField = styled.input`
-  width: 90%;
+  width: 80%;
   padding: 10px;
   margin-right: 20px;
   border: 1px solid #ccc;

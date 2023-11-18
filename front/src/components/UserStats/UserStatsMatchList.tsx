@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import UserData from '../../interfaces/user-data.interface';
 import styled from 'styled-components';
-import { useUserGames } from '../../context/UserDataContext';
+import { useUserData, useUserGames } from '../../context/UserDataContext';
 import RoundImg from '../UI/RoundImage';
 import { primaryLightColor } from '../../constants/color-tokens';
 import UserGameData from '../../interfaces/user-game-data.interface';
@@ -103,6 +103,9 @@ const UserStatsMatchList: React.FC<UserStatsMatchListProps> = ({
 }): JSX.Element => {
   const { userGames, isFetchingGames, fetchGamesList, isErrorFetchingGames } =
     useUserGames();
+  const { userData: loggedUserData } = useUserData();
+
+  const isCurrentUser = useRef(loggedUserData?.intraId === userData.intraId);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -135,14 +138,23 @@ const UserStatsMatchList: React.FC<UserStatsMatchListProps> = ({
         if (userGames.length === 0) {
           return (
             <div className="empty-state">
-              <p>It looks like you haven't played any game yet. </p>
-              <MainButton
-                onClick={() => {
-                  navigate('/game');
-                }}
-              >
-                Start playing now
-              </MainButton>
+              {isCurrentUser.current ? (
+                <>
+                  <p>It looks like you haven't played any game yet. </p>
+                  <MainButton
+                    onClick={() => {
+                      navigate('/game');
+                    }}
+                  >
+                    Play&nbsp;now
+                  </MainButton>
+                </>
+              ) : (
+                <p>
+                  There is nothing to see here. This player hasn't played any
+                  game yet.
+                </p>
+              )}
             </div>
           );
         }
