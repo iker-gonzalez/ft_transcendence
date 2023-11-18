@@ -131,6 +131,69 @@ export function render(
   }
   drawSparksTrail(canvas, 0.3);
 
+  //Draw volume icon
+  if (sounds.music.volume === 0) {
+    drawText(
+      canvas,
+      '🔕',
+      canvas.width / 2,
+      canvas.height / 8,
+      '30px Courier',
+      'center',
+      RenderColor.White,
+    );
+  } else if (sounds.music.volume > 0 && sounds.music.volume < 0.2) {
+    drawText(
+      canvas,
+      '🔔',
+      canvas.width / 2,
+      canvas.height / 8,
+      '30px Courier',
+      'center',
+      RenderColor.White,
+    );
+  } else if (sounds.music.volume >= 0.2 && sounds.music.volume < 0.4) {
+    drawText(
+      canvas,
+      '🔔',
+      canvas.width / 2,
+      canvas.height / 8,
+      '40px Courier',
+      'center',
+      RenderColor.White,
+    );
+  } else if (sounds.music.volume >= 0.4 && sounds.music.volume < 0.6) {
+    drawText(
+      canvas,
+      '🔔',
+      canvas.width / 2,
+      canvas.height / 8,
+      '50px Courier',
+      'center',
+      RenderColor.White,
+    );
+  } else if (sounds.music.volume >= 0.6 && sounds.music.volume < 0.8) {
+    drawText(
+      canvas,
+      '🔔',
+      canvas.width / 2,
+      canvas.height / 8,
+      '60px Courier',
+      'center',
+      RenderColor.White,
+    );
+  } else if (sounds.music.volume >= 0.8) {
+    drawText(
+      canvas,
+      '🔔',
+      canvas.width / 2,
+      canvas.height / 8,
+      '70px Courier',
+      'center',
+      RenderColor.White,
+    );
+  }
+
   drawText(
     canvas,
     usersData.user1.username,
@@ -281,7 +344,7 @@ export function render(
       }
     }
   }
-  
+
   const speedRender: number = ballData.speed * 0.1;
 
   drawText(
@@ -431,7 +494,7 @@ export function matchUser1(
     gamePowerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
 
     let themeSound = new Audio(theme.hitSound);
-    themeSound.play().catch(function (error: any) { });
+    themeSound.play().catch(function (error: any) {});
 
     // Sparks effect when the ball hits the paddle
     if (theme.id === 'star-wars') {
