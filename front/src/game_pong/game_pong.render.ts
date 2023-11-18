@@ -375,6 +375,7 @@ export function resetBall(
   user1: IUserData,
   user2: IUserData,
   userSpeedInput: number,
+  sounds: ISounds,
 ) {
   const newBallData: IBallData = ballData;
   const newUserData1: IUserData = user1;
@@ -386,6 +387,12 @@ export function resetBall(
   newUserData2.height = 100;
 
   // TODO Check setTimeout (async / await)
+ setTimeout(() => {
+   if (user1.score < 5 && user2.score < 5) {
+     sounds.beepLong.play().catch(function (error: any) {});
+   }
+ }, 1500);
+  
   setTimeout(() => {
     newBallData.x = canvas.width / 2;
     newBallData.y = canvas.height / 2;
@@ -393,16 +400,6 @@ export function resetBall(
     newBallData.moveY = -newBallData.moveY * Math.random();
     newBallData.reset = false;
   }, 2000);
-
-  // drawText(
-  //   canvas,
-  //   'reloj',
-  //   canvas.width / 2,
-  //   canvas.height / 2,
-  //   '20px Arial',
-  //   'center',
-  //   RenderColor.White,
-  // );
 
   return { newBallData, newUserData1, newUserData2 };
 }
@@ -450,6 +447,7 @@ export function matchUser1(
       user1,
       user2,
       userSpeedInput,
+      sounds,
     );
     ballData = newBallData;
     user1 = newUserData1;
@@ -465,6 +463,7 @@ export function matchUser1(
       user1,
       user2,
       userSpeedInput,
+      sounds,
     );
     ballData = newBallData;
     user1 = newUserData1;
