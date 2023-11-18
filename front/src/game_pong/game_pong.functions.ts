@@ -25,8 +25,6 @@ const VOLUME_DOWN_KEY = 'l';
 const MUTE_KEY = 'm';
 const UNMUTE_KEY = 'u';
 
-
-
 let ballTrail: any[] = [];
 let sparksTrail: any[] = [];
 export let isBallFrozen: boolean = true;
@@ -262,6 +260,7 @@ export type InitializeEventListenersArgs = {
   slit: number;
   stepPaddle: number;
   sounds: ISounds;
+  theme: any;
 };
 
 export function initializeEventListeners({
@@ -276,6 +275,7 @@ export function initializeEventListeners({
   slit,
   stepPaddle,
   sounds,
+  theme,
 }: InitializeEventListenersArgs): any[] {
   function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
@@ -306,9 +306,13 @@ export function initializeEventListeners({
     //Mute all sounds
     try {
       if (event.key === MUTE_KEY) {
-        sounds.music.volume = 0;
+        sounds.music.muted = true;
+        sounds.botScore.muted = true;
+        theme.hitSound.muted = true;
       } else if (event.key === UNMUTE_KEY) {
-        sounds.music.volume = 0.3;
+        sounds.music.muted = false;
+        sounds.botScore.muted = false;
+        theme.hitSound.muted = false;
       }
     } catch (err) {}
   }
