@@ -375,6 +375,7 @@ export function resetBall(
   user1: IUserData,
   user2: IUserData,
   userSpeedInput: number,
+  sounds: ISounds,
 ) {
   const newBallData: IBallData = ballData;
   const newUserData1: IUserData = user1;
@@ -392,6 +393,10 @@ export function resetBall(
     newBallData.moveX = newBallData.moveX * 1;
     newBallData.moveY = -newBallData.moveY * Math.random();
     newBallData.reset = false;
+    if (user1.score < 5 && user2.score < 5) {
+      sounds.beepLong.play().catch(function (error: any) { });
+    }
+
   }, 2000);
 
   // drawText(
@@ -450,6 +455,7 @@ export function matchUser1(
       user1,
       user2,
       userSpeedInput,
+      sounds,
     );
     ballData = newBallData;
     user1 = newUserData1;
@@ -465,6 +471,7 @@ export function matchUser1(
       user1,
       user2,
       userSpeedInput,
+      sounds,
     );
     ballData = newBallData;
     user1 = newUserData1;
