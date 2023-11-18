@@ -431,7 +431,7 @@ export function matchUser1(
     gamePowerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
 
     let themeSound = new Audio(theme.hitSound);
-    themeSound.play().catch(function (error: any) {});
+    themeSound.play().catch(function (error: any) { });
 
     // Sparks effect when the ball hits the paddle
     if (theme.id === 'star-wars') {
