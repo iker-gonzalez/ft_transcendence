@@ -26,6 +26,7 @@ const SidebarContainer = styled.div`
     flex-grow: 1;
     background-color: ${darkerBgColor};
     padding: 20px;
+    overflow-y: auto;
   }
 `;
 
@@ -228,7 +229,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   type="text" 
                   value={roomName} 
                   onChange={(e) => {
-                    if (e.target.value.length <= 15) {
+                    if (e.target.value.length <= 10) {
                       setRoomName(e.target.value);
                     }
                   }}  
