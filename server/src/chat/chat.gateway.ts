@@ -99,12 +99,57 @@ async handleSendMessageToRoom( client: Socket, payload) {
  @SubscribeMessage('leaveRoom') 
  async handleLeaveRoom(client: Socket, payload) {
 
-  client.leave(payload.roomName);
-  // Actualizar la DB
-  const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
-  await this.chatChannelservice.leaveUserFromChannel(payload.roomName, userId);
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    await this.chatChannelservice.leaveUserFromChannel(payload.roomName, userId);
+    client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
 
  }
 
- 
+ @SubscribeMessage('muteUser') 
+ async handleMuteUser(client: Socket, payload) {
+
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
+    await this.chatChannelservice.muteUserInChannel(payload.roomName, addminId, userId);
+   // client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+
+ @SubscribeMessage('unmuteUser') 
+ async handleUnmuteUser(client: Socket, payload) {
+
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
+    await this.chatChannelservice.unmuteUserInChannel(payload.roomName, addminId, userId);
+ //   client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+
+ @SubscribeMessage('kickUser') 
+ async handleKickUser(client: Socket, payload) {
+
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
+    await this.chatChannelservice.kickUserInChannel(payload.roomName, addminId, userId);
+    client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+
 }
