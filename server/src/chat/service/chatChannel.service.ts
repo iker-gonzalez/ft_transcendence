@@ -327,41 +327,23 @@ async leaveUserFromChannel(
   });
 
   if (!foundChatRoom)
-  throw new BadRequestException ("channelRoom not exist");
+    throw new BadRequestException ("channelRoom not exist");
 
   if (ownerId != foundChatRoom.ownerId)
-  throw new ConflictException ("It is not the owner of the channel, not premissions to do this");
+    throw new ConflictException ("It is not the owner of the channel, not premissions to do this");
 
-console.log("foundChatRoom");
-  console.log(foundChatRoom);
-  // Verificar si el usuario ya es administrador en la sala de chat
- // const isUserAdmin = await this.prisma.chatRoomUser.findFirst({
- //   where: { roomId: foundChatRoom.id, userId: newAdminId, admins: true },
- // });
- // if (isUserAdmin)
- // throw new ConflictException ("It is already a adminis");
-//
   // Verificar si el usuario ya pertenece a la sala de chat
   const existingUser = await this.prisma.chatRoomUser.findFirst({
     where: { roomId: foundChatRoom.id, userId: newAdminId },
      });
 try{
 
-   /* const updatedChatRoom = await this.prisma.chatRoom.update({
-      where: { id: foundChatRoom.id },
-      data: {
-        admins: {
-          // Aquí puedes utilizar 'set' para reemplazar la lista de administradores
-          set: [...foundChatRoom.admins, newAdminId],
-        },
-      },
-    });*/
+    // Si el usuario al que se quiere hacer administrador no es un usuario del chatRomm, añadirle a este.
     if (!existingUser)
     {
       await this.addUserToChannel(newAdminId, channelRoom);
     
-  }
-
+    }  
       // Buscar el ChatRoomUser por userId
       const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
         where: { userId: newAdminId },
@@ -393,6 +375,8 @@ try{
    ): Promise<void> 
 {
  
+  try{
+
   if (!channelRoom || !ownerId || !deleteAdminId)
   throw new BadRequestException ("channelRoom or ownerId or deleteAdminId  are null");
 
@@ -412,21 +396,27 @@ try{
   throw new BadRequestException ("It is not the owner of the channel, not premissions to do this");
 
 
-  const isAdmin = this.isUserAdmin(foundChatRoom.id, deleteAdminId);
+  const isAdmin = await this.isUserAdmin(foundChatRoom.id, deleteAdminId);
+  console.log("3");
 
   if (!isAdmin)
   throw new BadRequestException ("deleteAdminId is not the admin of the channel yet");
+  console.log("4");
  
-  try{
-    // Agregar el usuario como administrador de la sala de chat
-    await this.prisma.chatRoom.update({
-      where: { id: foundChatRoom.id },
-      data: {
-        admins: {
-          set: foundChatRoom.admins.filter(adminId => adminId !== deleteAdminId),
-        },
-      },
-    });
+          // Buscar el ChatRoomUser por userId
+          const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
+            where: { userId: deleteAdminId },
+          });
+
+         // Actualizar la relación adminUsers del ChatRoom para desconectar al usuario administrador
+         const updatedChatRoom = await this.prisma.chatRoom.update({
+          where: { id: foundChatRoom.id },
+          data: {
+            adminUsers: {
+              disconnect: { id: chatRoomUser.id },
+            },
+          },
+        });
   }
   catch(error){
     console.error("Error:", error);
@@ -435,9 +425,7 @@ try{
 }
 
 private async isUserAdmin(chatRoomId: string, userId: string):  Promise<boolean> {
-  // Implementa la lógica para verificar si el usuario es administrador del ChatRoom.
-  // Puedes acceder a la base de datos o utilizar la lógica que tengas implementada.
-  // En este ejemplo, asumimos que el ChatRoom tiene un campo admins que es un array de IDs de usuarios administradores.
+  
   if (!chatRoomId || !userId )
   throw new BadRequestException ("channelRoom or userId are null");
 
@@ -447,15 +435,17 @@ private async isUserAdmin(chatRoomId: string, userId: string):  Promise<boolean>
   
 
   // Get el Channel
-  const chatRoom = await this.prisma.chatRoom.findFirst({
-    where: { id: chatRoomId,
-    },
-    include:{
-      users:true,
-    },
+  const chatRoom = await this.prisma.chatRoom.findUnique({
+    where: { id: chatRoomId },
+    include: { adminUsers: true },
   });
-  return chatRoom.admins.includes(chatRoomUser.id);
+    
+   // Verificar si el usuario está en la lista de adminUsers
+   const isUserAdmin = chatRoom.adminUsers.some((adminUser) => adminUser.userId === userId);
+   console.log(isUserAdmin);
+   return isUserAdmin;
 }
+
 
 // Delete admin from channel
 // Mute User

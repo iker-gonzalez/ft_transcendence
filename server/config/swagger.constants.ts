@@ -236,15 +236,27 @@ export const swaggerConstants = {
       },
     },
     allUserChannelIn:{
-      summary: 'Return all existing channel un DB. The name and its privacy',
+      summary: 'Return todos los canales al que pertenece un usuario',
       ok: {
-        description: 'Return all exisitng channel ins the DB. Private, protected and public',
+        description: '',
       },
     },
     channelMess: {
       summary: 'Return all the messages that have been sent in the channel ',
       ok: {
         description: 'Return contet, username, data',
+      },
+    },
+    addAdmin: {
+      summary: 'Add administrator to a channel, if it was not in the channel as user add it',
+      ok: {
+        description: '',
+      },
+    },
+    deleteAdmin: {
+      summary: 'Delete administrator of a channel,',
+      ok: {
+        description: '',
       },
     },
   },
