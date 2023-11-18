@@ -101,7 +101,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   setMessagesByChat,
   messagesByChat,
 }) => {
-  const title = selectedUser?.username || selectedGroup?.name;
 
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
@@ -181,7 +180,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       {selectedUser || selectedGroup ? (
         <>
         <WrapperDiv>
-          <ChatMessageAreaHeader name={selectedUser?.username || selectedGroup?.name || ''} avatarSrc={selectedUser?.avatar || ''} />
+          <ChatMessageAreaHeader user={selectedUser} group={selectedGroup} />          
           <MessageList>
             {messages.map((message) => (
                 <MessageItem key={message.timestamp}>

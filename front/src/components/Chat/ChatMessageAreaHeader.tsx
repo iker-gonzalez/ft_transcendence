@@ -8,6 +8,8 @@ import ViewNewUserProfile from '../Friends/ViewNewUserProfile';
 import Modal from '../UI/Modal';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import Group from '../../interfaces/chat-group.interface';
+import User from '../../interfaces/chat-user.interface';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -41,11 +43,11 @@ const MainButtonStyled = styled(MainButton)`
 `;
 
 interface ChatMessageAreaHeaderProps {
-  name: string;
-  avatarSrc: string;
-}
+    user?: User | null;
+    group?: Group | null;
+  }
 
-const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ name, avatarSrc }) => {
+const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ user, group }) => {
     const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
   const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
@@ -54,7 +56,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ name, ava
   const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
     useUserFriends();
 
-    const friend = userFriends.find(user => user.username === name) || null;
+    const friend = userFriends.find(userFriend => userFriend.username === user?.username) || null;
 
   const { launchFlashMessage } = useFlashMessages();
 
@@ -75,31 +77,35 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ name, ava
   
     return (
         <HeaderWrapper>
-          <div>
-            <Avatar src={avatarSrc} alt={name} />
-            <Title>{name}</Title>
-          </div>
-          <div>
+        <div>
+            {user && <Avatar src={user.avatar} alt={user.username} />}
+            <Title style={{ marginLeft: group ? '0' : '', marginBottom: group ? '15px' : '' }}>
+                {user?.username || group?.name || ''}
+            </Title>        
+        </div>
+        {user && (
+            <div>
             <MainButtonStyled onClick={() => console.log('Play button clicked')}>Play</MainButtonStyled>
             <MainButtonStyled onClick={() => setFriendProfileToShow(friend)}>Profile</MainButtonStyled>
             <MainButtonStyled onClick={() => console.log('Block button clicked')}>Block</MainButtonStyled>
-          </div>
-          {friendProfileToShow && (
+            </div>
+        )}
+        {friendProfileToShow && (
             <Modal
-              dismissModalAction={() => {
+            dismissModalAction={() => {
                 setFriendProfileToShow(null);
-              }}
-              showFullScreen={true}
+            }}
+            showFullScreen={true}
             >
-              <ViewNewUserProfile
+            <ViewNewUserProfile
                 foundUserData={friendProfileToShow}
                 isAlreadyFriend={true}
                 onUpdateFriendsList={onUpdateFriendsList}
-              />
+            />
             </Modal>
-          )}
+        )}
         </HeaderWrapper>
-      );
+    );
   };
   
   export default ChatMessageAreaHeader;
