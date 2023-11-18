@@ -20,6 +20,10 @@ import GameTheme from '../interfaces/game-theme.interface';
 
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
+const VOLUME_UP_KEY = 'h';
+const VOLUME_DOWN_KEY = 'l';
+const MUTE_KEY = 'm';
+const UNMUTE_KEY = 'u';
 
 let ballTrail: any[] = [];
 let sparksTrail: any[] = [];
@@ -255,6 +259,8 @@ export type InitializeEventListenersArgs = {
   ballData: IBallData;
   slit: number;
   stepPaddle: number;
+  sounds: ISounds;
+  theme: any;
 };
 
 export function initializeEventListeners({
@@ -268,6 +274,8 @@ export function initializeEventListeners({
   ballData,
   slit,
   stepPaddle,
+  sounds,
+  theme,
 }: InitializeEventListenersArgs): any[] {
   function onKeyDown(event: KeyboardEvent) {
     if (isPlayer1) {
@@ -285,6 +293,28 @@ export function initializeEventListeners({
         user2.y += userSpeedInput * stepPaddle;
       }
     }
+
+    //Adjust the volume of music
+    try {
+      if (sounds.music.volume < 1 && event.key === VOLUME_UP_KEY) {
+        sounds.music.volume = Math.min(1, sounds.music.volume + 0.1);
+      } else if (sounds.music.volume > 0 && event.key === VOLUME_DOWN_KEY) {
+        sounds.music.volume = Math.max(0, sounds.music.volume - 0.1);
+      }
+    } catch (err) {}
+
+    //Mute all sounds
+    try {
+      if (event.key === MUTE_KEY) {
+        sounds.music.muted = true;
+        sounds.botScore.muted = true;
+        theme.hitSound.muted = true;
+      } else if (event.key === UNMUTE_KEY) {
+        sounds.music.muted = false;
+        sounds.botScore.muted = false;
+        theme.hitSound.muted = false;
+      }
+    } catch (err) {}
   }
 
   function onMouseMove(event: MouseEvent) {

@@ -111,6 +111,8 @@ export async function gameLoop({
     ballData,
     slit,
     stepPaddle,
+    sounds,
+    theme,
   });
 
   eventList.forEach(
