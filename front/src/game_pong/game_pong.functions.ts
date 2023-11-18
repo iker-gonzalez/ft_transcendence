@@ -294,7 +294,7 @@ export function initializeEventListeners({
       }
     }
 
-    //Adjust the volume of music
+    //Adjust the volume of background music
     try {
       if (sounds.music.volume < 1 && event.key === VOLUME_UP_KEY) {
         sounds.music.volume = Math.min(1, sounds.music.volume + 0.1);
@@ -303,16 +303,12 @@ export function initializeEventListeners({
       }
     } catch (err) {}
 
-    //Mute all sounds
+    //Mute & unmute background music
     try {
       if (event.key === MUTE_KEY) {
-        sounds.music.muted = true;
-        sounds.botScore.muted = true;
-        theme.hitSound.muted = true;
+        sounds.music.volume = 0;
       } else if (event.key === UNMUTE_KEY) {
-        sounds.music.muted = false;
-        sounds.botScore.muted = false;
-        theme.hitSound.muted = false;
+        sounds.music.volume = 0.3;
       }
     } catch (err) {}
   }
