@@ -309,10 +309,13 @@ export function initializeEventListeners({
         sounds.music.muted = true;
         sounds.botScore.muted = true;
         theme.hitSound.muted = true;
+        console.log('onKeyDown MUTED? -> ', theme.hitSound.muted);
+
       } else if (event.key === UNMUTE_KEY) {
         sounds.music.muted = false;
         sounds.botScore.muted = false;
         theme.hitSound.muted = false;
+        console.log('onKeyDown MUTED? -> ', theme.hitSound.muted)
       }
     } catch (err) {}
   }
