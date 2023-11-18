@@ -28,6 +28,7 @@ const UNMUTE_KEY = 'u';
 let ballTrail: any[] = [];
 let sparksTrail: any[] = [];
 export let isBallFrozen: boolean = true;
+export let isMuted: boolean = false;
 
 export function drawRect(
   canvas: HTMLCanvasElement,
@@ -309,10 +310,12 @@ export function initializeEventListeners({
         sounds.music.muted = true;
         sounds.botScore.muted = true;
         theme.hitSound.muted = true;
+        isMuted = true;
       } else if (event.key === UNMUTE_KEY) {
         sounds.music.muted = false;
         sounds.botScore.muted = false;
         theme.hitSound.muted = false;
+        isMuted = false;
       }
     } catch (err) {}
   }
