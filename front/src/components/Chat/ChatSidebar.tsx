@@ -155,7 +155,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     avatar: friend.avatar,
     username: friend.username,
   }));
-  console.log('friends:', userFriends);
   return (
     <SidebarContainer>
       <GradientBorder className="gradient-border">
@@ -240,9 +239,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </MainButton>
                 <Title>Or join an existing one</Title>
                   <List>
-                    {allGroups.filter(group => !userGroups.includes(group)).map((group) => (
+                    {allGroups.filter(group => !userGroups.some(userGroup => userGroup.name === group.name)).map((group) => (
                       <ListItem 
-                        key={group.id} 
+                        key={group.name} 
                         onClick={() => {
                           handleGroupClick(group);
                           setPopupVisible(false);
