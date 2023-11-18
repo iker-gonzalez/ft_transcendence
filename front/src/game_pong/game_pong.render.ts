@@ -387,27 +387,19 @@ export function resetBall(
   newUserData2.height = 100;
 
   // TODO Check setTimeout (async / await)
+ setTimeout(() => {
+   if (user1.score < 5 && user2.score < 5) {
+     sounds.beepLong.play().catch(function (error: any) {});
+   }
+ }, 1500);
+  
   setTimeout(() => {
     newBallData.x = canvas.width / 2;
     newBallData.y = canvas.height / 2;
     newBallData.moveX = newBallData.moveX * 1;
     newBallData.moveY = -newBallData.moveY * Math.random();
     newBallData.reset = false;
-    if (user1.score < 5 && user2.score < 5) {
-      sounds.beepLong.play().catch(function (error: any) { });
-    }
-
   }, 2000);
-
-  // drawText(
-  //   canvas,
-  //   'reloj',
-  //   canvas.width / 2,
-  //   canvas.height / 2,
-  //   '20px Arial',
-  //   'center',
-  //   RenderColor.White,
-  // );
 
   return { newBallData, newUserData1, newUserData2 };
 }
