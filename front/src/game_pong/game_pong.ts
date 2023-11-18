@@ -112,6 +112,7 @@ export async function gameLoop({
     slit,
     stepPaddle,
     sounds,
+    theme,
   });
 
   eventList.forEach(
