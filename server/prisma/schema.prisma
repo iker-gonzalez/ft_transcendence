@@ -86,8 +86,8 @@ model ChatRoomUser {
   mute   Boolean @default(false)
   admins Boolean @default(false)
 
-  user        User       @relation(fields: [userId], references: [id])
-  room        ChatRoom   @relation(fields: [roomId], references: [id])
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room        ChatRoom   @relation(fields: [roomId], references: [id], onDelete: Cascade)
   // Agregar cualquier otro dato relacionado con la sala de chat y los usuarios
   // Relación con salas de chat silenciadas por este usuario
   mutedRooms  ChatRoom[] @relation("mutedRooms")
@@ -101,8 +101,8 @@ model ChatMessage {
   createdAt DateTime @default(now())
   roomId    String
   senderId  String
-  chatRoom  ChatRoom @relation(fields: [roomId], references: [id])
-  sender    User     @relation(fields: [senderId], references: [id])
+  chatRoom  ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }
 
 model UserGameSession {
