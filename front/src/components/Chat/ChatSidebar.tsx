@@ -139,14 +139,20 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [isSocketConnected, chatMessageSocketRef]);
 
   const handleJoinRoom = (roomName: string) => {
-    if (roomName.trim() !== '') {
-      chatMessageSocketRef.current.emit('joinRoom', { roomName, intraId: userData?.intraId });
-      setPopupVisible(false);
-      launchFlashMessage(
-        `You have successfully joined the room ${roomName}!`,
-        FlashMessageLevel.SUCCESS,
-      );
-
+    if (roomName.trim() !== '' && roomName) {
+      if (userGroups.some(group => group.name === roomName)) {
+        launchFlashMessage(
+          `The group name ${roomName} already exists. Please choose a different name.`,
+          FlashMessageLevel.ERROR,
+        );
+      } else {
+        chatMessageSocketRef.current.emit('joinRoom', { roomName, intraId: userData?.intraId });
+        setPopupVisible(false);
+        launchFlashMessage(
+          `You have successfully joined the room ${roomName}!`,
+          FlashMessageLevel.SUCCESS,
+        );
+      }
     }
   };
 
@@ -217,7 +223,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </>
             ) : (
               <>
-                <Title>Create a new group chat or join an existing one</Title>
+                <Title>Create a new group chat</Title>
                 <input 
                   type="text" 
                   value={roomName} 
@@ -234,6 +240,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     name: roomName
                   });
                   handleJoinRoom(roomName);
+                  setRoomName('');
                 }}>
                   Join Room
                 </MainButton>
