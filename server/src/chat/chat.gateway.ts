@@ -216,6 +216,19 @@ async handleSendMessageToRoom( client: Socket, payload) {
     console.error("Error:", error);
   }
  }
+ @SubscribeMessage('joinProtectedGroup') 
+ async handleJoinProtectedGroup(client: Socket, payload) {
+   
+   try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+     await this.chatChannelservice.isPasswordCorrect(payload.roomName, payload.password);
+     await this.chatChannelservice.addUserToChannel(userId, payload.roomName,);
+     client.emit('joinedRoom', `Te has unido a la sala ${payload.roomName}`);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
 
 
  

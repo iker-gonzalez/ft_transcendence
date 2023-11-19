@@ -815,6 +815,40 @@ catch(error){
    console.error("Error:", error);
  }
 }
+
+// check correct password
+async isPasswordCorrect(
+  channelRoom: string,
+  password: string,
+): Promise<void> 
+{
+
+try{
+
+ if (!channelRoom )
+ throw new BadRequestException ("channelRoom are null");
+
+ // Get el Channel
+ const foundChatRoom = await this.prisma.chatRoom.findFirst({
+   where: { name: channelRoom,},
+   include:{
+     users:true,
+    },});
+ if (!foundChatRoom)
+ throw new BadRequestException ("channelRoom not exist");
+
+ console.log(password);
+ console.log(foundChatRoom.password);
+ 
+if (foundChatRoom.password != password)
+throw new BadRequestException ("Incorrect password");
+ }
+catch(error){
+  throw new BadRequestException(error);
+  
+   console.error("Error:", error);
+ }
+}
 // make private
 
 }
