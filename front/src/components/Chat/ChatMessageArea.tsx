@@ -9,10 +9,9 @@ import useChatMessageSocket, {
   UseChatMessageSocket,
 } from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
-import { getIntraId } from '../../utils/utils';
+import { getIntraIdFromUsername, getUsernameFromIntraId } from '../../utils/utils';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
-import { send } from 'process';
 
 const MessageAreaContainer = styled.div`
   width: 100%;
@@ -35,18 +34,10 @@ const MessageAreaContainer = styled.div`
 
 const WrapperDiv = styled.div`
 justify-content: flex-start;
-
-
-
-
 `;
 
 const WrapperDiv2 = styled.div`
 justify-content: flex-start;
-
-
-
-
 `;
 
 const Title = styled.h2`
@@ -119,24 +110,27 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   // Add a listener for incoming messages
   useEffect(() => {
-      if (!selectedUserProp) {
+      if (!selectedUser) {
+        console.log('no selected user');
     return;
   }
-    setReceiverIntraId(getIntraId(selectedUser?.username || '')?.toString() || '');
+  if (isSocketConnected) {
+    setReceiverIntraId(getIntraIdFromUsername(selectedUser?.username || '')?.toString() || '');
     const listener = (messageData: any) => {
       console.log('Received a new message:', messageData);
       // Parse the message data and cherry-pick the applicable properties
       const parsedData = JSON.parse(messageData);
+      console.log('parsedData', parsedData);
       const newMessage: Message = {
-        senderName: userData?.username || 'Anonymous',
-        senderAvatar: userData?.avatar || 'Anonymous',
+        senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
+        senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
         content: parsedData.content,
         timestamp: Date.now().toString(),
       };
       //Append the new message to the messages state
         setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
           ...prevMessages,
-          [selectedUserProp.username]: [...(prevMessages[selectedUserProp.username] || []), newMessage]
+          [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), newMessage]
         }));
     };
       // Add the listener to the socket
@@ -147,7 +141,9 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
      return () => {
        chatMessageSocketRef.current.off(`privateMessageReceived/${userData?.intraId.toString()}`, listener);
     };
-  }, [isMessageSent]);
+  }
+  }, [selectedUser, isSocketConnected, chatMessageSocketRef]);
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
@@ -169,13 +165,13 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         ...prevMessages,
         [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), message]
       }));
-      const receiverId = getIntraId(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
+      const receiverIntraId = getIntraIdFromUsername(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
       console.log('EMitting privateMessage');
-      console.log('receiverId', receiverId);
+      console.log('receiverId', receiverIntraId);
       console.log('senderId', userData?.intraId);
       console.log('content', newMessage);
       chatMessageSocketRef.current.emit('privateMessage', {
-        receiverId: receiverId, // temporary until endpoint is fixed
+        receiverId: receiverIntraId, // temporary until endpoint is fixed
         senderId: userData?.intraId,
         content: newMessage,
       });
@@ -192,10 +188,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         content: newMessage,
         timestamp: new Date().toString(),
       };
-      // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-      //   ...prevMessages,
-      //   [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), message]
-      // }));
       console.log('sending message to room');
       chatMessageSocketRef.current.emit('sendMessageToRoom', {
         roomName: selectedGroup?.name,
@@ -219,7 +211,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
                   {`${message.senderName}: ${message.content}`}
           </MessageItem>
             ))}
-            {(selectedUserProp && messagesByChat[selectedUserProp.username] || selectedGroup && messagesByChat[selectedGroup.name] || []).map((messageData, index) => (
+            {(selectedUser && messagesByChat[selectedUser.username] || selectedGroup && messagesByChat[selectedGroup.name] || []).map((messageData, index) => (
               <MessageItem key={index}>
                 {`${messageData.senderName}: ${messageData.content}`}
               </MessageItem>
