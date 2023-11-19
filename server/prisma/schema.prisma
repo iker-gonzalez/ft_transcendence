@@ -10,7 +10,7 @@ datasource db {
 enum ChannelType {
   PUBLIC
   PRIVATE
-  PASSWORD
+  PROTECTED
 }
 
 model User {
