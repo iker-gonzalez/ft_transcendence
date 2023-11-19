@@ -96,10 +96,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
-  const [receiverIntraId, setReceiverIntraId] = useState('');
-  const [isMessageSent, setIsMessageSent] = useState(false);
-
-  const selectedUserProp = selectedUser;
 
   // Get the socket and related objects from the utility function
   const {
@@ -115,12 +111,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     return;
   }
   if (isSocketConnected) {
-    setReceiverIntraId(getIntraIdFromUsername(selectedUser?.username || '')?.toString() || '');
     const listener = (messageData: any) => {
-      console.log('Received a new message:', messageData);
-      // Parse the message data and cherry-pick the applicable properties
       const parsedData = JSON.parse(messageData);
-      console.log('parsedData', parsedData);
       const newMessage: Message = {
         senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
         senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
@@ -134,7 +126,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         }));
     };
       // Add the listener to the socket
-      console.log('emitting privateMessageReceivedSignal', `privateMessageReceived/${userData?.intraId.toString()}`);
       chatMessageSocketRef.current.on(`privateMessageReceived/${userData?.intraId.toString()}`, listener);
 
     // Clean up the listener when the component unmounts or when the receiverId changes
@@ -166,16 +157,11 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), message]
       }));
       const receiverIntraId = getIntraIdFromUsername(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
-      console.log('EMitting privateMessage');
-      console.log('receiverId', receiverIntraId);
-      console.log('senderId', userData?.intraId);
-      console.log('content', newMessage);
       chatMessageSocketRef.current.emit('privateMessage', {
         receiverId: receiverIntraId, // temporary until endpoint is fixed
         senderId: userData?.intraId,
         content: newMessage,
       });
-      setIsMessageSent(!isMessageSent);
       setMessage('');
     }
   };
