@@ -2,6 +2,7 @@ import {
     Controller,
     Get,
     Param,
+    Post,
   } from '@nestjs/common';
 
   import {
@@ -21,6 +22,7 @@ import { AllUsersDMWithDTO } from './dto/all-users-DM-with.dto';
 import { ConversationMessageDTO } from './dto/conversation-message.dto';
 import { AllExistingChannelsDTO } from './dto/all-existing-channel.dto';
 import { AllUserChannelInDTO } from './dto/all-user-channel-in.dto';
+import { ChannelType } from '@prisma/client';
 
 @ApiTags('Chat')
 @Controller('chat')
@@ -161,13 +163,11 @@ export class ChatController {
 
 
     @Get(':channelRoom/:ownerIntra/:deleteAdminIntra/deleteAdmin') 
-    @ApiParam({ name: 'roomName' })
+    @ApiParam({ name: 'channelRoom' }) 
+    @ApiParam({ name: 'ownerIntra' }) 
+    @ApiParam({ name: 'deleteAdminIntra' })
     @ApiOperation({
       summary: swaggerConstants.chat.deleteAdmin.summary,
-    })
-    @ApiOkResponse({
-      description: swaggerConstants.chat.deleteAdmin.ok.description,
-      type: ConversationMessageDTO,
     })
     async getdeleteAddminToChannel( 
       @Param('channelRoom') channelRoom: string,
@@ -189,13 +189,11 @@ export class ChatController {
     }
 
     @Get(':channelRoom/:ownerIntra/:newAdminIntra/addAdmin') 
-    @ApiParam({ name: 'roomName' })
+    @ApiParam({ name: 'channelRoom' }) 
+    @ApiParam({ name: 'ownerIntra' }) 
+    @ApiParam({ name: 'newAdminIntra' })
     @ApiOperation({
       summary: swaggerConstants.chat.addAdmin.summary,
-    })
-    @ApiOkResponse({
-      description: swaggerConstants.chat.addAdmin.ok.description,
-      type: ConversationMessageDTO,
     })
     async getAddAddminToChannel( 
       @Param('channelRoom') channelRoom: string,
@@ -214,5 +212,49 @@ export class ChatController {
       catch (error) {
           console.error("Error:", error);
       }
-    }  
+    }
+
+    @Post(':channelRoom/:ownerIntra/:password/addPassword')
+    @ApiParam({ name: 'channelRoom' }) 
+    @ApiParam({ name: 'ownerIntra' }) 
+    @ApiParam({ name: 'password' }) 
+    @ApiOperation({
+      summary: swaggerConstants.chat.addOrModifyPassword.summary,
+    })
+    async postaddPasswordChannel( 
+      @Param('channelRoom') channelRoom: string,
+      @Param('ownerIntra') ownerIntra: string,
+      @Param('password') password: string,
+    ) : Promise<void> { 
+      console.log("postaddPasswordChannel post");
+      try{
+        const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
+        this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, password, ChannelType.PROTECTED);
+      }
+      catch (error) {
+          console.error("Error:", error);
+      }
+    }
+
+    @Post(':channelRoom/:ownerIntra/:password/deletePassword')
+    @ApiParam({ name: 'channelRoom' }) 
+    @ApiParam({ name: 'ownerIntra' }) 
+    @ApiParam({ name: 'password' })
+    @ApiOperation({
+      summary: swaggerConstants.chat.deletePassword.summary,
+    })
+    async postdeletePasswordChannel( 
+      @Param('channelRoom') channelRoom: string,
+      @Param('ownerIntra') ownerIntra: string,
+    ) : Promise<void> { 
+      console.log("postaddPasswordChannel post");
+      try{
+        const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
+        this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, null, ChannelType.PUBLIC);
+      }
+      catch (error) {
+          console.error("Error:", error);
+      }
+    }
+
 }

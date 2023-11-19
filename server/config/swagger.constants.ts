@@ -253,6 +253,18 @@ export const swaggerConstants = {
         description: '',
       },
     },
+    addOrModifyPassword:{
+      summary: 'Add or modify password. Automatically this chat is set as PROTECTED',
+      ok: {
+        description: '',
+      },
+    },
+    deletePassword:{
+      summary: 'Delete password. Automatically this chat is set as PUBLIC',
+      ok: {
+        description: '',
+      },
+    },
     deleteAdmin: {
       summary: 'Delete administrator of a channel,',
       ok: {
