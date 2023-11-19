@@ -247,11 +247,17 @@ export class ChatChannelService {
       },
       include:{
         users:true,
+        mutedUsers:true,
       },
     });
 
     if (!foundChatRoom)
       throw new BadRequestException ("channelRoom not exist");
+
+      const isMuted = foundChatRoom.mutedUsers.some((muteUser) => muteUser.userId === senderId);
+      if (isMuted)
+        throw new BadRequestException ("User is muted, cannot send messages");
+
 
     // Buscar si ya esta en la Sala
     const existingChatRoomUser = await this.prisma.chatRoomUser.findFirst({

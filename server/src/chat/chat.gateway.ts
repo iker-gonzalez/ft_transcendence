@@ -35,15 +35,45 @@ export class ChatGateway implements OnGatewayConnection {
       const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
 
       const addMessageStatus =  await this.chatDMservice.addMessageToUser(senderId, receiverId, payload.content);
+      
+      // Emit signal to update the receiver chat frontend
+      this.server.emit(`privateMessageReceived/${payload.receiverId}`,
+                            JSON.stringify(payload))
      
     } catch (error) {
       console.error("Error:", error);
     }
-
-    // Emit signal to update the receiver chat frontend
-    this.server.emit(`privateMessageReceived/${payload.receiverId}`,
-                      JSON.stringify(payload))
 }
+
+@SubscribeMessage('muteUserDM')
+async handleMuteUserDM(client, payload) {
+  try { 
+    // Prueba para el get de lo DM
+    const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
+    const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
+
+    const addMessageStatus =  await this.chatDMservice.muteUserDM(senderId, receiverId);
+    this.server.emit(`muteUserDMDone/${payload.receiverId}`,
+    JSON.stringify(payload))
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+@SubscribeMessage('unmuteUserDM') 
+async handleUnmuteUserDM(client, payload) {
+  try { 
+    // Prueba para el get de lo DM
+    const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
+    const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
+    const addMessageStatus =  await this.chatDMservice.unmuteUserDM(senderId, receiverId);
+    this.server.emit(`unmuteUserDMDone/${payload.receiverId}`,
+    JSON.stringify(payload))
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 
 @SubscribeMessage('joinRoom')
 async handleJoinRoom(client: Socket, paydload) {
