@@ -106,12 +106,32 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   // Add a listener for incoming messages
   useEffect(() => {
-      if (!selectedUser) {
-        console.log('no selected user');
-    return;
-  }
-  if (isSocketConnected) {
-    const listener = (messageData: any) => {
+    if (isSocketConnected) {
+      const privateMessageListener = (messageData: any) => {
+        if (!selectedUser) {
+          console.log('no selected user');
+          return;
+        }
+        const parsedData = JSON.parse(messageData);
+        const newMessage: Message = {
+          senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
+          senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
+          content: parsedData.content,
+          timestamp: Date.now().toString(),
+        };
+        //Append the new message to the messages state
+        setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+          ...prevMessages,
+          [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), newMessage]
+        }));
+    };
+
+    const groupMessageListener = (messageData: any) => {
+      if (!selectedGroup) {
+        console.log('no selected group');
+        return;
+      }
+      console.log('group message received');
       const parsedData = JSON.parse(messageData);
       const newMessage: Message = {
         senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
@@ -119,21 +139,22 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         content: parsedData.content,
         timestamp: Date.now().toString(),
       };
-      //Append the new message to the messages state
-        setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-          ...prevMessages,
-          [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), newMessage]
-        }));
+      setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+        ...prevMessages,
+        [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), newMessage]
+      }));
     };
-      // Add the listener to the socket
-      chatMessageSocketRef.current.on(`privateMessageReceived/${userData?.intraId.toString()}`, listener);
+      // Add the listeners to the socket
+      chatMessageSocketRef.current.on(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
+      chatMessageSocketRef.current.on('message', groupMessageListener);
 
     // Clean up the listener when the component unmounts or when the receiverId changes
      return () => {
-       chatMessageSocketRef.current.off(`privateMessageReceived/${userData?.intraId.toString()}`, listener);
+       chatMessageSocketRef.current.off(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
+       chatMessageSocketRef.current.off('message', groupMessageListener);
     };
   }
-  }, [selectedUser, isSocketConnected, chatMessageSocketRef]);
+  }, [selectedUser, selectedGroup, isSocketConnected, chatMessageSocketRef]);
 
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,6 +195,10 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         content: newMessage,
         timestamp: new Date().toString(),
       };
+      setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+        ...prevMessages,
+        [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), message]
+      }));
       console.log('sending message to room');
       chatMessageSocketRef.current.emit('sendMessageToRoom', {
         roomName: selectedGroup?.name,
