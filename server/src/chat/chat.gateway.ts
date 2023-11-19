@@ -39,7 +39,6 @@ export class ChatGateway implements OnGatewayConnection {
     } catch (error) {
       console.error("Error:", error);
     }
-
     // Emit signal to update the receiver chat frontend
     this.server.emit(`privateMessageReceived/${payload.receiverId}`,
                       JSON.stringify(payload))
