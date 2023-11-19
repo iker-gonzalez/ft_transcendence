@@ -12,6 +12,7 @@ import { useUserData } from '../../context/UserDataContext';
 import { getIntraId } from '../../utils/utils';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
+import { send } from 'process';
 
 const MessageAreaContainer = styled.div`
   width: 100%;
@@ -104,6 +105,10 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
+  const [receiverIntraId, setReceiverIntraId] = useState('');
+  const [isMessageSent, setIsMessageSent] = useState(false);
+
+  const selectedUserProp = selectedUser;
 
   // Get the socket and related objects from the utility function
   const {
@@ -114,18 +119,40 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   // Add a listener for incoming messages
   useEffect(() => {
-    if (isSocketConnected) {
-      chatMessageSocketRef.current.on('newMessage', (messageData: Message) => {
-        // Handle the incoming message, e.g., add it to your message list
-        console.log('Received a new message:', messageData);
-        // You can update your message state or perform other actions here
-      });
-    }
-  }, [isSocketConnected, chatMessageSocketRef]);
+      if (!selectedUserProp) {
+    return;
+  }
+    setReceiverIntraId(getIntraId(selectedUser?.username || '')?.toString() || '');
+    const listener = (messageData: any) => {
+      console.log('Received a new message:', messageData);
+      // Parse the message data and cherry-pick the applicable properties
+      const parsedData = JSON.parse(messageData);
+      const newMessage: Message = {
+        senderName: userData?.username || 'Anonymous',
+        senderAvatar: userData?.avatar || 'Anonymous',
+        content: parsedData.content,
+        timestamp: Date.now().toString(),
+      };
+      //Append the new message to the messages state
+        setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+          ...prevMessages,
+          [selectedUserProp.username]: [...(prevMessages[selectedUserProp.username] || []), newMessage]
+        }));
+    };
+      // Add the listener to the socket
+      console.log('emitting privateMessageReceivedSignal', `privateMessageReceived/${userData?.intraId.toString()}`);
+      chatMessageSocketRef.current.on(`privateMessageReceived/${userData?.intraId.toString()}`, listener);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Clean up the listener when the component unmounts or when the receiverId changes
+     return () => {
+       chatMessageSocketRef.current.off(`privateMessageReceived/${userData?.intraId.toString()}`, listener);
+    };
+  }, [isMessageSent]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
+  
 
   const { userData } = useUserData();
 
@@ -143,11 +170,16 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), message]
       }));
       const receiverId = getIntraId(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
+      console.log('EMitting privateMessage');
+      console.log('receiverId', receiverId);
+      console.log('senderId', userData?.intraId);
+      console.log('content', newMessage);
       chatMessageSocketRef.current.emit('privateMessage', {
         receiverId: receiverId, // temporary until endpoint is fixed
         senderId: userData?.intraId,
         content: newMessage,
       });
+      setIsMessageSent(!isMessageSent);
       setMessage('');
     }
   };
@@ -160,10 +192,10 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         content: newMessage,
         timestamp: new Date().toString(),
       };
-      setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-        ...prevMessages,
-        [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), message]
-      }));
+      // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+      //   ...prevMessages,
+      //   [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), message]
+      // }));
       console.log('sending message to room');
       chatMessageSocketRef.current.emit('sendMessageToRoom', {
         roomName: selectedGroup?.name,
@@ -173,7 +205,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       setMessage('');
     }
   };
-
+  
   return (
     <MessageAreaContainer>
     <GradientBorder className="gradient-border">
@@ -182,12 +214,12 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         <WrapperDiv>
           <ChatMessageAreaHeader user={selectedUser} group={selectedGroup} />          
           <MessageList>
-            {messages.map((message) => (
+          {messages.map((message) => (
                 <MessageItem key={message.timestamp}>
                   {`${message.senderName}: ${message.content}`}
           </MessageItem>
             ))}
-            {(selectedUser && messagesByChat[selectedUser.username] || selectedGroup && messagesByChat[selectedGroup.name] || []).map((messageData, index) => (
+            {(selectedUserProp && messagesByChat[selectedUserProp.username] || selectedGroup && messagesByChat[selectedGroup.name] || []).map((messageData, index) => (
               <MessageItem key={index}>
                 {`${messageData.senderName}: ${messageData.content}`}
               </MessageItem>
