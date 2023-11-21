@@ -17,6 +17,9 @@ export interface ISounds {
   userScore: HTMLAudioElement;
   botScore: HTMLAudioElement;
   music: any;
+  countdown: any;
+  beepShort: any;
+  beepLong: any;
 }
 
 export enum RenderColor {

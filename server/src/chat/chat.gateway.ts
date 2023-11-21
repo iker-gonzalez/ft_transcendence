@@ -37,12 +37,13 @@ export class ChatGateway implements OnGatewayConnection {
       const addMessageStatus =  await this.chatDMservice.addMessageToUser(senderId, receiverId, payload.content);
       
       // Emit signal to update the receiver chat frontend
-      this.server.emit(`privateMessageReceived/${payload.receiverId}`,
-                            JSON.stringify(payload))
-     
+
     } catch (error) {
       console.error("Error:", error);
     }
+    // Emit signal to update the receiver chat frontend
+    this.server.emit(`privateMessageReceived/${payload.receiverId}`,
+                      JSON.stringify(payload))
 }
 
 @SubscribeMessage('muteUserDM')

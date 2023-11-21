@@ -9,7 +9,7 @@ import useChatMessageSocket, {
   UseChatMessageSocket,
 } from './useChatMessageSocket';
 import { useUserData } from '../../context/UserDataContext';
-import { getIntraId } from '../../utils/utils';
+import { getIntraIdFromUsername, getUsernameFromIntraId } from '../../utils/utils';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
 
@@ -34,18 +34,10 @@ const MessageAreaContainer = styled.div`
 
 const WrapperDiv = styled.div`
 justify-content: flex-start;
-
-
-
-
 `;
 
 const WrapperDiv2 = styled.div`
 justify-content: flex-start;
-
-
-
-
 `;
 
 const Title = styled.h2`
@@ -115,17 +107,60 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   // Add a listener for incoming messages
   useEffect(() => {
     if (isSocketConnected) {
-      chatMessageSocketRef.current.on('newMessage', (messageData: Message) => {
-        // Handle the incoming message, e.g., add it to your message list
-        console.log('Received a new message:', messageData);
-        // You can update your message state or perform other actions here
-      });
-    }
-  }, [isSocketConnected, chatMessageSocketRef]);
+      const privateMessageListener = (messageData: any) => {
+        if (!selectedUser) {
+          console.log('no selected user');
+          return;
+        }
+        const parsedData = JSON.parse(messageData);
+        const newMessage: Message = {
+          senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
+          senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
+          content: parsedData.content,
+          timestamp: Date.now().toString(),
+        };
+        //Append the new message to the messages state
+        setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+          ...prevMessages,
+          [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), newMessage]
+        }));
+    };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const groupMessageListener = (messageData: any) => {
+      if (!selectedGroup) {
+        console.log('no selected group');
+        return;
+      }
+      console.log('group message received');
+      const parsedData = JSON.parse(messageData);
+      const newMessage: Message = {
+        senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
+        senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
+        content: parsedData.content,
+        timestamp: Date.now().toString(),
+      };
+      setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+        ...prevMessages,
+        [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), newMessage]
+      }));
+    };
+      // Add the listeners to the socket
+      chatMessageSocketRef.current.on(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
+      chatMessageSocketRef.current.on('message', groupMessageListener);
+
+    // Clean up the listener when the component unmounts or when the receiverId changes
+     return () => {
+       chatMessageSocketRef.current.off(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
+       chatMessageSocketRef.current.off('message', groupMessageListener);
+    };
+  }
+  }, [selectedUser, selectedGroup, isSocketConnected, chatMessageSocketRef]);
+
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
+  
 
   const { userData } = useUserData();
 
@@ -142,9 +177,9 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         ...prevMessages,
         [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), message]
       }));
-      const receiverId = getIntraId(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
+      const receiverIntraId = getIntraIdFromUsername(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
       chatMessageSocketRef.current.emit('privateMessage', {
-        receiverId: receiverId, // temporary until endpoint is fixed
+        receiverId: receiverIntraId, // temporary until endpoint is fixed
         senderId: userData?.intraId,
         content: newMessage,
       });
@@ -173,7 +208,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       setMessage('');
     }
   };
-
+  
   return (
     <MessageAreaContainer>
     <GradientBorder className="gradient-border">
@@ -182,7 +217,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         <WrapperDiv>
           <ChatMessageAreaHeader user={selectedUser} group={selectedGroup} />          
           <MessageList>
-            {messages.map((message) => (
+          {messages.map((message) => (
                 <MessageItem key={message.timestamp}>
                   {`${message.senderName}: ${message.content}`}
           </MessageItem>
