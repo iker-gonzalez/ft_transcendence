@@ -10,7 +10,7 @@ datasource db {
 enum ChannelType {
   PUBLIC
   PRIVATE
-  PASSWORD
+  PROTECTED
 }
 
 model User {
@@ -34,6 +34,7 @@ model User {
   receivedMessages DirectMessage[] @relation("receivedMessages")
   // Relación con las salas de chat
   chatRooms        ChatRoomUser[]
+  chatRoomOwner    ChatRoom[]      @relation("ownerRooms")
 
   connectStatus Boolean       @default(false)
   ChatMessage   ChatMessage[]
@@ -57,24 +58,22 @@ model ChatRoom {
   name      String
   createdAt DateTime @default(now())
 
-  //
-  ownerId String
+  // Owner Chat
+  ownerId   String
+  ownerUser User   @relation("ownerRooms", fields: [ownerId], references: [id], onDelete: Cascade)
 
   // Relación con los mensajes en la sala
   messages ChatMessage[]
   users    ChatRoomUser[]
 
   // Privacy
-  type ChannelType @default(PUBLIC)
-
-  // admin
-  admins String[] @db.Uuid
-  bans   String[] @db.Uuid
-  mute   String[] @db.Uuid
+  type     ChannelType @default(PUBLIC)
+  password String?
 
   // Relación con usuarios silenciados en esta sala
-  adminUsers ChatRoomUser[] @relation("adminRooms")
-  mutedUsers ChatRoomUser[] @relation("mutedRooms")
+  adminUsers  ChatRoomUser[] @relation("adminRooms")
+  mutedUsers  ChatRoomUser[] @relation("mutedRooms")
+  bannedUsers ChatRoomUser[] @relation("bannedRooms")
 }
 
 model ChatRoomUser {
@@ -82,15 +81,14 @@ model ChatRoomUser {
   userId String
   roomId String
 
-  mute   Boolean @default(false)
-  admins Boolean @default(false)
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
-  user       User       @relation(fields: [userId], references: [id])
-  room       ChatRoom   @relation(fields: [roomId], references: [id])
   // Agregar cualquier otro dato relacionado con la sala de chat y los usuarios
   // Relación con salas de chat silenciadas por este usuario
-  mutedRooms ChatRoom[] @relation("mutedRooms")
-  adminRooms ChatRoom[] @relation("adminRooms")
+  mutedRooms  ChatRoom[] @relation("mutedRooms")
+  adminRooms  ChatRoom[] @relation("adminRooms")
+  bannedRooms ChatRoom[] @relation("bannedRooms")
 }
 
 model ChatMessage {
@@ -99,8 +97,8 @@ model ChatMessage {
   createdAt DateTime @default(now())
   roomId    String
   senderId  String
-  chatRoom  ChatRoom @relation(fields: [roomId], references: [id])
-  sender    User     @relation(fields: [senderId], references: [id])
+  chatRoom  ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }
 
 model UserGameSession {

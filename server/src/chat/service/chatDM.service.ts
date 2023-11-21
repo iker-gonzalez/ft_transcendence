@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConsoleLogger, Injectable } from '@nestjs/common';
 import { DirectMessage, User } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { GetDirectMessageDto } from './../dto/get-direct-message.dto';
@@ -128,14 +128,18 @@ export class ChatDMService {
     content: string
   ): Promise<boolean> 
   {
+    try {
     if (!userSenderId || !userReceiverId)
       throw new BadRequestException('userSender or userReceiver does not exist in DB');
 
-    try {
       const existingMessage = await this.prisma.directMessage.findUnique({
         where: { id: userSenderId },
-      });  
-      
+      });
+
+      const isMuted = await this.isUserMuted(userSenderId, userReceiverId);
+      if (isMuted)
+        throw new BadRequestException('Cannot sent message, user is muted');
+
       if (!existingMessage || existingMessage) {
 
         console.log("exisingMessage"); 
@@ -157,7 +161,79 @@ export class ChatDMService {
     return true;
    };
 
+
+   async muteUserDM(
+    userId: string,
+    userToMuteId: string,
+  ): Promise<void> 
+{
+  try {
+  if (!userId || !userToMuteId)
+  throw new BadRequestException('userId or userToMuteId does not exist in DB');
+  
+  const user = await this.prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  await this.prisma.user.update({
+    where: { id: userId },
+    data: {
+      blockList: { push: userToMuteId },
+    },
+  });
   }
+  catch(e)
+  {
+    throw new BadRequestException(e);
+  }
+}
+
+async unmuteUserDM(
+  userId: string,
+  userToUnMuteId: string,
+): Promise<void> 
+{
+try {
+if (!userId || !userToUnMuteId)
+throw new BadRequestException('userId or userToMuteId does not exist in DB');
+
+const user = await this.prisma.user.findUnique({
+  where: {
+    id: userId,
+  }});
+
+const updatedBlockList = user.blockList.filter((id) => id !== userToUnMuteId);
+console.log("unmuteUserDM");
+const isMuted = await this.isUserMuted(userId, userToUnMuteId);
+console.log("isMuted");
+console.log(isMuted);
+await this.prisma.user.update({
+  where: { id: userId },
+  data: { blockList: updatedBlockList },
+});
+
+
+}
+catch(e)
+{
+  throw new BadRequestException(e);
+}
+}
+
+async isUserMuted(userId: string, blockedUserId: string): Promise<boolean> {
+  const user = await this.prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new BadRequestException(`User with ID ${userId} not found`);
+  }
+
+  return user.blockList.includes(blockedUserId);
+  }
+}
 
 
 

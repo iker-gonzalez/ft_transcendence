@@ -35,7 +35,9 @@ export class ChatGateway implements OnGatewayConnection {
       const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
 
       const addMessageStatus =  await this.chatDMservice.addMessageToUser(senderId, receiverId, payload.content);
-     
+      
+      // Emit signal to update the receiver chat frontend
+
     } catch (error) {
       console.error("Error:", error);
     }
@@ -44,12 +46,43 @@ export class ChatGateway implements OnGatewayConnection {
                       JSON.stringify(payload))
 }
 
+@SubscribeMessage('muteUserDM')
+async handleMuteUserDM(client, payload) {
+  try { 
+    // Prueba para el get de lo DM
+    const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
+    const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
+
+    const addMessageStatus =  await this.chatDMservice.muteUserDM(senderId, receiverId);
+    this.server.emit(`muteUserDMDone/${payload.receiverId}`,
+    JSON.stringify(payload))
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+@SubscribeMessage('unmuteUserDM') 
+async handleUnmuteUserDM(client, payload) {
+  try { 
+    // Prueba para el get de lo DM
+    const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
+    const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
+    const addMessageStatus =  await this.chatDMservice.unmuteUserDM(senderId, receiverId);
+    this.server.emit(`unmuteUserDMDone/${payload.receiverId}`,
+    JSON.stringify(payload))
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+
 @SubscribeMessage('joinRoom')
 async handleJoinRoom(client: Socket, paydload) {
   // Unir al cliente a la sala
   console.log("joiRoom event");
   console.log(paydload.roomName);
   console.log(paydload.intraId);
+  try { 
 
   const userId = await this.chatDMservice.findUserIdByIntraId(paydload.intraId);
   console.log(userId);
@@ -60,6 +93,13 @@ async handleJoinRoom(client: Socket, paydload) {
   }
   await this.chatChannelservice.addUserToChannel(userId, paydload.roomName);
 
+  client.join(paydload.roomName);
+  client.emit('joinedRoom', `Te has unido a la sala ${paydload.roomName}`);
+
+} catch (error) {
+  console.error("Error:", error);
+}
+
  // Obtener la lista de clientes en la sala
 // const io = this.server;
 // const room = io.of('/').in(roomName) as any; // Afirmación de tipo
@@ -68,9 +108,7 @@ async handleJoinRoom(client: Socket, paydload) {
 //     console.log(`Clientes en la sala ${roomName}:`, clients);
 //   }
 // });
- 
-    client.join(paydload.roomName);
-    client.emit('joinedRoom', `Te has unido a la sala ${paydload.roomName}`);
+
 }
  
 @SubscribeMessage('sendMessageToRoom') 
@@ -78,6 +116,7 @@ async handleSendMessageToRoom( client: Socket, payload) {
   console.log("sendMessageToRoom event");
   console.log('roomName:', payload.roomName);
   console.log('message:', payload.message);
+
 
   try{
 
@@ -116,7 +155,8 @@ async handleSendMessageToRoom( client: Socket, payload) {
     const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
     const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
     await this.chatChannelservice.muteUserInChannel(payload.roomName, addminId, userId);
-   // client.leave(payload.roomName);
+    this.server.to(payload.roomName).emit('mutedUserUpdate', payload);
+
   }
    catch (error) {
     console.error("Error:", error);
@@ -130,7 +170,7 @@ async handleSendMessageToRoom( client: Socket, payload) {
     const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
     const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
     await this.chatChannelservice.unmuteUserInChannel(payload.roomName, addminId, userId);
- //   client.leave(payload.roomName);
+    this.server.to(payload.roomName).emit('unmutedUserUpdate', payload);
   }
    catch (error) {
     console.error("Error:", error);
@@ -151,4 +191,46 @@ async handleSendMessageToRoom( client: Socket, payload) {
   }
  }
 
+ @SubscribeMessage('banUser') 
+ async handleBanUser(client: Socket, payload) {
+
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
+    await this.chatChannelservice.banUserInChannel(payload.roomName, addminId, userId);
+    client.leave(payload.roomName);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+
+ @SubscribeMessage('UnBanUser') 
+ async handleUnBanUser(client: Socket, payload) {
+
+  try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
+    await this.chatChannelservice.unbanUserInChannel(payload.roomName, addminId, userId);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+ @SubscribeMessage('joinProtectedGroup') 
+ async handleJoinProtectedGroup(client: Socket, payload) {
+   
+   try { 
+    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
+     await this.chatChannelservice.isPasswordCorrect(payload.roomName, payload.password);
+     await this.chatChannelservice.addUserToChannel(userId, payload.roomName,);
+     client.emit('joinedRoom', `Te has unido a la sala ${payload.roomName}`);
+  }
+   catch (error) {
+    console.error("Error:", error);
+  }
+ }
+
+
+ 
 }
