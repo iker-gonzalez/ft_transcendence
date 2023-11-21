@@ -162,7 +162,7 @@ export class ChatController {
   /********************************************************** */ 
 
 
-    @Get(':channelRoom/:ownerIntra/:deleteAdminIntra/deleteAdmin') 
+    @Post(':channelRoom/:ownerIntra/:deleteAdminIntra/deleteAdmin') 
     @ApiParam({ name: 'channelRoom' }) 
     @ApiParam({ name: 'ownerIntra' }) 
     @ApiParam({ name: 'deleteAdminIntra' })
@@ -188,7 +188,7 @@ export class ChatController {
       }
     }
 
-    @Get(':channelRoom/:ownerIntra/:newAdminIntra/addAdmin') 
+    @Post(':channelRoom/:ownerIntra/:newAdminIntra/addAdmin') 
     @ApiParam({ name: 'channelRoom' }) 
     @ApiParam({ name: 'ownerIntra' }) 
     @ApiParam({ name: 'newAdminIntra' })
