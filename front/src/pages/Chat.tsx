@@ -7,7 +7,7 @@ import Message from '../interfaces/chat-dm-message.interface';
 import { fetchAuthorized, getBaseUrl } from '../utils/utils';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
-import { getIntraId } from '../utils/utils';
+import { getIntraIdFromUsername } from '../utils/utils';
 import GroupMessage from '../interfaces/chat-group-message.interface';
 import CenteredLayout from '../components/UI/CenteredLayout';
 import styled from 'styled-components';
@@ -107,7 +107,7 @@ const ChatPage: React.FC = () => {
    * @param user - The selected user.
    */
   const handleUserClick = (user: User) => {
-    const userIntraId = getIntraId(user.username); //temporary until endpoint is fixed
+    const userIntraId = getIntraIdFromUsername(user.username); //temporary until endpoint is fixed
     fetchAuthorized(
       `${getBaseUrl()}/chat/${userData?.intraId}/${userIntraId}/DM`,
       /* temporary until endpoint is fixed */ {

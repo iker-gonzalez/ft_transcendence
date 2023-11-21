@@ -258,12 +258,18 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
   return (
     <WrapperDiv>
       <CenteredLayout>
-        <h2 className="title-2">
+        <h2 className="title title-1 mb-24">
           Hello,{' '}
           <span className="highlighted">
             {isPlayer1 ? players[0].username : players[1].username}
           </span>
         </h2>
+        <h3 className="title title-3">
+          Paddle controls: MOUSE 🖱 || ARROW UP ⬆️ || ARROW DOWN ⬇️
+        </h3>
+        <h3 className="title title-3">
+          Music controls 🔡: HIGH 'h' || LOW 'l' || MUTE 'm' || UNMUTE 'u'
+        </h3>
         <GameCanvasWithAction
           canvasRef={canvasRef}
           background={selectedTheme.backgroundImg}

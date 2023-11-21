@@ -123,10 +123,10 @@ export async function gameLoop({
 
   console.log('Is Ball Frozen? ', isBallFrozen);
   if (isFirstRun) {
-    countDownToStart(countDown, canvas);
+    countDownToStart(countDown, canvas, sounds);
     isFirstRun = false;
   }
-
+  
   // Abort game if the user closes the tab
   onAbortGame(socket, sessionId, isPlayer1);
 
