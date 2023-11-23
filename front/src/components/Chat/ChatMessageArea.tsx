@@ -113,17 +113,24 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
           return;
         }
         const parsedData = JSON.parse(messageData);
+        console.log('parsedData', parsedData);
         const newMessage: Message = {
           senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
           senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
           content: parsedData.content,
           timestamp: Date.now().toString(),
         };
+        console.log('getUsernameFromIntraId(parsedData.receiverId)', getUsernameFromIntraId(parsedData.senderId));
+        console.log('selectedUser.username', selectedUser.username);
         //Append the new message to the messages state
         setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
           ...prevMessages,
-          [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), newMessage]
+          [getUsernameFromIntraId(parsedData.senderId)]: [...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] || []), newMessage]
         }));
+        // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+        //   ...prevMessages,
+        //   [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), newMessage]
+        // }));
     };
 
     const groupMessageListener = (messageData: any) => {
@@ -214,7 +221,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       setMessage('');
     }
   };
-  
+  console.log('messages', messages);
   return (
     <MessageAreaContainer>
     <GradientBorder className="gradient-border">
