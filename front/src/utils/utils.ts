@@ -92,24 +92,28 @@ export function getIsPlayer1(
 }
 
 // Temporary function to get the intra ID of a user from their username until endpoint is implemented
-export function getIntraIdFromUsername(username: string) {
-  if (username == 'ikgonzal')
+export function getIntraIdFromUsername(username: string): number {
+  if (username === 'ikgonzal')
     return 88036;
-  else if (username == 'test-')
+  else if (username === 'test-')
     return 666;
-  else if (username == 'test2-')
+  else if (username === 'test2-')
     return 667;
-  else if (username == 'test3-')
+  else if (username === 'test3-')
     return 668;
+  else
+    return -1;
 }
 
-export function getUsernameFromIntraId(intraId: number) {
-  if (intraId == 88036)
+export function getUsernameFromIntraId(intraId: number): string {
+  if (intraId === 88036)
     return 'ikgonzal';
-  else if (intraId == 666)
+  else if (intraId === 666)
     return 'test-';
-  else if (intraId == 667)
+  else if (intraId === 667)
     return 'test2-';
-  else if (intraId == 668)
+  else if (intraId === 668)
     return 'test3-';
+  else
+    return 'Unknown';
 }

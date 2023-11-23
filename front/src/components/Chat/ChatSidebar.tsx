@@ -129,7 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   // Add a listener for incoming messages
   useEffect(() => {
-    if (isSocketConnected) {
+    if (isSocketConnected && chatMessageSocketRef.current) {
       chatMessageSocketRef.current.on('newMessage', (messageData: string) => {
         // Handle the incoming message, e.g., add it to your message list
         console.log('Received a new message:', messageData);
@@ -140,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [isSocketConnected, chatMessageSocketRef]);
 
   const handleJoinRoom = (roomName: string) => {
-    if (roomName.trim() !== '' && roomName) {
+    if (roomName.trim() !== '' && roomName && chatMessageSocketRef.current) {
       if (userGroups.some(group => group.name === roomName)) {
         launchFlashMessage(
           `The group name ${roomName} already exists. Please choose a different name.`,
@@ -277,7 +277,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <List>
             {userGroups.map((group) => (
-              <ListItem key={group.id} onClick={() => handleGroupClick(group)}>
+              <ListItem key={group.name} onClick={() => handleGroupClick(group)}>
                 {group.name}
               </ListItem>
             ))}
