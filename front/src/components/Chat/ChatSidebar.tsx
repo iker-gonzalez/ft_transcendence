@@ -9,9 +9,7 @@ import { darkerBgColor } from '../../constants/color-tokens';
 import MainButton from '../UI/MainButton';
 import RoundImg from '../UI/RoundImage';
 import UserStatusInfo from '../UI/UserStatus';
-import useChatMessageSocket, {
-  UseChatMessageSocket,
-} from './useChatMessageSocket';
+import { Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
@@ -110,6 +108,7 @@ interface SidebarProps {
   unreadMessages: { [key: string]: number };
   selectedUser: User | null;
   selectedGroup: Group | null;
+  socket: Socket | null;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -120,7 +119,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   handleGroupClick,
   unreadMessages,
   selectedUser,
-  selectedGroup
+  selectedGroup,
+  socket
 }) => {
 
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -138,38 +138,15 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchUserData(token as string);
   }, []);
 
-  useEffect(() => {
-    //console.log('pepe');
-  }, [users]);
-  
-  // Get the socket and related objects from the utility function
-  const {
-    chatMessageSocketRef,
-    isSocketConnected,
-    isConnectionError,
-  }: UseChatMessageSocket = useChatMessageSocket();
-
-  // Add a listener for incoming messages
-  useEffect(() => {
-    if (isSocketConnected && chatMessageSocketRef.current) {
-      chatMessageSocketRef.current.on('newMessage', (messageData: string) => {
-        // Handle the incoming message, e.g., add it to your message list
-        console.log('Received a new message:', messageData);
-
-        // You can update your message state or perform other actions here
-      });
-    }
-  }, [isSocketConnected, chatMessageSocketRef]);
-
   const handleJoinRoom = (roomName: string) => {
-    if (roomName.trim() !== '' && roomName && chatMessageSocketRef.current) {
+    if (roomName.trim() !== '' && roomName && socket) {
       if (userGroups.some(group => group.name === roomName)) {
         launchFlashMessage(
           `The group name ${roomName} already exists. Please choose a different name.`,
           FlashMessageLevel.ERROR,
         );
       } else {
-        chatMessageSocketRef.current.emit('joinRoom', { roomName, intraId: userData?.intraId });
+        socket.emit('joinRoom', { roomName, intraId: userData?.intraId });
         setPopupVisible(false);
         launchFlashMessage(
           `You have successfully joined the room ${roomName}!`,
@@ -185,9 +162,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     username: friend.username,
   }));
 
-  console.log('unreadMessages', unreadMessages);
-  console.log(users);
-  console.log('selectedUserIntraIddd:', selectedUser?.intraId)
+  // console.log('unreadMessages', unreadMessages);
+  // console.log(users);
+  // console.log('selectedUserIntraIddd:', selectedUser?.intraId)
 
   return (
     <SidebarContainer>
