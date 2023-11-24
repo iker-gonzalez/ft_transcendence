@@ -105,8 +105,15 @@ const ChatPage: React.FC = () => {
     }
   }, [userData]);
 
-  const [unreadMessages, setUnreadMessages] = useState<{ [key: string]: number }>({});
+  const [unreadMessages, setUnreadMessages] = useState<{ [key: string]: number }>(() => {
+    const savedUnreadMessages = localStorage.getItem('unreadMessages');
+    return savedUnreadMessages ? JSON.parse(savedUnreadMessages) : {};
+  });
 
+  useEffect(() => {
+    localStorage.setItem('unreadMessages', JSON.stringify(unreadMessages));
+  }, [unreadMessages]);
+  
   // Get the socket and related objects from the utility function
   const {
     chatMessageSocketRef,
