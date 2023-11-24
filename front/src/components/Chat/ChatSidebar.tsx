@@ -168,6 +168,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     avatar: friend.avatar,
     username: friend.username,
   }));
+
+  console.log('unreadMessages', unreadMessages);
+
   return (
     <SidebarContainer>
       <GradientBorder className="gradient-border">

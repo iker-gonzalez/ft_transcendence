@@ -210,7 +210,7 @@ const ChatPage: React.FC = () => {
         setMessagesByChat({});
         setUnreadMessages(prevUnreadMessages => ({
           ...prevUnreadMessages,
-          [user.id]: 0,
+          [getIntraIdFromUsername(user.username)]: 0,
         }));
         setUsers((prevUsers) => {
           // Check if the user already exists in the array
@@ -276,10 +276,6 @@ const ChatPage: React.FC = () => {
           return prevGroups;
         });
       });
-  };
-
-  const onNewMessage = () => {
-    console.log('pepeeee');
   };
 
   return (
