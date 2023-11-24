@@ -119,6 +119,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     const token = Cookies.get('token');
     fetchUserData(token as string);
   }, []);
+
+  useEffect(() => {
+    //console.log('pepe');
+  }, [users]);
   
   // Get the socket and related objects from the utility function
   const {
