@@ -35,7 +35,7 @@ type MessagesByChat = {
  * @returns React functional component.
  */
 const ChatPage: React.FC = () => {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const selectedUser = useRef<User | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   const [users, setUsers] = useState<User[]>([]);
@@ -61,7 +61,7 @@ const ChatPage: React.FC = () => {
         .then((data: User[]) => {
           const users = data.map((item) => {
             return {
-              id: item.id,
+              intraId: item.intraId,
               avatar: item.avatar,
               username: item.username,
             };
@@ -136,11 +136,14 @@ const ChatPage: React.FC = () => {
           [getUsernameFromIntraId(parsedData.senderId)]: [...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] || []), newMessage]
         }));
 
-        setUnreadMessages(prevUnreadMessages => ({
-          ...prevUnreadMessages,
-          [parsedData.senderId]: (prevUnreadMessages[parsedData.senderId] || 0) + 1,
-        }));
-
+        console.log('selectedUserIntraId:', selectedUser?.current?.intraId);
+        console.log('parsedData.senderId:', parsedData.senderId);
+        if (parsedData.senderId !== selectedUser?.current?.intraId) {
+          setUnreadMessages(prevUnreadMessages => ({
+            ...prevUnreadMessages,
+            [parsedData.senderId]: (prevUnreadMessages[parsedData.senderId] || 0) + 1,
+          }));
+      }
     };
 
     const groupMessageListener = (messageData: any) => {
@@ -204,17 +207,17 @@ const ChatPage: React.FC = () => {
             timestamp: item.timestamp,
           };
         });
-        setSelectedUser(user);
-        setSelectedGroup(null);
+        selectedUser.current = user;
+        //setSelectedGroup(null);
         setMessages(messages);
         setMessagesByChat({});
         setUnreadMessages(prevUnreadMessages => ({
           ...prevUnreadMessages,
-          [user.id]: 0,
+          [user.intraId]: 0,
         }));
         setUsers((prevUsers) => {
           // Check if the user already exists in the array
-          const userExists = prevUsers.some((prevUser) => prevUser.id === user.id);
+          const userExists = prevUsers.some((prevUser) => prevUser.intraId === user.intraId);
           console.log('userExists:', userExists);
           // If the user doesn't exist, add them to the array
           if (!userExists) {
@@ -260,7 +263,7 @@ const ChatPage: React.FC = () => {
       }
         else
           setMessages([]);
-        setSelectedUser(null);
+        //setSelectedUser(null);
         setSelectedGroup(group);
         setMessagesByChat({});
         setUserGroups((prevGroups) => {
@@ -288,9 +291,11 @@ const ChatPage: React.FC = () => {
           handleUserClick={handleUserClick}
           handleGroupClick={handleGroupClick}
           unreadMessages={unreadMessages}
+          selectedUser={selectedUser.current}
+          selectedGroup={selectedGroup}
         />
         <ChatMessageArea
-          selectedUser={selectedUser}
+          selectedUser={selectedUser.current}
           selectedGroup={selectedGroup}
           messages={messages}
           messagesByChat={messagesByChat}
