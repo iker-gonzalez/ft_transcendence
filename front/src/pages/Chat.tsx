@@ -210,7 +210,7 @@ const ChatPage: React.FC = () => {
         setMessagesByChat({});
         setUnreadMessages(prevUnreadMessages => ({
           ...prevUnreadMessages,
-          [getIntraIdFromUsername(user.username)]: 0,
+          [user.id]: 0,
         }));
         setUsers((prevUsers) => {
           // Check if the user already exists in the array
