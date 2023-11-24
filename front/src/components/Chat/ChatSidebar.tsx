@@ -170,6 +170,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }));
 
   console.log('unreadMessages', unreadMessages);
+  console.log(users);
 
   return (
     <SidebarContainer>
