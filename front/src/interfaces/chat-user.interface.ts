@@ -1,5 +1,5 @@
 export default interface User {
-    id: number;
+    intraId: number;
     avatar: string;
     username: string;
   }
