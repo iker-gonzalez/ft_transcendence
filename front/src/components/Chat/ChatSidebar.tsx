@@ -95,6 +95,7 @@ interface SidebarProps {
   allGroups: Array<{ id: string; name: string }>;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
+  unreadMessages: { [key: string]: number };
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -103,6 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   allGroups,
   handleUserClick,
   handleGroupClick,
+  unreadMessages,
 }) => {
 
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -184,6 +186,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             {users.map((user) => (
               <ListItem key={user.id} onClick={() => handleUserClick(user)}>
                 {user.username}
+                {unreadMessages[user.id] > 0 && (
+                <span style={{ color: 'red', marginLeft: '10px' }}>
+                  {unreadMessages[user.id]}
+                </span>
+                )}
               </ListItem>
             ))}
           </List>

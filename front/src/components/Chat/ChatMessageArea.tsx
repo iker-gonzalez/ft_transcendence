@@ -76,6 +76,7 @@ interface ChatMessageAreaProps {
   messages: Message[];
   setMessagesByChat: React.Dispatch<React.SetStateAction<{ [key: string]: Message[] }>>;
   messagesByChat: { [key: string]: Message[] };
+  onNewMessage: () => void;
 }
 
 /**
@@ -92,12 +93,13 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   messages,
   setMessagesByChat,
   messagesByChat,
+  onNewMessage,
 }) => {
 
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
   
-  const newMessageSentRef = useRef(true);
+  // const newMessageSentRef = useRef(true);
 
   // Get the socket and related objects from the utility function
   const {
@@ -106,58 +108,58 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     isConnectionError,
   }: UseChatMessageSocket = useChatMessageSocket();
 
-  // Add a listener for incoming messages
-  useEffect(() => {
-    console.log('useEffect new message triggered');
-    if (isSocketConnected && chatMessageSocketRef.current) {
-      const privateMessageListener = (messageData: any) => {
-        console.log('private message listener triggered');
-        const parsedData = JSON.parse(messageData);
-        const newMessage: Message = {
-          senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
-          senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
-          content: parsedData.content,
-          timestamp: Date.now().toString(),
-        };
-        //Append the new message to the messages state
-        setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-          ...prevMessages,
-          [getUsernameFromIntraId(parsedData.senderId)]: [...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] || []), newMessage]
-        }));
-    };
+  // // Add a listener for incoming messages
+  // useEffect(() => {
+  //   console.log('useEffect new message triggered');
+  //   if (isSocketConnected && chatMessageSocketRef.current) {
+  //     const privateMessageListener = (messageData: any) => {
+  //       console.log('private message listener triggered');
+  //       const parsedData = JSON.parse(messageData);
+  //       const newMessage: Message = {
+  //         senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
+  //         senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
+  //         content: parsedData.content,
+  //         timestamp: Date.now().toString(),
+  //       };
+  //       //Append the new message to the messages state
+  //       setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+  //         ...prevMessages,
+  //         [getUsernameFromIntraId(parsedData.senderId)]: [...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] || []), newMessage]
+  //       }));
+  //   };
 
-    const groupMessageListener = (messageData: any) => {
-      console.log('group message listener triggered');
-      if (!selectedGroup) {
-        console.log('no selected group');
-        return;
-      }
-      console.log('group message received');
-      const parsedData = JSON.parse(messageData);
-      const newMessage: Message = {
-        senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
-        senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
-        content: parsedData.content,
-        timestamp: Date.now().toString(),
-      };
-      // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-      //   ...prevMessages,
-      //   [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), newMessage]
-      // })); 
-    };
-      // Add the listeners to the socket
-      chatMessageSocketRef.current.on(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
-      chatMessageSocketRef.current.on('message', groupMessageListener);
+  //   const groupMessageListener = (messageData: any) => {
+  //     console.log('group message listener triggered');
+  //     if (!selectedGroup) {
+  //       console.log('no selected group');
+  //       return;
+  //     }
+  //     console.log('group message received');
+  //     const parsedData = JSON.parse(messageData);
+  //     const newMessage: Message = {
+  //       senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
+  //       senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
+  //       content: parsedData.content,
+  //       timestamp: Date.now().toString(),
+  //     };
+  //     // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+  //     //   ...prevMessages,
+  //     //   [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), newMessage]
+  //     // })); 
+  //   };
+  //     // Add the listeners to the socket
+  //     chatMessageSocketRef.current.on(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
+  //     chatMessageSocketRef.current.on('message', groupMessageListener);
 
-    // Clean up the listener when the component unmounts or when the receiverId changes
-     return () => {
-        if (chatMessageSocketRef.current) {
-          chatMessageSocketRef.current.off(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
-          chatMessageSocketRef.current.off('message', groupMessageListener);
-        }
-    };
-  }
-  }, [newMessageSentRef.current]);
+  //   // Clean up the listener when the component unmounts or when the receiverId changes
+  //    return () => {
+  //       if (chatMessageSocketRef.current) {
+  //         chatMessageSocketRef.current.off(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
+  //         chatMessageSocketRef.current.off('message', groupMessageListener);
+  //       }
+  //   };
+  // }
+  // }, [newMessageSentRef.current]);
 
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -170,6 +172,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   const handlePrivateMessage = (newMessage: string) => {
     if (newMessage.trim() !== '' && selectedUser) {
       const message: Message = {
+        id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
         senderName: userData?.username || 'Anonymous',
         senderAvatar: userData?.avatar || 'Anonymous',
         content: newMessage,
@@ -188,13 +191,15 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         });
       }
       setMessage('');
-      newMessageSentRef.current = !newMessageSentRef.current;
+      onNewMessage();
+      //newMessageSentRef.current = !newMessageSentRef.current;
     }
   };
 
   const handleSendRoomMessage = (newMessage: string) => {
     if (newMessage.trim() !== '' && selectedGroup) {
       const message: Message = {
+        id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
         senderName: userData?.username || 'Anonymous',
         senderAvatar: userData?.avatar || 'Anonymous',
         content: newMessage,
@@ -212,6 +217,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
           });
       }
       setMessage('');
+      onNewMessage();
     }
   };
   return (
@@ -223,12 +229,12 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
           <ChatMessageAreaHeader user={selectedUser} group={selectedGroup} />          
           <MessageList>
           {messages.map((message) => (
-                <MessageItem key={message.timestamp}>
+                <MessageItem key={message.id}>
                   {`${message.senderName}: ${message.content}`}
           </MessageItem>
             ))}
-            {(selectedUser && messagesByChat[selectedUser.username] || selectedGroup && messagesByChat[selectedGroup.name] || []).map((messageData, index) => (
-              <MessageItem key={messageData.timestamp}>
+            {(selectedUser && messagesByChat[selectedUser.username] || selectedGroup && messagesByChat[selectedGroup.name] || []).map((messageData) => (
+              <MessageItem key={messageData.id}>
                 {`${messageData.senderName}: ${messageData.content}`}
               </MessageItem>
             ))}
