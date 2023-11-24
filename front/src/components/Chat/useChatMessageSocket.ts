@@ -36,7 +36,7 @@ export default function useChatMessageSocket(): UseChatMessageSocket {
     socket.on('connect', async () => {
       setIsSocketConnected(true);
       setIsConnectionError(false);
-      console.info('Chat socket connected');
+      //console.info('Chat socket connected');
     });
 
     // Clean up the socket when the component unmounts

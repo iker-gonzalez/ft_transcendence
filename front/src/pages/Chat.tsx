@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ChatSidebar from '../components/Chat/ChatSidebar';
 import ChatMessageArea from '../components/Chat/ChatMessageArea';
 import Group from '../interfaces/chat-group.interface';
@@ -7,10 +7,14 @@ import Message from '../interfaces/chat-dm-message.interface';
 import { fetchAuthorized, getBaseUrl } from '../utils/utils';
 import { useUserData } from '../context/UserDataContext';
 import Cookies from 'js-cookie';
-import { getIntraIdFromUsername } from '../utils/utils';
+import { getIntraIdFromUsername, getUsernameFromIntraId } from '../utils/utils';
 import GroupMessage from '../interfaces/chat-group-message.interface';
 import CenteredLayout from '../components/UI/CenteredLayout';
 import styled from 'styled-components';
+import useChatMessageSocket, {
+  UseChatMessageSocket,
+} from '../components/Chat/useChatMessageSocket';
+
 
 const WrapperDiv = styled.div`
   width: 100%;
@@ -31,7 +35,7 @@ type MessagesByChat = {
  * @returns React functional component.
  */
 const ChatPage: React.FC = () => {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const selectedUser = useRef<User | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   const [users, setUsers] = useState<User[]>([]);
@@ -57,7 +61,7 @@ const ChatPage: React.FC = () => {
         .then((data: User[]) => {
           const users = data.map((item) => {
             return {
-              id: item.id,
+              intraId: item.intraId,
               avatar: item.avatar,
               username: item.username,
             };
@@ -101,6 +105,82 @@ const ChatPage: React.FC = () => {
     }
   }, [userData]);
 
+  const [unreadMessages, setUnreadMessages] = useState<{ [key: string]: number }>({});
+
+  // Get the socket and related objects from the utility function
+  const {
+    chatMessageSocketRef,
+    isSocketConnected,
+    isConnectionError,
+  }: UseChatMessageSocket = useChatMessageSocket();
+
+  const [newMessageSent, setNewMessageSent] = useState(false);
+
+  // Add a listener for incoming messages
+  useEffect(() => {
+    console.log('useEffect new message triggered');
+    if (isSocketConnected && chatMessageSocketRef.current) {
+      const privateMessageListener = (messageData: any) => {
+        console.log('private message listener triggered');
+        const parsedData = JSON.parse(messageData);
+        const newMessage: Message = {
+          id: messageData.id,
+          senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
+          senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
+          content: parsedData.content,
+          timestamp: Date.now().toString(),
+        };
+        //Append the new message to the messages state
+        setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+          ...prevMessages,
+          [getUsernameFromIntraId(parsedData.senderId)]: [...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] || []), newMessage]
+        }));
+
+        console.log('selectedUserIntraId:', selectedUser?.current?.intraId);
+        console.log('parsedData.senderId:', parsedData.senderId);
+        if (parsedData.senderId !== selectedUser?.current?.intraId) {
+          setUnreadMessages(prevUnreadMessages => ({
+            ...prevUnreadMessages,
+            [parsedData.senderId]: (prevUnreadMessages[parsedData.senderId] || 0) + 1,
+          }));
+      }
+    };
+
+    const groupMessageListener = (messageData: any) => {
+      console.log('group message listener triggered');
+      if (!selectedGroup) {
+        console.log('no selected group');
+        return;
+      }
+      console.log('group message received');
+      const parsedData = JSON.parse(messageData);
+      const newMessage: Message = {
+        id: messageData.id,
+        senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
+        senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
+        content: parsedData.content,
+        timestamp: Date.now().toString(),
+      };
+      // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+      //   ...prevMessages,
+      //   [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), newMessage]
+      // })); 
+    };
+      // Add the listeners to the socket
+      chatMessageSocketRef.current.on(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
+      chatMessageSocketRef.current.on('message', groupMessageListener);
+
+    // Clean up the listener when the component unmounts or when the receiverId changes
+     return () => {
+        if (chatMessageSocketRef.current) {
+          chatMessageSocketRef.current.off(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
+          chatMessageSocketRef.current.off('message', groupMessageListener);
+        }
+    };
+  }
+  }, [newMessageSent, isSocketConnected]);
+
+
   /**
    * Handles the click event on a user in the chat sidebar.
    * Fetches the messages between the signed in user and the selected user.
@@ -120,19 +200,24 @@ const ChatPage: React.FC = () => {
       .then((data: Message[]) => {
         const messages = data.map((item: Message) => {
           return {
+            id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
             senderName: item.senderName,
             senderAvatar: item.senderAvatar,
             content: item.content,
             timestamp: item.timestamp,
           };
         });
-        setSelectedUser(user);
-        setSelectedGroup(null);
+        selectedUser.current = user;
+        //setSelectedGroup(null);
         setMessages(messages);
         setMessagesByChat({});
+        setUnreadMessages(prevUnreadMessages => ({
+          ...prevUnreadMessages,
+          [user.intraId]: 0,
+        }));
         setUsers((prevUsers) => {
           // Check if the user already exists in the array
-          const userExists = prevUsers.some((prevUser) => prevUser.id === user.id);
+          const userExists = prevUsers.some((prevUser) => prevUser.intraId === user.intraId);
           console.log('userExists:', userExists);
           // If the user doesn't exist, add them to the array
           if (!userExists) {
@@ -167,7 +252,7 @@ const ChatPage: React.FC = () => {
         const messages = data.map((item: GroupMessage) => {
           console.log('item:', item);
           return {
-            id: 'dssdsfd', //temporary until id is incorporated in endpoint or Message interface is armonized
+            id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
             senderName: item.senderName,
             senderAvatar: item.senderAvatar,
             content: item.content,
@@ -178,7 +263,7 @@ const ChatPage: React.FC = () => {
       }
         else
           setMessages([]);
-        setSelectedUser(null);
+        //setSelectedUser(null);
         setSelectedGroup(group);
         setMessagesByChat({});
         setUserGroups((prevGroups) => {
@@ -205,13 +290,19 @@ const ChatPage: React.FC = () => {
           allGroups={allGroups}
           handleUserClick={handleUserClick}
           handleGroupClick={handleGroupClick}
+          unreadMessages={unreadMessages}
+          selectedUser={selectedUser.current}
+          selectedGroup={selectedGroup}
         />
         <ChatMessageArea
-          selectedUser={selectedUser}
+          selectedUser={selectedUser.current}
           selectedGroup={selectedGroup}
           messages={messages}
           messagesByChat={messagesByChat}
-          setMessagesByChat={setMessagesByChat} //here should be messages with the most recent one
+          setMessagesByChat={setMessagesByChat}
+          onNewMessage={() => {
+            setNewMessageSent(prevNewMessageSent => !prevNewMessageSent);
+          }}
         />
       </WrapperDiv>
     </CenteredLayout>
