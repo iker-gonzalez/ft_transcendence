@@ -89,13 +89,27 @@ const MainButtonStyled = styled(MainButton)`
   margin-left: 20px;
 `;
 
+const UnreadMessagesCount = styled.span`
+  display: inline-block;
+  color: black;
+  background-color: yellow;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  margin-left: 10px;
+`;
+
 interface SidebarProps {
-  users: Array<{ id: number; avatar: string; username: string }>;
+  users: Array<{ intraId: number; avatar: string; username: string }>;
   userGroups: Array<{ id: string; name: string }>;
   allGroups: Array<{ id: string; name: string }>;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
   unreadMessages: { [key: string]: number };
+  selectedUser: User | null;
+  selectedGroup: Group | null;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -105,6 +119,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   handleUserClick,
   handleGroupClick,
   unreadMessages,
+  selectedUser,
+  selectedGroup
 }) => {
 
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -164,13 +180,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const userFriendsConverted = userFriends.map((friend) => ({
-    id: friend.intraId,
+    intraId: friend.intraId,
     avatar: friend.avatar,
     username: friend.username,
   }));
 
   console.log('unreadMessages', unreadMessages);
   console.log(users);
+  console.log('selectedUserIntraIddd:', selectedUser?.intraId)
 
   return (
     <SidebarContainer>
@@ -188,12 +205,12 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <List>
             {users.map((user) => (
-              <ListItem key={user.id} onClick={() => handleUserClick(user)}>
+              <ListItem key={user.intraId} onClick={() => handleUserClick(user)}>
                 {user.username}
-                {unreadMessages[user.id] > 0 && (
-                <span style={{ color: 'red', marginLeft: '10px' }}>
-                  {unreadMessages[user.id]}
-                </span>
+                {selectedUser?.intraId !== user.intraId && unreadMessages[user.intraId] > 0 && (
+                  <UnreadMessagesCount>
+                    {unreadMessages[user.intraId]}
+                  </UnreadMessagesCount>
                 )}
               </ListItem>
             ))}
@@ -208,7 +225,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <List>
                 {userFriendsConverted.length > 0 ? (
                   userFriendsConverted.map((friend) => (
-                    <ListItem key={friend.id} style={{ display: 'flex', alignItems: 'center' }}>
+                    <ListItem key={friend.intraId} style={{ display: 'flex', alignItems: 'center' }}>
                       <RoundImgStyled
                         src={friend.avatar}
                         alt=""
@@ -218,7 +235,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                           {friend.username}
                         </Username>
                       </UserInfo>
-                      <UserStatusInfo intraId={friend.id} />
+                      <UserStatusInfo intraId={friend.intraId} />
                       <MainButtonStyled
                         onClick={() => {
                         handleUserClick(friend);
