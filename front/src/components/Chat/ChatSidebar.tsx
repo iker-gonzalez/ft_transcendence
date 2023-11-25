@@ -104,6 +104,7 @@ interface SidebarProps {
   selectedGroup: Group | null;
   users: Array<{ intraId: number; avatar: string; username: string }>;
   userGroups: Group [] | null;
+  updateUserGroups: (group: Group) => void;
   allGroups: Group [] | null;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
@@ -114,6 +115,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({
   users,
   userGroups,
+  updateUserGroups,
   allGroups,
   handleUserClick,
   handleGroupClick,
@@ -147,6 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           `The group name ${newGroup.name} already exists. Please choose a different name.`,
           FlashMessageLevel.ERROR,
         );
+        return 1;
       } else {
         const payload = {
           roomName: newGroup.name,
@@ -160,6 +163,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           `You have successfully joined the room ${newGroup.name}!`,
           FlashMessageLevel.SUCCESS,
         );
+        return 0;
       }
     }
   };
@@ -273,13 +277,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                     );
                     return;
                   }
-                  const newGroup = {
+                  const newGroup: Group = {
                     id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), 
                     name: roomName,
                     type: groupNature
                   };
-                  handleGroupClick(newGroup);
-                  handleJoinRoom(newGroup, password);
+                  if (handleJoinRoom(newGroup, password) === 0) {
+                    updateUserGroups(newGroup); 
+                  }
                   setRoomName('');
                 }}>
                   Join Room
