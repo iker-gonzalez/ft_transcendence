@@ -84,6 +84,54 @@ export class ChatController {
         }
     }
 
+    @Post(':userIntra/:ToBlockIntra/blockUser') 
+    @ApiParam({ name: 'userIntra' }) 
+    @ApiParam({ name: 'ToBlockIntra' }) 
+    @ApiOperation({
+      summary: swaggerConstants.chat.block.summary,
+    })
+    async getBlockUser(
+      @Param('userIntra') userIntra: string,
+      @Param('ToBlockIntra') ToBlockIntra: string,
+      ):Promise<void> {
+        
+        console.log("getBlockUser get");
+        console.log(userIntra);
+        console.log(userIntra);
+        try{
+          const userId = await this.chatDMService.findUserIdByIntraId(parseInt(userIntra, 10));
+          const ToBlockId = await this.chatDMService.findUserIdByIntraId(parseInt(ToBlockIntra, 10));
+          this.chatDMService.blockUserDM(userId, ToBlockId);
+      } 
+        catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    @Post(':userIntra/:unblockUserIntra/unblockUser') 
+    @ApiParam({ name: 'userIntra' }) 
+    @ApiParam({ name: 'unblockUserIntra' }) 
+    @ApiOperation({
+      summary: swaggerConstants.chat.unblock.summary,
+    })
+    async getUnBlockUser(
+      @Param('userIntra') userIntra: string,
+      @Param('unblockUserIntra') unblockUserIntra: string,
+      ):Promise<void> {
+        
+        console.log("getUnBlockUser get");
+        console.log(userIntra);
+        try{
+          const userId = await this.chatDMService.findUserIdByIntraId(parseInt(userIntra, 10));
+          const ToBlockId = await this.chatDMService.findUserIdByIntraId(parseInt(unblockUserIntra, 10));
+          this.chatDMService.unblockUserDM(userId, ToBlockId);
+      } 
+        catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+
     /********************************************************** */
     //                    CHANNEL                               //
     /********************************************************** */
@@ -204,10 +252,62 @@ export class ChatController {
       console.log(channelRoom);
       console.log(ownerIntra);
       console.log(newAdminIntra);
-      try{
+      try{ 
         const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
         const newAdminId = await this.chatDMService.findUserIdByIntraId(parseInt(newAdminIntra, 10));
         this.chatChannelService.addAddminToChannel(channelRoom, ownerId, newAdminId);
+      }
+      catch (error) {
+          console.error("Error:", error);
+      }
+    }
+
+    @Post(':channelRoom/:ownerIntra/:userToMuteIntra/muteUser') 
+    @ApiParam({ name: 'channelRoom' }) 
+    @ApiParam({ name: 'ownerIntra' }) 
+    @ApiParam({ name: 'userToMuteIntra' })
+    @ApiOperation({
+      summary: swaggerConstants.chat.muteUser.summary,
+    })
+    async getMuteUserToChannel( 
+      @Param('channelRoom') channelRoom: string,
+      @Param('ownerIntra') ownerIntra: string,
+      @Param('userToMuteIntra') userToMuteIntra: string,
+    ) : Promise<void> { 
+      console.log("getMuteUserToChannel get");
+      console.log(channelRoom);
+      console.log(ownerIntra);
+      console.log(userToMuteIntra);
+      try{ 
+        const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
+        const userToMuteId = await this.chatDMService.findUserIdByIntraId(parseInt(userToMuteIntra, 10));
+        this.chatChannelService.muteUserInChannel(channelRoom, ownerId, userToMuteId);
+      }
+      catch (error) {
+          console.error("Error:", error);
+      }
+    }
+
+    @Post(':channelRoom/:ownerIntra/:userToUnMuteIntra/unmuteUser') 
+    @ApiParam({ name: 'channelRoom' }) 
+    @ApiParam({ name: 'ownerIntra' }) 
+    @ApiParam({ name: 'userToUnMuteIntra' })
+    @ApiOperation({
+      summary: swaggerConstants.chat.unmuteUser.summary,
+    })
+    async getUnMuteUserToChannel( 
+      @Param('channelRoom') channelRoom: string,
+      @Param('ownerIntra') ownerIntra: string,
+      @Param('userToUnMuteIntra') userToUnMuteIntra: string,
+    ) : Promise<void> { 
+      console.log("getMuteUserToChannel get");
+      console.log(channelRoom);
+      console.log(ownerIntra);
+      console.log(userToUnMuteIntra);
+      try{ 
+        const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
+        const userToUnMuteId = await this.chatDMService.findUserIdByIntraId(parseInt(userToUnMuteIntra, 10));
+        this.chatChannelService.unmuteUserInChannel(channelRoom, ownerId, userToUnMuteId);
       }
       catch (error) {
           console.error("Error:", error);

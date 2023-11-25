@@ -253,6 +253,13 @@ export const swaggerConstants = {
         description: '',
       },
     },
+    muteUser : {
+      summary: 'Mute user on a chanel',
+    },
+    unmuteUser : {
+      summary: 'Unmute user on a chanel',
+
+    },
     addOrModifyPassword:{
       summary: 'Add or modify password. Automatically this chat is set as PROTECTED',
       ok: {
@@ -270,6 +277,12 @@ export const swaggerConstants = {
       ok: {
         description: '',
       },
+    },
+    block:{
+      summary: 'Block a user of a Direct Message',
+    },
+    unblock:{
+      summary: 'Unblock a user of a Direct Message',
     },
   },
   dto: {
