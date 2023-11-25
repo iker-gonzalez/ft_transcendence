@@ -5,6 +5,7 @@ import { ChatDMService } from './service/chatDM.service';
 import { ChatChannelService } from './service/chatChannel.service';
 import { UserService } from '../user/user.service';
 import { Socket } from 'socket.io';
+import { BadGatewayException } from '@nestjs/common';
 // Create a Map to store user sockets
 const userSockets = new Map();
 
@@ -46,6 +47,7 @@ export class ChatGateway implements OnGatewayConnection {
                       JSON.stringify(payload))
 }
 
+/*
 @SubscribeMessage('muteUserDM')
 async handleMuteUserDM(client, payload) {
   try { 
@@ -53,7 +55,7 @@ async handleMuteUserDM(client, payload) {
     const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
     const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
 
-    const addMessageStatus =  await this.chatDMservice.muteUserDM(senderId, receiverId);
+    const addMessageStatus =  await this.chatDMservice.unblockUserDM(senderId, receiverId);
     this.server.emit(`muteUserDMDone/${payload.receiverId}`,
     JSON.stringify(payload))
   } catch (error) {
@@ -67,13 +69,13 @@ async handleUnmuteUserDM(client, payload) {
     // Prueba para el get de lo DM
     const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
     const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
-    const addMessageStatus =  await this.chatDMservice.unmuteUserDM(senderId, receiverId);
+    const addMessageStatus =  await this.chatDMservice.unblockUserDM(senderId, receiverId);
     this.server.emit(`unmuteUserDMDone/${payload.receiverId}`,
     JSON.stringify(payload))
   } catch (error) {
     console.error("Error:", error);
   }
-}
+}*/
 
 
 @SubscribeMessage('joinRoom')
@@ -89,8 +91,17 @@ async handleJoinRoom(client: Socket, paydload) {
   const channelExist = await this.chatChannelservice.channelExist(paydload.roomName);
   if (!channelExist)
   {
-    await this.chatChannelservice.createChannel(userId, paydload.roomName, "public");
+    await this.chatChannelservice.createChannel(userId, paydload.roomName, paydload.privacy, paydload.password);
   }
+  else 
+  {
+
+    if (paydload.privacy == "protected")
+    await this.chatChannelservice.isPasswordCorrect(paydload.roomName, paydload.password);
+  
+  if (paydload.privacy == "private")
+    throw new BadGatewayException ("Cannot access to a private chaner")
+}
   await this.chatChannelservice.addUserToChannel(userId, paydload.roomName);
 
   client.join(paydload.roomName);
@@ -148,34 +159,6 @@ async handleSendMessageToRoom( client: Socket, payload) {
 
  }
 
- @SubscribeMessage('muteUser') 
- async handleMuteUser(client: Socket, payload) {
-
-  try { 
-    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
-    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
-    await this.chatChannelservice.muteUserInChannel(payload.roomName, addminId, userId);
-    this.server.to(payload.roomName).emit('mutedUserUpdate', payload);
-
-  }
-   catch (error) {
-    console.error("Error:", error);
-  }
- }
-
- @SubscribeMessage('unmuteUser') 
- async handleUnmuteUser(client: Socket, payload) {
-
-  try { 
-    const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
-    const addminId = await this.chatDMservice.findUserIdByIntraId(payload.addAdminId);
-    await this.chatChannelservice.unmuteUserInChannel(payload.roomName, addminId, userId);
-    this.server.to(payload.roomName).emit('unmutedUserUpdate', payload);
-  }
-   catch (error) {
-    console.error("Error:", error);
-  }
- }
 
  @SubscribeMessage('kickUser') 
  async handleKickUser(client: Socket, payload) {
