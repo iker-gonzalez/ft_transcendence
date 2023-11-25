@@ -252,6 +252,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <option value="PROTECTED">Protected</option>
                 </select>
                 <MainButton onClick={() => {
+                  if (!roomName) {
+                    launchFlashMessage(
+                      `Room name cannot be empty. Please choose a name.`,
+                      FlashMessageLevel.ERROR,
+                    );
+                    return;
+                  }
                   const newGroup = {
                     id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), 
                     name: roomName,
