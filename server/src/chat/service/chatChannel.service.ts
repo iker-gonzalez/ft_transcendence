@@ -156,7 +156,7 @@ export class ChatChannelService {
         if (!adminId)
         throw new BadRequestException('adminId does not exist in DB');
 
-    if (access == "public")
+    if (access == "PUBLIC")
     {
 
       // Crear el Channel
@@ -168,7 +168,7 @@ export class ChatChannelService {
         }
       })
     }
-    else if (access == "protected")
+    else if (access == "PROTECTED")
     {
       await this.prisma.chatRoom.create({
         data:{
