@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, RefObject } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import Message from '../../interfaces/chat-dm-message.interface';
 import MessageInput from './ChatMessageAreaInput';
 import ChatMessageAreaHeader from './ChatMessageAreaHeader';
-import useChatMessageSocket, {
-  UseChatMessageSocket,
-} from './useChatMessageSocket';
+import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
 import { getIntraIdFromUsername, getUsernameFromIntraId } from '../../utils/utils';
 import GradientBorder from '../UI/GradientBorder';
@@ -77,6 +75,7 @@ interface ChatMessageAreaProps {
   setMessagesByChat: React.Dispatch<React.SetStateAction<{ [key: string]: Message[] }>>;
   messagesByChat: { [key: string]: Message[] };
   onNewMessage: () => void;
+  socket: Socket | null;
 }
 
 /**
@@ -94,74 +93,12 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   setMessagesByChat,
   messagesByChat,
   onNewMessage,
+  socket
 }) => {
 
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
   
-  // const newMessageSentRef = useRef(true);
-
-  // Get the socket and related objects from the utility function
-  const {
-    chatMessageSocketRef,
-    isSocketConnected,
-    isConnectionError,
-  }: UseChatMessageSocket = useChatMessageSocket();
-
-  // // Add a listener for incoming messages
-  // useEffect(() => {
-  //   console.log('useEffect new message triggered');
-  //   if (isSocketConnected && chatMessageSocketRef.current) {
-  //     const privateMessageListener = (messageData: any) => {
-  //       console.log('private message listener triggered');
-  //       const parsedData = JSON.parse(messageData);
-  //       const newMessage: Message = {
-  //         senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
-  //         senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
-  //         content: parsedData.content,
-  //         timestamp: Date.now().toString(),
-  //       };
-  //       //Append the new message to the messages state
-  //       setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-  //         ...prevMessages,
-  //         [getUsernameFromIntraId(parsedData.senderId)]: [...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] || []), newMessage]
-  //       }));
-  //   };
-
-  //   const groupMessageListener = (messageData: any) => {
-  //     console.log('group message listener triggered');
-  //     if (!selectedGroup) {
-  //       console.log('no selected group');
-  //       return;
-  //     }
-  //     console.log('group message received');
-  //     const parsedData = JSON.parse(messageData);
-  //     const newMessage: Message = {
-  //       senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
-  //       senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
-  //       content: parsedData.content,
-  //       timestamp: Date.now().toString(),
-  //     };
-  //     // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-  //     //   ...prevMessages,
-  //     //   [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), newMessage]
-  //     // })); 
-  //   };
-  //     // Add the listeners to the socket
-  //     chatMessageSocketRef.current.on(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
-  //     chatMessageSocketRef.current.on('message', groupMessageListener);
-
-  //   // Clean up the listener when the component unmounts or when the receiverId changes
-  //    return () => {
-  //       if (chatMessageSocketRef.current) {
-  //         chatMessageSocketRef.current.off(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
-  //         chatMessageSocketRef.current.off('message', groupMessageListener);
-  //       }
-  //   };
-  // }
-  // }, [newMessageSentRef.current]);
-
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
@@ -183,8 +120,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), message]
       }));
       const receiverIntraId = getIntraIdFromUsername(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
-      if (chatMessageSocketRef.current) {
-        chatMessageSocketRef.current.emit('privateMessage', {
+      if (socket) {
+        socket.emit('privateMessage', {
           receiverId: receiverIntraId, // temporary until endpoint is fixed
           senderId: userData?.intraId,
           content: newMessage,
@@ -192,7 +129,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       }
       setMessage('');
       onNewMessage();
-      //newMessageSentRef.current = !newMessageSentRef.current;
     }
   };
 
@@ -209,8 +145,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         ...prevMessages,
         [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), message]
       }));
-      if (chatMessageSocketRef.current) {
-          chatMessageSocketRef.current.emit('sendMessageToRoom', {
+      if (socket) {
+          socket.emit('sendMessageToRoom', {
             roomName: selectedGroup?.name,
             intraId: userData?.intraId,
             message: newMessage,

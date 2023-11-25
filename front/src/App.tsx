@@ -16,6 +16,7 @@ import UserStats from './pages/UserStats';
 import Chat from './pages/Chat';
 import GameSession from './components/Game/GameSession';
 
+
 function App() {
   return (
     <UserDataProvider>
