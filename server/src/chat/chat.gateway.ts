@@ -97,10 +97,10 @@ async handleJoinRoom(client: Socket, payload) {
   else 
   {
 
-    if (payload.privacy == "PROTECTED")
+    if (payload.type == "PROTECTED")
     await this.chatChannelservice.isPasswordCorrect(payload.roomName, payload.password);
   
-  if (payload.privacy == "PRIVATE")
+  if (payload.type == "PRIVATE")
     throw new BadGatewayException ("Cannot access to a private chaner")
 }
   await this.chatChannelservice.addUserToChannel(userId, payload.roomName);
