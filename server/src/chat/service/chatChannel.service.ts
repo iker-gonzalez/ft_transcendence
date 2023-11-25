@@ -147,7 +147,7 @@ export class ChatChannelService {
   async createChannel(
     adminId: string,
     channelName: string,
-    access: string
+    access: ChannelType
   ): Promise<void> 
   {
     try{
@@ -158,7 +158,8 @@ export class ChatChannelService {
       await this.prisma.chatRoom.create({
           data:{
             name: channelName,
-            ownerId: adminId
+            ownerId: adminId,
+            type: access,
           }
         })
     }
