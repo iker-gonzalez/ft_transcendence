@@ -128,6 +128,12 @@ async handleSendMessageToRoom( client: Socket, payload) {
   console.log('roomName:', payload.roomName);
   console.log('message:', payload.message);
 
+  // id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+  // senderName: userData?.username || 'Anonymous',
+  // senderAvatar: userData?.avatar || 'Anonymous',
+  // content: newMessage,
+  // timestamp: new Date().toString(),
+
 
   try{
 

@@ -104,6 +104,7 @@ interface SidebarProps {
   selectedGroup: Group | null;
   users: Array<{ intraId: number; avatar: string; username: string }>;
   userGroups: Group [] | null;
+  updateUserGroups: (group: Group) => void;
   allGroups: Group [] | null;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
@@ -114,6 +115,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({
   users,
   userGroups,
+  updateUserGroups,
   allGroups,
   handleUserClick,
   handleGroupClick,
@@ -132,6 +134,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   useUserData();
   const { launchFlashMessage } = useFlashMessages();
   const [groupNature, setGroupNature] = useState('PUBLIC');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     fetchFriendsList();
@@ -139,18 +142,20 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchUserData(token as string);
   }, []);
 
-  const handleJoinRoom = (newGroup: Group) => {
+  const handleJoinRoom = (newGroup: Group, password: string) => {
     if (newGroup.name.trim() !== '' && newGroup.name && socket) {
       if (userGroups && userGroups.some(group => group.name === newGroup.name)) {
         launchFlashMessage(
           `The group name ${newGroup.name} already exists. Please choose a different name.`,
           FlashMessageLevel.ERROR,
         );
+        return 1;
       } else {
         const payload = {
           roomName: newGroup.name,
           intraId: userData?.intraId,
-          type: newGroup.type
+          type: newGroup.type,
+          password: password
         };
         socket.emit('joinRoom', payload);
         setPopupVisible(false);
@@ -158,6 +163,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           `You have successfully joined the room ${newGroup.name}!`,
           FlashMessageLevel.SUCCESS,
         );
+        return 0;
       }
     }
   };
@@ -167,6 +173,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     avatar: friend.avatar,
     username: friend.username,
   }));
+
+  console.log('allGroups', allGroups);
 
   return (
     <SidebarContainer>
@@ -243,7 +251,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     if (e.target.value.length <= 10) {
                       setRoomName(e.target.value);
                     }
-                  }}  
+                  }}
                   placeholder="Enter room name"
                 />
                 <select value={groupNature} onChange={(e) => setGroupNature(e.target.value)}>
@@ -251,6 +259,16 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <option value="PRIVATE">Private</option>
                   <option value="PROTECTED">Protected</option>
                 </select>
+
+                {groupNature === 'PRIVATE' && (
+                  <input 
+                    type="password" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                  />
+                )}
+                
                 <MainButton onClick={() => {
                   if (!roomName) {
                     launchFlashMessage(
@@ -259,32 +277,37 @@ const Sidebar: React.FC<SidebarProps> = ({
                     );
                     return;
                   }
-                  const newGroup = {
+                  const newGroup: Group = {
                     id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), 
                     name: roomName,
                     type: groupNature
                   };
-                  handleGroupClick(newGroup);
-                  handleJoinRoom(newGroup);
+                  if (handleJoinRoom(newGroup, password) === 0) {
+                    updateUserGroups(newGroup); 
+                  }
                   setRoomName('');
                 }}>
                   Join Room
                 </MainButton>
                 <Title>Or join an existing one</Title>
-                  <List>
-                    {allGroups && allGroups.filter(group => userGroups && !userGroups.some(userGroup => userGroup.name === group.name)).map((group) => (
+                <List>
+                  {allGroups && allGroups
+                    .filter(group => userGroups && !userGroups.some(userGroup => userGroup.name === group.name))
+                    .filter(group => group.type === 'PUBLIC' || group.type === 'PROTECTED')
+                    .map((group) => (
                       <ListItem 
                         key={group.name} 
                         onClick={() => {
                           handleGroupClick(group);
                           setPopupVisible(false);
-                          handleJoinRoom(group);
+                          handleJoinRoom(group, ''); // no password
                         }}
                       >
                         {group.name}
+                        {group.type === 'PROTECTED' && ' 🔒'}
                       </ListItem>
                     ))}
-                  </List>
+                </List>
               </>
             )}
           </Modal>
