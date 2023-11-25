@@ -260,7 +260,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <option value="PROTECTED">Protected</option>
                 </select>
 
-                {groupNature === 'PRIVATE' && (
+                {groupNature === 'PROTECTED' && (
                   <input 
                     type="password" 
                     value={password} 
