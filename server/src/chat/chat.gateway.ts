@@ -89,7 +89,7 @@ async handleJoinRoom(client: Socket, payload) {
   const channelExist = await this.chatChannelservice.channelExist(payload.roomName);
   if (!channelExist)
   {
-    await this.chatChannelservice.createChannel(userId, payload.roomName, "PRIVATE");
+    await this.chatChannelservice.createChannel(userId, payload.roomName, payload.type);
   }
   await this.chatChannelservice.addUserToChannel(userId, payload.roomName);
 
