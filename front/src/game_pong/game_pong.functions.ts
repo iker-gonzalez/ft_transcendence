@@ -389,16 +389,6 @@ export function initializeEventListeners({
           canvas.height - thickness - user1.height - ballData.radius * slit;
       }
     }
-    // user1.y = touch.clientY - user1.height / 2;
-    // if (user1.y < thickness + ballData.radius * slit) {
-    //   user1.y = thickness + ballData.radius * slit;
-    // } else if (
-    //   user1.y >
-    //   canvas.height - thickness - user1.height - ballData.radius * slit
-    // ) {
-    //   user1.y =
-    //     canvas.height - thickness - user1.height - ballData.radius * slit;
-    // }
   }
 
   const eventList = [
