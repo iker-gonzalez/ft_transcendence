@@ -298,9 +298,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <ListItem 
                         key={group.name} 
                         onClick={() => {
+                          handleJoinRoom(group, ''); // no password
                           handleGroupClick(group);
                           setPopupVisible(false);
-                          handleJoinRoom(group, ''); // no password
                         }}
                       >
                         {group.name}
