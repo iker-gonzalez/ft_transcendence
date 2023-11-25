@@ -162,7 +162,7 @@ export class ChatDMService {
    };
 
 
-   async muteUserDM(
+   async blockUserDM(
     userId: string,
     userToMuteId: string,
   ): Promise<void> 
@@ -177,6 +177,7 @@ export class ChatDMService {
     },
   });
 
+  console.log("Blo");
   await this.prisma.user.update({
     where: { id: userId },
     data: {
@@ -190,7 +191,7 @@ export class ChatDMService {
   }
 }
 
-async unmuteUserDM(
+async unblockUserDM(
   userId: string,
   userToUnMuteId: string,
 ): Promise<void> 
