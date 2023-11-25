@@ -170,6 +170,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     username: friend.username,
   }));
 
+  console.log('allGroups', allGroups);
+
   return (
     <SidebarContainer>
       <GradientBorder className="gradient-border">
@@ -283,8 +285,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                   Join Room
                 </MainButton>
                 <Title>Or join an existing one</Title>
-                  <List>
-                    {allGroups && allGroups.filter(group => userGroups && !userGroups.some(userGroup => userGroup.name === group.name)).map((group) => (
+                <List>
+                  {allGroups && allGroups
+                    .filter(group => userGroups && !userGroups.some(userGroup => userGroup.name === group.name))
+                    .filter(group => group.type === 'PUBLIC' || group.type === 'PROTECTED')
+                    .map((group) => (
                       <ListItem 
                         key={group.name} 
                         onClick={() => {
@@ -294,9 +299,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                         }}
                       >
                         {group.name}
+                        {group.type === 'PROTECTED' && ' 🔒'}
                       </ListItem>
                     ))}
-                  </List>
+                </List>
               </>
             )}
           </Modal>
