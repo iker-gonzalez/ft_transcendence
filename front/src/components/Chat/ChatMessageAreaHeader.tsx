@@ -90,6 +90,12 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ user, gro
             <MainButtonStyled onClick={() => console.log('Block button clicked')}>Block</MainButtonStyled>
             </div>
         )}
+        {group && (
+            <div>
+              <MainButtonStyled onClick={() => console.log('Actions button clicked')}>Actions</MainButtonStyled>
+              <MainButtonStyled onClick={() => console.log('Protect button clicked')}>Password</MainButtonStyled>
+            </div>
+        )}
         {friendProfileToShow && (
             <Modal
             dismissModalAction={() => {
