@@ -79,33 +79,33 @@ async handleUnmuteUserDM(client, payload) {
 
 
 @SubscribeMessage('joinRoom')
-async handleJoinRoom(client: Socket, paydload) {
+async handleJoinRoom(client: Socket, payload) {
   // Unir al cliente a la sala
   console.log("joiRoom event");
-  console.log(paydload.roomName);
-  console.log(paydload.intraId);
+  console.log(payload.roomName);
+  console.log(payload.intraId);
   try { 
 
-  const userId = await this.chatDMservice.findUserIdByIntraId(paydload.intraId);
+  const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
   console.log(userId);
-  const channelExist = await this.chatChannelservice.channelExist(paydload.roomName);
+  const channelExist = await this.chatChannelservice.channelExist(payload.roomName);
   if (!channelExist)
   {
-    await this.chatChannelservice.createChannel(userId, paydload.roomName, paydload.privacy, paydload.password);
+    await this.chatChannelservice.createChannel(userId, payload.roomName, payload.type, payload.password);
   }
   else 
   {
 
-    if (paydload.privacy == "protected")
-    await this.chatChannelservice.isPasswordCorrect(paydload.roomName, paydload.password);
+    if (payload.privacy == "protected")
+    await this.chatChannelservice.isPasswordCorrect(payload.roomName, payload.password);
   
-  if (paydload.privacy == "private")
+  if (payload.privacy == "private")
     throw new BadGatewayException ("Cannot access to a private chaner")
 }
-  await this.chatChannelservice.addUserToChannel(userId, paydload.roomName);
+  await this.chatChannelservice.addUserToChannel(userId, payload.roomName);
 
-  client.join(paydload.roomName);
-  client.emit('joinedRoom', `Te has unido a la sala ${paydload.roomName}`);
+  client.join(payload.roomName);
+  client.emit('joinedRoom', `Te has unido a la sala ${payload.roomName}`);
 
 } catch (error) {
   console.error("Error:", error);

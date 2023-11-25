@@ -9,9 +9,7 @@ import { darkerBgColor } from '../../constants/color-tokens';
 import MainButton from '../UI/MainButton';
 import RoundImg from '../UI/RoundImage';
 import UserStatusInfo from '../UI/UserStatus';
-import useChatMessageSocket, {
-  UseChatMessageSocket,
-} from './useChatMessageSocket';
+import { Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
@@ -102,14 +100,15 @@ const UnreadMessagesCount = styled.span`
 `;
 
 interface SidebarProps {
+  selectedUser: User | null;
+  selectedGroup: Group | null;
   users: Array<{ intraId: number; avatar: string; username: string }>;
-  userGroups: Array<{ id: string; name: string }>;
-  allGroups: Array<{ id: string; name: string }>;
+  userGroups: Group [] | null;
+  allGroups: Group [] | null;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
   unreadMessages: { [key: string]: number };
-  selectedUser: User | null;
-  selectedGroup: Group | null;
+  socket: Socket | null;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -120,7 +119,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   handleGroupClick,
   unreadMessages,
   selectedUser,
-  selectedGroup
+  selectedGroup,
+  socket
 }) => {
 
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -131,6 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { userData, fetchUserData } =
   useUserData();
   const { launchFlashMessage } = useFlashMessages();
+  const [groupNature, setGroupNature] = useState('PUBLIC');
 
   useEffect(() => {
     fetchFriendsList();
@@ -138,41 +139,23 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchUserData(token as string);
   }, []);
 
-  useEffect(() => {
-    //console.log('pepe');
-  }, [users]);
-  
-  // Get the socket and related objects from the utility function
-  const {
-    chatMessageSocketRef,
-    isSocketConnected,
-    isConnectionError,
-  }: UseChatMessageSocket = useChatMessageSocket();
-
-  // Add a listener for incoming messages
-  useEffect(() => {
-    if (isSocketConnected && chatMessageSocketRef.current) {
-      chatMessageSocketRef.current.on('newMessage', (messageData: string) => {
-        // Handle the incoming message, e.g., add it to your message list
-        console.log('Received a new message:', messageData);
-
-        // You can update your message state or perform other actions here
-      });
-    }
-  }, [isSocketConnected, chatMessageSocketRef]);
-
-  const handleJoinRoom = (roomName: string) => {
-    if (roomName.trim() !== '' && roomName && chatMessageSocketRef.current) {
-      if (userGroups.some(group => group.name === roomName)) {
+  const handleJoinRoom = (newGroup: Group) => {
+    if (newGroup.name.trim() !== '' && newGroup.name && socket) {
+      if (userGroups && userGroups.some(group => group.name === newGroup.name)) {
         launchFlashMessage(
-          `The group name ${roomName} already exists. Please choose a different name.`,
+          `The group name ${newGroup.name} already exists. Please choose a different name.`,
           FlashMessageLevel.ERROR,
         );
       } else {
-        chatMessageSocketRef.current.emit('joinRoom', { roomName, intraId: userData?.intraId });
+        const payload = {
+          roomName: newGroup.name,
+          intraId: userData?.intraId,
+          type: newGroup.type
+        };
+        socket.emit('joinRoom', payload);
         setPopupVisible(false);
         launchFlashMessage(
-          `You have successfully joined the room ${roomName}!`,
+          `You have successfully joined the room ${newGroup.name}!`,
           FlashMessageLevel.SUCCESS,
         );
       }
@@ -184,10 +167,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     avatar: friend.avatar,
     username: friend.username,
   }));
-
-  console.log('unreadMessages', unreadMessages);
-  console.log(users);
-  console.log('selectedUserIntraIddd:', selectedUser?.intraId)
 
   return (
     <SidebarContainer>
@@ -267,25 +246,39 @@ const Sidebar: React.FC<SidebarProps> = ({
                   }}  
                   placeholder="Enter room name"
                 />
+                <select value={groupNature} onChange={(e) => setGroupNature(e.target.value)}>
+                  <option value="PUBLIC">Public</option>
+                  <option value="PRIVATE">Private</option>
+                  <option value="PROTECTED">Protected</option>
+                </select>
                 <MainButton onClick={() => {
-                  handleGroupClick({
+                  if (!roomName) {
+                    launchFlashMessage(
+                      `Room name cannot be empty. Please choose a name.`,
+                      FlashMessageLevel.ERROR,
+                    );
+                    return;
+                  }
+                  const newGroup = {
                     id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), 
-                    name: roomName
-                  });
-                  handleJoinRoom(roomName);
+                    name: roomName,
+                    type: groupNature
+                  };
+                  handleGroupClick(newGroup);
+                  handleJoinRoom(newGroup);
                   setRoomName('');
                 }}>
                   Join Room
                 </MainButton>
                 <Title>Or join an existing one</Title>
                   <List>
-                    {allGroups.filter(group => !userGroups.some(userGroup => userGroup.name === group.name)).map((group) => (
+                    {allGroups && allGroups.filter(group => userGroups && !userGroups.some(userGroup => userGroup.name === group.name)).map((group) => (
                       <ListItem 
                         key={group.name} 
                         onClick={() => {
                           handleGroupClick(group);
                           setPopupVisible(false);
-                          handleJoinRoom(group.name);
+                          handleJoinRoom(group);
                         }}
                       >
                         {group.name}
@@ -308,7 +301,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <PlusSign onClick={() => { setPopupVisible(true); setActiveModalContent('groupChats'); }}>+</PlusSign>
           </div>
           <List>
-            {userGroups.map((group) => (
+            {userGroups && userGroups.map((group) => (
               <ListItem key={group.name} onClick={() => handleGroupClick(group)}>
                 {group.name}
               </ListItem>
