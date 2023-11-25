@@ -60,7 +60,7 @@ model ChatRoom {
 
   // Owner Chat
   ownerId   String
-  ownerUser User   @relation("ownerRooms", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerUser User   @relation("ownerRooms", fields: [ownerId], references: [id])
 
   // Relación con los mensajes en la sala
   messages ChatMessage[]
