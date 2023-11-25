@@ -16,7 +16,7 @@ import StarWarsBg from './images/themes/star-wars-bg.jpg';
 import StarWarsHitSound from './sounds/themes/hit-star_wars.mp3';
 
 import FootballBg from './images/themes/football-bg.jpg';
-import FootballHitSound from './sounds/themes/hit-footbal.wav';
+import FootballHitSound from './sounds/themes/hit-football.wav';
 import GamePowerUp from '../interfaces/game-power-up.interface';
 
 export const thickness: number = 10;
