@@ -36,7 +36,7 @@ type MessagesByChat = {
  * @returns React functional component.
  */
 const Chat: React.FC = () => {
-  const selectedUser = useRef<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   const [users, setUsers] = useState<User[]>([]);
@@ -101,6 +101,7 @@ useEffect(() => {
             return {
               id: item.id,
               name: item.name,
+              type: item.type,
             };
           });
           setUserGroups(groups);
@@ -118,6 +119,7 @@ useEffect(() => {
             return {
               id: item.id,
               name: item.name,
+              type: item.type,
             };
           });
           setAllGroups(allGroups);
@@ -158,8 +160,8 @@ useEffect(() => {
           [getUsernameFromIntraId(parsedData.senderId)]: [...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] || []), newMessage]
         }));
         console.log('check 1');
-        if (parsedData.senderId !== selectedUser?.current?.intraId && 
-          !(typeof parsedData.senderId === 'undefined' && typeof selectedUser?.current?.intraId === 'undefined')) {
+        if (parsedData.senderId !== selectedUser?.intraId && 
+          !(typeof parsedData.senderId === 'undefined' && typeof selectedUser?.intraId === 'undefined')) {
             console.log('check 2');
             try { 
               setUnreadMessages(prevUnreadMessages => {
@@ -246,8 +248,8 @@ useEffect(() => {
             timestamp: item.timestamp,
           };
         });
-        selectedUser.current = user;
-        //setSelectedGroup(null);
+        setSelectedUser(user);
+        setSelectedGroup(null);
         setMessages(messages);
         setMessagesByChat({});
         setUnreadMessages(prevUnreadMessages => ({
@@ -300,7 +302,7 @@ useEffect(() => {
       }
         else
           setMessages([]);
-        //setSelectedUser(null);
+        setSelectedUser(null);
         setSelectedGroup(group);
         setMessagesByChat({});
         setUserGroups((prevGroups) => {
@@ -328,12 +330,12 @@ useEffect(() => {
           handleUserClick={handleUserClick}
           handleGroupClick={handleGroupClick}
           unreadMessages={unreadMessages}
-          selectedUser={selectedUser.current}
+          selectedUser={selectedUser}
           selectedGroup={selectedGroup}
           socket={socket}
         />
         <ChatMessageArea
-          selectedUser={selectedUser.current}
+          selectedUser={selectedUser}
           selectedGroup={selectedGroup}
           messages={messages}
           messagesByChat={messagesByChat}
