@@ -132,6 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   useUserData();
   const { launchFlashMessage } = useFlashMessages();
   const [groupNature, setGroupNature] = useState('PUBLIC');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     fetchFriendsList();
@@ -139,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchUserData(token as string);
   }, []);
 
-  const handleJoinRoom = (newGroup: Group) => {
+  const handleJoinRoom = (newGroup: Group, password: string) => {
     if (newGroup.name.trim() !== '' && newGroup.name && socket) {
       if (userGroups && userGroups.some(group => group.name === newGroup.name)) {
         launchFlashMessage(
@@ -150,7 +151,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         const payload = {
           roomName: newGroup.name,
           intraId: userData?.intraId,
-          type: newGroup.type
+          type: newGroup.type,
+          password: password
         };
         socket.emit('joinRoom', payload);
         setPopupVisible(false);
@@ -243,7 +245,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     if (e.target.value.length <= 10) {
                       setRoomName(e.target.value);
                     }
-                  }}  
+                  }}
                   placeholder="Enter room name"
                 />
                 <select value={groupNature} onChange={(e) => setGroupNature(e.target.value)}>
@@ -251,6 +253,16 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <option value="PRIVATE">Private</option>
                   <option value="PROTECTED">Protected</option>
                 </select>
+
+                {groupNature === 'PRIVATE' && (
+                  <input 
+                    type="password" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                  />
+                )}
+                
                 <MainButton onClick={() => {
                   if (!roomName) {
                     launchFlashMessage(
@@ -265,7 +277,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     type: groupNature
                   };
                   handleGroupClick(newGroup);
-                  handleJoinRoom(newGroup);
+                  handleJoinRoom(newGroup, password);
                   setRoomName('');
                 }}>
                   Join Room
@@ -278,7 +290,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         onClick={() => {
                           handleGroupClick(group);
                           setPopupVisible(false);
-                          handleJoinRoom(group);
+                          handleJoinRoom(group, ''); // no password
                         }}
                       >
                         {group.name}
