@@ -360,24 +360,41 @@ export function initializeEventListeners({
     }
   }
 
-  // function onTouchStart(event: TouchEvent) {
-  //   const touch = event.touches[0];
-  //   user1.y = touch.clientY - user1.height / 2;
-  //   if (user1.y < thickness + ballData.radius * slit) {
-  //     user1.y = thickness + ballData.radius * slit;
-  //   } else if (
-  //     user1.y >
-  //     canvas.height - thickness - user1.height - ballData.radius * slit
-  //   ) {
-  //     user1.y =
-  //       canvas.height - thickness - user1.height - ballData.radius * slit;
-  //   }
-  // }
+  function onTouchStart(event: TouchEvent) {
+    const touch = event.touches[0];
+
+    if (isPlayer1) {
+      let rect = canvas.getBoundingClientRect();
+      user1.y = touch.clientY - rect.top - user1.height / 2;
+      if (user1.y < thickness + ballData.radius * slit) {
+        user1.y = thickness + ballData.radius * slit;
+      } else if (
+        user1.y >
+        canvas.height - thickness - user1.height - ballData.radius * slit
+      ) {
+        user1.y =
+          canvas.height - thickness - user1.height - ballData.radius * slit;
+      }
+    }
+    if (!isPlayer1 && !isSoloMode(usersData)) {
+      let rect = canvas.getBoundingClientRect();
+      user2.y = touch.clientY - rect.top - user2.height / 2;
+      if (user2.y < thickness + ballData.radius * slit) {
+        user2.y = thickness + ballData.radius * slit;
+      } else if (
+        user2.y >
+        canvas.height - thickness - user1.height - ballData.radius * slit
+      ) {
+        user2.y =
+          canvas.height - thickness - user1.height - ballData.radius * slit;
+      }
+    }
+  }
 
   const eventList = [
     { typeEvent: 'keydown', handler: onKeyDown },
     { typeEvent: 'mousemove', handler: onMouseMove },
-    // { typeEvent: 'touchstart', handler: onTouchStart },
+    { typeEvent: 'touchstart', handler: onTouchStart },
   ];
 
   return eventList;
