@@ -145,7 +145,8 @@ useEffect(() => {
     // console.log('useEffect new message triggered');
     if (isSocketConnected && socket) {
       const privateMessageListener = (messageData: any) => {
-        // console.log('private message listener triggered');
+        console.log('private message listener triggered');
+        console.log('message data DM', messageData);
         const parsedData = JSON.parse(messageData);
         const newMessage: Message = {
           id: messageData.id,
@@ -188,6 +189,7 @@ useEffect(() => {
 
     const groupMessageListener = (messageData: any) => {
       console.log('group message listener triggered');
+      console.log('message data group', messageData);
       if (!selectedGroup) {
         console.log('no selected group');
         return;
@@ -278,6 +280,7 @@ useEffect(() => {
    */
   const handleGroupClick = (group: Group) => {
     console.log('i am here baby');
+    console.log('groupname', group.name);
     fetchAuthorized(
       `${getBaseUrl()}/chat/${group.name}/allChannel`,
       /* temporary until endpoint is fixed */ {
@@ -288,7 +291,9 @@ useEffect(() => {
     )
       .then((response) => response.json())
       .then((data: GroupMessage[]) => {
+        console.log('data', data);
         if (data.length > 0) {
+          console.log('data', data);
         const messages = data.map((item: GroupMessage) => {
           return {
             id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
@@ -301,24 +306,19 @@ useEffect(() => {
         setMessages(messages);
       }
         else
+        {
+          console.log('no messages');
           setMessages([]);
+        }
         setSelectedUser(null);
         setSelectedGroup(group);
         setMessagesByChat({});
-        setUserGroups((prevGroups) => {
-          // Check if the group already exists in the array
-          const groupExists = prevGroups.some((prevGroup) => prevGroup.name === group.name);
-        
-          // If the group doesn't exist, add them to the array
-          if (!groupExists) {
-            console.log('group does not exist');
-            return [...prevGroups, group];
-          }
-          // If the group does exist, return the previous state
-          return prevGroups;
-        });
       });
   };
+
+  function updateUserGroups(newGroup: Group) {
+    setUserGroups(prevGroups => [...prevGroups, newGroup]);
+  }
 
   return (
     <CenteredLayout>
@@ -326,6 +326,7 @@ useEffect(() => {
         <ChatSidebar
           users={users}
           userGroups={userGroups}
+          updateUserGroups={updateUserGroups}
           allGroups={allGroups}
           handleUserClick={handleUserClick}
           handleGroupClick={handleGroupClick}

@@ -149,6 +149,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
           socket.emit('sendMessageToRoom', {
             roomName: selectedGroup?.name,
             intraId: userData?.intraId,
+            senderName: userData?.username || 'Anonymous',
+            senderAvatar: userData?.avatar || 'Anonymous',
             message: newMessage,
           });
       }
