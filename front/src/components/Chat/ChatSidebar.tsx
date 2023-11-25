@@ -147,7 +147,12 @@ const Sidebar: React.FC<SidebarProps> = ({
           FlashMessageLevel.ERROR,
         );
       } else {
-        socket.emit('joinRoom', { roomName: newGroup.name, intraId: userData?.intraId });
+        const payload = {
+          roomName: newGroup.name,
+          intraId: userData?.intraId,
+          type: newGroup.type
+        };
+        socket.emit('joinRoom', payload);
         setPopupVisible(false);
         launchFlashMessage(
           `You have successfully joined the room ${newGroup.name}!`,
