@@ -68,70 +68,9 @@ const Chat: React.FC = () => {
     setIsConnectionError(error);
   }, [chatMessageSocketRef, connected, error]);
 
-  // const fetchPrivateChats = () => {
-  //   if (userData) {
-  //     fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/DM`, {
-  //       headers: {
-  //         Authorization: `Bearer ${Cookies.get('token')}`,
-  //       },
-  //     })
-  //       .then((response) => response.json())
-  //       .then((data: User[]) => {
-  //         const users = data.map((item) => {
-  //           return {
-  //             intraId: item.intraId,
-  //             avatar: item.avatar,
-  //             username: item.username,
-  //           };
-  //         });
-  //         setUsers(users);
-  //       });
-  //   }
-  // };
-
-  // const fetchUserGroups = () => {
-  //   if (userData) {
-  //     fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/CM`, {
-  //       headers: {
-  //         Authorization: `Bearer ${Cookies.get('token')}`,
-  //       },
-  //     })
-  //       .then((response) => response.json())
-  //       .then((data: Group[]) => {
-  //         const groups = data.map((item) => {
-  //           return {
-  //             id: item.id,
-  //             name: item.name,
-  //             type: item.type,
-  //           };
-  //         });
-  //         setUserGroups(groups);
-  //       });
-  //   }
-  // };
-
-  // const fetchAllGroups = () => {
-  //   if (userData) {
-  //     fetchAuthorized(`${getBaseUrl()}/chat/allExistingChannel`, {
-  //       headers: {
-  //         Authorization: `Bearer ${Cookies.get('token')}`,
-  //       },
-  //     })
-  //       .then((response) => response.json())
-  //       .then((data: Group[]) => {
-  //         const allGroups = data.map((item) => {
-  //           return {
-  //             id: item.id,
-  //             name: item.name,
-  //             type: item.type,
-  //           };
-  //         });
-  //         setAllGroups(allGroups);
-  //       });
-  //   }
-  // };
-
   const { fetchPrivateChats, fetchUserGroups, fetchAllGroups } = useChatData();
+
+  const [updateChatData, setUpdateChatData] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -146,7 +85,7 @@ const Chat: React.FC = () => {
     };
 
     fetchData();
-  }, [userData]);
+  }, [updateChatData]);
 
   const [unreadMessages, setUnreadMessages] = useState<{
     [key: string]: number;
@@ -367,8 +306,8 @@ const Chat: React.FC = () => {
   };
 
   function updateUserGroups(newGroup: Group) {
-    //setUserGroups(prevGroups => [...prevGroups, newGroup]);
-    fetchUserGroups();
+    setUpdateChatData(prevState => !prevState);
+
   }
 
   return (
