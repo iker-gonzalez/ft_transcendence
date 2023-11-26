@@ -15,7 +15,7 @@ import useChatMessageSocket, {
   UseChatMessageSocket,
 } from '../components/Chat/useChatMessageSocket';
 import { Socket } from 'socket.io-client';
-import { useChatData } from '../context/ChatDataContext';
+import { useChatData, useMessageData } from '../context/ChatDataContext';
 
 const WrapperDiv = styled.div`
   width: 100%;
@@ -68,13 +68,13 @@ const Chat: React.FC = () => {
     setIsConnectionError(error);
   }, [chatMessageSocketRef, connected, error]);
 
-  const { fetchPrivateChats, fetchUserGroups, fetchAllGroups } = useChatData();
+  const { fetchDirectMessageUsers, fetchUserGroups, fetchAllGroups } = useChatData();
 
   const [updateChatData, setUpdateChatData] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const users = await fetchPrivateChats();
+      const users = await fetchDirectMessageUsers();
       setUsers(users);
 
       const userGroups = await fetchUserGroups();
@@ -86,6 +86,26 @@ const Chat: React.FC = () => {
 
     fetchData();
   }, [updateChatData]);
+
+  const { fetchUserMessages, fetchGroupMessages } = useMessageData();
+
+  const handleUserClick = async (user: User) => {
+    console.log('user', user)
+    const directMessages = await fetchUserMessages(user);
+    setSelectedUser(user);
+    setSelectedGroup(null);
+    setMessages(directMessages);
+  };
+  
+  const handleGroupClick = async (group: Group) => {
+    console.log('group', group)
+    const groupMessages = await fetchGroupMessages(group);
+    setSelectedGroup(group);
+    setSelectedUser(null);
+    console.log('groupMessages', groupMessages)
+    setMessages(groupMessages);
+    // ... set state based on messages ...
+  };
 
   const [unreadMessages, setUnreadMessages] = useState<{
     [key: string]: number;
@@ -199,102 +219,6 @@ const Chat: React.FC = () => {
       };
     }
   }, [newMessageSent, isSocketConnected]);
-
-  /**
-   * Handles the click event on a user in the chat sidebar.
-   * Fetches the messages between the signed in user and the selected user.
-   * @param user - The selected user.
-   */
-  const handleUserClick = (user: User) => {
-    const userIntraId = getIntraIdFromUsername(user.username); //temporary until endpoint is fixed
-    fetchAuthorized(
-      `${getBaseUrl()}/chat/${userData?.intraId}/${userIntraId}/DM`,
-      /* temporary until endpoint is fixed */ {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      },
-    )
-      .then((response) => response.json())
-      .then((data: Message[]) => {
-        const messages = data.map((item: Message) => {
-          return {
-            id:
-              Math.random().toString(36).substring(2, 15) +
-              Math.random().toString(36).substring(2, 15),
-            senderName: item.senderName,
-            senderAvatar: item.senderAvatar,
-            content: item.content,
-            timestamp: item.timestamp,
-          };
-        });
-        setSelectedUser(user);
-        setSelectedGroup(null);
-        setMessages(messages);
-        setMessagesByChat({});
-        setUnreadMessages((prevUnreadMessages) => ({
-          ...prevUnreadMessages,
-          [user.intraId]: 0,
-        }));
-        setUsers((prevUsers) => {
-          // Check if the user already exists in the array
-          const userExists = prevUsers.some(
-            (prevUser) => prevUser.intraId === user.intraId,
-          );
-          // If the user doesn't exist, add them to the array
-          if (!userExists) {
-            return [...prevUsers, user];
-          }
-
-          // If the user does exist, return the previous state
-          return prevUsers;
-        });
-      });
-  };
-
-  /**
-   * Handles the click event on a group in the chat sidebar.
-   * Fetches the messages between the signed in user and the selected group.
-   * Sets the selected group and clears the selected user.
-   * @param group - The selected group.
-   */
-  const handleGroupClick = (group: Group) => {
-    console.log('i am here baby');
-    console.log('groupname', group.name);
-    fetchAuthorized(
-      `${getBaseUrl()}/chat/${group.name}/allChannel`,
-      /* temporary until endpoint is fixed */ {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      },
-    )
-      .then((response) => response.json())
-      .then((data: GroupMessage[]) => {
-        console.log('data', data);
-        if (data.length > 0) {
-          console.log('data', data);
-          const messages = data.map((item: GroupMessage) => {
-            return {
-              id:
-                Math.random().toString(36).substring(2, 15) +
-                Math.random().toString(36).substring(2, 15),
-              senderName: item.senderName,
-              senderAvatar: item.senderAvatar,
-              content: item.content,
-              timestamp: item.timestamp,
-            };
-          });
-          setMessages(messages);
-        } else {
-          console.log('no messages');
-          setMessages([]);
-        }
-        setSelectedUser(null);
-        setSelectedGroup(group);
-        setMessagesByChat({});
-      });
-  };
 
   function updateUserGroups(newGroup: Group) {
     setUpdateChatData((prevState) => !prevState);
