@@ -44,22 +44,32 @@ const MainButtonStyled = styled(MainButton)`
 `;
 
 interface ChatMessageAreaHeaderProps {
-    user?: User | null;
-    group?: Group | null;
-    socket: Socket | null;
-  }
+  user?: User | null;
+  group?: Group | null;
+  socket: Socket | null;
+  navigateToEmptyChat: () => void;
+}
 
-const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ user, group, socket }) => {
-  
-  const [friendProfileToShow, setFriendProfileToShow] = useState<FriendData | null>(null);
+const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
+  user,
+  group,
+  socket,
+  navigateToEmptyChat,
+}) => {
+  const [friendProfileToShow, setFriendProfileToShow] =
+    useState<FriendData | null>(null);
 
-  const [showAddNewFriendFlow, setShowAddNewFriendFlow] = useState<boolean>(false);
+  const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
+    useState<boolean>(false);
 
   const { userData } = useUserData();
 
-  const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } = useUserFriends();
+  const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
+    useUserFriends();
 
-  const friend = userFriends.find(userFriend => userFriend.username === user?.username) || null;
+  const friend =
+    userFriends.find((userFriend) => userFriend.username === user?.username) ||
+    null;
 
   const { launchFlashMessage } = useFlashMessages();
 
@@ -79,63 +89,83 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ user, gro
   };
 
   const handleLeaveChannel = (roomName: string) => {
-
     if (roomName.trim() !== '' && roomName && socket) {
       const payload = {
         roomName: roomName,
         intraId: userData?.intraId,
       };
-  
+
       socket.emit('leaveRoom', payload);
-  
+
       launchFlashMessage(
         `You have successfully left the room ${roomName}!`,
         FlashMessageLevel.SUCCESS,
       );
+      navigateToEmptyChat();
     }
   };
-  
-    return (
-        <HeaderWrapper>
-        <div>
-            {user && <Avatar src={user.avatar} alt={user.username} />}
-            <Title style={{ marginLeft: group ? '0' : '', marginBottom: group ? '15px' : '' }}>
-                {user?.username || group?.name || ''}
-                {group?.type === 'PROTECTED' && <span> 🔐</span>}
-                {group?.type === 'PRIVATE' && <span> 🔒</span>}
-            </Title>        
-        </div>
-        {user && (
-            <div>
-            <MainButtonStyled onClick={() => console.log('Play button clicked')}>Play</MainButtonStyled>
-            <MainButtonStyled onClick={() => setFriendProfileToShow(friend)}>Profile</MainButtonStyled>
-            <MainButtonStyled onClick={() => console.log('Block button clicked')}>Block</MainButtonStyled>
-            </div>
-        )}
-        {group && (
-            <div>
-              <MainButtonStyled onClick={() => console.log('Actions button clicked')}>Actions</MainButtonStyled>
-              <MainButtonStyled onClick={() => console.log('Protect button clicked')}>Password</MainButtonStyled>
-              <MainButtonStyled onClick={() => handleLeaveChannel(group.name)}>Leave Channel</MainButtonStyled>
 
-            </div>
-        )}
-        {friendProfileToShow && (
-            <Modal
-            dismissModalAction={() => {
-                setFriendProfileToShow(null);
-            }}
-            showFullScreen={true}
-            >
-            <ViewNewUserProfile
-                foundUserData={friendProfileToShow}
-                isAlreadyFriend={true}
-                onUpdateFriendsList={onUpdateFriendsList}
-            />
-            </Modal>
-        )}
-        </HeaderWrapper>
-    );
-  };
-  
-  export default ChatMessageAreaHeader;
+  return (
+    <HeaderWrapper>
+      <div>
+        {user && <Avatar src={user.avatar} alt={user.username} />}
+        <Title
+          style={{
+            marginLeft: group ? '0' : '',
+            marginBottom: group ? '15px' : '',
+          }}
+        >
+          {user?.username || group?.name || ''}
+          {group?.type === 'PROTECTED' && <span> 🔐</span>}
+          {group?.type === 'PRIVATE' && <span> 🔒</span>}
+        </Title>
+      </div>
+      {user && (
+        <div>
+          <MainButtonStyled onClick={() => console.log('Play button clicked')}>
+            Play
+          </MainButtonStyled>
+          <MainButtonStyled onClick={() => setFriendProfileToShow(friend)}>
+            Profile
+          </MainButtonStyled>
+          <MainButtonStyled onClick={() => console.log('Block button clicked')}>
+            Block
+          </MainButtonStyled>
+        </div>
+      )}
+      {group && (
+        <div>
+          <MainButtonStyled
+            onClick={() => console.log('Actions button clicked')}
+          >
+            Actions
+          </MainButtonStyled>
+          <MainButtonStyled
+            onClick={() => console.log('Protect button clicked')}
+          >
+            Password
+          </MainButtonStyled>
+          <MainButtonStyled onClick={() => handleLeaveChannel(group.name)}>
+            Leave Channel
+          </MainButtonStyled>
+        </div>
+      )}
+      {friendProfileToShow && (
+        <Modal
+          dismissModalAction={() => {
+            setFriendProfileToShow(null);
+          }}
+          showFullScreen={true}
+        >
+          <ViewNewUserProfile
+            foundUserData={friendProfileToShow}
+            isAlreadyFriend={true}
+            onUpdateFriendsList={onUpdateFriendsList}
+          />
+        </Modal>
+      )}
+    </HeaderWrapper>
+  );
+};
+
+export default ChatMessageAreaHeader;

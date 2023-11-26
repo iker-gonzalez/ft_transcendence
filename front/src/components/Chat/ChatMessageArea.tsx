@@ -70,7 +70,10 @@ const StyledParagraph = styled.p`
 
 interface ChatMessageAreaProps {
   selectedUser: User | null;
+  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
   selectedGroup: Group | null;
+  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
+  updateUserGroups: (group: Group) => void;
   messages: Message[];
   setMessagesByChat: React.Dispatch<React.SetStateAction<{ [key: string]: Message[] }>>;
   messagesByChat: { [key: string]: Message[] };
@@ -88,7 +91,10 @@ interface ChatMessageAreaProps {
 
 const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   selectedUser,
+  setSelectedUser,
   selectedGroup,
+  setSelectedGroup,
+  updateUserGroups,
   messages,
   setMessagesByChat,
   messagesByChat,
@@ -156,8 +162,15 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       }
       setMessage('');
       onNewMessage();
-    }
+    }  
   };
+
+  
+  const navigateToEmptyChat = () => {
+    setSelectedUser(null);
+    setSelectedGroup(null);
+  }
+
   return (
     <MessageAreaContainer>
     <GradientBorder className="gradient-border">
@@ -168,6 +181,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
             user={selectedUser} 
             group={selectedGroup} 
             socket={socket}
+            navigateToEmptyChat={navigateToEmptyChat}
           />          
           <MessageList>
           {messages.map((message) => (
