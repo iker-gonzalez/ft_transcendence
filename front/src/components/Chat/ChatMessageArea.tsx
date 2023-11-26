@@ -164,7 +164,11 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       {selectedUser || selectedGroup ? (
         <>
         <WrapperDiv>
-          <ChatMessageAreaHeader user={selectedUser} group={selectedGroup} />          
+          <ChatMessageAreaHeader 
+            user={selectedUser} 
+            group={selectedGroup} 
+            socket={socket}
+          />          
           <MessageList>
           {messages.map((message) => (
                 <MessageItem key={message.id}>
