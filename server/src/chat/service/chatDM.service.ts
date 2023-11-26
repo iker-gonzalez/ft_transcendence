@@ -119,6 +119,16 @@ export class ChatDMService {
     return user ? user.id : null;
   }
 
+  async findUserIntraById(Id: string): Promise<number>
+  {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: Id,
+      },
+    });
+
+    return user ? user.intraId : 0;
+  }
   /********************************************************** */
   //                     DM FUNCIONALITY                      //
   /********************************************************** */
