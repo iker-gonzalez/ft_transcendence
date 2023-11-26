@@ -23,6 +23,7 @@ import { ConversationMessageDTO } from './dto/conversation-message.dto';
 import { AllExistingChannelsDTO } from './dto/all-existing-channel.dto';
 import { AllUserChannelInDTO } from './dto/all-user-channel-in.dto';
 import { ChannelType } from '@prisma/client';
+import { AllChannelInfo } from './dto/all-channel-info.dt';
 
 @ApiTags('Chat')
 @Controller('chat')
@@ -191,7 +192,7 @@ export class ChatController {
     })
     @ApiOkResponse({
       description: swaggerConstants.chat.channelMess.ok.description,
-      type: ConversationMessageDTO,
+      type: AllChannelInfo,
     })
     async getMessageInRoom( 
       @Param('roomName') roomName: string,
