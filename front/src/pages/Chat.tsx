@@ -15,6 +15,7 @@ import useChatMessageSocket, {
   UseChatMessageSocket,
 } from '../components/Chat/useChatMessageSocket';
 import { Socket } from 'socket.io-client';
+import { useChatData } from '../context/ChatDataContext';
 
 const WrapperDiv = styled.div`
   width: 100%;
@@ -29,7 +30,6 @@ const WrapperDiv = styled.div`
 type MessagesByChat = {
   [key: string]: Message[];
 };
-
 
 /**
  * ChatPage component that displays the chat sidebar and message area.
@@ -49,85 +49,47 @@ const Chat: React.FC = () => {
 
   const [allGroups, setAllGroups] = useState<Group[]>([]);
 
-// Initialize state variables
-const [socket, setSocket] = useState<Socket | null>(null);
-const [isSocketConnected, setIsSocketConnected] = useState(false);
-const [isConnectionError, setIsConnectionError] = useState(false);
+  // Initialize state variables
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [isConnectionError, setIsConnectionError] = useState(false);
 
-// Call useChatMessageSocket at the top level of your component
-const {
-  chatMessageSocketRef,
-  isSocketConnected: connected,
-  isConnectionError: error,
-}: UseChatMessageSocket = useChatMessageSocket();
-
-useEffect(() => {
-  // Update state variables
-  setSocket(chatMessageSocketRef.current);
-  setIsSocketConnected(connected);
-  setIsConnectionError(error);
-}, [chatMessageSocketRef, connected, error]);
-
+  // Call useChatMessageSocket at the top level of your component
+  const {
+    chatMessageSocketRef,
+    isSocketConnected: connected,
+    isConnectionError: error,
+  }: UseChatMessageSocket = useChatMessageSocket();
 
   useEffect(() => {
-    // Fetch all users that the signed in user has chatted with privately
-    if (userData) {
-      fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/DM`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data: User[]) => {
-          const users = data.map((item) => {
-            return {
-              intraId: item.intraId,
-              avatar: item.avatar,
-              username: item.username,
-            };
-          });
-          setUsers(users);
-        });
+    // Update state variables
+    setSocket(chatMessageSocketRef.current);
+    setIsSocketConnected(connected);
+    setIsConnectionError(error);
+  }, [chatMessageSocketRef, connected, error]);
 
-      // Fetch all groups that the signed in user has chatted in
-      fetchAuthorized(`${getBaseUrl()}/chat/${userData?.intraId}/CM`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data: Group[]) => {
-          const groups = data.map((item) => {
-            return {
-              id: item.id,
-              name: item.name,
-              type: item.type,
-            };
-          });
-          setUserGroups(groups);
-        });
+  const { fetchPrivateChats, fetchUserGroups, fetchAllGroups } = useChatData();
 
-      // Fetch all existing groups in the database
-      fetchAuthorized(`${getBaseUrl()}/chat/allExistingChannel`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data: Group[]) => {
-          const allGroups = data.map((item) => {
-            return {
-              id: item.id,
-              name: item.name,
-              type: item.type,
-            };
-          });
-          setAllGroups(allGroups);
-        });
-    }
-  }, [userData]);
+  const [updateChatData, setUpdateChatData] = useState(false);
 
-  const [unreadMessages, setUnreadMessages] = useState<{ [key: string]: number }>(() => {
+  useEffect(() => {
+    const fetchData = async () => {
+      const users = await fetchPrivateChats();
+      setUsers(users);
+
+      const userGroups = await fetchUserGroups();
+      setUserGroups(userGroups);
+
+      const allGroups = await fetchAllGroups();
+      setAllGroups(allGroups);
+    };
+
+    fetchData();
+  }, [updateChatData]);
+
+  const [unreadMessages, setUnreadMessages] = useState<{
+    [key: string]: number;
+  }>(() => {
     const savedUnreadMessages = localStorage.getItem('unreadMessages');
     return savedUnreadMessages ? JSON.parse(savedUnreadMessages) : {};
   });
@@ -139,90 +101,113 @@ useEffect(() => {
     localStorage.setItem('unreadMessages', JSON.stringify(unreadMessages));
   }, [unreadMessages]);
 
-
   // Add a listener for incoming messages
   useEffect(() => {
     // console.log('useEffect new message triggered');
     if (isSocketConnected && socket) {
       const privateMessageListener = (messageData: any) => {
-        console.log('private message listener triggered');
-        console.log('message data DM', messageData);
         const parsedData = JSON.parse(messageData);
         const newMessage: Message = {
           id: messageData.id,
-          senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
-          senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
+          senderName:
+            getUsernameFromIntraId(parsedData.senderId)?.toString() ||
+            'Anonymous',
+          senderAvatar:
+            getUsernameFromIntraId(parsedData.senderAvatar)?.toString() ||
+            'Anonymous',
           content: parsedData.content,
           timestamp: Date.now().toString(),
         };
         //Append the new message to the messages state
         setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
           ...prevMessages,
-          [getUsernameFromIntraId(parsedData.senderId)]: [...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] || []), newMessage]
+          [getUsernameFromIntraId(parsedData.senderId)]: [
+            ...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] ||
+              []),
+            newMessage,
+          ],
         }));
         console.log('check 1');
-        if (parsedData.senderId !== selectedUser?.intraId && 
-          !(typeof parsedData.senderId === 'undefined' && typeof selectedUser?.intraId === 'undefined')) {
-            console.log('check 2');
-            try { 
-              setUnreadMessages(prevUnreadMessages => {
-                console.log('check 3');
+        if (
+          parsedData.senderId !== selectedUser?.intraId &&
+          !(
+            typeof parsedData.senderId === 'undefined' &&
+            typeof selectedUser?.intraId === 'undefined'
+          )
+        ) {
+          console.log('check 2');
+          try {
+            setUnreadMessages((prevUnreadMessages) => {
+              console.log('check 3');
 
-                // Increment the count for the sender
+              // Increment the count for the sender
               const updatedUnreadMessages = {
                 ...prevUnreadMessages,
-                [parsedData.senderId]: (prevUnreadMessages[parsedData.senderId] || 0) + 1,
+                [parsedData.senderId]:
+                  (prevUnreadMessages[parsedData.senderId] || 0) + 1,
               };
 
               // Store the updated count in local storage
-              
-              console.log('añade mensaje a local storage');
-            localStorage.setItem('unreadMessages', JSON.stringify(updatedUnreadMessages));
-      
-            return updatedUnreadMessages;
-          });
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    };
 
-    const groupMessageListener = (messageData: any) => {
-      console.log('group message listener triggered');
-      console.log('message data group', messageData);
-      if (!selectedGroup) {
-        console.log('no selected group');
-        return;
-      }
-      console.log('group message received');
-      const parsedData = JSON.parse(messageData);
-      const newMessage: Message = {
-        id: messageData.id,
-        senderName: getUsernameFromIntraId(parsedData.senderId)?.toString() || 'Anonymous',
-        senderAvatar: getUsernameFromIntraId(parsedData.senderAvatar)?.toString() || 'Anonymous',
-        content: parsedData.content,
-        timestamp: Date.now().toString(),
+              console.log('añade mensaje a local storage');
+              localStorage.setItem(
+                'unreadMessages',
+                JSON.stringify(updatedUnreadMessages),
+              );
+
+              return updatedUnreadMessages;
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        }
       };
-      // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-      //   ...prevMessages,
-      //   [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), newMessage]
-      // })); 
-    };
+
+      const groupMessageListener = (messageData: any) => {
+        console.log('group message listener triggered');
+        console.log('message data group', messageData);
+        if (!selectedGroup) {
+          console.log('no selected group');
+          return;
+        }
+        console.log('group message received');
+        const parsedData = JSON.parse(messageData);
+        const newMessage: Message = {
+          id: messageData.id,
+          senderName:
+            getUsernameFromIntraId(parsedData.senderId)?.toString() ||
+            'Anonymous',
+          senderAvatar:
+            getUsernameFromIntraId(parsedData.senderAvatar)?.toString() ||
+            'Anonymous',
+          content: parsedData.content,
+          timestamp: Date.now().toString(),
+        };
+        // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+        //   ...prevMessages,
+        //   [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), newMessage]
+        // }));
+      };
       // Add the listeners to the socket
-      socket.on(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
+      socket.on(
+        `privateMessageReceived/${userData?.intraId.toString()}`,
+        privateMessageListener,
+      );
       socket.on('message', groupMessageListener);
 
-    //Clean up the listener when the component unmounts or when the receiverId changes
-     return () => {
+      //Clean up the listener when the component unmounts or when the receiverId changes
+      return () => {
         if (socket) {
           console.log('cleaning up listeners');
-          socket.off(`privateMessageReceived/${userData?.intraId.toString()}`, privateMessageListener);
+          socket.off(
+            `privateMessageReceived/${userData?.intraId.toString()}`,
+            privateMessageListener,
+          );
           socket.off('message', groupMessageListener);
         }
-    };
-  }
+      };
+    }
   }, [newMessageSent, isSocketConnected]);
-
 
   /**
    * Handles the click event on a user in the chat sidebar.
@@ -243,7 +228,9 @@ useEffect(() => {
       .then((data: Message[]) => {
         const messages = data.map((item: Message) => {
           return {
-            id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+            id:
+              Math.random().toString(36).substring(2, 15) +
+              Math.random().toString(36).substring(2, 15),
             senderName: item.senderName,
             senderAvatar: item.senderAvatar,
             content: item.content,
@@ -254,18 +241,20 @@ useEffect(() => {
         setSelectedGroup(null);
         setMessages(messages);
         setMessagesByChat({});
-        setUnreadMessages(prevUnreadMessages => ({
+        setUnreadMessages((prevUnreadMessages) => ({
           ...prevUnreadMessages,
           [user.intraId]: 0,
         }));
         setUsers((prevUsers) => {
           // Check if the user already exists in the array
-          const userExists = prevUsers.some((prevUser) => prevUser.intraId === user.intraId);
+          const userExists = prevUsers.some(
+            (prevUser) => prevUser.intraId === user.intraId,
+          );
           // If the user doesn't exist, add them to the array
           if (!userExists) {
             return [...prevUsers, user];
           }
-        
+
           // If the user does exist, return the previous state
           return prevUsers;
         });
@@ -294,19 +283,19 @@ useEffect(() => {
         console.log('data', data);
         if (data.length > 0) {
           console.log('data', data);
-        const messages = data.map((item: GroupMessage) => {
-          return {
-            id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-            senderName: item.senderName,
-            senderAvatar: item.senderAvatar,
-            content: item.content,
-            timestamp: item.timestamp,
-          };
-        });
-        setMessages(messages);
-      }
-        else
-        {
+          const messages = data.map((item: GroupMessage) => {
+            return {
+              id:
+                Math.random().toString(36).substring(2, 15) +
+                Math.random().toString(36).substring(2, 15),
+              senderName: item.senderName,
+              senderAvatar: item.senderAvatar,
+              content: item.content,
+              timestamp: item.timestamp,
+            };
+          });
+          setMessages(messages);
+        } else {
           console.log('no messages');
           setMessages([]);
         }
@@ -317,7 +306,8 @@ useEffect(() => {
   };
 
   function updateUserGroups(newGroup: Group) {
-    setUserGroups(prevGroups => [...prevGroups, newGroup]);
+    setUpdateChatData(prevState => !prevState);
+
   }
 
   return (
@@ -342,9 +332,12 @@ useEffect(() => {
           messagesByChat={messagesByChat}
           setMessagesByChat={setMessagesByChat}
           onNewMessage={() => {
-            setNewMessageSent(prevNewMessageSent => !prevNewMessageSent);
+            setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
           }}
           socket={socket}
+          setSelectedUser={setSelectedUser}
+          setSelectedGroup={setSelectedGroup}
+          updateUserGroups={updateUserGroups}
         />
       </WrapperDiv>
     </CenteredLayout>
