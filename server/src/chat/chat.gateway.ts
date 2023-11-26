@@ -144,7 +144,7 @@ async handleSendMessageToRoom( client: Socket, payload) {
     await this.chatChannelservice.addChannelMessageToUser(payload.roomName ,userId, payload.message);
     
     // Enviar el mensaje a todos los clientes en la sala
-    this.server.to(payload.roomName).emit('message', payload.message);
+    this.server.to(payload.roomName).emit('message', payload);
 
   }
   catch(error){
