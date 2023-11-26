@@ -68,7 +68,8 @@ const Chat: React.FC = () => {
     setIsConnectionError(error);
   }, [chatMessageSocketRef, connected, error]);
 
-  const { fetchDirectMessageUsers, fetchUserGroups, fetchAllGroups } = useChatData();
+  const { fetchDirectMessageUsers, fetchUserGroups, fetchAllGroups } =
+    useChatData();
 
   const [updateChatData, setUpdateChatData] = useState(false);
 
@@ -90,19 +91,19 @@ const Chat: React.FC = () => {
   const { fetchUserMessages, fetchGroupMessages } = useMessageData();
 
   const handleUserClick = async (user: User) => {
-    console.log('user', user)
+    console.log('user', user);
     const directMessages = await fetchUserMessages(user);
     setSelectedUser(user);
     setSelectedGroup(null);
     setMessages(directMessages);
   };
-  
+
   const handleGroupClick = async (group: Group) => {
-    console.log('group', group)
+    console.log('group', group);
     const groupMessages = await fetchGroupMessages(group);
     setSelectedGroup(group);
     setSelectedUser(null);
-    console.log('groupMessages', groupMessages)
+    console.log('groupMessages', groupMessages);
     setMessages(groupMessages);
     // ... set state based on messages ...
   };
