@@ -3,12 +3,14 @@ import Cookies from 'js-cookie';
 import { useUserData } from './UserDataContext';
 import User from '../interfaces/chat-user.interface';
 import Group from '../interfaces/chat-group.interface';
-import UserData from '../interfaces/user-data.interface';
+import Message from '../interfaces/chat-dm-message.interface';
+import GroupMessage from '../interfaces/chat-group-message.interface';
+import { getIntraIdFromUsername, getUsernameFromIntraId } from '../utils/utils';
 
 export const useChatData = () => {
   const { userData } = useUserData();
 
-  const fetchPrivateChats = async () => {
+  const fetchDirectMessageUsers = async () => {
     const response = await fetchAuthorized(
       `${getBaseUrl()}/chat/${userData?.intraId}/DM`,
       {
@@ -68,5 +70,38 @@ export const useChatData = () => {
     return allGroups;
   };
 
-  return { fetchPrivateChats, fetchUserGroups, fetchAllGroups };
+  return { fetchDirectMessageUsers, fetchUserGroups, fetchAllGroups };
+};
+
+export const useMessageData = () => {
+  const { userData } = useUserData();
+
+  const fetchUserMessages = async (user: User) => {
+    const userIntraId = getIntraIdFromUsername(user.username); //temporary until endpoint is fixed
+    const response = await fetchAuthorized(
+      `${getBaseUrl()}/chat/${userData?.intraId}/${userIntraId}/DM`,
+      /* temporary until endpoint is fixed */ {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+      },
+    );
+    const data = await response.json();
+    return data;
+  };
+
+  const fetchGroupMessages = async (group: Group) => {
+    const response = await fetchAuthorized(
+      `${getBaseUrl()}/chat/${group.name}/allChannel`,
+      /* temporary until endpoint is fixed */ {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+      },
+    );
+    const data = await response.json();
+    return data;
+  };
+
+  return { fetchUserMessages, fetchGroupMessages };
 };
