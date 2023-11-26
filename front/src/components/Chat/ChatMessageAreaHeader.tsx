@@ -10,6 +10,7 @@ import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
+import { Socket } from 'socket.io-client';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -45,18 +46,20 @@ const MainButtonStyled = styled(MainButton)`
 interface ChatMessageAreaHeaderProps {
     user?: User | null;
     group?: Group | null;
+    socket: Socket | null;
   }
 
-const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ user, group }) => {
-    const [friendProfileToShow, setFriendProfileToShow] =
-    useState<FriendData | null>(null);
-  const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
-    useState<boolean>(false);
+const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ user, group, socket }) => {
+  
+  const [friendProfileToShow, setFriendProfileToShow] = useState<FriendData | null>(null);
 
-  const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
-    useUserFriends();
+  const [showAddNewFriendFlow, setShowAddNewFriendFlow] = useState<boolean>(false);
 
-    const friend = userFriends.find(userFriend => userFriend.username === user?.username) || null;
+  const { userData } = useUserData();
+
+  const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } = useUserFriends();
+
+  const friend = userFriends.find(userFriend => userFriend.username === user?.username) || null;
 
   const { launchFlashMessage } = useFlashMessages();
 
@@ -74,6 +77,23 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ user, gro
 
     launchFlashMessage(successMessage, FlashMessageLevel.SUCCESS);
   };
+
+  const handleLeaveChannel = (roomName: string) => {
+
+    if (roomName.trim() !== '' && roomName && socket) {
+      const payload = {
+        roomName: roomName,
+        intraId: userData?.intraId,
+      };
+  
+      socket.emit('leaveRoom', payload);
+  
+      launchFlashMessage(
+        `You have successfully left the room ${roomName}!`,
+        FlashMessageLevel.SUCCESS,
+      );
+    }
+  };
   
     return (
         <HeaderWrapper>
@@ -81,6 +101,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ user, gro
             {user && <Avatar src={user.avatar} alt={user.username} />}
             <Title style={{ marginLeft: group ? '0' : '', marginBottom: group ? '15px' : '' }}>
                 {user?.username || group?.name || ''}
+                {group?.type === 'PROTECTED' && <span> 🔐</span>}
+                {group?.type === 'PRIVATE' && <span> 🔒</span>}
             </Title>        
         </div>
         {user && (
@@ -94,6 +116,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({ user, gro
             <div>
               <MainButtonStyled onClick={() => console.log('Actions button clicked')}>Actions</MainButtonStyled>
               <MainButtonStyled onClick={() => console.log('Protect button clicked')}>Password</MainButtonStyled>
+              <MainButtonStyled onClick={() => handleLeaveChannel(group.name)}>Leave Channel</MainButtonStyled>
+
             </div>
         )}
         {friendProfileToShow && (

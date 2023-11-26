@@ -243,7 +243,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </>
             ) : (
               <>
-                <Title>Create a new group chat</Title>
+                <Title>Create a new channel</Title>
                 <input 
                   type="text" 
                   value={roomName} 
@@ -287,7 +287,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   }
                   setRoomName('');
                 }}>
-                  Join Room
+                  Join Channel
                 </MainButton>
                 <Title>Or join an existing one</Title>
                 <List>
@@ -320,13 +320,15 @@ const Sidebar: React.FC<SidebarProps> = ({
               width: '100%',
             }}
           >
-            <Title>Group Chats</Title>
+            <Title>Channels</Title>
             <PlusSign onClick={() => { setPopupVisible(true); setActiveModalContent('groupChats'); }}>+</PlusSign>
           </div>
           <List>
             {userGroups && userGroups.map((group) => (
               <ListItem key={group.name} onClick={() => handleGroupClick(group)}>
                 {group.name}
+                {group.type === 'PROTECTED' && <span> 🔐</span>}
+                {group.type === 'PRIVATE' && <span> 🔒</span>}
               </ListItem>
             ))}
           </List>
