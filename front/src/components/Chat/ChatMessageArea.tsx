@@ -7,7 +7,10 @@ import MessageInput from './ChatMessageAreaInput';
 import ChatMessageAreaHeader from './ChatMessageAreaHeader';
 import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
-import { getIntraIdFromUsername, getUsernameFromIntraId } from '../../utils/utils';
+import {
+  getIntraIdFromUsername,
+  getUsernameFromIntraId,
+} from '../../utils/utils';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
 
@@ -31,11 +34,11 @@ const MessageAreaContainer = styled.div`
 `;
 
 const WrapperDiv = styled.div`
-justify-content: flex-start;
+  justify-content: flex-start;
 `;
 
 const WrapperDiv2 = styled.div`
-justify-content: flex-start;
+  justify-content: flex-start;
 `;
 
 const Title = styled.h2`
@@ -70,9 +73,14 @@ const StyledParagraph = styled.p`
 
 interface ChatMessageAreaProps {
   selectedUser: User | null;
+  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
   selectedGroup: Group | null;
+  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
+  updateUserGroups: (group: Group) => void;
   messages: Message[];
-  setMessagesByChat: React.Dispatch<React.SetStateAction<{ [key: string]: Message[] }>>;
+  setMessagesByChat: React.Dispatch<
+    React.SetStateAction<{ [key: string]: Message[] }>
+  >;
   messagesByChat: { [key: string]: Message[] };
   onNewMessage: () => void;
   socket: Socket | null;
@@ -88,28 +96,31 @@ interface ChatMessageAreaProps {
 
 const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   selectedUser,
+  setSelectedUser,
   selectedGroup,
+  setSelectedGroup,
+  updateUserGroups,
   messages,
   setMessagesByChat,
   messagesByChat,
   onNewMessage,
-  socket
+  socket,
 }) => {
-
   // Declare and initialize the message state
   const [message, setMessage] = useState('');
-  
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
-  
 
   const { userData } = useUserData();
 
   const handlePrivateMessage = (newMessage: string) => {
     if (newMessage.trim() !== '' && selectedUser) {
       const message: Message = {
-        id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+        id:
+          Math.random().toString(36).substring(2, 15) +
+          Math.random().toString(36).substring(2, 15),
         senderName: userData?.username || 'Anonymous',
         senderAvatar: userData?.avatar || 'Anonymous',
         content: newMessage,
@@ -117,9 +128,14 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       };
       setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
         ...prevMessages,
-        [selectedUser.username]: [...(prevMessages[selectedUser.username] || []), message]
+        [selectedUser.username]: [
+          ...(prevMessages[selectedUser.username] || []),
+          message,
+        ],
       }));
-      const receiverIntraId = getIntraIdFromUsername(selectedUser?.username || 'Anonymous'); // temporary until endpoint is fixed
+      const receiverIntraId = getIntraIdFromUsername(
+        selectedUser?.username || 'Anonymous',
+      ); // temporary until endpoint is fixed
       if (socket) {
         socket.emit('privateMessage', {
           receiverId: receiverIntraId, // temporary until endpoint is fixed
@@ -135,7 +151,9 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   const handleSendRoomMessage = (newMessage: string) => {
     if (newMessage.trim() !== '' && selectedGroup) {
       const message: Message = {
-        id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+        id:
+          Math.random().toString(36).substring(2, 15) +
+          Math.random().toString(36).substring(2, 15),
         senderName: userData?.username || 'Anonymous',
         senderAvatar: userData?.avatar || 'Anonymous',
         content: newMessage,
@@ -143,49 +161,69 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
       };
       setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
         ...prevMessages,
-        [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), message]
+        [selectedGroup.name]: [
+          ...(prevMessages[selectedGroup.name] || []),
+          message,
+        ],
       }));
       if (socket) {
-          socket.emit('sendMessageToRoom', {
-            roomName: selectedGroup?.name,
-            intraId: userData?.intraId,
-            senderName: userData?.username || 'Anonymous',
-            senderAvatar: userData?.avatar || 'Anonymous',
-            message: newMessage,
-          });
+        socket.emit('sendMessageToRoom', {
+          roomName: selectedGroup?.name,
+          intraId: userData?.intraId,
+          senderName: userData?.username || 'Anonymous',
+          senderAvatar: userData?.avatar || 'Anonymous',
+          message: newMessage,
+        });
       }
       setMessage('');
       onNewMessage();
     }
   };
+
+  const navigateToEmptyChat = () => {
+    setSelectedUser(null);
+    setSelectedGroup(null);
+  };
+
   return (
     <MessageAreaContainer>
-    <GradientBorder className="gradient-border">
-      {selectedUser || selectedGroup ? (
-        <>
-        <WrapperDiv>
-          <ChatMessageAreaHeader user={selectedUser} group={selectedGroup} />          
-          <MessageList>
-          {messages.map((message) => (
-                <MessageItem key={message.id}>
-                  {`${message.senderName}: ${message.content}`}
-          </MessageItem>
-            ))}
-            {(selectedUser && messagesByChat[selectedUser.username] || selectedGroup && messagesByChat[selectedGroup.name] || []).map((messageData) => (
-              <MessageItem key={messageData.id}>
-                {`${messageData.senderName}: ${messageData.content}`}
-              </MessageItem>
-            ))}
-          </MessageList>
-        </WrapperDiv>
-        <WrapperDiv2>
-          <MessageInput
-            message={message}
-            onInputChange={handleInputChange}
-            onMessageSubmit={selectedGroup ? handleSendRoomMessage : handlePrivateMessage}
-          />
-        </WrapperDiv2>
-        </>
+      <GradientBorder className="gradient-border">
+        {selectedUser || selectedGroup ? (
+          <>
+            <WrapperDiv>
+              <ChatMessageAreaHeader
+                user={selectedUser}
+                group={selectedGroup}
+                socket={socket}
+                navigateToEmptyChat={navigateToEmptyChat}
+              />
+              <MessageList>
+                {messages.map((message) => (
+                  <MessageItem key={message.id}>
+                    {`${message.senderName}: ${message.content}`}
+                  </MessageItem>
+                ))}
+                {(
+                  (selectedUser && messagesByChat[selectedUser.username]) ||
+                  (selectedGroup && messagesByChat[selectedGroup.name]) ||
+                  []
+                ).map((messageData) => (
+                  <MessageItem key={messageData.id}>
+                    {`${messageData.senderName}: ${messageData.content}`}
+                  </MessageItem>
+                ))}
+              </MessageList>
+            </WrapperDiv>
+            <WrapperDiv2>
+              <MessageInput
+                message={message}
+                onInputChange={handleInputChange}
+                onMessageSubmit={
+                  selectedGroup ? handleSendRoomMessage : handlePrivateMessage
+                }
+              />
+            </WrapperDiv2>
+          </>
         ) : (
           <CenteredContainer>
             <StyledParagraph>

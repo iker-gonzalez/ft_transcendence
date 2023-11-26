@@ -4,7 +4,6 @@ import MainButton from '../UI/MainButton';
 
 const InputContainer = styled.div`
   margin-top: 20px;
-
 `;
 
 const InputField = styled.input`
