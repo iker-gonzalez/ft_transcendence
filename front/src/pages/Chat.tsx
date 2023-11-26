@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect} from 'react';
 import ChatSidebar from '../components/Chat/ChatSidebar';
 import ChatMessageArea from '../components/Chat/ChatMessageArea';
 import Group from '../interfaces/chat-group.interface';
 import User from '../interfaces/chat-user.interface';
 import Message from '../interfaces/chat-dm-message.interface';
-import { fetchAuthorized, getBaseUrl } from '../utils/utils';
 import { useUserData } from '../context/UserDataContext';
-import Cookies from 'js-cookie';
-import { getIntraIdFromUsername, getUsernameFromIntraId } from '../utils/utils';
-import GroupMessage from '../interfaces/chat-group-message.interface';
+import { getUsernameFromIntraId } from '../utils/utils';
 import CenteredLayout from '../components/UI/CenteredLayout';
 import styled from 'styled-components';
 import useChatMessageSocket, {

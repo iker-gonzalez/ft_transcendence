@@ -7,10 +7,7 @@ import MessageInput from './ChatMessageAreaInput';
 import ChatMessageAreaHeader from './ChatMessageAreaHeader';
 import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
-import {
-  getIntraIdFromUsername,
-  getUsernameFromIntraId,
-} from '../../utils/utils';
+import { getIntraIdFromUsername } from '../../utils/utils';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
 
