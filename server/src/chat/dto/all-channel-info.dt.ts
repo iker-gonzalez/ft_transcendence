@@ -4,11 +4,11 @@ import { swaggerConstants } from '../../../config/swagger.constants';
 import { ConversationMessageDTO } from './conversation-message.dto';
 
 export class AllChannelInfo {
-   //@ApiProperty({
-   //    description: swaggerConstants.dto.conversationMessageDTO.data.description,
-   //    example: swaggerConstants.dto.conversationMessageDTO.data.example,
-   //  })
-   //  
+   @ApiProperty({
+    description: swaggerConstants.dto.AllChannelInfoDTO.data.description,
+    example: swaggerConstants.dto.AllChannelInfoDTO.data.example,
+    })
+     
 
     // Chat Room info
     roomName: string;
