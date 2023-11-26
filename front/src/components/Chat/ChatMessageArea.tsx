@@ -2,12 +2,11 @@ import React, { useState, RefObject } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
-import Message from '../../interfaces/chat-dm-message.interface';
+import Message from '../../interfaces/chat-message.interface';
 import MessageInput from './ChatMessageAreaInput';
 import ChatMessageAreaHeader from './ChatMessageAreaHeader';
 import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
-import { getIntraIdFromUsername } from '../../utils/utils';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
 
@@ -112,55 +111,30 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   const { userData } = useUserData();
 
-  const handlePrivateMessage = (newMessage: string) => {
-    if (newMessage.trim() !== '' && selectedUser) {
-      const message: Message = {
-        id:
-          Math.random().toString(36).substring(2, 15) +
-          Math.random().toString(36).substring(2, 15),
-        senderName: userData?.username || 'Anonymous',
-        senderAvatar: userData?.avatar || 'Anonymous',
-        content: newMessage,
-        timestamp: new Date().toString(),
-      };
+  const handlePrivateMessage = (newMessage: Message) => {
+    if (selectedUser) {
       setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
         ...prevMessages,
         [selectedUser.username]: [
           ...(prevMessages[selectedUser.username] || []),
-          message,
+          newMessage,
         ],
       }));
-      const receiverIntraId = getIntraIdFromUsername(
-        selectedUser?.username || 'Anonymous',
-      ); // temporary until endpoint is fixed
       if (socket) {
-        socket.emit('privateMessage', {
-          receiverId: receiverIntraId, // temporary until endpoint is fixed
-          senderId: userData?.intraId,
-          content: newMessage,
-        });
+        socket.emit('privateMessage', message);
       }
       setMessage('');
       onNewMessage();
     }
   };
 
-  const handleSendRoomMessage = (newMessage: string) => {
-    if (newMessage.trim() !== '' && selectedGroup) {
-      const message: Message = {
-        id:
-          Math.random().toString(36).substring(2, 15) +
-          Math.random().toString(36).substring(2, 15),
-        senderName: userData?.username || 'Anonymous',
-        senderAvatar: userData?.avatar || 'Anonymous',
-        content: newMessage,
-        timestamp: new Date().toString(),
-      };
+  const handleSendRoomMessage = (newMessage: Message) => {
+    if (selectedGroup) {
       setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
         ...prevMessages,
         [selectedGroup.name]: [
           ...(prevMessages[selectedGroup.name] || []),
-          message,
+          newMessage,
         ],
       }));
       if (socket) {
@@ -213,7 +187,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
             </WrapperDiv>
             <WrapperDiv2>
               <MessageInput
-                message={message}
                 onInputChange={handleInputChange}
                 onMessageSubmit={
                   selectedGroup ? handleSendRoomMessage : handlePrivateMessage

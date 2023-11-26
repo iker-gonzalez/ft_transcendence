@@ -3,8 +3,6 @@ import Cookies from 'js-cookie';
 import { useUserData } from './UserDataContext';
 import User from '../interfaces/chat-user.interface';
 import Group from '../interfaces/chat-group.interface';
-import Message from '../interfaces/chat-dm-message.interface';
-import GroupMessage from '../interfaces/chat-group-message.interface';
 import { getIntraIdFromUsername, getUsernameFromIntraId } from '../utils/utils';
 
 export const useChatData = () => {

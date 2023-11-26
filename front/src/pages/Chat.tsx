@@ -1,9 +1,9 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatSidebar from '../components/Chat/ChatSidebar';
 import ChatMessageArea from '../components/Chat/ChatMessageArea';
 import Group from '../interfaces/chat-group.interface';
 import User from '../interfaces/chat-user.interface';
-import Message from '../interfaces/chat-dm-message.interface';
+import Message from '../interfaces/chat-message.interface';
 import { useUserData } from '../context/UserDataContext';
 import { getUsernameFromIntraId } from '../utils/utils';
 import CenteredLayout from '../components/UI/CenteredLayout';
@@ -88,7 +88,6 @@ const Chat: React.FC = () => {
   const { fetchUserMessages, fetchGroupMessages } = useMessageData();
 
   const handleUserClick = async (user: User) => {
-    console.log('user', user);
     const directMessages = await fetchUserMessages(user);
     setSelectedUser(user);
     setSelectedGroup(null);
@@ -96,13 +95,10 @@ const Chat: React.FC = () => {
   };
 
   const handleGroupClick = async (group: Group) => {
-    console.log('group', group);
     const groupMessages = await fetchGroupMessages(group);
     setSelectedGroup(group);
     setSelectedUser(null);
-    console.log('groupMessages', groupMessages);
     setMessages(groupMessages);
-    // ... set state based on messages ...
   };
 
   const [unreadMessages, setUnreadMessages] = useState<{
@@ -119,9 +115,7 @@ const Chat: React.FC = () => {
     localStorage.setItem('unreadMessages', JSON.stringify(unreadMessages));
   }, [unreadMessages]);
 
-  // Add a listener for incoming messages
   useEffect(() => {
-    // console.log('useEffect new message triggered');
     if (isSocketConnected && socket) {
       const privateMessageListener = (messageData: any) => {
         const parsedData = JSON.parse(messageData);
@@ -136,7 +130,6 @@ const Chat: React.FC = () => {
           content: parsedData.content,
           timestamp: Date.now().toString(),
         };
-        //Append the new message to the messages state
         setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
           ...prevMessages,
           [getUsernameFromIntraId(parsedData.senderId)]: [
@@ -145,7 +138,6 @@ const Chat: React.FC = () => {
             newMessage,
           ],
         }));
-        console.log('check 1');
         if (
           parsedData.senderId !== selectedUser?.intraId &&
           !(
@@ -153,20 +145,13 @@ const Chat: React.FC = () => {
             typeof selectedUser?.intraId === 'undefined'
           )
         ) {
-          console.log('check 2');
           try {
             setUnreadMessages((prevUnreadMessages) => {
-              console.log('check 3');
-
-              // Increment the count for the sender
               const updatedUnreadMessages = {
                 ...prevUnreadMessages,
                 [parsedData.senderId]:
                   (prevUnreadMessages[parsedData.senderId] || 0) + 1,
               };
-
-              // Store the updated count in local storage
-
               console.log('añade mensaje a local storage');
               localStorage.setItem(
                 'unreadMessages',
