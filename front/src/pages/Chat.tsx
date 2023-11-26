@@ -165,29 +165,20 @@ const Chat: React.FC = () => {
 
       const groupMessageListener = (messageData: any) => {
         console.log('group message listener triggered');
-        console.log('message data group', messageData);
+        console.log('messageData', messageData);
         if (!selectedGroup) {
           console.log('no selected group');
           return;
         }
-        console.log('group message received');
-        const parsedData = JSON.parse(messageData);
-        const newMessage: Message = {
-          id: messageData.id,
-          senderName:
-            getUsernameFromIntraId(parsedData.senderId)?.toString() ||
-            'Anonymous',
-          senderAvatar:
-            getUsernameFromIntraId(parsedData.senderAvatar)?.toString() ||
-            'Anonymous',
-          content: parsedData.content,
-          timestamp: Date.now().toString(),
-        };
         // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
         //   ...prevMessages,
-        //   [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), newMessage]
+        //   [selectedGroup.name]: [
+        //     ...(prevMessages[selectedGroup.name] || []),
+        //     messageData.message,
+        //   ],
         // }));
       };
+
       // Add the listeners to the socket
       socket.on(
         `privateMessageReceived/${userData?.intraId.toString()}`,
@@ -306,8 +297,7 @@ const Chat: React.FC = () => {
   };
 
   function updateUserGroups(newGroup: Group) {
-    setUpdateChatData(prevState => !prevState);
-
+    setUpdateChatData((prevState) => !prevState);
   }
 
   return (
