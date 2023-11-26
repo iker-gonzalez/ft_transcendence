@@ -18,7 +18,6 @@ const SidebarContainer = styled.div`
   flex-basis: 30%;
   display: flex;
   height: 81vh;
-  
 
   .gradient-border {
     flex-grow: 1;
@@ -49,7 +48,9 @@ const Title = styled.h2`
   font-weight: bold;
   margin-bottom: 10px;
 
-  ${props => props.className === 'friends-modal' && `
+  ${(props) =>
+    props.className === 'friends-modal' &&
+    `
     font-size: 25px;
   `}
 `;
@@ -63,7 +64,7 @@ const ListItem = styled.li`
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
-  marginBottom: '20px';
+  marginbottom: '20px';
 `;
 
 const RoundImgStyled = styled(RoundImg)`
@@ -103,9 +104,9 @@ interface SidebarProps {
   selectedUser: User | null;
   selectedGroup: Group | null;
   users: Array<{ intraId: number; avatar: string; username: string }>;
-  userGroups: Group [] | null;
+  userGroups: Group[] | null;
   updateUserGroups: (group: Group) => void;
-  allGroups: Group [] | null;
+  allGroups: Group[] | null;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
   unreadMessages: { [key: string]: number };
@@ -122,16 +123,15 @@ const Sidebar: React.FC<SidebarProps> = ({
   unreadMessages,
   selectedUser,
   selectedGroup,
-  socket
+  socket,
 }) => {
-
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const [activeModalContent, setActiveModalContent] = useState<'directMessages' | 'groupChats'>('directMessages');
+  const [activeModalContent, setActiveModalContent] = useState<
+    'directMessages' | 'groupChats'
+  >('directMessages');
   const [roomName, setRoomName] = useState('');
-  const { userFriends, fetchFriendsList } =
-  useUserFriends();
-  const { userData, fetchUserData } =
-  useUserData();
+  const { userFriends, fetchFriendsList } = useUserFriends();
+  const { userData, fetchUserData } = useUserData();
   const { launchFlashMessage } = useFlashMessages();
   const [groupNature, setGroupNature] = useState('PUBLIC');
   const [password, setPassword] = useState('');
@@ -144,7 +144,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleJoinRoom = (newGroup: Group, password: string) => {
     if (newGroup.name.trim() !== '' && newGroup.name && socket) {
-      if (userGroups && userGroups.some(group => group.name === newGroup.name)) {
+      if (
+        userGroups &&
+        userGroups.some((group) => group.name === newGroup.name)
+      ) {
         launchFlashMessage(
           `The group name ${newGroup.name} already exists. Please choose a different name.`,
           FlashMessageLevel.ERROR,
@@ -155,7 +158,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           roomName: newGroup.name,
           intraId: userData?.intraId,
           type: newGroup.type,
-          password: password
+          password: password,
         };
         socket.emit('joinRoom', payload);
         setPopupVisible(false);
@@ -188,17 +191,28 @@ const Sidebar: React.FC<SidebarProps> = ({
             }}
           >
             <Title>Direct Messages</Title>
-            <PlusSign onClick={() => { setPopupVisible(true); setActiveModalContent('directMessages'); }}>+</PlusSign>
+            <PlusSign
+              onClick={() => {
+                setPopupVisible(true);
+                setActiveModalContent('directMessages');
+              }}
+            >
+              +
+            </PlusSign>
           </div>
           <List>
             {users.map((user) => (
-              <ListItem key={user.intraId} onClick={() => handleUserClick(user)}>
+              <ListItem
+                key={user.intraId}
+                onClick={() => handleUserClick(user)}
+              >
                 {user.username}
-                {selectedUser?.intraId !== user.intraId && unreadMessages[user.intraId] > 0 && (
-                  <UnreadMessagesCount>
-                    {unreadMessages[user.intraId]}
-                  </UnreadMessagesCount>
-                )}
+                {selectedUser?.intraId !== user.intraId &&
+                  unreadMessages[user.intraId] > 0 && (
+                    <UnreadMessagesCount>
+                      {unreadMessages[user.intraId]}
+                    </UnreadMessagesCount>
+                  )}
               </ListItem>
             ))}
           </List>
@@ -207,46 +221,46 @@ const Sidebar: React.FC<SidebarProps> = ({
           <Modal dismissModalAction={() => setPopupVisible(false)}>
             {activeModalContent === 'directMessages' ? (
               <>
-                <Title className='friends-modal'>Chat with one of your friends</Title>
+                <Title className="friends-modal">
+                  Chat with one of your friends
+                </Title>
                 <br></br>
                 <List>
-                {userFriendsConverted.length > 0 ? (
-                  userFriendsConverted.map((friend) => (
-                    <ListItem key={friend.intraId} style={{ display: 'flex', alignItems: 'center' }}>
-                      <RoundImgStyled
-                        src={friend.avatar}
-                        alt=""
-                      />
-                      <UserInfo>
-                        <Username>
-                          {friend.username}
-                        </Username>
-                      </UserInfo>
-                      <UserStatusInfo intraId={friend.intraId} />
-                      <MainButtonStyled
-                        onClick={() => {
-                        handleUserClick(friend);
-                        setPopupVisible(false);
-                      }}
+                  {userFriendsConverted.length > 0 ? (
+                    userFriendsConverted.map((friend) => (
+                      <ListItem
+                        key={friend.intraId}
+                        style={{ display: 'flex', alignItems: 'center' }}
                       >
-                        Chat
-                      </MainButtonStyled>
-                    </ListItem>
-                  ))
-                ) : (
-                  <p>
-                    It seems you do not have any friends yet. 
-                    Go to your profile and find some friends to chat with!
-                  </p>
-                )}
+                        <RoundImgStyled src={friend.avatar} alt="" />
+                        <UserInfo>
+                          <Username>{friend.username}</Username>
+                        </UserInfo>
+                        <UserStatusInfo intraId={friend.intraId} />
+                        <MainButtonStyled
+                          onClick={() => {
+                            handleUserClick(friend);
+                            setPopupVisible(false);
+                          }}
+                        >
+                          Chat
+                        </MainButtonStyled>
+                      </ListItem>
+                    ))
+                  ) : (
+                    <p>
+                      It seems you do not have any friends yet. Go to your
+                      profile and find some friends to chat with!
+                    </p>
+                  )}
                 </List>
               </>
             ) : (
               <>
-                <Title>Create a new group chat</Title>
-                <input 
-                  type="text" 
-                  value={roomName} 
+                <Title>Create a new channel</Title>
+                <input
+                  type="text"
+                  value={roomName}
                   onChange={(e) => {
                     if (e.target.value.length <= 10) {
                       setRoomName(e.target.value);
@@ -254,59 +268,76 @@ const Sidebar: React.FC<SidebarProps> = ({
                   }}
                   placeholder="Enter room name"
                 />
-                <select value={groupNature} onChange={(e) => setGroupNature(e.target.value)}>
+                <select
+                  value={groupNature}
+                  onChange={(e) => setGroupNature(e.target.value)}
+                >
                   <option value="PUBLIC">Public</option>
                   <option value="PRIVATE">Private</option>
                   <option value="PROTECTED">Protected</option>
                 </select>
 
                 {groupNature === 'PROTECTED' && (
-                  <input 
-                    type="password" 
-                    value={password} 
+                  <input
+                    type="password"
+                    value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter password"
                   />
                 )}
-                
-                <MainButton onClick={() => {
-                  if (!roomName) {
-                    launchFlashMessage(
-                      `Room name cannot be empty. Please choose a name.`,
-                      FlashMessageLevel.ERROR,
-                    );
-                    return;
-                  }
-                  const newGroup: Group = {
-                    id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15), 
-                    name: roomName,
-                    type: groupNature
-                  };
-                  if (handleJoinRoom(newGroup, password) === 0) {
-                    updateUserGroups(newGroup); 
-                  }
-                  setRoomName('');
-                }}>
-                  Join Room
+
+                <MainButton
+                  onClick={() => {
+                    if (!roomName) {
+                      launchFlashMessage(
+                        `Room name cannot be empty. Please choose a name.`,
+                        FlashMessageLevel.ERROR,
+                      );
+                      return;
+                    }
+                    const newGroup: Group = {
+                      id:
+                        Math.random().toString(36).substring(2, 15) +
+                        Math.random().toString(36).substring(2, 15),
+                      name: roomName,
+                      type: groupNature,
+                    };
+                    if (handleJoinRoom(newGroup, password) === 0) {
+                      updateUserGroups(newGroup);
+                    }
+                    setRoomName('');
+                  }}
+                >
+                  Join Channel
                 </MainButton>
                 <Title>Or join an existing one</Title>
                 <List>
-                  {allGroups && allGroups
-                    .filter(group => userGroups && !userGroups.some(userGroup => userGroup.name === group.name))
-                    .filter(group => group.type === 'PUBLIC' || group.type === 'PROTECTED')
-                    .map((group) => (
-                      <ListItem 
-                        key={group.name} 
-                        onClick={() => {
-                          handleJoinRoom(group, ''); // no password
-                          handleGroupClick(group);
-                          setPopupVisible(false);
-                        }}
-                      >
-                        {group.name}
-                        {group.type === 'PROTECTED' && ' 🔒'}
-                      </ListItem>
-                    ))}
+                  {allGroups &&
+                    allGroups
+                      .filter(
+                        (group) =>
+                          userGroups &&
+                          !userGroups.some(
+                            (userGroup) => userGroup.name === group.name,
+                          ),
+                      )
+                      .filter(
+                        (group) =>
+                          group.type === 'PUBLIC' || group.type === 'PROTECTED',
+                      )
+                      .map((group) => (
+                        <ListItem
+                          key={group.name}
+                          onClick={() => {
+                            handleJoinRoom(group, ''); // no password
+                            handleGroupClick(group);
+                            setPopupVisible(false);
+                          }}
+                        >
+                          {group.name}
+                          {group.type === 'PROTECTED' && ' 🔒'}
+                        </ListItem>
+                      ))}
                 </List>
               </>
             )}
@@ -320,20 +351,33 @@ const Sidebar: React.FC<SidebarProps> = ({
               width: '100%',
             }}
           >
-            <Title>Group Chats</Title>
-            <PlusSign onClick={() => { setPopupVisible(true); setActiveModalContent('groupChats'); }}>+</PlusSign>
+            <Title>Channels</Title>
+            <PlusSign
+              onClick={() => {
+                setPopupVisible(true);
+                setActiveModalContent('groupChats');
+              }}
+            >
+              +
+            </PlusSign>
           </div>
           <List>
-            {userGroups && userGroups.map((group) => (
-              <ListItem key={group.name} onClick={() => handleGroupClick(group)}>
-                {group.name}
-              </ListItem>
-            ))}
+            {userGroups &&
+              userGroups.map((group) => (
+                <ListItem
+                  key={group.name}
+                  onClick={() => handleGroupClick(group)}
+                >
+                  {group.name}
+                  {group.type === 'PROTECTED' && <span> 🔐</span>}
+                  {group.type === 'PRIVATE' && <span> 🔒</span>}
+                </ListItem>
+              ))}
           </List>
         </UserList>
       </GradientBorder>
     </SidebarContainer>
   );
-}
+};
 
 export default Sidebar;

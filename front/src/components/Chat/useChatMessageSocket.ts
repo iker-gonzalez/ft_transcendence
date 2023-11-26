@@ -15,7 +15,6 @@ export default function useChatMessageSocket(): UseChatMessageSocket {
   const chatMessageSocketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Initialize the socket
     chatMessageSocketRef.current = io(`${getBaseUrl()}/chat`, {
       transports: ['websocket'],
     });
