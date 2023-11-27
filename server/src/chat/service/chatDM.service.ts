@@ -120,6 +120,7 @@ export class ChatDMService {
 
  async findUserIdByIntraId(intraId: number): Promise<string>
   {
+    console.log("findUserIdByIntraId", intraId);
     const user = await this.prisma.user.findUnique({
       where: {
         intraId: intraId,
