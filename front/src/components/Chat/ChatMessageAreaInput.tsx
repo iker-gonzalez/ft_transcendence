@@ -1,8 +1,10 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import styled from 'styled-components';
 import MainButton from '../UI/MainButton';
-import Message from '../../interfaces/chat-message.interface';
+import DirectMessage from '../../interfaces/chat-message.interface';
 import { useUserData } from '../../context/UserDataContext';
+import Group from '../../interfaces/chat-group.interface';
+import User from '../../interfaces/chat-user.interface';
 
 const InputContainer = styled.div`
   margin-top: 20px;
@@ -19,10 +21,12 @@ const InputField = styled.input`
 
 interface MessageInputProps {
   onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onMessageSubmit: (message: Message) => void;
+  onMessageSubmit: (message: DirectMessage) => void;
+  selectedUser: User | null;
+  selectedGroup: Group | null;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ onMessageSubmit }) => {
+const MessageInput: React.FC<MessageInputProps> = ({ onMessageSubmit, selectedUser, selectedGroup }) => {
   const [message, setMessage] = useState('');
 
   const { userData } = useUserData();
@@ -34,10 +38,12 @@ const MessageInput: React.FC<MessageInputProps> = ({ onMessageSubmit }) => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (message.trim() !== '') {
-      const newMessage: Message = {
+      const newMessage: DirectMessage = {
         id:
           Math.random().toString(36).substring(2, 15) +
           Math.random().toString(36).substring(2, 15),
+        senderIntraId: userData?.intraId || 0,
+        receiverIntraId: selectedUser?.intraId || 0,
         senderName: userData?.username || 'Anonymous',
         senderAvatar: userData?.avatar || 'Anonymous',
         content: message,

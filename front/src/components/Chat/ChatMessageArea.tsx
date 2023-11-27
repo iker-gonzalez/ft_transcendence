@@ -121,7 +121,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         ],
       }));
       if (socket) {
-        socket.emit('privateMessage', message);
+        console.log('message content: ', newMessage);
+        socket.emit('privateMessage', newMessage);
       }
       setMessage('');
       onNewMessage();
@@ -188,6 +189,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
             <WrapperDiv2>
               <MessageInput
                 onInputChange={handleInputChange}
+                selectedUser={selectedUser}
+                selectedGroup={selectedGroup}
                 onMessageSubmit={
                   selectedGroup ? handleSendRoomMessage : handlePrivateMessage
                 }

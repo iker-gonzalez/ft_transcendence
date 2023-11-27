@@ -32,8 +32,8 @@ export class ChatGateway implements OnGatewayConnection {
     console.log(payload.receiverId);
     try { 
       // Prueba para el get de lo DM
-      const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
-      const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
+      const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderIntraId);
+      const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverIntraId);
 
       const addMessageStatus =  await this.chatDMservice.addMessageToUser(senderId, receiverId, payload.content);
       
@@ -43,7 +43,7 @@ export class ChatGateway implements OnGatewayConnection {
       console.error("Error:", error);
     }
     // Emit signal to update the receiver chat frontend
-    this.server.emit(`privateMessageReceived/${payload.receiverId}`,
+    this.server.emit(`privateMessageReceived/${payload.receiverIntraId}`,
                       JSON.stringify(payload))
 }
 

@@ -3,7 +3,7 @@ import ChatSidebar from '../components/Chat/ChatSidebar';
 import ChatMessageArea from '../components/Chat/ChatMessageArea';
 import Group from '../interfaces/chat-group.interface';
 import User from '../interfaces/chat-user.interface';
-import Message from '../interfaces/chat-message.interface';
+import DirectMessage from '../interfaces/chat-message.interface';
 import { useUserData } from '../context/UserDataContext';
 import { getUsernameFromIntraId } from '../utils/utils';
 import CenteredLayout from '../components/UI/CenteredLayout';
@@ -25,7 +25,7 @@ const WrapperDiv = styled.div`
 
 // Define the MessagesByChat type
 type MessagesByChat = {
-  [key: string]: Message[];
+  [key: string]: DirectMessage[];
 };
 
 /**
@@ -39,7 +39,7 @@ const Chat: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [userGroups, setUserGroups] = useState<Group[]>([]);
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<DirectMessage[]>([]);
   const [messagesByChat, setMessagesByChat] = useState<MessagesByChat>({});
 
   const { userData } = useUserData();
@@ -119,8 +119,11 @@ const Chat: React.FC = () => {
     if (isSocketConnected && socket) {
       const privateMessageListener = (messageData: any) => {
         const parsedData = JSON.parse(messageData);
-        const newMessage: Message = {
+        console.log('messageData', messageData);
+        const newMessage: DirectMessage = {
           id: messageData.id,
+          senderIntraId: parsedData.senderId,
+          receiverIntraId: parsedData.receiverId,
           senderName:
             getUsernameFromIntraId(parsedData.senderId)?.toString() ||
             'Anonymous',
@@ -130,7 +133,7 @@ const Chat: React.FC = () => {
           content: parsedData.content,
           timestamp: Date.now().toString(),
         };
-        setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+        setMessagesByChat((prevMessages: { [key: string]: DirectMessage[] }) => ({
           ...prevMessages,
           [getUsernameFromIntraId(parsedData.senderId)]: [
             ...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] ||
