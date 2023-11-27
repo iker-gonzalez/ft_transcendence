@@ -83,12 +83,20 @@ export class ChatDMService {
     // Eliminar los usruarios repetidos y el propio usuario
     const uniqueUsers = Array.from(new Set(allUsers)).filter((user) => user !== userId);
 
+    const userObjId = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        blockList: true,
+      },
+    });
+
+    
     // Crear DTO para enviar el is del usuario, el avartar y el nombre
     const allUserDMWithDTO = [];
-    for (const userId of uniqueUsers )
+    for (const userId2 of uniqueUsers )
     {
       const userObj = await this.prisma.user.findUnique({
-        where: { id: userId },
+        where: { id: userId2 },
         select: {
           avatar: true,
           intraId: true,
@@ -96,10 +104,12 @@ export class ChatDMService {
         },
       });
       const userDTO = new  AllUsersDMWithDTO();
-      userDTO.id = userId;
+      userDTO.id = userId2;
       userDTO.avatar = userObj.avatar;
       userDTO.username = userObj.username;
       userDTO.intraId = userObj.intraId;
+      const isBlocked = userObjId.blockList.some((blockUser) => blockUser === userId2);
+      userDTO.isBlocked = isBlocked;
       allUserDMWithDTO.push(userDTO)
     }
 
@@ -119,6 +129,16 @@ export class ChatDMService {
     return user ? user.id : null;
   }
 
+  async findUserIntraById(Id: string): Promise<number>
+  {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: Id,
+      },
+    });
+
+    return user ? user.intraId : 0;
+  }
   /********************************************************** */
   //                     DM FUNCIONALITY                      //
   /********************************************************** */
@@ -187,7 +207,7 @@ export class ChatDMService {
   }
   catch(e)
   {
-    throw new BadRequestException(e);
+    throw new BadRequestException(e); 
   }
 }
 

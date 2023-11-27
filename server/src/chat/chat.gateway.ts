@@ -146,6 +146,23 @@ async handleSendMessageToRoom( client: Socket, payload) {
     // Enviar el mensaje a todos los clientes en la sala
     this.server.to(payload.roomName).emit('message', payload);
 
+    /*
+    const chatRoom= await this.chatChannelservice.obtenerUsuariosDeChatRoom(payload.roomName);
+    console.log("jhkjhkjh");
+
+    for (const usuario of chatRoom) {
+
+      // Aquí puedes realizar operaciones con cada usuario
+      console.log(usuario.userId);
+      const userIntra = await this.chatDMservice.findUserIntraById(usuario.userId);
+      this.server.emit(`privateMessageReceived/${payload.userIntra}`,
+      JSON.stringify(payload))
+
+    }
+    */
+
+
+
   }
   catch(error){
     console.error("Error:", error);

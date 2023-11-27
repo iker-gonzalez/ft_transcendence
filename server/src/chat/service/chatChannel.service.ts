@@ -8,6 +8,7 @@ import { UserService } from '../../user/user.service';
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { ConversationMessageDTO } from '../dto/conversation-message.dto';
 import passport from 'passport';
+import { AllChannelInfo } from '../dto/all-channel-info.dt';
 
 @Injectable()
 export class ChatChannelService {
@@ -46,14 +47,19 @@ export class ChatChannelService {
   }
 
   async getMessageInRoom(roomName: string):
-  Promise<any[]>
+  Promise<any>
   {
     if (roomName == null)
       throw new BadRequestException('User Id not found in DB');
   
+      // Obtener la sala de chat con todas las relaciones utilizando el ID
       const chatRoom = await this.prisma.chatRoom.findFirst({
-        where: {
-          name: roomName,
+        where: { name: roomName },
+        include: {
+          adminUsers: true,
+          users: true,
+          mutedUsers: true,
+          bannedUsers: true,
         },
       });
       if (!chatRoom)
@@ -88,12 +94,45 @@ export class ChatChannelService {
       for (const message of conversationsChannel )
       {
           conversationDTO.push(new ConversationMessageDTO(message, message.sender, null));
-  
       }
-    return conversationDTO;
+
+      const ownerIntra = await this.findUserIntraById(chatRoom.ownerId);
+      
+      const allinfo = new AllChannelInfo(conversationDTO, chatRoom, ownerIntra);
+
+      console.log("GET ADMINNN");
+      console.log(chatRoom.users);
+      allinfo.setIntrasOfMemeber((await this.findUserIntraByIArrayd(chatRoom.users)), "users");
+      allinfo.setIntrasOfMemeber((await this.findUserIntraByIArrayd(chatRoom.adminUsers)), "admin");
+      allinfo.setIntrasOfMemeber((await this.findUserIntraByIArrayd(chatRoom.mutedUsers)), "muted");
+      allinfo.setIntrasOfMemeber((await this.findUserIntraByIArrayd(chatRoom.bannedUsers)), "banned");
+
+    return allinfo;
+  }
+  async findUserIntraByIArrayd(chatUsers: ChatRoomUser[]): Promise<number[]>
+  {
+    const intraIds = [];
+    console.log(chatUsers);
+
+    for (const chatUser of chatUsers )
+    {
+      intraIds.push(await this.findUserIntraById(chatUser.userId));
+    }
+    console.log(intraIds);
+
+    return intraIds;
   }
 
+  async findUserIntraById(Id: string): Promise<number>
+  {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: Id,
+      },
+    });
 
+    return user ? user.intraId : 0;
+  }
   async getAllExistingChannels(
   ) :  Promise< AllExistingChannelsDTO[] > 
   {
@@ -943,6 +982,19 @@ catch(error){
  }
 }
 // make private
+
+async obtenerUsuariosDeChatRoom(roomId: string) {
+  const chatRoom = await this.prisma.chatRoom.findUnique({
+    where: { id: roomId },
+    include: { users: true },
+  });
+
+  if (!chatRoom) {
+    throw new BadRequestException('ChatRoom no encontrado');
+  }
+
+  return chatRoom.users;
+}
 
 }
 

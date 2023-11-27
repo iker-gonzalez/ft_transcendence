@@ -735,6 +735,39 @@ export const swaggerConstants = {
         },
       },
     },
+    AllChannelInfoDTO: {
+      data: {
+        description:
+          'conversation between two users. Who sent and who recevied the message',
+        example: {
+          roomName: "GRUPOPRUEBA",
+          createDate: "2023-11-26T19:10:42.496Z",
+          ownerIntra: 667,
+          password: null,
+          type: "PUBLIC",
+          channelMessage: [
+            {
+
+              senderId: '623274f5-5fa1-4ad8-b7a1-c1edcb239af2',
+              receiverId: '1cc83703-a2ed-4ec2-b021-c5db82bb3d94',
+              content: 'Soy el otro usuario 333',
+              createdAt: '2023-11-05T10:38:33.782Z',
+              senderName: 'test3-',
+              receiverName: 'test-',
+              senderAvatar: 'https://i.pravatar.cc/600?img=35',
+              receiverAvatar: 'https://i.pravatar.cc/600?img=8',
+            }
+          ],
+          usersIntra: [
+            667,
+            668
+        ],
+        adminIntra: [667],
+        mutedIntra: [668],
+        bannedIntra: []
+          }
+        },
+      },
     allUserChannelInDTO: {
       data: {
         description:
