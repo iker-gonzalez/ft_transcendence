@@ -5,8 +5,8 @@ import { swaggerConstants } from '../../../config/swagger.constants';
 
 export class AllUsersDMWithDTO {
     @ApiProperty({
-        description: swaggerConstants.dto.allUserChannelInDTO.data.description,
-        example: swaggerConstants.dto.allUserChannelInDTO.data.example,
+        description: swaggerConstants.dto.allUserDMWithDTO.data.description,
+        example: swaggerConstants.dto.allUserDMWithDTO.data.example,
       })
 
     @IsUUID()
