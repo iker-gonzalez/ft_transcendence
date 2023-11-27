@@ -1,12 +1,15 @@
 import {
+  Body,
     Controller,
     Get,
     Param,
+    Patch,
     Post,
   } from '@nestjs/common';
 
   import {
     ApiBadRequestResponse,
+    ApiBody,
     ApiConflictResponse,
     ApiNotFoundResponse,
     ApiOkResponse,
@@ -23,7 +26,13 @@ import { ConversationMessageDTO } from './dto/conversation-message.dto';
 import { AllExistingChannelsDTO } from './dto/all-existing-channel.dto';
 import { AllUserChannelInDTO } from './dto/all-user-channel-in.dto';
 import { ChannelType } from '@prisma/client';
-import { AllChannelInfo } from './dto/all-channel-info.dt';
+import { AllChannelInfo } from './dto/all-channel-info.dto';
+import { RoomOwnerIntraDTO } from './dto/roomOwnerIntra.dto';
+
+
+interface Payload {
+  ownerID: string;
+}
 
 @ApiTags('Chat')
 @Controller('chat')
@@ -85,30 +94,40 @@ export class ChatController {
         }
     }
 
-    @Post(':userIntra/:ToBlockIntra/blockUser') 
+    @Patch(':userIntra/:ToBlockIntra/:b_block/blockUser') 
     @ApiParam({ name: 'userIntra' }) 
     @ApiParam({ name: 'ToBlockIntra' }) 
+    @ApiParam({ name: 'b_block' }) 
     @ApiOperation({
       summary: swaggerConstants.chat.block.summary,
     })
-    async getBlockUser(
+    async patchBlockUser(
       @Param('userIntra') userIntra: string,
       @Param('ToBlockIntra') ToBlockIntra: string,
+      @Param('b_block') b_block: number,
       ):Promise<void> {
         
-        console.log("getBlockUser get");
-        console.log(userIntra);
-        console.log(userIntra);
+        console.log("patchBlockUser patch");
         try{
           const userId = await this.chatDMService.findUserIdByIntraId(parseInt(userIntra, 10));
           const ToBlockId = await this.chatDMService.findUserIdByIntraId(parseInt(ToBlockIntra, 10));
-          this.chatDMService.blockUserDM(userId, ToBlockId);
+          if (b_block == 1)
+          {
+            console.log("blocked patch");
+            console.log(b_block);
+
+            this.chatDMService.blockUserDM(userId, ToBlockId);
+          }
+          else
+            this.chatDMService.unblockUserDM(userId, ToBlockId);
+
       } 
         catch (error) {
             console.error("Error:", error);
         }
     }
 
+    /*
     @Post(':userIntra/:unblockUserIntra/unblockUser') 
     @ApiParam({ name: 'userIntra' }) 
     @ApiParam({ name: 'unblockUserIntra' }) 
@@ -131,7 +150,7 @@ export class ChatController {
             console.error("Error:", error);
         }
     }
-
+*/
 
     /********************************************************** */
     //                    CHANNEL                               //
@@ -263,26 +282,37 @@ export class ChatController {
       }
     }
 
-    @Post(':channelRoom/:ownerIntra/:userToMuteIntra/muteUser') 
+
+    @Patch(':channelRoom/:userToMuteIntra/:b_mute/setMute') 
     @ApiParam({ name: 'channelRoom' }) 
-    @ApiParam({ name: 'ownerIntra' }) 
     @ApiParam({ name: 'userToMuteIntra' })
+    @ApiParam({ name: 'b_mute' }) 
+    @ApiBody({ description: 'JSON body with the ownerIntra', type: RoomOwnerIntraDTO })
     @ApiOperation({
       summary: swaggerConstants.chat.muteUser.summary,
     })
-    async getMuteUserToChannel( 
+    async patchMuteUserToChannel( 
       @Param('channelRoom') channelRoom: string,
-      @Param('ownerIntra') ownerIntra: string,
       @Param('userToMuteIntra') userToMuteIntra: string,
+      @Param('b_mute') b_mute: number,
+      @Body() paydload: RoomOwnerIntraDTO,
     ) : Promise<void> { 
-      console.log("getMuteUserToChannel get");
+      console.log("patchMuteUserToChannel patch");
       console.log(channelRoom);
-      console.log(ownerIntra);
       console.log(userToMuteIntra);
+      console.log(paydload);
+      console.log(paydload.ownerIntra);
       try{ 
-        const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
-        const userToMuteId = await this.chatDMService.findUserIdByIntraId(parseInt(userToMuteIntra, 10));
-        this.chatChannelService.muteUserInChannel(channelRoom, ownerId, userToMuteId);
+        const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
+      const userToMuteId = await this.chatDMService.findUserIdByIntraId(parseInt(userToMuteIntra, 10));
+        if (b_mute == 1)
+        {
+          this.chatChannelService.muteUserInChannel(channelRoom, ownerId, userToMuteId);
+        }
+        else
+        {
+          this.chatChannelService.unmuteUserInChannel(channelRoom, ownerId, userToMuteId);
+        }
       }
       catch (error) {
           console.error("Error:", error);

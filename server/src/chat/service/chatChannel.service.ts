@@ -8,7 +8,7 @@ import { UserService } from '../../user/user.service';
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { ConversationMessageDTO } from '../dto/conversation-message.dto';
 import passport from 'passport';
-import { AllChannelInfo } from '../dto/all-channel-info.dt';
+import { AllChannelInfo } from '../dto/all-channel-info.dto';
 
 @Injectable()
 export class ChatChannelService {
@@ -634,6 +634,7 @@ try{
       users:true },});
   if (!foundChatRoom)
   throw new BadRequestException ("channelRoom not exist");
+console.log("rñlkrew");
 
   // Check permision
   const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
@@ -649,7 +650,6 @@ try{
      where: { userId: muteUserId },});
   if (!chatRoomUser)
       throw new BadRequestException ("User is not in the chatRoom");
-
 
     // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
          const updatedChatRoom = await this.prisma.chatRoom.update({
