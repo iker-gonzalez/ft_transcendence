@@ -9,6 +9,7 @@ import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
+import DirectMessage from '../../interfaces/chat-message.interface';
 
 const MessageAreaContainer = styled.div`
   width: 100%;
@@ -78,7 +79,7 @@ interface ChatMessageAreaProps {
     React.SetStateAction<{ [key: string]: Message[] }>
   >;
   messagesByChat: { [key: string]: Message[] };
-  onNewMessage: () => void;
+  onNewMessage: (newMessage: DirectMessage) => void;
   socket: Socket | null;
 }
 
@@ -113,31 +114,31 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   const handlePrivateMessage = (newMessage: Message) => {
     if (selectedUser) {
-      setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-        ...prevMessages,
-        [selectedUser.username]: [
-          ...(prevMessages[selectedUser.username] || []),
-          newMessage,
-        ],
-      }));
+      // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+      //   ...prevMessages,
+      //   [selectedUser.username]: [
+      //     ...(prevMessages[selectedUser.username] || []),
+      //     newMessage,
+      //   ],
+      // }));
       if (socket) {
         console.log('message content: ', newMessage);
         socket.emit('privateMessage', newMessage);
       }
       setMessage('');
-      onNewMessage();
+      onNewMessage(newMessage);
     }
   };
 
-  const handleSendRoomMessage = (newMessage: Message) => {
+  const handleSendRoomMessage = (newMessage: DirectMessage) => {
     if (selectedGroup) {
-      setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-        ...prevMessages,
-        [selectedGroup.name]: [
-          ...(prevMessages[selectedGroup.name] || []),
-          newMessage,
-        ],
-      }));
+      // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
+      //   ...prevMessages,
+      //   [selectedGroup.name]: [
+      //     ...(prevMessages[selectedGroup.name] || []),
+      //     newMessage,
+      //   ],
+      // }));
       if (socket) {
         socket.emit('sendMessageToRoom', {
           roomName: selectedGroup?.name,
@@ -148,7 +149,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         });
       }
       setMessage('');
-      onNewMessage();
+      onNewMessage(newMessage);
     }
   };
 
