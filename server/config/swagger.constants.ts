@@ -777,6 +777,27 @@ export const swaggerConstants = {
         },
       },
     },
-
+    allUserDMWithDTO:{
+      data: {
+        description:
+          'The name of all users with had had direct messages',
+        example: {
+          id: "28bee14d-495f-4684-872c-b02782ba070a",
+          avatar: "https://i.pravatar.cc/600?img=32",
+          username: "test2-",
+          intraId: 667,
+          isBlocked: true
+        },
+      },
+    },
+    roomOwnerIntraDTO:{
+      data:{
+        description:
+          'Owner intra',
+          example:{
+            ownerIntra : "GRUPO_PRUEBA"
+          }
+      }
+    }
   },
 };
