@@ -229,6 +229,9 @@ export const swaggerConstants = {
         description: 'Return all channel users is in',
       },
     },
+    isPasswordCorrect:{
+      summary: 'Return true is password of the room is correct',
+    },
     allExistingChannel:{
       summary: 'Return all existing channel un DB. The name and its privacy',
       ok: {

@@ -980,7 +980,35 @@ catch(error){
  }
 }
 // make private
+async addUserToPrivateChannel(userIdAdd: string, ownerId: string, channelName: string) {
+  try{
 
+    if (!userIdAdd || !ownerId || !channelName)
+      throw new BadRequestException ("channelRoom or ownerId or userIdAdd  are null");
+  
+    // Get el Channel
+    const foundChatRoom = await this.prisma.chatRoom.findFirst({
+      where: { name: channelName,},
+      include:{
+        users:true },});
+    if (!foundChatRoom)
+      throw new BadRequestException ("channelRoom not exist");
+
+      console.log(ownerId);
+    if (foundChatRoom.ownerId != ownerId)
+      throw new BadRequestException ("This is not the owner of the channel");
+
+    // Add user
+    console.log("WWWWW");
+    await this.addUserToChannel(userIdAdd, channelName);
+  }
+  catch(error){
+    throw new BadRequestException(error);
+     console.error("Error:", error);
+   }
+}
+
+// alternativa 2 para enviar mensages
 async obtenerUsuariosDeChatRoom(roomId: string) {
   const chatRoom = await this.prisma.chatRoom.findUnique({
     where: { id: roomId },
@@ -993,6 +1021,8 @@ async obtenerUsuariosDeChatRoom(roomId: string) {
 
   return chatRoom.users;
 }
+
+
 
 }
 
