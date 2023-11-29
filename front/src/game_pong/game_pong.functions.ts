@@ -27,10 +27,12 @@ const VOLUME_UP_KEY = 'h';
 const VOLUME_DOWN_KEY = 'l';
 const MUTE_KEY = 'm';
 const UNMUTE_KEY = 'u';
+const PAUSE_KEY = 'p';
 
 let ballTrail: any[] = [];
 let sparksTrail: any[] = [];
 export let isBallFrozen: boolean = true;
+export let isGamePaused: boolean = false;
 
 export function drawRect(
   canvas: HTMLCanvasElement,
@@ -327,6 +329,15 @@ export function initializeEventListeners({
         sounds.music.volume = 0;
       } else if (event.key === UNMUTE_KEY) {
         sounds.music.volume = 0.3;
+      }
+    } catch (err) {}
+
+    //Pause & unpause the game
+    try {
+      if (event.key === PAUSE_KEY && isGamePaused === false) {
+        isGamePaused = true;
+      } else if (event.key === PAUSE_KEY && isGamePaused === true) {
+        isGamePaused = false;
       }
     } catch (err) {}
   }
