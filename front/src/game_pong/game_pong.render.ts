@@ -20,6 +20,7 @@ import {
   drawSparksTrail,
   drawText,
   isBallFrozen,
+  isGamePaused,
   isSoloMode,
   sparks,
   sparksTrailClean,
@@ -413,7 +414,7 @@ export function matchUser1(
   theme: any,
 ) {
   // Ball motion
-  if (!isBallFrozen) {
+  if (!isBallFrozen && !isGamePaused) {
     ballData.x += ballData.moveX;
     ballData.y += ballData.moveY;
   }
