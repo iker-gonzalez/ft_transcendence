@@ -1,7 +1,8 @@
 import { ChatMessage, DirectMessage, User } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { swaggerConstants } from '../../../config/swagger.constants';
-import { IsArray, IsInt, IsUUID, isArray, isInt, isUUID } from 'class-validator';
+import { IsArray, IsHash, IsInt, IsString, IsUUID, isArray, isInt, isUUID } from 'class-validator';
+import { Hash } from 'crypto';
 
 export class RoomOwnerIntraDTO {
      @ApiProperty({

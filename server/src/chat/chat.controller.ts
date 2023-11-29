@@ -28,6 +28,7 @@ import { AllUserChannelInDTO } from './dto/all-user-channel-in.dto';
 import { ChannelType } from '@prisma/client';
 import { AllChannelInfo } from './dto/all-channel-info.dto';
 import { RoomOwnerIntraDTO } from './dto/roomOwnerIntra.dto';
+import { RoomOwnerPasswordIntraDTO } from './dto/room-owener-password.dto';
 
 
 interface Payload {
@@ -215,7 +216,7 @@ export class ChatController {
     })
     async getMessageInRoom( 
       @Param('roomName') roomName: string,
-    ) : Promise<ConversationMessageDTO[]> { 
+    ) : Promise<AllChannelInfo[]> { 
       console.log("getMessageInRoom get");
       try{
         return this.chatChannelService.getMessageInRoom(roomName);
@@ -228,7 +229,7 @@ export class ChatController {
   /********************************************************** */
   //                     ADMIN FUNCIONALITY                   //
   /********************************************************** */ 
-
+/*
 
     @Post(':channelRoom/:ownerIntra/:deleteAdminIntra/deleteAdmin') 
     @ApiParam({ name: 'channelRoom' }) 
@@ -255,27 +256,34 @@ export class ChatController {
           console.error("Error:", error);
       }
     }
-
-    @Post(':channelRoom/:ownerIntra/:newAdminIntra/addAdmin') 
+*/
+    @Patch(':channelRoom/:setAdminIntra/:b_add/setAdmin') 
     @ApiParam({ name: 'channelRoom' }) 
-    @ApiParam({ name: 'ownerIntra' }) 
-    @ApiParam({ name: 'newAdminIntra' })
+    @ApiParam({ name: 'setAdminIntra' })
+    @ApiParam({ name: 'b_add' }) 
+    @ApiBody({ description: 'JSON body with the ownerIntra', type: RoomOwnerIntraDTO })
     @ApiOperation({
       summary: swaggerConstants.chat.addAdmin.summary,
     })
-    async getAddAddminToChannel( 
+    async patchsetAddminToChannel( 
       @Param('channelRoom') channelRoom: string,
-      @Param('ownerIntra') ownerIntra: string,
-      @Param('newAdminIntra') newAdminIntra: string,
+      @Param('setAdminIntra') setAdminIntra: string,
+      @Param('b_add') b_add: number,
+      @Body() paydload: RoomOwnerIntraDTO,
     ) : Promise<void> { 
-      console.log("getAddAddminToChannel get");
+      console.log("patchsetAddminToChannel patch");
       console.log(channelRoom);
-      console.log(ownerIntra);
-      console.log(newAdminIntra);
+      console.log(setAdminIntra);
       try{ 
-        const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
-        const newAdminId = await this.chatDMService.findUserIdByIntraId(parseInt(newAdminIntra, 10));
-        this.chatChannelService.addAddminToChannel(channelRoom, ownerId, newAdminId);
+        const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
+        const newAdminId = await this.chatDMService.findUserIdByIntraId(parseInt(setAdminIntra, 10));
+        if (b_add == 1)
+        {
+          this.chatChannelService.addAddminToChannel(channelRoom, ownerId, newAdminId);
+        }
+        else{
+          this.chatChannelService.deleteAddminToChannel(channelRoom, ownerId, newAdminId);
+        }
       }
       catch (error) {
           console.error("Error:", error);
@@ -318,7 +326,7 @@ export class ChatController {
           console.error("Error:", error);
       }
     }
-
+/*
     @Post(':channelRoom/:ownerIntra/:userToUnMuteIntra/unmuteUser') 
     @ApiParam({ name: 'channelRoom' }) 
     @ApiParam({ name: 'ownerIntra' }) 
@@ -344,8 +352,43 @@ export class ChatController {
           console.error("Error:", error);
       }
     }
+*/
 
-    @Post(':channelRoom/:ownerIntra/:password/addPassword')
+ 
+    @Patch(':channelRoom/updatePassword')
+    @ApiParam({ name: 'channelRoom' }) 
+    @ApiParam({ name: 'ownerIntra' }) 
+    @ApiParam({ name: 'password' }) 
+    @ApiBody({ description: 'JSON body with the ownerIntra', type: RoomOwnerPasswordIntraDTO })
+    @ApiOperation({
+      summary: swaggerConstants.chat.addOrModifyPassword.summary,
+    })
+    async updateChannelPassword( 
+      @Param('channelRoom') channelRoom: string,
+      @Param('userToMuteIntra') userToMuteIntra: string,
+      @Param('b_mute') b_mute: number,
+      @Body() paydload: RoomOwnerPasswordIntraDTO,
+    ) : Promise<void> {
+      console.log("updateChannelPassword patch");
+      try{
+        const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
+        if ( paydload.password != null)
+        {
+          console.log("paydload.password");
+          console.log(paydload.password);
+          this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, paydload.password, ChannelType.PROTECTED);
+        }
+        else
+        {
+          this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, paydload.password, ChannelType.PUBLIC);
+        }
+      }
+      catch (error) {
+          console.error("Error:", error);
+      }
+    }
+
+/*    @Post(':channelRoom/:ownerIntra/:password/addPassword')
     @ApiParam({ name: 'channelRoom' }) 
     @ApiParam({ name: 'ownerIntra' }) 
     @ApiParam({ name: 'password' }) 
@@ -387,7 +430,5 @@ export class ChatController {
           console.error("Error:", error);
       }
     }
-
-
-
+*/
 }

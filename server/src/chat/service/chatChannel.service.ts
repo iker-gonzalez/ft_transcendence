@@ -498,10 +498,11 @@ try{
     where: { roomId: foundChatRoom.id, userId: newAdminId },
      });
 
-    // Si el usuario al que se quiere hacer administrador no es un usuario del chatRomm, añadirle a este.
+    // Si el usuario al que se quiere hacer administrador no es un usuario del chatRomm.
     if (!existingUser)
     {
-      await this.addUserToChannel(newAdminId, channelRoom);
+        throw new BadRequestException ("user is not from this channel");
+     // await this.addUserToChannel(newAdminId, channelRoom);
     
     }  
       // Buscar el ChatRoomUser por userId
@@ -519,8 +520,6 @@ try{
         },
       },
     });
-
- 
     }
   catch(error){
     console.error("Error:", error);
@@ -634,7 +633,6 @@ try{
       users:true },});
   if (!foundChatRoom)
   throw new BadRequestException ("channelRoom not exist");
-console.log("rñlkrew");
 
   // Check permision
   const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
