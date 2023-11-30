@@ -85,9 +85,20 @@ const Chat: React.FC = () => {
     fetchData();
   }, [updateChatData]);
 
+
+
   const { fetchUserMessages, fetchGroupMessages } = useMessageData();
 
   const handleUserClick = async (user: User) => {
+    const users = await fetchDirectMessageUsers();
+    setUsers(users);
+  
+    const userExists = users.some((u: User) => u.intraId === user.intraId);
+  
+    if (!userExists) {
+      setUsers((prevUsers) => [...prevUsers, user]);
+    }
+  
     const directMessages = await fetchUserMessages(user);
     setSelectedUser(user);
     setSelectedGroup(null);
@@ -207,7 +218,7 @@ const Chat: React.FC = () => {
     }
   }, [newMessageSent, isSocketConnected]);
 
-  function updateUserGroups(newGroup: Group) {
+  function updateUserSidebar() {
     setUpdateChatData((prevState) => !prevState);
   }
 
@@ -217,7 +228,7 @@ const Chat: React.FC = () => {
         <ChatSidebar
           users={users}
           userGroups={userGroups}
-          updateUserGroups={updateUserGroups}
+          updateUserSidebar={updateUserSidebar}
           allGroups={allGroups}
           handleUserClick={handleUserClick}
           handleGroupClick={handleGroupClick}
@@ -239,7 +250,7 @@ const Chat: React.FC = () => {
           socket={socket}
           setSelectedUser={setSelectedUser}
           setSelectedGroup={setSelectedGroup}
-          updateUserGroups={updateUserGroups}
+          updateUserGroups={updateUserSidebar}
         />
       </WrapperDiv>
     </CenteredLayout>
