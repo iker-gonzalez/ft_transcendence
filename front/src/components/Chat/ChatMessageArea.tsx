@@ -171,7 +171,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
                 navigateToEmptyChat={navigateToEmptyChat}
               />
               <MessageList>
-                {messages.map((message) => (
+                {messages && messages.length > 0 && messages.map((message) => (
                   <MessageItem key={message.id}>
                     {`${message.senderName}: ${message.content}`}
                   </MessageItem>
