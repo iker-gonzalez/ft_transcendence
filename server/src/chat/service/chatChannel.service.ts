@@ -8,7 +8,7 @@ import { UserService } from '../../user/user.service';
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { ConversationMessageDTO } from '../dto/conversation-message.dto';
 import passport from 'passport';
-import { AllChannelInfo } from '../dto/all-channel-info.dt';
+import { AllChannelInfo } from '../dto/all-channel-info.dto';
 
 @Injectable()
 export class ChatChannelService {
@@ -498,10 +498,11 @@ try{
     where: { roomId: foundChatRoom.id, userId: newAdminId },
      });
 
-    // Si el usuario al que se quiere hacer administrador no es un usuario del chatRomm, añadirle a este.
+    // Si el usuario al que se quiere hacer administrador no es un usuario del chatRomm.
     if (!existingUser)
     {
-      await this.addUserToChannel(newAdminId, channelRoom);
+        throw new BadRequestException ("user is not from this channel");
+     // await this.addUserToChannel(newAdminId, channelRoom);
     
     }  
       // Buscar el ChatRoomUser por userId
@@ -519,8 +520,6 @@ try{
         },
       },
     });
-
- 
     }
   catch(error){
     console.error("Error:", error);
@@ -649,7 +648,6 @@ try{
      where: { userId: muteUserId },});
   if (!chatRoomUser)
       throw new BadRequestException ("User is not in the chatRoom");
-
 
     // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
          const updatedChatRoom = await this.prisma.chatRoom.update({
@@ -982,7 +980,35 @@ catch(error){
  }
 }
 // make private
+async addUserToPrivateChannel(userIdAdd: string, ownerId: string, channelName: string) {
+  try{
 
+    if (!userIdAdd || !ownerId || !channelName)
+      throw new BadRequestException ("channelRoom or ownerId or userIdAdd  are null");
+  
+    // Get el Channel
+    const foundChatRoom = await this.prisma.chatRoom.findFirst({
+      where: { name: channelName,},
+      include:{
+        users:true },});
+    if (!foundChatRoom)
+      throw new BadRequestException ("channelRoom not exist");
+
+      console.log(ownerId);
+    if (foundChatRoom.ownerId != ownerId)
+      throw new BadRequestException ("This is not the owner of the channel");
+
+    // Add user
+    console.log("WWWWW");
+    await this.addUserToChannel(userIdAdd, channelName);
+  }
+  catch(error){
+    throw new BadRequestException(error);
+     console.error("Error:", error);
+   }
+}
+
+// alternativa 2 para enviar mensages
 async obtenerUsuariosDeChatRoom(roomId: string) {
   const chatRoom = await this.prisma.chatRoom.findUnique({
     where: { id: roomId },
@@ -995,6 +1021,8 @@ async obtenerUsuariosDeChatRoom(roomId: string) {
 
   return chatRoom.users;
 }
+
+
 
 }
 

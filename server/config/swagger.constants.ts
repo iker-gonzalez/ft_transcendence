@@ -229,6 +229,9 @@ export const swaggerConstants = {
         description: 'Return all channel users is in',
       },
     },
+    isPasswordCorrect:{
+      summary: 'Return true is password of the room is correct',
+    },
     allExistingChannel:{
       summary: 'Return all existing channel un DB. The name and its privacy',
       ok: {
@@ -248,17 +251,13 @@ export const swaggerConstants = {
       },
     },
     addAdmin: {
-      summary: 'Add administrator to a channel, if it was not in the channel as user add it',
+      summary: 'Add or delete administrator to a channel, if it was not in the channel as user add it',
       ok: {
         description: '',
       },
     },
     muteUser : {
-      summary: 'Mute user on a chanel',
-    },
-    unmuteUser : {
-      summary: 'Unmute user on a chanel',
-
+      summary: 'Mute or unmute user on a chanel',
     },
     addOrModifyPassword:{
       summary: 'Add or modify password. Automatically this chat is set as PROTECTED',
@@ -777,6 +776,37 @@ export const swaggerConstants = {
         },
       },
     },
-
+    allUserDMWithDTO:{
+      data: {
+        description:
+          'The name of all users with had had direct messages',
+        example: {
+          id: "28bee14d-495f-4684-872c-b02782ba070a",
+          avatar: "https://i.pravatar.cc/600?img=32",
+          username: "test2-",
+          intraId: 667,
+          isBlocked: true
+        },
+      },
+    },
+    roomOwnerIntraDTO:{
+      data:{
+        description:
+          'Owner intra',
+          example:{
+            ownerIntra : "GRUPO_PRUEBA"
+          }
+      }
+    },
+    roomOwnerPasswordIntradto : {
+      data:{
+        description:
+          'Owner intra and password',
+          example:{
+            ownerIntra : "GRUPO_PRUEBA",
+            password : "xxxxxxxx"
+          }
+      }
+    },
   },
 };
