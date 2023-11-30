@@ -105,7 +105,7 @@ interface SidebarProps {
   selectedGroup: Group | null;
   users: Array<{ intraId: number; avatar: string; username: string }>;
   userGroups: Group[] | null;
-  updateUserGroups: (group: Group) => void;
+  updateUserSidebar: () => void;
   allGroups: Group[] | null;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
@@ -116,7 +116,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({
   users,
   userGroups,
-  updateUserGroups,
+  updateUserSidebar,
   allGroups,
   handleUserClick,
   handleGroupClick,
@@ -204,7 +204,10 @@ const Sidebar: React.FC<SidebarProps> = ({
             {users.map((user) => (
               <ListItem
                 key={user.intraId}
-                onClick={() => handleUserClick(user)}
+                onClick= {() => {
+                  handleUserClick(user);
+                  updateUserSidebar();
+                }}
               >
                 {user.username}
                 {selectedUser?.intraId !== user.intraId &&
@@ -303,7 +306,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       type: groupNature,
                     };
                     if (handleJoinRoom(newGroup, password) === 0) {
-                      updateUserGroups(newGroup);
+                      updateUserSidebar();
                     }
                     setRoomName('');
                   }}
