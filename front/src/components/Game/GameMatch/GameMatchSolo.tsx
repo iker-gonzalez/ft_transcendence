@@ -29,6 +29,7 @@ import {
 import GameTheme from '../../../interfaces/game-theme.interface';
 import GamePowerUp from '../../../interfaces/game-power-up.interface';
 import styled from 'styled-components';
+import GameControls from './GameControls';
 
 const WrapperDiv = styled.div`
   .title {
@@ -163,15 +164,7 @@ export default function GameMatchSolo(): JSX.Element {
     <WrapperDiv>
       <CenteredLayout>
         <h2 className="title title-1 mb-24">Be ready to challenge our AI 🦾</h2>
-        <h3 className="title title-3">
-          Paddle controls 🕹 : MOUSE 🖱 || ARROW UP ⬆️ || ARROW DOWN ⬇️
-        </h3>
-        <h3 className="title title-3">
-          Music controls 🔔 : HIGH 'h' || LOW 'l' || MUTE 'm' || UNMUTE 'u'
-        </h3>
-        <h3 className="title title-3">
-          Pause / unpause controls 🚦 : PAUSE / UNPAUSE 'p'
-        </h3>
+        <GameControls />
         <GameCanvasWithAction
           canvasRef={canvasRef}
           background={selectedTheme.backgroundImg}

@@ -35,6 +35,7 @@ import {
 } from '../../../game_pong/game_pong.constants';
 import GameMatchCustomization from './GameMatchCustomization';
 import GamePowerUp from '../../../interfaces/game-power-up.interface';
+import GameControls from './GameControls';
 
 const WrapperDiv = styled.div`
   .highlighted {
@@ -264,15 +265,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
             {isPlayer1 ? players[0].username : players[1].username}
           </span>
         </h2>
-        <h3 className="title title-3">
-          Paddle controls 🕹 : MOUSE 🖱 || ARROW UP ⬆️ || ARROW DOWN ⬇️
-        </h3>
-        <h3 className="title title-3">
-          Music controls 🔔 : HIGH 'h' || LOW 'l' || MUTE 'm' || UNMUTE 'u'
-        </h3>
-        <h3 className="title title-3">
-          Pause / unpause controls 🚦 : PAUSE / UNPAUSE 'p'
-        </h3>
+        <GameControls />
         <GameCanvasWithAction
           canvasRef={canvasRef}
           background={selectedTheme.backgroundImg}
