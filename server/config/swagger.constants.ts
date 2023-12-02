@@ -231,6 +231,9 @@ export const swaggerConstants = {
     },
     isPasswordCorrect:{
       summary: 'Return true is password of the room is correct',
+      ok:{
+        description: 'true if the password is correct, false is not',
+      }
     },
     allExistingChannel:{
       summary: 'Return all existing channel un DB. The name and its privacy',
@@ -283,6 +286,9 @@ export const swaggerConstants = {
     unblock:{
       summary: 'Unblock a user of a Direct Message',
     },
+    setUsertoPrivateChannel:{
+      summary: 'Add or delete a user to a private Channel'
+    }
   },
   dto: {
     intraSignin: {
@@ -758,11 +764,27 @@ export const swaggerConstants = {
             }
           ],
           usersIntra: [
-            667,
-            668
+            {
+              intra: 667,
+              username: "test2-"
+            },
+            {
+              intra: 668,
+              username: "test3-"
+            }
         ],
-        adminIntra: [667],
-        mutedIntra: [668],
+        adminIntra: [
+          {
+            intra: 667,
+            username: "test2-"
+          }
+        ],
+        mutedIntra: [
+          {
+            intra: 668,
+            username: "test3-"
+          }
+        ],
         bannedIntra: []
           }
         },
