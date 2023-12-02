@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import MainButton from '../UI/MainButton';
 import RoundImg from '../UI/RoundImage';
@@ -11,7 +11,7 @@ import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import { Socket } from 'socket.io-client';
-import { getChannelUsers } from '../../context/ChatDataContext';
+import { useChannelData } from '../../context/ChatDataContext';
 import SVG from 'react-inlinesvg';
 import adminSVG from '../../assets/svg/admin.svg';
 
@@ -59,6 +59,30 @@ interface ChatMessageAreaHeaderProps {
   updateUserSidebar: () => void;
 }
 
+interface ChannelMessage {
+  senderId: string;
+  receiverId: string;
+  content: string;
+  createdAt: string;
+  senderName: string;
+  receiverName: string;
+  senderAvatar: string;
+  receiverAvatar: string;
+}
+
+interface ChannelData {
+  roomName: string;
+  createDate: string;
+  ownerIntra: number;
+  password: null | string;
+  type: string;
+  channelMessage: ChannelMessage[];
+  usersIntra: number[];
+  adminIntra: number[];
+  mutedIntra: number[];
+  bannedIntra: number[];
+}
+
 const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   user,
   group,
@@ -74,6 +98,9 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   const { userData } = useUserData();
 
+  const [channelData, setChannelData] = useState<ChannelData | null>(null);
+  const { fetchChannelData } = useChannelData();
+
   const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
     useUserFriends();
 
@@ -87,6 +114,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   useEffect(() => {
     fetchFriendsList();
+    const getchChannelData = async () => {
+      const data = await fetchChannelData(group?.name || '');
+      setChannelData(data);
+    };
+    getchChannelData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onUpdateFriendsList = (
@@ -164,9 +196,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       {group && (
         <div>
           <MainButtonStyled
-            onClick={async () => {
-              const ids = await getChannelUsers(group);
-              setUserIntraIds(ids);
+            onClick={() => {
+              console.log('Actions button clicked');
+              console.log('channelData', channelData);
+              setUserIntraIds(channelData?.usersIntra || []);
+              console.log('userIntraIds', userIntraIds);
               setPopupVisible(true);
             }}
           >

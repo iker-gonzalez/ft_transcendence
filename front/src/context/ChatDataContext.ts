@@ -93,7 +93,7 @@ export const useMessageData = () => {
       `${getBaseUrl()}/chat/${group.name}/allChannel`,
       /* temporary until endpoint is fixed */ {
         headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`, //only returns messages from the user to see if group message rendering improves
+          Authorization: `Bearer ${Cookies.get('token')}`,
         },
       },
     );
@@ -104,18 +104,20 @@ export const useMessageData = () => {
   return { fetchUserMessages, fetchGroupMessages };
 };
 
-export const getChannelUsers = async (group: Group) => {
-  const response = await fetchAuthorized(
-    `${getBaseUrl()}/chat/${group.name}/allChannel`,
-    /* temporary until endpoint is fixed */ {
-      headers: {
-        Authorization: `Bearer ${Cookies.get('token')}`, //only returns messages from the user to see if group message rendering improves
+export const useChannelData = () => {
+  const fetchChannelData = async (group: string) => {
+    const response = await fetchAuthorized(
+      `${getBaseUrl()}/chat/${group}/allChannel`,
+      /* temporary until endpoint is fixed */ {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`, //only returns messages from the user to see if group message rendering improves
+        },
       },
-    },
-  );
-  const data = await response.json();
-  console.log('datafromChannel:', data);
-  const userIntraIds = data.usersIntra;
-  console.log('userIntraIdsfromChannel:', userIntraIds);
-  return userIntraIds;
-};
+    );
+    const data = await response.json();
+    console.log('datafromChannel:', data);
+    return data;
+  };
+
+  return { fetchChannelData };
+}
