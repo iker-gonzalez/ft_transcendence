@@ -80,20 +80,18 @@ const Chat: React.FC = () => {
     fetchData();
   }, [updateChatData]);
 
-
-
   const { fetchUserMessages, fetchGroupMessages } = useMessageData();
 
   const handleUserClick = async (user: User) => {
     const users = await fetchDirectMessageUsers();
     setUsers(users);
-  
+
     const userExists = users.some((u: User) => u.intraId === user.intraId);
-  
+
     if (!userExists) {
       setUsers((prevUsers) => [...prevUsers, user]);
     }
-  
+
     const directMessages = await fetchUserMessages(user);
     setSelectedUser(user);
     setSelectedGroup(null);
@@ -227,8 +225,7 @@ const Chat: React.FC = () => {
             if (selectedUser) {
               console.log('new direct message?: ', newMessage);
               handleUserClick(selectedUser);
-            }
-            else if (selectedGroup) {
+            } else if (selectedGroup) {
               console.log('new group message?: ', newMessage);
               handleGroupClick(selectedGroup);
             }

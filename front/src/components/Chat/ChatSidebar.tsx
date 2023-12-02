@@ -194,7 +194,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             {users.map((user) => (
               <ListItem
                 key={user.intraId}
-                onClick= {() => {
+                onClick={() => {
                   handleUserClick(user);
                   updateUserSidebar();
                 }}
