@@ -75,10 +75,6 @@ interface ChatMessageAreaProps {
   setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
   updateUserGroups: (group: Group) => void;
   messages: DirectMessage[];
-  setMessagesByChat: React.Dispatch<
-    React.SetStateAction<{ [key: string]: DirectMessage[] }>
-  >;
-  messagesByChat: { [key: string]: DirectMessage[] };
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
   socket: Socket | null;
 }
@@ -98,8 +94,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   setSelectedGroup,
   updateUserGroups,
   messages,
-  setMessagesByChat,
-  messagesByChat,
   onNewMessage,
   socket,
 }) => {
@@ -157,15 +151,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
                       {`${message.senderName}: ${message.content}`}
                     </MessageItem>
                   ))}
-                {(
-                  (selectedUser && messagesByChat[selectedUser.username]) ||
-                  (selectedGroup && messagesByChat[selectedGroup.name]) ||
-                  []
-                ).map((messageData) => (
-                  <MessageItem key={messageData.id}>
-                    {`${messageData.senderName}: ${messageData.content}`}
-                  </MessageItem>
-                ))}
               </MessageList>
             </WrapperDiv>
             <WrapperDiv2>
