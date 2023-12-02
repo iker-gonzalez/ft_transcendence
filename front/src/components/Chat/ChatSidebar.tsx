@@ -354,6 +354,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                           key={group.name}
                           onClick={() => {
                             handleJoinRoom(group, ''); // no password
+                            updateUserSidebar();
                             handleGroupClick(group);
                             setPopupVisible(false);
                           }}
