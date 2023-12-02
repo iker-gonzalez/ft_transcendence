@@ -49,10 +49,40 @@ const MessageList = styled.ul`
 `;
 
 const MessageItem = styled.li`
-  margin: 10px 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
 
-  a {
-    color: ${primaryAccentColor};
+  margin-bottom: 15px;
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    margin-right: 8px;
+  }
+
+  .message-container {
+    .message-header {
+      display: flex;
+      justify-content: flex-start;
+      align-items: baseline;
+
+      .username {
+        font-weight: bold;
+        line-height: 1;
+        margin-bottom: 6px;
+        margin-right: 8px;
+      }
+
+      .timestamp {
+        opacity: 0.7;
+        font-size: 0.8rem;
+      }
+    }
+    a {
+      color: ${primaryAccentColor};
+    }
   }
 `;
 
@@ -138,24 +168,46 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               navigateToEmptyChat={navigateToEmptyChat}
               updateUserSidebar={updateUserSidebar}
               onNewMessage={handleNewMessage}
-              selectedUser={selectedUser}
             />
             <div className="message-list-container">
               <MessageList>
                 {messages &&
+                  selectedUser &&
                   messages.length > 0 &&
-                  messages.map((message) => (
-                    <ScrollIntoViewIfNeeded>
-                      <MessageItem key={message.id}>
-                        {message.senderName}:{' '}
-                        <span
-                          dangerouslySetInnerHTML={{
-                            __html: message.content,
-                          }}
-                        />
-                      </MessageItem>
-                    </ScrollIntoViewIfNeeded>
-                  ))}
+                  messages.map((message) => {
+                    return (
+                      <ScrollIntoViewIfNeeded>
+                        <MessageItem key={message.id}>
+                          <img
+                            src={message.senderAvatar}
+                            alt=""
+                            className="avatar"
+                          />
+                          <div className="message-container">
+                            <div className="message-header">
+                              <p className="username">{message.senderName}</p>
+                              <p className="timestamp">
+                                {new Date(
+                                  Date.parse(message.createdAt as string),
+                                ).toLocaleString('us-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: 'numeric',
+                                  minute: 'numeric',
+                                })}
+                              </p>
+                            </div>
+                            <p
+                              dangerouslySetInnerHTML={{
+                                __html: message.content,
+                              }}
+                            />
+                          </div>
+                        </MessageItem>
+                      </ScrollIntoViewIfNeeded>
+                    );
+                  })}
               </MessageList>
             </div>
             <div>
