@@ -424,6 +424,7 @@ export function matchUser1(
   user2: IUserData,
   sounds: ISounds,
   theme: any,
+  powerUps: any,
 ) {
   // Ball motion
   if (!isBallFrozen && !isGamePaused) {
@@ -501,9 +502,9 @@ export function matchUser1(
     ballData.moveY = ballData.speed * Math.sin(angleRad);
 
     // Modify values (ball speed % paddle height) to make it more difficult
-    gamePowerUps[0].value ? (ballData.speed += 0.5) : (ballData.speed += 0);
-    gamePowerUps[1].value ? (user1.height -= 10) : (user1.height -= 0);
-    gamePowerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
+    powerUps[0].value ? (ballData.speed += 0.5) : (ballData.speed += 0);
+    powerUps[1].value ? (user1.height -= 10) : (user1.height -= 0);
+    powerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
 
     let themeSound = new Audio(theme.hitSound);
     themeSound.play().catch(function (error: any) {});
