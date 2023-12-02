@@ -13,6 +13,8 @@ import { Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
+import MainInput from '../UI/MainInput';
+import MainSelect from '../UI/MainSelect';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -47,12 +49,6 @@ const Title = styled.h2`
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
-
-  ${(props) =>
-    props.className === 'friends-modal' &&
-    `
-    font-size: 25px;
-  `}
 `;
 
 const List = styled.ul`
@@ -64,7 +60,7 @@ const ListItem = styled.li`
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
-  marginbottom: '20px';
+  margin-bottom: '20px';
 `;
 
 const RoundImgStyled = styled(RoundImg)`
@@ -80,12 +76,6 @@ const UserInfo = styled.div`
 
 const Username = styled.h3`
   font-size: 1.5em;
-`;
-
-const MainButtonStyled = styled(MainButton)`
-  padding: 5px 10px;
-  font-size: 0.8em;
-  margin-left: 20px;
 `;
 
 const UnreadMessagesCount = styled.span`
@@ -190,7 +180,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               width: '100%',
             }}
           >
-            <Title>Direct Messages</Title>
+            <h1>Direct Messages</h1>
             <PlusSign
               onClick={() => {
                 setPopupVisible(true);
@@ -218,33 +208,46 @@ const Sidebar: React.FC<SidebarProps> = ({
           </List>
         </UserList>
         {isPopupVisible && (
-          <Modal dismissModalAction={() => setPopupVisible(false)}>
+          <Modal
+            dismissModalAction={() => {
+              setPopupVisible(false);
+
+              // Reset inputs
+              setRoomName('');
+              setGroupNature('PUBLIC');
+              setPassword('');
+            }}
+          >
             {activeModalContent === 'directMessages' ? (
               <>
-                <Title className="friends-modal">
-                  Chat with one of your friends
-                </Title>
-                <br></br>
+                <h1 className="title-1 mb-16">Send new message</h1>
+                <p className="mb-24">Chat with one of your friends</p>
                 <List>
                   {userFriendsConverted.length > 0 ? (
                     userFriendsConverted.map((friend) => (
                       <ListItem
                         key={friend.intraId}
-                        style={{ display: 'flex', alignItems: 'center' }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
                       >
                         <RoundImgStyled src={friend.avatar} alt="" />
                         <UserInfo>
                           <Username>{friend.username}</Username>
                         </UserInfo>
                         <UserStatusInfo intraId={friend.intraId} />
-                        <MainButtonStyled
+                        <MainButton
                           onClick={() => {
                             handleUserClick(friend);
                             setPopupVisible(false);
                           }}
+                          style={{
+                            marginLeft: '24px',
+                          }}
                         >
                           Chat
-                        </MainButtonStyled>
+                        </MainButton>
                       </ListItem>
                     ))
                   ) : (
@@ -257,32 +260,49 @@ const Sidebar: React.FC<SidebarProps> = ({
               </>
             ) : (
               <>
-                <Title>Create a new channel</Title>
-                <input
-                  type="text"
-                  value={roomName}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 10) {
-                      setRoomName(e.target.value);
-                    }
+                <h1 className="title-1 mb-24">Create new channel</h1>
+                <p className="mb-16">
+                  You can create a public channel for maximum outreach or make
+                  it private for increased privacy.
+                </p>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '8px',
                   }}
-                  placeholder="Enter room name"
-                />
-                <select
-                  value={groupNature}
-                  onChange={(e) => setGroupNature(e.target.value)}
+                  className="mb-24"
                 >
-                  <option value="PUBLIC">Public</option>
-                  <option value="PRIVATE">Private</option>
-                  <option value="PROTECTED">Protected</option>
-                </select>
-
+                  <MainInput
+                    minLength={1}
+                    maxLength={10}
+                    type="text"
+                    value={roomName}
+                    onChange={(e) => {
+                      setRoomName(e.target.value);
+                    }}
+                    placeholder="Enter room name"
+                  />
+                  <MainSelect
+                    value={groupNature}
+                    onChange={(e) => {
+                      setGroupNature(e.target.value);
+                      setPassword('');
+                    }}
+                  >
+                    <option value="PUBLIC">Public</option>
+                    <option value="PRIVATE">Private</option>
+                    <option value="PROTECTED">Protected</option>
+                  </MainSelect>
+                </div>
                 {groupNature === 'PROTECTED' && (
-                  <input
+                  <MainInput
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter password"
+                    className="mb-16"
                   />
                 )}
 
@@ -307,10 +327,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                     }
                     setRoomName('');
                   }}
+                  className="mb-8"
                 >
                   Join Channel
                 </MainButton>
-                <Title>Or join an existing one</Title>
+                <p>Or join an existing one</p>
                 <List>
                   {allGroups &&
                     allGroups
