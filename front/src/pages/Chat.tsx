@@ -41,7 +41,6 @@ const Chat: React.FC = () => {
   const [userGroups, setUserGroups] = useState<Group[]>([]);
 
   const [messages, setMessages] = useState<DirectMessage[]>([]);
-  const [messagesByChat, setMessagesByChat] = useState<MessagesByChat>({});
 
   const { userData } = useUserData();
 
@@ -147,14 +146,6 @@ const Chat: React.FC = () => {
           content: parsedData.content,
           timestamp: Date.now().toString(),
         };
-        // setMessagesByChat((prevMessages: { [key: string]: DirectMessage[] }) => ({
-        //   ...prevMessages,
-        //   [getUsernameFromIntraId(parsedData.senderId)]: [
-        //     ...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] ||
-        //       []),
-        //     newMessage,
-        //   ],
-        // }));
         if (
           parsedData.senderId !== selectedUser?.intraId &&
           !(
@@ -190,13 +181,6 @@ const Chat: React.FC = () => {
           console.log('no selected group');
           return;
         }
-        // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-        //   ...prevMessages,
-        //   [selectedGroup.name]: [
-        //     ...(prevMessages[selectedGroup.name] || []),
-        //     messageData.message,
-        //   ],
-        // }));
       };
 
       // Add the listeners to the socket
@@ -243,8 +227,6 @@ const Chat: React.FC = () => {
           selectedUser={selectedUser}
           selectedGroup={selectedGroup}
           messages={messages}
-          messagesByChat={messagesByChat}
-          setMessagesByChat={setMessagesByChat}
           onNewMessage={(newMessage: DirectMessage | GroupMessage) => {
             setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
             if (selectedUser) {
