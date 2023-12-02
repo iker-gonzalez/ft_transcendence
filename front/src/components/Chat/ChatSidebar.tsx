@@ -309,7 +309,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       );
                     }}
                     placeholder="Enter room name"
-                    style={{ borderColor: isRoomNameValid ? 'green' : 'red' }}
+                    style={{ borderColor: isRoomNameValid ? '' : 'red' }}
                   />
                   <MainSelect
                     value={groupNature}
