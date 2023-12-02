@@ -1,4 +1,6 @@
+import User from '../interfaces/chat-user.interface';
 import GameSessionUser from '../interfaces/game-session-user.interface';
+import UserData from '../interfaces/user-data.interface';
 import UserStatus from '../interfaces/user-status.interface';
 import Cookies from 'js-cookie';
 
@@ -91,33 +93,51 @@ export function getIsPlayer1(
   return playerIndex === 0;
 }
 
+/**
+ * Creates a new direct message between two users.
+ * @param {Object} params - The parameters for creating a new direct message.
+ * @param {UserData} params.userData - The data of the user sending the message.
+ * @param {User} params.selectedUser - The data of the user receiving the message.
+ * @param {string} params.contentText - The content of the message.
+ * @returns {Object} The newly created direct message, containing the IDs of the sender and receiver, the sender's name and avatar, the content of the message, and the timestamp.
+ */
+export function createNewDirectMessage({
+  userData,
+  selectedUser,
+  contentText,
+}: {
+  userData: UserData;
+  selectedUser: User;
+  contentText: string;
+}) {
+  return {
+    id:
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15),
+    senderIntraId: userData.intraId || 0,
+    receiverIntraId: selectedUser.intraId || 0,
+    senderName: userData.username || 'Anonymous',
+    senderAvatar: userData.avatar || 'Anonymous',
+    content: contentText,
+    timestamp: new Date().toString(),
+  };
+}
+
 // Temporary function to get the intra ID of a user from their username until endpoint is implemented
 export function getIntraIdFromUsername(username: string): number {
-  if (username === 'ikgonzal')
-    return 88036;
-  else if (username === 'test-')
-    return 666;
-  else if (username === 'test2-')
-    return 667;
-  else if (username === 'test3-')
-    return 668;
-  else if (username === 'ngasco')
-    return 88103;
-  else
-    return -1;
+  if (username === 'ikgonzal') return 88036;
+  else if (username === 'test-') return 666;
+  else if (username === 'test2-') return 667;
+  else if (username === 'test3-') return 668;
+  else if (username === 'ngasco') return 88103;
+  else return -1;
 }
 
 export function getUsernameFromIntraId(intraId: number): string {
-  if (intraId === 88036)
-    return 'ikgonzal';
-  else if (intraId === 666)
-    return 'test-';
-  else if (intraId === 667)
-    return 'test2-';
-  else if (intraId === 668)
-    return 'test3-';
-  else if (intraId === 88103)
-    return 'ngasco';
-  else
-    return 'Unknown';
+  if (intraId === 88036) return 'ikgonzal';
+  else if (intraId === 666) return 'test-';
+  else if (intraId === 667) return 'test2-';
+  else if (intraId === 668) return 'test3-';
+  else if (intraId === 88103) return 'ngasco';
+  else return 'Unknown';
 }
