@@ -24,11 +24,6 @@ const WrapperDiv = styled.div`
   gap: 40px;
 `;
 
-// Define the MessagesByChat type
-type MessagesByChat = {
-  [key: string]: DirectMessage[];
-};
-
 /**
  * ChatPage component that displays the chat sidebar and message area.
  * @returns React functional component.
