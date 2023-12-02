@@ -125,6 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { launchFlashMessage } = useFlashMessages();
   const [groupNature, setGroupNature] = useState('PUBLIC');
   const [password, setPassword] = useState('');
+  const [isRoomNameValid, setIsRoomNameValid] = useState(true);
 
   useEffect(() => {
     fetchFriendsList();
@@ -135,8 +136,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleJoinRoom = (newGroup: Group, password: string) => {
     if (newGroup.name.trim() !== '' && newGroup.name && socket) {
       if (
-        userGroups &&
-        userGroups.some((group) => group.name === newGroup.name)
+        allGroups &&
+        allGroups.some((group) => group.name === newGroup.name)
       ) {
         launchFlashMessage(
           `The group name ${newGroup.name} already exists. Please choose a different name.`,
@@ -266,7 +267,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <h1 className="title-1 mb-24">Create new channel</h1>
                 <p className="mb-16">
                   You can create a public channel for maximum outreach or make
-                  it private for increased privacy.
+                  it private for increased privacy. The group name must be globally unique.
                 </p>
                 <div
                   style={{
@@ -284,8 +285,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                     value={roomName}
                     onChange={(e) => {
                       setRoomName(e.target.value);
+                      setIsRoomNameValid(!allGroups?.some(group => group.name === e.target.value));
                     }}
                     placeholder="Enter room name"
+                    style={{ borderColor: isRoomNameValid ? 'green' : 'red' }}
                   />
                   <MainSelect
                     value={groupNature}
@@ -330,7 +333,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     }
                     setRoomName('');
                   }}
-                  className="mb-8"
+                  disabled={!isRoomNameValid}
                 >
                   Join Channel
                 </MainButton>
