@@ -101,6 +101,8 @@ export function getIntraIdFromUsername(username: string): number {
     return 667;
   else if (username === 'test3-')
     return 668;
+  else if (username === 'ngasco')
+    return 88103;
   else
     return -1;
 }
@@ -114,6 +116,8 @@ export function getUsernameFromIntraId(intraId: number): string {
     return 'test2-';
   else if (intraId === 668)
     return 'test3-';
+  else if (intraId === 88103)
+    return 'ngasco';
   else
     return 'Unknown';
 }

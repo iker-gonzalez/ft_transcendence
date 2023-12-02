@@ -1,21 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatSidebar from '../components/Chat/ChatSidebar';
 import ChatMessageArea from '../components/Chat/ChatMessageArea';
 import Group from '../interfaces/chat-group.interface';
 import User from '../interfaces/chat-user.interface';
-import Message from '../interfaces/chat-dm-message.interface';
-import { fetchAuthorized, getBaseUrl } from '../utils/utils';
-import { useUserData } from '../context/UserDataContext';
-import Cookies from 'js-cookie';
-import { getIntraIdFromUsername, getUsernameFromIntraId } from '../utils/utils';
+import DirectMessage from '../interfaces/chat-message.interface';
 import GroupMessage from '../interfaces/chat-group-message.interface';
+import { useUserData } from '../context/UserDataContext';
+import { getUsernameFromIntraId } from '../utils/utils';
 import CenteredLayout from '../components/UI/CenteredLayout';
 import styled from 'styled-components';
 import useChatMessageSocket, {
   UseChatMessageSocket,
 } from '../components/Chat/useChatMessageSocket';
 import { Socket } from 'socket.io-client';
-import { useChatData } from '../context/ChatDataContext';
+import { useChatData, useMessageData } from '../context/ChatDataContext';
 
 const WrapperDiv = styled.div`
   width: 100%;
@@ -25,11 +23,6 @@ const WrapperDiv = styled.div`
   align-items: stretch;
   gap: 40px;
 `;
-
-// Define the MessagesByChat type
-type MessagesByChat = {
-  [key: string]: Message[];
-};
 
 /**
  * ChatPage component that displays the chat sidebar and message area.
@@ -42,8 +35,7 @@ const Chat: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [userGroups, setUserGroups] = useState<Group[]>([]);
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [messagesByChat, setMessagesByChat] = useState<MessagesByChat>({});
+  const [messages, setMessages] = useState<DirectMessage[]>([]);
 
   const { userData } = useUserData();
 
@@ -68,13 +60,14 @@ const Chat: React.FC = () => {
     setIsConnectionError(error);
   }, [chatMessageSocketRef, connected, error]);
 
-  const { fetchPrivateChats, fetchUserGroups, fetchAllGroups } = useChatData();
+  const { fetchDirectMessageUsers, fetchUserGroups, fetchAllGroups } =
+    useChatData();
 
   const [updateChatData, setUpdateChatData] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const users = await fetchPrivateChats();
+      const users = await fetchDirectMessageUsers();
       setUsers(users);
 
       const userGroups = await fetchUserGroups();
@@ -86,6 +79,33 @@ const Chat: React.FC = () => {
 
     fetchData();
   }, [updateChatData]);
+
+  const { fetchUserMessages, fetchGroupMessages } = useMessageData();
+
+  const handleUserClick = async (user: User) => {
+    const users = await fetchDirectMessageUsers();
+    setUsers(users);
+
+    const userExists = users.some((u: User) => u.intraId === user.intraId);
+
+    if (!userExists) {
+      setUsers((prevUsers) => [...prevUsers, user]);
+    }
+
+    const directMessages = await fetchUserMessages(user);
+    setSelectedUser(user);
+    setSelectedGroup(null);
+    console.log('directMessages', directMessages);
+    setMessages(directMessages);
+  };
+
+  const handleGroupClick = async (group: Group) => {
+    const groupMessages = await fetchGroupMessages(group);
+    setSelectedGroup(group);
+    setSelectedUser(null);
+    console.log('groupMessages', groupMessages.channelMessage);
+    setMessages(groupMessages.channelMessage);
+  };
 
   const [unreadMessages, setUnreadMessages] = useState<{
     [key: string]: number;
@@ -101,14 +121,15 @@ const Chat: React.FC = () => {
     localStorage.setItem('unreadMessages', JSON.stringify(unreadMessages));
   }, [unreadMessages]);
 
-  // Add a listener for incoming messages
   useEffect(() => {
-    // console.log('useEffect new message triggered');
     if (isSocketConnected && socket) {
       const privateMessageListener = (messageData: any) => {
         const parsedData = JSON.parse(messageData);
-        const newMessage: Message = {
+        console.log('messageData', messageData);
+        const newMessage: DirectMessage = {
           id: messageData.id,
+          senderIntraId: parsedData.senderId,
+          receiverIntraId: parsedData.receiverId,
           senderName:
             getUsernameFromIntraId(parsedData.senderId)?.toString() ||
             'Anonymous',
@@ -118,16 +139,6 @@ const Chat: React.FC = () => {
           content: parsedData.content,
           timestamp: Date.now().toString(),
         };
-        //Append the new message to the messages state
-        setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-          ...prevMessages,
-          [getUsernameFromIntraId(parsedData.senderId)]: [
-            ...(prevMessages[getUsernameFromIntraId(parsedData.senderId)] ||
-              []),
-            newMessage,
-          ],
-        }));
-        console.log('check 1');
         if (
           parsedData.senderId !== selectedUser?.intraId &&
           !(
@@ -135,20 +146,13 @@ const Chat: React.FC = () => {
             typeof selectedUser?.intraId === 'undefined'
           )
         ) {
-          console.log('check 2');
           try {
             setUnreadMessages((prevUnreadMessages) => {
-              console.log('check 3');
-
-              // Increment the count for the sender
               const updatedUnreadMessages = {
                 ...prevUnreadMessages,
                 [parsedData.senderId]:
                   (prevUnreadMessages[parsedData.senderId] || 0) + 1,
               };
-
-              // Store the updated count in local storage
-
               console.log('añade mensaje a local storage');
               localStorage.setItem(
                 'unreadMessages',
@@ -165,29 +169,13 @@ const Chat: React.FC = () => {
 
       const groupMessageListener = (messageData: any) => {
         console.log('group message listener triggered');
-        console.log('message data group', messageData);
+        console.log('messageData', messageData);
         if (!selectedGroup) {
           console.log('no selected group');
           return;
         }
-        console.log('group message received');
-        const parsedData = JSON.parse(messageData);
-        const newMessage: Message = {
-          id: messageData.id,
-          senderName:
-            getUsernameFromIntraId(parsedData.senderId)?.toString() ||
-            'Anonymous',
-          senderAvatar:
-            getUsernameFromIntraId(parsedData.senderAvatar)?.toString() ||
-            'Anonymous',
-          content: parsedData.content,
-          timestamp: Date.now().toString(),
-        };
-        // setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-        //   ...prevMessages,
-        //   [selectedGroup.name]: [...(prevMessages[selectedGroup.name] || []), newMessage]
-        // }));
       };
+
       // Add the listeners to the socket
       socket.on(
         `privateMessageReceived/${userData?.intraId.toString()}`,
@@ -209,105 +197,8 @@ const Chat: React.FC = () => {
     }
   }, [newMessageSent, isSocketConnected]);
 
-  /**
-   * Handles the click event on a user in the chat sidebar.
-   * Fetches the messages between the signed in user and the selected user.
-   * @param user - The selected user.
-   */
-  const handleUserClick = (user: User) => {
-    const userIntraId = getIntraIdFromUsername(user.username); //temporary until endpoint is fixed
-    fetchAuthorized(
-      `${getBaseUrl()}/chat/${userData?.intraId}/${userIntraId}/DM`,
-      /* temporary until endpoint is fixed */ {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      },
-    )
-      .then((response) => response.json())
-      .then((data: Message[]) => {
-        const messages = data.map((item: Message) => {
-          return {
-            id:
-              Math.random().toString(36).substring(2, 15) +
-              Math.random().toString(36).substring(2, 15),
-            senderName: item.senderName,
-            senderAvatar: item.senderAvatar,
-            content: item.content,
-            timestamp: item.timestamp,
-          };
-        });
-        setSelectedUser(user);
-        setSelectedGroup(null);
-        setMessages(messages);
-        setMessagesByChat({});
-        setUnreadMessages((prevUnreadMessages) => ({
-          ...prevUnreadMessages,
-          [user.intraId]: 0,
-        }));
-        setUsers((prevUsers) => {
-          // Check if the user already exists in the array
-          const userExists = prevUsers.some(
-            (prevUser) => prevUser.intraId === user.intraId,
-          );
-          // If the user doesn't exist, add them to the array
-          if (!userExists) {
-            return [...prevUsers, user];
-          }
-
-          // If the user does exist, return the previous state
-          return prevUsers;
-        });
-      });
-  };
-
-  /**
-   * Handles the click event on a group in the chat sidebar.
-   * Fetches the messages between the signed in user and the selected group.
-   * Sets the selected group and clears the selected user.
-   * @param group - The selected group.
-   */
-  const handleGroupClick = (group: Group) => {
-    console.log('i am here baby');
-    console.log('groupname', group.name);
-    fetchAuthorized(
-      `${getBaseUrl()}/chat/${group.name}/allChannel`,
-      /* temporary until endpoint is fixed */ {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      },
-    )
-      .then((response) => response.json())
-      .then((data: GroupMessage[]) => {
-        console.log('data', data);
-        if (data.length > 0) {
-          console.log('data', data);
-          const messages = data.map((item: GroupMessage) => {
-            return {
-              id:
-                Math.random().toString(36).substring(2, 15) +
-                Math.random().toString(36).substring(2, 15),
-              senderName: item.senderName,
-              senderAvatar: item.senderAvatar,
-              content: item.content,
-              timestamp: item.timestamp,
-            };
-          });
-          setMessages(messages);
-        } else {
-          console.log('no messages');
-          setMessages([]);
-        }
-        setSelectedUser(null);
-        setSelectedGroup(group);
-        setMessagesByChat({});
-      });
-  };
-
-  function updateUserGroups(newGroup: Group) {
-    setUpdateChatData(prevState => !prevState);
-
+  function updateUserSidebar() {
+    setUpdateChatData((prevState) => !prevState);
   }
 
   return (
@@ -316,7 +207,7 @@ const Chat: React.FC = () => {
         <ChatSidebar
           users={users}
           userGroups={userGroups}
-          updateUserGroups={updateUserGroups}
+          updateUserSidebar={updateUserSidebar}
           allGroups={allGroups}
           handleUserClick={handleUserClick}
           handleGroupClick={handleGroupClick}
@@ -329,15 +220,20 @@ const Chat: React.FC = () => {
           selectedUser={selectedUser}
           selectedGroup={selectedGroup}
           messages={messages}
-          messagesByChat={messagesByChat}
-          setMessagesByChat={setMessagesByChat}
-          onNewMessage={() => {
+          updateUserSidebar={updateUserSidebar}
+          onNewMessage={(newMessage: DirectMessage | GroupMessage) => {
             setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
+            if (selectedUser) {
+              console.log('new direct message?: ', newMessage);
+              handleUserClick(selectedUser);
+            } else if (selectedGroup) {
+              console.log('new group message?: ', newMessage);
+              handleGroupClick(selectedGroup);
+            }
           }}
           socket={socket}
           setSelectedUser={setSelectedUser}
           setSelectedGroup={setSelectedGroup}
-          updateUserGroups={updateUserGroups}
         />
       </WrapperDiv>
     </CenteredLayout>

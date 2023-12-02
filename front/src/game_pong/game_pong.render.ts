@@ -20,6 +20,7 @@ import {
   drawSparksTrail,
   drawText,
   isBallFrozen,
+  isGamePaused,
   isSoloMode,
   sparks,
   sparksTrailClean,
@@ -214,6 +215,18 @@ export function render(
     RenderColor.Red,
   );
 
+  if (isGamePaused) {
+    drawText(
+      canvas,
+      '   GAME   PAUSED ',
+      canvas.width / 2,
+      canvas.height / 2,
+      '50px Courier',
+      'center',
+      RenderColor.Red,
+    );
+  }
+
   if (isSoloMode(usersData)) {
     drawText(
       canvas,
@@ -387,12 +400,12 @@ export function resetBall(
   newUserData2.height = 100;
 
   // TODO Check setTimeout (async / await)
- setTimeout(() => {
-   if (user1.score < 5 && user2.score < 5) {
-     sounds.beepLong.play().catch(function (error: any) {});
-   }
- }, 1500);
-  
+  setTimeout(() => {
+    if (user1.score < 5 && user2.score < 5) {
+      sounds.beepLong.play().catch(function (error: any) {});
+    }
+  }, 1500);
+
   setTimeout(() => {
     newBallData.x = canvas.width / 2;
     newBallData.y = canvas.height / 2;
@@ -413,7 +426,7 @@ export function matchUser1(
   theme: any,
 ) {
   // Ball motion
-  if (!isBallFrozen) {
+  if (!isBallFrozen && !isGamePaused) {
     ballData.x += ballData.moveX;
     ballData.y += ballData.moveY;
   }
