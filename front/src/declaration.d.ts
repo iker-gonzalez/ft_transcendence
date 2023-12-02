@@ -10,3 +10,5 @@ declare module 'vanta/src/vanta.net' {
   const net: any;
   export default net;
 }
+
+declare module 'react-scroll-into-view-if-needed';

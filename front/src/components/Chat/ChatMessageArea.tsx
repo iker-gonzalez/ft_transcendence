@@ -13,6 +13,7 @@ import {
   darkerBgColor,
   primaryAccentColor,
 } from '../../constants/color-tokens';
+import ScrollIntoViewIfNeeded from 'react-scroll-into-view-if-needed';
 
 const MessageAreaContainer = styled.div`
   width: 100%;
@@ -29,22 +30,17 @@ const MessageAreaContainer = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    overflow-y: auto; /* Add scroll behavior when content overflows */
   }
 `;
 
 const WrapperDiv = styled.div`
-  justify-content: flex-start;
-`;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
-const WrapperDiv2 = styled.div`
-  justify-content: flex-start;
-`;
-
-const Title = styled.h2`
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 20px;
+  .message-list-container {
+    overflow-y: auto;
+  }
 `;
 
 const MessageList = styled.ul`
@@ -134,40 +130,42 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     <MessageAreaContainer>
       <GradientBorder className="gradient-border">
         {selectedUser || selectedGroup ? (
-          <>
-            <WrapperDiv>
-              <ChatMessageAreaHeader
-                user={selectedUser}
-                group={selectedGroup}
-                socket={socket}
-                navigateToEmptyChat={navigateToEmptyChat}
-                updateUserSidebar={updateUserSidebar}
-                onNewMessage={handleNewMessage}
-                selectedUser={selectedUser}
-              />
+          <WrapperDiv>
+            <ChatMessageAreaHeader
+              user={selectedUser}
+              group={selectedGroup}
+              socket={socket}
+              navigateToEmptyChat={navigateToEmptyChat}
+              updateUserSidebar={updateUserSidebar}
+              onNewMessage={handleNewMessage}
+              selectedUser={selectedUser}
+            />
+            <div className="message-list-container">
               <MessageList>
                 {messages &&
                   messages.length > 0 &&
                   messages.map((message) => (
-                    <MessageItem key={message.id}>
-                      {message.senderName}:{' '}
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: message.content,
-                        }}
-                      />
-                    </MessageItem>
+                    <ScrollIntoViewIfNeeded>
+                      <MessageItem key={message.id}>
+                        {message.senderName}:{' '}
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: message.content,
+                          }}
+                        />
+                      </MessageItem>
+                    </ScrollIntoViewIfNeeded>
                   ))}
               </MessageList>
-            </WrapperDiv>
-            <WrapperDiv2>
+            </div>
+            <div>
               <MessageInput
                 selectedUser={selectedUser}
                 selectedGroup={selectedGroup}
                 onMessageSubmit={handleNewMessage}
               />
-            </WrapperDiv2>
-          </>
+            </div>
+          </WrapperDiv>
         ) : (
           <CenteredContainer>
             <StyledParagraph>
