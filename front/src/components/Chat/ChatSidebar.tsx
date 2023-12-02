@@ -136,8 +136,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleJoinRoom = (newGroup: Group, password: string) => {
     if (newGroup.name.trim() !== '' && newGroup.name && socket) {
       if (
-        allGroups &&
-        allGroups.some((group) => group.name === newGroup.name)
+        userGroups &&
+        userGroups.some((group) => group.name === newGroup.name)
       ) {
         launchFlashMessage(
           `The group name ${newGroup.name} already exists. Please choose a different name.`,

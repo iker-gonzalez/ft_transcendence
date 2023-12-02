@@ -11,6 +11,8 @@ import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import { Socket } from 'socket.io-client';
+import { getChannelUsers } from '../../context/ChatDataContext';
+import { get } from 'http';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -73,6 +75,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     userFriends.find((userFriend) => userFriend.username === user?.username) ||
     null;
 
+  const [isPopupVisible, setPopupVisible] = useState(false);
   const { launchFlashMessage } = useFlashMessages();
 
   useEffect(() => {
@@ -138,7 +141,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       {group && (
         <div>
           <MainButtonStyled
-            onClick={() => console.log('Actions button clicked')}
+            onClick={() => getChannelUsers(group)}
           >
             Actions
           </MainButtonStyled>
