@@ -4,6 +4,7 @@ import ChatMessageArea from '../components/Chat/ChatMessageArea';
 import Group from '../interfaces/chat-group.interface';
 import User from '../interfaces/chat-user.interface';
 import DirectMessage from '../interfaces/chat-message.interface';
+import GroupMessage from '../interfaces/chat-group-message.interface';
 import { useUserData } from '../context/UserDataContext';
 import { getUsernameFromIntraId } from '../utils/utils';
 import CenteredLayout from '../components/UI/CenteredLayout';
@@ -110,7 +111,8 @@ const Chat: React.FC = () => {
     const groupMessages = await fetchGroupMessages(group);
     setSelectedGroup(group);
     setSelectedUser(null);
-    setMessages(groupMessages);
+    console.log('groupMessages', groupMessages.channelMessage);
+    setMessages(groupMessages.channelMessage);
   };
 
   const [unreadMessages, setUnreadMessages] = useState<{
@@ -142,7 +144,7 @@ const Chat: React.FC = () => {
           senderAvatar:
             getUsernameFromIntraId(parsedData.senderAvatar)?.toString() ||
             'Anonymous',
-          content: parsedData.content,
+          message: parsedData.content,
           timestamp: Date.now().toString(),
         };
         // setMessagesByChat((prevMessages: { [key: string]: DirectMessage[] }) => ({
@@ -243,9 +245,15 @@ const Chat: React.FC = () => {
           messages={messages}
           messagesByChat={messagesByChat}
           setMessagesByChat={setMessagesByChat}
-          onNewMessage={(newMessage: DirectMessage) => {
+          onNewMessage={(newMessage: DirectMessage | GroupMessage) => {
             setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
+            if (selectedUser) {
+              console.log('new direct message?: ', newMessage);
+              handleUserClick(selectedUser);
+            }
+            else if (selectedGroup) {
+              handleGroupClick(selectedGroup);
+            }
           }}
           socket={socket}
           setSelectedUser={setSelectedUser}

@@ -126,8 +126,10 @@ async handleJoinRoom(client: Socket, payload) {
 @SubscribeMessage('sendMessageToRoom') 
 async handleSendMessageToRoom( client: Socket, payload) {
   console.log("sendMessageToRoom event");
+  console.log('all payload:', payload);
   console.log('roomName:', payload.roomName);
   console.log('message:', payload.message);
+  console.log('intraId:', payload.intraId);
 
   // id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
   // senderName: userData?.username || 'Anonymous',
@@ -141,7 +143,7 @@ async handleSendMessageToRoom( client: Socket, payload) {
     // Actualizar la DB
     const userId = await this.chatDMservice.findUserIdByIntraId(payload.intraId);
     console.log(userId);
-    await this.chatChannelservice.addChannelMessageToUser(payload.roomName ,userId, payload.message);
+    await this.chatChannelservice.addChannelMessageToUser(payload.roomName ,userId, payload.content);
     
     // Enviar el mensaje a todos los clientes en la sala
     this.server.to(payload.roomName).emit('message', payload);

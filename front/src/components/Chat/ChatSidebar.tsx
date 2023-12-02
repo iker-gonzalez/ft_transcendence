@@ -180,7 +180,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               width: '100%',
             }}
           >
-            <h1>Direct Messages</h1>
+            <Title>Direct Messages</Title>
             <PlusSign
               onClick={() => {
                 setPopupVisible(true);
