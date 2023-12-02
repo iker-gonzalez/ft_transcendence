@@ -27,7 +27,11 @@ interface MessageInputProps {
   selectedGroup: Group | null;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ onMessageSubmit, selectedUser, selectedGroup }) => {
+const MessageInput: React.FC<MessageInputProps> = ({
+  onMessageSubmit,
+  selectedUser,
+  selectedGroup,
+}) => {
   const [message, setMessage] = useState('');
 
   const { userData } = useUserData();
@@ -40,21 +44,20 @@ const MessageInput: React.FC<MessageInputProps> = ({ onMessageSubmit, selectedUs
     e.preventDefault();
     if (message.trim() !== '') {
       if (selectedUser) {
-      const newDirectMessage: DirectMessage = {
-        id:
-          Math.random().toString(36).substring(2, 15) +
-          Math.random().toString(36).substring(2, 15),
-        senderIntraId: userData?.intraId || 0,
-        receiverIntraId: selectedUser?.intraId || 0,
-        senderName: userData?.username || 'Anonymous',
-        senderAvatar: userData?.avatar || 'Anonymous',
-        content: message,
-        timestamp: new Date().toString(),
-      };
-      onMessageSubmit(newDirectMessage);
-      setMessage('');
-      }
-      else if (selectedGroup) {
+        const newDirectMessage: DirectMessage = {
+          id:
+            Math.random().toString(36).substring(2, 15) +
+            Math.random().toString(36).substring(2, 15),
+          senderIntraId: userData?.intraId || 0,
+          receiverIntraId: selectedUser?.intraId || 0,
+          senderName: userData?.username || 'Anonymous',
+          senderAvatar: userData?.avatar || 'Anonymous',
+          content: message,
+          timestamp: new Date().toString(),
+        };
+        onMessageSubmit(newDirectMessage);
+        setMessage('');
+      } else if (selectedGroup) {
         console.log('new group message: ', message);
         const newGroupMessage: GroupMessage = {
           id:
@@ -69,7 +72,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ onMessageSubmit, selectedUs
         };
         onMessageSubmit(newGroupMessage);
         setMessage('');
-
       }
     }
   };
