@@ -194,7 +194,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                 const newDirectMessage: DirectMessage = createNewDirectMessage({
                   selectedUser,
                   userData,
-                  contentText: `Hey, ngasco! Fancy playing a 1vs1 match together? Click <a href="${window.location.origin}/game">here</a> to start a new game!`,
+                  contentText: `Hey, ${selectedUser.username}! Fancy playing a 1vs1 match together? Click <a href="${window.location.origin}/game">here</a> to start a new game!`,
                 });
 
                 onNewMessage(newDirectMessage);
@@ -240,7 +240,9 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                 <div key={intraId}>
                   {intraId}
                   {/*If there is time, change to svg*/}
-                  <MainButton onClick={() => setAdmin(intraId)}>Set Admin</MainButton>
+                  <MainButton onClick={() => setAdmin(intraId)}>
+                    Set Admin
+                  </MainButton>
                   <MainButton onClick={() => mute(intraId)}>Mute</MainButton>
                   <MainButton onClick={() => kick(intraId)}>Kick</MainButton>
                   <MainButton onClick={() => ban(intraId)}>Ban</MainButton>
