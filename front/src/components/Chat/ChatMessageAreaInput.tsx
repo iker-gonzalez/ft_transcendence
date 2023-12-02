@@ -7,6 +7,7 @@ import { useUserData } from '../../context/UserDataContext';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import MainInput from '../UI/MainInput';
+import { createNewDirectMessage } from '../../utils/utils';
 
 const InputContainer = styled.div`
   margin-top: 20px;
@@ -45,18 +46,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (message.trim() !== '') {
-      if (selectedUser) {
-        const newDirectMessage: DirectMessage = {
-          id:
-            Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15),
-          senderIntraId: userData?.intraId || 0,
-          receiverIntraId: selectedUser?.intraId || 0,
-          senderName: userData?.username || 'Anonymous',
-          senderAvatar: userData?.avatar || 'Anonymous',
-          content: message,
-          timestamp: new Date().toString(),
-        };
+      if (selectedUser && userData) {
+        const newDirectMessage: DirectMessage = createNewDirectMessage({
+          selectedUser,
+          userData,
+          contentText: message,
+        });
         onMessageSubmit(newDirectMessage);
         setMessage('');
       } else if (selectedGroup) {
