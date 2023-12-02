@@ -60,7 +60,6 @@ interface ChatMessageAreaHeaderProps {
   navigateToEmptyChat: () => void;
   updateUserSidebar: () => void;
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
-  selectedUser: User | null;
 }
 
 interface ChannelMessage {
@@ -94,7 +93,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   navigateToEmptyChat,
   updateUserSidebar,
   onNewMessage,
-  selectedUser,
 }) => {
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
@@ -190,11 +188,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         <div>
           <MainButtonStyled
             onClick={() => {
-              if (userData && selectedUser) {
+              if (userData && user) {
                 const newDirectMessage: DirectMessage = createNewDirectMessage({
-                  selectedUser,
+                  selectedUser: user,
                   userData,
-                  contentText: `Hey, ${selectedUser.username}! Fancy playing a 1vs1 match together? Click <a href="${window.location.origin}/game">here</a> to start a new game!`,
+                  contentText: `Hey, ${user.username}! Fancy playing a 1vs1 match together? Click <a href="${window.location.origin}/game">here</a> to start a new game!`,
                 });
 
                 onNewMessage(newDirectMessage);
