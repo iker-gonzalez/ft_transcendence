@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import MainButton from '../UI/MainButton';
 import RoundImg from '../UI/RoundImage';
@@ -11,6 +11,9 @@ import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import { Socket } from 'socket.io-client';
+import { useChannelData } from '../../context/ChatDataContext';
+import SVG from 'react-inlinesvg';
+import adminSVG from '../../assets/svg/admin.svg';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -43,12 +46,41 @@ const MainButtonStyled = styled(MainButton)`
   margin-right: 15px;
 `;
 
+const StyledSVG = styled(SVG)`
+  width: 10px; // Adjust as needed
+  height: 10px; // Adjust as needed
+`;
+
 interface ChatMessageAreaHeaderProps {
   user?: User | null;
   group?: Group | null;
   socket: Socket | null;
   navigateToEmptyChat: () => void;
   updateUserSidebar: () => void;
+}
+
+interface ChannelMessage {
+  senderId: string;
+  receiverId: string;
+  content: string;
+  createdAt: string;
+  senderName: string;
+  receiverName: string;
+  senderAvatar: string;
+  receiverAvatar: string;
+}
+
+interface ChannelData {
+  roomName: string;
+  createDate: string;
+  ownerIntra: number;
+  password: null | string;
+  type: string;
+  channelMessage: ChannelMessage[];
+  usersIntra: number[];
+  adminIntra: number[];
+  mutedIntra: number[];
+  bannedIntra: number[];
 }
 
 const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
@@ -66,6 +98,9 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   const { userData } = useUserData();
 
+  const [channelData, setChannelData] = useState<ChannelData | null>(null);
+  const { fetchChannelData } = useChannelData();
+
   const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
     useUserFriends();
 
@@ -73,10 +108,17 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     userFriends.find((userFriend) => userFriend.username === user?.username) ||
     null;
 
+  const [isPopupVisible, setPopupVisible] = useState(false);
   const { launchFlashMessage } = useFlashMessages();
+  const [userIntraIds, setUserIntraIds] = useState<number[] | null>(null);
 
   useEffect(() => {
     fetchFriendsList();
+    const getchChannelData = async () => {
+      const data = await fetchChannelData(group?.name || '');
+      setChannelData(data);
+    };
+    getchChannelData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onUpdateFriendsList = (
@@ -105,6 +147,22 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       );
       navigateToEmptyChat();
     }
+  };
+
+  const setAdmin = (intraId: number) => {
+    console.log('set admin');
+  };
+
+  const mute = (intraId: number) => {
+    console.log('mute');
+  };
+
+  const kick = (intraId: number) => {
+    console.log('kick');
+  };
+
+  const ban = (intraId: number) => {
+    console.log('ban');
   };
 
   return (
@@ -138,10 +196,35 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       {group && (
         <div>
           <MainButtonStyled
-            onClick={() => console.log('Actions button clicked')}
+            onClick={() => {
+              console.log('Actions button clicked');
+              console.log('channelData', channelData);
+              setUserIntraIds(channelData?.usersIntra || []);
+              console.log('userIntraIds', userIntraIds);
+              setPopupVisible(true);
+            }}
           >
             Actions
           </MainButtonStyled>
+          {userIntraIds && isPopupVisible && (
+            <Modal
+              dismissModalAction={() => {
+                setPopupVisible(false);
+              }}
+            >
+              {/* Display the user intra ids here */}
+              {userIntraIds.map((intraId) => (
+                <div key={intraId}>
+                  {intraId}
+                  {/*If there is time, change to svg*/}
+                  <MainButton onClick={() => setAdmin(intraId)}>Set Admin</MainButton>
+                  <MainButton onClick={() => mute(intraId)}>Mute</MainButton>
+                  <MainButton onClick={() => kick(intraId)}>Kick</MainButton>
+                  <MainButton onClick={() => ban(intraId)}>Ban</MainButton>
+                </div>
+              ))}
+            </Modal>
+          )}
           <MainButtonStyled
             onClick={() => console.log('Protect button clicked')}
           >
