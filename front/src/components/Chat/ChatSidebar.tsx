@@ -5,7 +5,11 @@ import User from '../../interfaces/chat-user.interface';
 import Modal from '../UI/Modal';
 import { useUserFriends, useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
-import { darkerBgColor } from '../../constants/color-tokens';
+import {
+  darkBgColor,
+  darkerBgColor,
+  primaryAccentColor,
+} from '../../constants/color-tokens';
 import MainButton from '../UI/MainButton';
 import RoundImg from '../UI/RoundImage';
 import UserStatusInfo from '../UI/UserStatus';
@@ -36,19 +40,38 @@ const UserList = styled.div`
   margin-bottom: 20px;
 `;
 
-const PlusSign = styled.span`
+const TitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+const PlusSign = styled.button`
+  width: 30px;
+  height: 30px;
+
+  border-radius: 6px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   font-size: 28px;
-  color: yellow;
+  color: ${primaryAccentColor};
+  background: none;
   cursor: pointer;
   margin-left: 10px;
-  position: relative;
-  top: -8px;
+
+  &:hover {
+    background-color: ${darkBgColor};
+    transition: background-color 0.3s;
+  }
 `;
 
 const Title = styled.h2`
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 10px;
 `;
 
 const List = styled.ul`
@@ -174,14 +197,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     <SidebarContainer>
       <GradientBorder className="gradient-border">
         <UserList>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              width: '100%',
-            }}
-          >
-            <Title>Direct Messages</Title>
+          <TitleContainer>
+            <Title>Messages</Title>
             <PlusSign
               onClick={() => {
                 setPopupVisible(true);
@@ -190,7 +207,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             >
               +
             </PlusSign>
-          </div>
+          </TitleContainer>
           <List>
             {users.map((user) => (
               <ListItem
@@ -285,7 +302,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                     value={roomName}
                     onChange={(e) => {
                       setRoomName(e.target.value);
-                      setIsRoomNameValid(!allGroups?.some(group => group.name === e.target.value));
+                      setIsRoomNameValid(
+                        !allGroups?.some(
+                          (group) => group.name === e.target.value,
+                        ),
+                      );
                     }}
                     placeholder="Enter room name"
                     style={{ borderColor: isRoomNameValid ? 'green' : 'red' }}
@@ -372,13 +393,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </Modal>
         )}
         <UserList>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              width: '100%',
-            }}
-          >
+          <TitleContainer>
             <Title>Channels</Title>
             <PlusSign
               onClick={() => {
@@ -388,7 +403,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             >
               +
             </PlusSign>
-          </div>
+          </TitleContainer>
           <List>
             {userGroups &&
               userGroups.map((group) => (
