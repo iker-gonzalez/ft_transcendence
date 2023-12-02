@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import MainButton from '../UI/MainButton';
 import RoundImg from '../UI/RoundImage';
@@ -13,7 +13,9 @@ import User from '../../interfaces/chat-user.interface';
 import { Socket } from 'socket.io-client';
 import { useChannelData } from '../../context/ChatDataContext';
 import SVG from 'react-inlinesvg';
-import adminSVG from '../../assets/svg/admin.svg';
+import DirectMessage from '../../interfaces/chat-message.interface';
+import GroupMessage from '../../interfaces/chat-group-message.interface';
+import { createNewDirectMessage } from '../../utils/utils';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -57,6 +59,8 @@ interface ChatMessageAreaHeaderProps {
   socket: Socket | null;
   navigateToEmptyChat: () => void;
   updateUserSidebar: () => void;
+  onNewMessage: (message: DirectMessage | GroupMessage) => void;
+  selectedUser: User | null;
 }
 
 interface ChannelMessage {
@@ -89,6 +93,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   socket,
   navigateToEmptyChat,
   updateUserSidebar,
+  onNewMessage,
+  selectedUser,
 }) => {
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
@@ -182,7 +188,24 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       </div>
       {user && (
         <div>
-          <MainButtonStyled onClick={() => console.log('Play button clicked')}>
+          <MainButtonStyled
+            onClick={() => {
+              if (userData && selectedUser) {
+                const newDirectMessage: DirectMessage = createNewDirectMessage({
+                  selectedUser,
+                  userData,
+                  contentText: `Hey, ngasco! Fancy playing a 1vs1 match together? Click <a href="${window.location.origin}/game">here</a> to start a new game!`,
+                });
+
+                onNewMessage(newDirectMessage);
+              } else {
+                launchFlashMessage(
+                  'Something went wrong. Try again later.',
+                  FlashMessageLevel.ERROR,
+                );
+              }
+            }}
+          >
             Play
           </MainButtonStyled>
           <MainButtonStyled onClick={() => setFriendProfileToShow(friend)}>

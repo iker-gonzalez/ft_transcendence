@@ -1,4 +1,4 @@
-import React, { useState, RefObject } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
@@ -9,7 +9,10 @@ import ChatMessageAreaHeader from './ChatMessageAreaHeader';
 import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
-import { darkerBgColor } from '../../constants/color-tokens';
+import {
+  darkerBgColor,
+  primaryAccentColor,
+} from '../../constants/color-tokens';
 
 const MessageAreaContainer = styled.div`
   width: 100%;
@@ -51,6 +54,10 @@ const MessageList = styled.ul`
 
 const MessageItem = styled.li`
   margin: 10px 0;
+
+  a {
+    color: ${primaryAccentColor};
+  }
 `;
 
 const CenteredContainer = styled.div`
@@ -135,13 +142,20 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
                 socket={socket}
                 navigateToEmptyChat={navigateToEmptyChat}
                 updateUserSidebar={updateUserSidebar}
+                onNewMessage={handleNewMessage}
+                selectedUser={selectedUser}
               />
               <MessageList>
                 {messages &&
                   messages.length > 0 &&
                   messages.map((message) => (
                     <MessageItem key={message.id}>
-                      {`${message.senderName}: ${message.content}`}
+                      {message.senderName}:{' '}
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: message.content,
+                        }}
+                      />
                     </MessageItem>
                   ))}
               </MessageList>
