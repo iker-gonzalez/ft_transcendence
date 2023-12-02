@@ -20,6 +20,7 @@ import { matchUser1, matchUser2, onGameEnd } from './game_pong.render';
 import { Socket } from 'socket.io-client';
 import { render } from './game_pong.render';
 import GameTheme from '../interfaces/game-theme.interface';
+import GamePowerUp from '../interfaces/game-power-up.interface';
 
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
@@ -434,6 +435,7 @@ export type InitializeSocketLogicArgs = {
   theme: GameTheme;
   isFirstRun: boolean;
   countDown: number;
+  powerUps: any;
 };
 
 export function initializeSocketLogic({
@@ -456,6 +458,7 @@ export function initializeSocketLogic({
   theme,
   isFirstRun,
   countDown,
+  powerUps,
 }: InitializeSocketLogicArgs) {
   socket.emit(
     'upload',
@@ -494,7 +497,7 @@ export function initializeSocketLogic({
         //  countDown = 3;
       }
 
-      matchUser1(canvas, ballData, user1, user2, sounds, theme);
+      matchUser1(canvas, ballData, user1, user2, sounds, theme, powerUps);
 
       render(
         canvas,
