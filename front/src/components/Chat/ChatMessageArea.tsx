@@ -73,9 +73,9 @@ interface ChatMessageAreaProps {
   setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
   selectedGroup: Group | null;
   setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
-  updateUserGroups: (group: Group) => void;
   messages: DirectMessage[];
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
+  updateUserSidebar: () => void;
   socket: Socket | null;
 }
 
@@ -92,18 +92,11 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   setSelectedUser,
   selectedGroup,
   setSelectedGroup,
-  updateUserGroups,
   messages,
   onNewMessage,
+  updateUserSidebar,
   socket,
 }) => {
-  // Declare and initialize the message state
-  const [message, setMessage] = useState('');
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
-  };
-
   const { userData } = useUserData();
 
   const handleNewMessage = (newMessage: DirectMessage | GroupMessage) => {
@@ -121,7 +114,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
           content: newMessage.content,
         });
       }
-      setMessage('');
       onNewMessage(newMessage);
     }
   };
@@ -142,6 +134,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
                 group={selectedGroup}
                 socket={socket}
                 navigateToEmptyChat={navigateToEmptyChat}
+                updateUserSidebar={updateUserSidebar}
               />
               <MessageList>
                 {messages &&
@@ -155,7 +148,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
             </WrapperDiv>
             <WrapperDiv2>
               <MessageInput
-                onInputChange={handleInputChange}
                 selectedUser={selectedUser}
                 selectedGroup={selectedGroup}
                 onMessageSubmit={handleNewMessage}

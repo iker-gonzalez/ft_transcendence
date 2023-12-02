@@ -220,6 +220,7 @@ const Chat: React.FC = () => {
           selectedUser={selectedUser}
           selectedGroup={selectedGroup}
           messages={messages}
+          updateUserSidebar={updateUserSidebar}
           onNewMessage={(newMessage: DirectMessage | GroupMessage) => {
             setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
             if (selectedUser) {
@@ -233,7 +234,6 @@ const Chat: React.FC = () => {
           socket={socket}
           setSelectedUser={setSelectedUser}
           setSelectedGroup={setSelectedGroup}
-          updateUserGroups={updateUserSidebar}
         />
       </WrapperDiv>
     </CenteredLayout>

@@ -21,7 +21,6 @@ const InputField = styled.input`
 `;
 
 interface MessageInputProps {
-  onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onMessageSubmit: (message: DirectMessage | GroupMessage) => void;
   selectedUser: User | null;
   selectedGroup: Group | null;
