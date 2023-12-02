@@ -124,7 +124,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
           intraId: userData?.intraId,
           senderName: userData?.username || 'Anonymous',
           senderAvatar: userData?.avatar || 'Anonymous',
-          message: newMessage.content,
+          content: newMessage.content,
         });
       }
       setMessage('');
