@@ -6,18 +6,21 @@ import GroupMessage from '../../interfaces/chat-group-message.interface';
 import { useUserData } from '../../context/UserDataContext';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
+import MainInput from '../UI/MainInput';
 
 const InputContainer = styled.div`
   margin-top: 20px;
-`;
 
-const InputField = styled.input`
-  width: 80%;
-  padding: 10px;
-  margin-right: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  outline: none;
+  form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    > input {
+      flex: 1;
+    }
+  }
 `;
 
 interface MessageInputProps {
@@ -78,7 +81,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   return (
     <InputContainer>
       <form onSubmit={handleSubmit}>
-        <InputField
+        <MainInput
           type="text"
           placeholder="Type your message..."
           value={message}
