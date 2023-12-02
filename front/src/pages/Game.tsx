@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Outlet, useNavigate, useOutletContext } from 'react-router-dom';
+import { Outlet, useOutletContext } from 'react-router-dom';
 import SessionData from '../interfaces/game-session-data.interface';
 import { useUserData } from '../context/UserDataContext';
 import UserData from '../interfaces/user-data.interface';
 import UserDataContextData from '../interfaces/user-data-context-data.interface';
+import Cookies from 'js-cookie';
 
 type GameContextType = {
   sessionDataState: [
@@ -15,12 +16,11 @@ type GameContextType = {
 
 const Game: React.FC = (): JSX.Element => {
   const [sessionData, setSessionData] = useState<SessionData>();
-  const { userData }: UserDataContextData = useUserData();
-  const navigate = useNavigate();
+  const { userData, fetchUserData }: UserDataContextData = useUserData();
 
   useEffect(() => {
     if (!userData) {
-      navigate('/');
+      fetchUserData(Cookies.get('token') as string);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
