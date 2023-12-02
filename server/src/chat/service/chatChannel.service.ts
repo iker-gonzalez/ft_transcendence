@@ -997,7 +997,8 @@ catch(error){
  }
 }
 // make private
-async addUserToPrivateChannel(userIdAdd: string, ownerId: string, channelName: string) {
+async addUserToPrivateChannel(userIdAdd: string, ownerId: string, channelName: string,
+  add: number) {
   try{
 
     if (!userIdAdd || !ownerId || !channelName)
@@ -1018,15 +1019,25 @@ async addUserToPrivateChannel(userIdAdd: string, ownerId: string, channelName: s
     // Add user
     if (foundChatRoom.type!== ChannelType.PRIVATE)
       throw new BadRequestException ("Chat must be private");
+    
+    // Buscar si esta banneado
+    const isUserAlreadyIn = foundChatRoom.users.some((userss) => userss.userId === userIdAdd);
+     if (add == 1)
+     {
+        if (isUserAlreadyIn)
+          throw new BadRequestException("This user already in this ChatRoom");
 
+          // Add user
+          await this.addUserToChannel(userIdAdd, channelName);
+    }
+    else if (add == 0)
+    {
+      if (!isUserAlreadyIn)
+         throw new BadRequestException("This user is not in this ChatRoom");
 
-       // Buscar si esta banneado
-     const isUserAlreadyIn = foundChatRoom.users.some((userss) => userss.userId === userIdAdd);
-       if (isUserAlreadyIn)
-           throw new BadRequestException("This user already in this ChatRoom");
- 
-      console.log("WWWWW");
-    await this.addUserToChannel(userIdAdd, channelName);
+         // Delete User
+         await this.leaveUserFromChannel(channelName, userIdAdd);
+    }
   }
   catch(error){
     throw new BadRequestException(error);

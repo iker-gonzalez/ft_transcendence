@@ -438,6 +438,9 @@ export class ChatController {
     @ApiOperation({
       summary: swaggerConstants.chat.isPasswordCorrect.summary, 
     })
+    @ApiOkResponse({
+      description: swaggerConstants.chat.isPasswordCorrect.ok.description,
+    })
     async getisPasswordCorrect(
       @Param('password') password: string,
       @Param('roomName') roomName: string,
@@ -453,24 +456,26 @@ export class ChatController {
       return true;
     }
 
-    @Get(':userAddIntra/:roomName/addUserToPrivateChannel') // Define la ruta para los parámetros userId1 y userId2
+    @Patch(':userAddIntra/:roomName/:b_bool/setUserToPrivateChannel') // Define la ruta para los parámetros userId1 y userId2
     @ApiParam({ name: 'userAddIntra' })
     @ApiParam({ name: 'roomName' })
+    @ApiParam({ name: 'b_bool' })
     @ApiBody({ description: 'JSON body with the ownerIntra', type: RoomOwnerIntraDTO })
     @ApiOperation({
-      summary: swaggerConstants.chat.isPasswordCorrect.summary, 
+      summary: swaggerConstants.chat.setUsertoPrivateChannel.summary, 
     })
-    async getaddUserToPrivateChannel(
+    async patchaddUserToPrivateChannel(
       @Param('userAddIntra') userAddIntra: string,
       @Param('roomName') roomName: string,
+      @Param('b_bool') b_bool: number,
       @Body() paydload: RoomOwnerIntraDTO,
     ) : Promise<void> {  
       console.log("addUserToPrivateChannel get");
       try{
         const userAddId = await this.chatDMService.findUserIdByIntraId(parseInt(userAddIntra, 10));
         const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
+        await this.chatChannelService.addUserToPrivateChannel(userAddId, ownerId, roomName, b_bool);
         
-        await this.chatChannelService.addUserToPrivateChannel(userAddId, ownerId, roomName);
       }
       catch (error) { 
           console.error("Error:", error);
