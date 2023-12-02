@@ -2,24 +2,25 @@ import { ChannelType, ChatMessage, ChatRoom, ChatRoomUser, User } from '@prisma/
 import { ApiProperty } from '@nestjs/swagger';
 import { swaggerConstants } from '../../../config/swagger.constants';
 import { ConversationMessageDTO } from './conversation-message.dto';
+import { IntraUsernameDTO } from './intra-username.dto';
+
 
 export class AllChannelInfo {
   @ApiProperty({
    description: swaggerConstants.dto.AllChannelInfoDTO.data.description,
    example: swaggerConstants.dto.AllChannelInfoDTO.data.example,
    })
-     
 
     // Chat Room info
     roomName: string;
-    usersIntra: number[];
+    usersInfo: IntraUsernameDTO[];
     ownerIntra: number;
     createDate : Date;
 
     // Channel funcionality
-    adminIntra: number[];
-    bannedIntra: number[];
-    mutedIntra: number[];
+    adminsInfo: IntraUsernameDTO[];
+    bannedInfo: IntraUsernameDTO[];
+    mutedInfo: IntraUsernameDTO[];
 
     // Privacy
     type: ChannelType;
@@ -43,16 +44,16 @@ export class AllChannelInfo {
         this.channelMessage = achannelMessage;
 
     }
-    setIntrasOfMemeber( memeberIntra: number[], member: string)
+    setIntrasOfMemeber( memeberIntra: IntraUsernameDTO[], member: string)
     {
         if (member == "users")
-            this.usersIntra = memeberIntra;
+            this.usersInfo = memeberIntra;
         else if(member == "admin")
-            this.adminIntra = memeberIntra;
+            this.adminsInfo = memeberIntra;
         else if(member == "banned")
-            this.bannedIntra = memeberIntra;
+            this.bannedInfo = memeberIntra;
         else if(member == "muted")
-            this.mutedIntra = memeberIntra;
+            this.mutedInfo = memeberIntra;
     }
   }
   
