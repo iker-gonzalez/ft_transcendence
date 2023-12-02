@@ -144,7 +144,7 @@ const Chat: React.FC = () => {
           senderAvatar:
             getUsernameFromIntraId(parsedData.senderAvatar)?.toString() ||
             'Anonymous',
-          message: parsedData.content,
+          content: parsedData.content,
           timestamp: Date.now().toString(),
         };
         // setMessagesByChat((prevMessages: { [key: string]: DirectMessage[] }) => ({
@@ -252,6 +252,7 @@ const Chat: React.FC = () => {
               handleUserClick(selectedUser);
             }
             else if (selectedGroup) {
+              console.log('new group message?: ', newMessage);
               handleGroupClick(selectedGroup);
             }
           }}
