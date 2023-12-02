@@ -77,6 +77,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   const [isPopupVisible, setPopupVisible] = useState(false);
   const { launchFlashMessage } = useFlashMessages();
+  const [userIntraIds, setUserIntraIds] = useState<number[] | null>(null);
 
   useEffect(() => {
     fetchFriendsList();
@@ -141,10 +142,26 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       {group && (
         <div>
           <MainButtonStyled
-            onClick={() => getChannelUsers(group)}
+            onClick={async () => {
+              const ids = await getChannelUsers(group);
+              setUserIntraIds(ids);
+              setPopupVisible(true);
+            }}
           >
             Actions
           </MainButtonStyled>
+          {userIntraIds && isPopupVisible && (
+            <Modal
+              dismissModalAction={() => {
+                setPopupVisible(false);
+              }}
+            >
+              {/* Display the user intra ids here */}
+              {userIntraIds.map((id) => (
+                <div key={id}>{id}</div>
+              ))}
+            </Modal>
+          )}
           <MainButtonStyled
             onClick={() => console.log('Protect button clicked')}
           >
