@@ -151,6 +151,7 @@ export async function gameLoop({
       theme,
       isFirstRun,
       countDown,
+      powerUps,
     });
   }
 
@@ -170,6 +171,7 @@ export async function gameLoop({
     eventList,
     canvasImages,
     theme,
+    powerUps,
   });
 }
 
@@ -192,6 +194,7 @@ type GameFunctionParams = {
   eventList: any[];
   canvasImages: InitializeCanvasImages;
   theme: GameTheme;
+  powerUps: any;
 };
 
 function game({
@@ -210,6 +213,7 @@ function game({
   eventList,
   canvasImages,
   theme,
+  powerUps,
 }: GameFunctionParams) {
   // Clean up if one of the players leaves the game
   const isAbortedMatch = true;
@@ -255,7 +259,7 @@ function game({
   setTimeout(
     () => {
       if (isSoloMode(usersData)) {
-        matchUser1(canvas, ballData, user1, user2, sounds, theme);
+        matchUser1(canvas, ballData, user1, user2, sounds, theme, powerUps);
         matchUser2(canvas, ballData, user1, user2, sounds, theme, true);
 
         render(
@@ -341,6 +345,7 @@ function game({
           eventList,
           canvasImages,
           theme,
+          powerUps,
         });
       });
     },
