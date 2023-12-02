@@ -9,6 +9,7 @@ import { BadRequestException, ConflictException, Injectable } from '@nestjs/comm
 import { ConversationMessageDTO } from '../dto/conversation-message.dto';
 import passport from 'passport';
 import { AllChannelInfo } from '../dto/all-channel-info.dto';
+import { IntraUsernameDTO } from '../dto/intra-username.dto';
 
 @Injectable()
 export class ChatChannelService {
@@ -102,18 +103,17 @@ export class ChatChannelService {
 
       console.log("GET ADMINNN");
       console.log(chatRoom.users);
-      allinfo.setIntrasOfMemeber((await this.findUserIntraByIArrayd(chatRoom.users)), "users");
-      allinfo.setIntrasOfMemeber((await this.findUserIntraByIArrayd(chatRoom.adminUsers)), "admin");
-      allinfo.setIntrasOfMemeber((await this.findUserIntraByIArrayd(chatRoom.mutedUsers)), "muted");
-      allinfo.setIntrasOfMemeber((await this.findUserIntraByIArrayd(chatRoom.bannedUsers)), "banned");
+      allinfo.setIntrasOfMemeber((await this.findUserIntraAndUsernmameById(chatRoom.users)), "users");
+      allinfo.setIntrasOfMemeber((await this.findUserIntraAndUsernmameById(chatRoom.adminUsers)), "admin");
+      allinfo.setIntrasOfMemeber((await this.findUserIntraAndUsernmameById(chatRoom.mutedUsers)), "muted");
+      allinfo.setIntrasOfMemeber((await this.findUserIntraAndUsernmameById(chatRoom.bannedUsers)), "banned");
 
     return allinfo;
   }
+
   async findUserIntraByIArrayd(chatUsers: ChatRoomUser[]): Promise<number[]>
   {
     const intraIds = [];
-    console.log(chatUsers);
-
     for (const chatUser of chatUsers )
     {
       intraIds.push(await this.findUserIntraById(chatUser.userId));
@@ -121,6 +121,23 @@ export class ChatChannelService {
     console.log(intraIds);
 
     return intraIds;
+  }
+
+  async findUserIntraAndUsernmameById(chatUsers: ChatRoomUser[]): Promise<IntraUsernameDTO[]>
+  {
+    const userInfo = [];
+
+    for (const chatUser of chatUsers )
+    {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: chatUser.userId,
+        },
+      });
+      userInfo.push(new IntraUsernameDTO(user.intraId,user.username ));
+    }
+
+    return userInfo;
   }
 
   async findUserIntraById(Id: string): Promise<number>
@@ -999,7 +1016,16 @@ async addUserToPrivateChannel(userIdAdd: string, ownerId: string, channelName: s
       throw new BadRequestException ("This is not the owner of the channel");
 
     // Add user
-    console.log("WWWWW");
+    if (foundChatRoom.type!== ChannelType.PRIVATE)
+      throw new BadRequestException ("Chat must be private");
+
+
+       // Buscar si esta banneado
+     const isUserAlreadyIn = foundChatRoom.users.some((userss) => userss.userId === userIdAdd);
+       if (isUserAlreadyIn)
+           throw new BadRequestException("This user already in this ChatRoom");
+ 
+      console.log("WWWWW");
     await this.addUserToChannel(userIdAdd, channelName);
   }
   catch(error){
