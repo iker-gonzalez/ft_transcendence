@@ -2,15 +2,12 @@ import React, { useState, RefObject } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
-import Message from '../../interfaces/chat-dm-message.interface';
+import DirectMessage from '../../interfaces/chat-message.interface';
+import GroupMessage from '../../interfaces/chat-group-message.interface';
 import MessageInput from './ChatMessageAreaInput';
 import ChatMessageAreaHeader from './ChatMessageAreaHeader';
 import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
-import {
-  getIntraIdFromUsername,
-  getUsernameFromIntraId,
-} from '../../utils/utils';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
 
@@ -76,13 +73,9 @@ interface ChatMessageAreaProps {
   setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
   selectedGroup: Group | null;
   setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
-  updateUserGroups: (group: Group) => void;
-  messages: Message[];
-  setMessagesByChat: React.Dispatch<
-    React.SetStateAction<{ [key: string]: Message[] }>
-  >;
-  messagesByChat: { [key: string]: Message[] };
-  onNewMessage: () => void;
+  messages: DirectMessage[];
+  onNewMessage: (message: DirectMessage | GroupMessage) => void;
+  updateUserSidebar: () => void;
   socket: Socket | null;
 }
 
@@ -99,84 +92,29 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   setSelectedUser,
   selectedGroup,
   setSelectedGroup,
-  updateUserGroups,
   messages,
-  setMessagesByChat,
-  messagesByChat,
   onNewMessage,
+  updateUserSidebar,
   socket,
 }) => {
-  // Declare and initialize the message state
-  const [message, setMessage] = useState('');
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
-  };
-
   const { userData } = useUserData();
 
-  const handlePrivateMessage = (newMessage: string) => {
-    if (newMessage.trim() !== '' && selectedUser) {
-      const message: Message = {
-        id:
-          Math.random().toString(36).substring(2, 15) +
-          Math.random().toString(36).substring(2, 15),
-        senderName: userData?.username || 'Anonymous',
-        senderAvatar: userData?.avatar || 'Anonymous',
-        content: newMessage,
-        timestamp: new Date().toString(),
-      };
-      setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-        ...prevMessages,
-        [selectedUser.username]: [
-          ...(prevMessages[selectedUser.username] || []),
-          message,
-        ],
-      }));
-      const receiverIntraId = getIntraIdFromUsername(
-        selectedUser?.username || 'Anonymous',
-      ); // temporary until endpoint is fixed
-      if (socket) {
-        socket.emit('privateMessage', {
-          receiverId: receiverIntraId, // temporary until endpoint is fixed
-          senderId: userData?.intraId,
-          content: newMessage,
-        });
-      }
-      setMessage('');
-      onNewMessage();
-    }
-  };
-
-  const handleSendRoomMessage = (newMessage: string) => {
-    if (newMessage.trim() !== '' && selectedGroup) {
-      const message: Message = {
-        id:
-          Math.random().toString(36).substring(2, 15) +
-          Math.random().toString(36).substring(2, 15),
-        senderName: userData?.username || 'Anonymous',
-        senderAvatar: userData?.avatar || 'Anonymous',
-        content: newMessage,
-        timestamp: new Date().toString(),
-      };
-      setMessagesByChat((prevMessages: { [key: string]: Message[] }) => ({
-        ...prevMessages,
-        [selectedGroup.name]: [
-          ...(prevMessages[selectedGroup.name] || []),
-          message,
-        ],
-      }));
-      if (socket) {
+  const handleNewMessage = (newMessage: DirectMessage | GroupMessage) => {
+    if (socket) {
+      if (selectedUser) {
+        console.log('message content: ', newMessage);
+        socket.emit('privateMessage', newMessage);
+      } else if (selectedGroup) {
+        console.log('new group message sending to socket: ', newMessage);
         socket.emit('sendMessageToRoom', {
           roomName: selectedGroup?.name,
           intraId: userData?.intraId,
           senderName: userData?.username || 'Anonymous',
           senderAvatar: userData?.avatar || 'Anonymous',
-          message: newMessage,
+          content: newMessage.content,
         });
       }
-      setMessage('');
-      onNewMessage();
+      onNewMessage(newMessage);
     }
   };
 
@@ -196,31 +134,23 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
                 group={selectedGroup}
                 socket={socket}
                 navigateToEmptyChat={navigateToEmptyChat}
+                updateUserSidebar={updateUserSidebar}
               />
               <MessageList>
-                {messages.map((message) => (
-                  <MessageItem key={message.id}>
-                    {`${message.senderName}: ${message.content}`}
-                  </MessageItem>
-                ))}
-                {(
-                  (selectedUser && messagesByChat[selectedUser.username]) ||
-                  (selectedGroup && messagesByChat[selectedGroup.name]) ||
-                  []
-                ).map((messageData) => (
-                  <MessageItem key={messageData.id}>
-                    {`${messageData.senderName}: ${messageData.content}`}
-                  </MessageItem>
-                ))}
+                {messages &&
+                  messages.length > 0 &&
+                  messages.map((message) => (
+                    <MessageItem key={message.id}>
+                      {`${message.senderName}: ${message.content}`}
+                    </MessageItem>
+                  ))}
               </MessageList>
             </WrapperDiv>
             <WrapperDiv2>
               <MessageInput
-                message={message}
-                onInputChange={handleInputChange}
-                onMessageSubmit={
-                  selectedGroup ? handleSendRoomMessage : handlePrivateMessage
-                }
+                selectedUser={selectedUser}
+                selectedGroup={selectedGroup}
+                onMessageSubmit={handleNewMessage}
               />
             </WrapperDiv2>
           </>
