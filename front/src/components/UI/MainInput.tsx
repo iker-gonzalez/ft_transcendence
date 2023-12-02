@@ -5,7 +5,7 @@ import {
   primaryLightColor,
 } from '../../constants/color-tokens';
 
-const Input = styled.input`
+const MainInput = styled.input`
   background: ${darkerBgColor};
   outline: none;
   border: 1px ${primaryColor} solid;
@@ -15,4 +15,4 @@ const Input = styled.input`
   font-size: 16px;
 `;
 
-export default Input;
+export default MainInput;
