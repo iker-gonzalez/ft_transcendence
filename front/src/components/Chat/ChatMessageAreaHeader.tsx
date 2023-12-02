@@ -12,7 +12,8 @@ import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import { Socket } from 'socket.io-client';
 import { getChannelUsers } from '../../context/ChatDataContext';
-import { get } from 'http';
+import SVG from 'react-inlinesvg';
+import adminSVG from '../../assets/svg/admin.svg';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -43,6 +44,11 @@ const MainButtonStyled = styled(MainButton)`
   margin-bottom: 25px;
   margin-top: 15px;
   margin-right: 15px;
+`;
+
+const StyledSVG = styled(SVG)`
+  width: 10px; // Adjust as needed
+  height: 10px; // Adjust as needed
 `;
 
 interface ChatMessageAreaHeaderProps {
@@ -111,6 +117,22 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     }
   };
 
+  const setAdmin = (intraId: number) => {
+    console.log('set admin');
+  };
+
+  const mute = (intraId: number) => {
+    console.log('mute');
+  };
+
+  const kick = (intraId: number) => {
+    console.log('kick');
+  };
+
+  const ban = (intraId: number) => {
+    console.log('ban');
+  };
+
   return (
     <HeaderWrapper>
       <div>
@@ -157,8 +179,15 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
               }}
             >
               {/* Display the user intra ids here */}
-              {userIntraIds.map((id) => (
-                <div key={id}>{id}</div>
+              {userIntraIds.map((intraId) => (
+                <div key={intraId}>
+                  {intraId}
+                  {/*If there is time, change to svg*/}
+                  <MainButton onClick={() => setAdmin(intraId)}>Set Admin</MainButton>
+                  <MainButton onClick={() => mute(intraId)}>Mute</MainButton>
+                  <MainButton onClick={() => kick(intraId)}>Kick</MainButton>
+                  <MainButton onClick={() => ban(intraId)}>Ban</MainButton>
+                </div>
               ))}
             </Modal>
           )}
