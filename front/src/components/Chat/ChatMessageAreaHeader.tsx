@@ -48,6 +48,7 @@ interface ChatMessageAreaHeaderProps {
   group?: Group | null;
   socket: Socket | null;
   navigateToEmptyChat: () => void;
+  updateUserSidebar: () => void;
 }
 
 const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
@@ -55,6 +56,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   group,
   socket,
   navigateToEmptyChat,
+  updateUserSidebar,
 }) => {
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
@@ -145,7 +147,12 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           >
             Password
           </MainButtonStyled>
-          <MainButtonStyled onClick={() => handleLeaveChannel(group.name)}>
+          <MainButtonStyled
+            onClick={() => {
+              handleLeaveChannel(group.name);
+              updateUserSidebar();
+            }}
+          >
             Leave Channel
           </MainButtonStyled>
         </div>
