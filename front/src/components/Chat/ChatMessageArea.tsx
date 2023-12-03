@@ -14,6 +14,7 @@ import {
   primaryAccentColor,
 } from '../../constants/color-tokens';
 import ScrollIntoViewIfNeeded from 'react-scroll-into-view-if-needed';
+import { ChannelData } from '../../interfaces/chat-channel-data.interface';
 
 const MessageAreaContainer = styled.div`
   width: 100%;
@@ -110,6 +111,7 @@ interface ChatMessageAreaProps {
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
   updateUserSidebar: () => void;
   socket: Socket | null;
+  channelData: ChannelData | null;
 }
 
 /**
@@ -129,6 +131,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   onNewMessage,
   updateUserSidebar,
   socket,
+  channelData
 }) => {
   const { userData } = useUserData();
 
@@ -168,6 +171,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               navigateToEmptyChat={navigateToEmptyChat}
               updateUserSidebar={updateUserSidebar}
               onNewMessage={handleNewMessage}
+              channelData={channelData}
             />
             <div className="message-list-container">
               <MessageList>
