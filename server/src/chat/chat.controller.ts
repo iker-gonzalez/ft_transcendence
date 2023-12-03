@@ -19,7 +19,7 @@ import {
     ApiUnauthorizedResponse,
   } from '@nestjs/swagger';
 import { ChatDMService } from './service/chatDM.service';
-import { swaggerConstants } from 'config/swagger.constants';
+import { swaggerConstants } from '../../config/swagger.constants';
 import { ChatChannelService } from './service/chatChannel.service';
 import { AllUsersDMWithDTO } from './dto/all-users-DM-with.dto';
 import { ConversationMessageDTO } from './dto/conversation-message.dto';
