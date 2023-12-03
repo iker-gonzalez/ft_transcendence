@@ -10,9 +10,6 @@ import MainInput from '../UI/MainInput';
 import { createNewDirectMessage } from '../../utils/utils';
 import { UserInfo } from '../../interfaces/chat-channel-data.interface';
 
-import { UserInfo } from '../../interfaces/chat-channel-data.interface';
-
-
 const InputContainer = styled.div`
   margin-top: 20px;
 
@@ -40,7 +37,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
   selectedUser,
   selectedGroup,
   mutedUsers
-  mutedUsers
 }) => {
 
   console.log('mutedUsers: ', mutedUsers);
@@ -51,10 +47,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
-
-  const mutedUsersIntraIds = mutedUsers.map((user) => user.intra);
-
-  const isMuted = mutedUsersIntraIds.includes(userData?.intraId || 0);
 
   const mutedUsersIntraIds = mutedUsers.map((user) => user.intra);
 
