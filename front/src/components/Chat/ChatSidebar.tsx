@@ -306,11 +306,13 @@ const Sidebar: React.FC<SidebarProps> = ({
             ) : (
               <>
                 <h1 className="title-1 mb-24">Create new channel</h1>
-                <p className="mb-16">
-                  You can create a public channel for maximum outreach or make
-                  it private for increased privacy. The group name must be
-                  globally unique.
-                </p>
+                <div className="mb-16">
+                  <p className="mb-8">
+                    You can create a public channel for maximum outreach or make
+                    it private for increased privacy.
+                  </p>
+                  <p>The group name must be globally unique.</p>
+                </div>
                 <div
                   style={{
                     display: 'flex',
@@ -377,7 +379,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                     if (handleJoinRoom(newGroup, password) === 0) {
                       updateUserSidebar();
                     }
+
+                    // Reset inputs
                     setRoomName('');
+                    setGroupNature('PUBLIC');
+                    setPassword('');
                   }}
                   disabled={!isRoomNameValid}
                 >

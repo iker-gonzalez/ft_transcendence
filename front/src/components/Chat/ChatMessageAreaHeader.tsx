@@ -387,14 +387,14 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           </div>
         )}
       {group && (
-        <MainButtonStyled
+        <DangerButton
           onClick={() => {
             handleLeaveChannel(group.name);
             updateUserSidebar();
           }}
         >
           Leave Channel
-        </MainButtonStyled>
+        </DangerButton>
       )}
       {friendProfileToShow && (
         <Modal
