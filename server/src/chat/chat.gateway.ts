@@ -149,7 +149,6 @@ async handleUnmuteUserDM(client, payload) {
     console.log('sendMessageToRoom event');
     console.log('all payload:', payload);
     console.log('roomName:', payload.roomName);
-    console.log('message:', payload.message);
     console.log('intraId:', payload.intraId);
 
     // id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
