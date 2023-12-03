@@ -16,7 +16,11 @@ import SVG from 'react-inlinesvg';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import GroupMessage from '../../interfaces/chat-group-message.interface';
 import { createNewDirectMessage } from '../../utils/utils';
-import { ChannelMessage, UserInfo, ChannelData } from '../../interfaces/chat-channel-data.interface';
+import {
+  ChannelMessage,
+  UserInfo,
+  ChannelData,
+} from '../../interfaces/chat-channel-data.interface';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -71,7 +75,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   navigateToEmptyChat,
   updateUserSidebar,
   onNewMessage,
-  channelData
+  channelData,
 }) => {
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
@@ -83,25 +87,36 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     useState<boolean>(false);
 
   const { userData } = useUserData();
+  const [password, setPasswordInput] = useState('');
 
   //const [channelData, setChannelData] = useState<ChannelData | null>(null);
   // const { fetchChannelData } = useChannelData();
-  
+
   const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
-  useUserFriends();
-  
+    useUserFriends();
+
   const friend =
-  userFriends.find((userFriend) => userFriend.username === user?.username) ||
-  null;
-  
+    userFriends.find((userFriend) => userFriend.username === user?.username) ||
+    null;
+
   const [isPopupVisible, setPopupVisible] = useState(false);
   const { launchFlashMessage } = useFlashMessages();
 
-  const [channelUsersInfo, setChannelUsersInfo] = useState<UserInfo[] | null>(null);
-  const [channelOwnerIntraId, setChannelOwnerIntraId] = useState<number | null>(null);
-  const [channelAdminsInfo, setChannelAdminsInfo] = useState<UserInfo[] | null>(null);
-  const [channelBannedInfo, setChannelBannedInfo] = useState<UserInfo[] | null>(null);
-  const [channelMutedInfo, setChannelMutedInfo] = useState<UserInfo[] | null>(null);
+  const [channelUsersInfo, setChannelUsersInfo] = useState<UserInfo[] | null>(
+    null,
+  );
+  const [channelOwnerIntraId, setChannelOwnerIntraId] = useState<number | null>(
+    null,
+  );
+  const [channelAdminsInfo, setChannelAdminsInfo] = useState<UserInfo[] | null>(
+    null,
+  );
+  const [channelBannedInfo, setChannelBannedInfo] = useState<UserInfo[] | null>(
+    null,
+  );
+  const [channelMutedInfo, setChannelMutedInfo] = useState<UserInfo[] | null>(
+    null,
+  );
 
   useEffect(() => {
     if (channelData) {
@@ -115,11 +130,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   useEffect(() => {
     fetchFriendsList();
-    // const getchChannelData = async () => {
-    //   const data = await fetchChannelData(group?.name || '');
-    //   setChannelData(data);
-    // };
-    // getchChannelData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onUpdateFriendsList = (
@@ -150,6 +160,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     }
   };
 
+  const setPassword = (password: string | null) => {};
+
   const setAdmin = (intraId: number) => {
     console.log('set admin');
   };
@@ -161,7 +173,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const kick = (intraId: number) => {
     console.log('kick');
   };
-  
+
   const ban = (intraId: number) => {
     console.log('ban');
   };
@@ -197,7 +209,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                   userData,
                   contentText: `Hey, ${user.username}! Fancy playing a 1vs1 match together? Click <a href="${window.location.origin}/game">here</a> to start a new game!`,
                 });
-  
+
                 onNewMessage(newDirectMessage);
               } else {
                 launchFlashMessage(
@@ -217,63 +229,105 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           </MainButtonStyled>
         </div>
       )}
-      {group && (channelOwnerIntraId === userData?.intraId || channelAdminsInfo?.some(admin => admin.intra === userData?.intraId)) && (
-        <div>
-          <MainButtonStyled
-            onClick={() => {
-              setPopupVisible(true);
-            }}
-          >
-            Actions
-          </MainButtonStyled>
-          {channelUsersInfo && isPopupVisible && (
-            <Modal
-              dismissModalAction={() => {
-                setPopupVisible(false);
-              }}
-            >
-              {/* Display the user intra ids here */}
-              {channelUsersInfo.map((channelUserInfo) => {
-                // Skip the logged-in user
-                if (channelUserInfo.intra === userData?.intraId) {
-                  return null;
-                }
-  
-                return (
-                  <div key={channelUserInfo.intra}>
-                    {channelUserInfo.username}
-                    {/*If there is time, change to svg*/}
-                    <MainButton onClick={() => setAdmin(channelUserInfo.intra)}>Set Admin</MainButton>
-                    <MainButton onClick={() => mute(channelUserInfo.intra)}>Mute</MainButton>
-                    <MainButton onClick={() => kick(channelUserInfo.intra)}>Kick</MainButton>
-                    <MainButton onClick={() => ban(channelUserInfo.intra)}>Ban</MainButton>
-                  </div>
-                );
-              })}
-            </Modal>
-          )}
-          {group && channelOwnerIntraId === userData?.intraId && (
-            <>
-              {console.log(group)}
-              <MainButtonStyled
-                onClick={() => console.log('Protect button clicked')}
-              >
-                {channelData?.type === 'PROTECTED' ? 'Remove Password' : 'Set Password'}
-              </MainButtonStyled>
-            </>
-          )}
-          </div>
-          )}
-          {group && (
+      {group &&
+        (channelOwnerIntraId === userData?.intraId ||
+          channelAdminsInfo?.some(
+            (admin) => admin.intra === userData?.intraId,
+          )) && (
+          <div>
             <MainButtonStyled
               onClick={() => {
-                handleLeaveChannel(group.name);
-                updateUserSidebar();
+                setPopupVisible(true);
               }}
             >
-              Leave Channel
+              Actions
             </MainButtonStyled>
-          )}
+            {channelUsersInfo && isPopupVisible && (
+              <Modal
+                dismissModalAction={() => {
+                  setPopupVisible(false);
+                }}
+              >
+                {/* Display the user intra ids here */}
+                {channelUsersInfo.map((channelUserInfo) => {
+                  // Skip the logged-in user
+                  if (channelUserInfo.intra === userData?.intraId) {
+                    return null;
+                  }
+
+                  return (
+                    <div key={channelUserInfo.intra}>
+                      {channelUserInfo.username}
+                      {/*If there is time, change to svg*/}
+                      <MainButton
+                        onClick={() => setAdmin(channelUserInfo.intra)}
+                      >
+                        Set Admin
+                      </MainButton>
+                      <MainButton onClick={() => mute(channelUserInfo.intra)}>
+                        Mute
+                      </MainButton>
+                      <MainButton onClick={() => kick(channelUserInfo.intra)}>
+                        Kick
+                      </MainButton>
+                      <MainButton onClick={() => ban(channelUserInfo.intra)}>
+                        Ban
+                      </MainButton>
+                    </div>
+                  );
+                })}
+              </Modal>
+            )}
+            {group && channelOwnerIntraId === userData?.intraId && (
+              <>
+                {channelData?.type === 'PUBLIC' ? (
+                  <>
+                    <MainButtonStyled onClick={() => setPopupVisible(true)}>
+                      Set Password
+                    </MainButtonStyled>
+
+                    {isPopupVisible && (
+                      <Modal dismissModalAction={() => setPopupVisible(false)}>
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPasswordInput(e.target.value)}
+                        />
+                        <button
+                          onClick={() => {
+                            setPassword(password);
+                            setPopupVisible(false);
+                          }}
+                        >
+                          Submit
+                        </button>
+                      </Modal>
+                    )}
+                  </>
+                ) : channelData?.type === 'PROTECTED' ? (
+                  <MainButtonStyled
+                    onClick={() => {
+                      console.log('Unprotect button clicked');
+                      setPassword(null);
+                    }}
+                  >
+                    Remove Password
+                  </MainButtonStyled>
+                ) : null}
+              </>
+            )}
+          </div>
+        )}
+      {group && (
+        <MainButtonStyled
+          onClick={() => {
+            handleLeaveChannel(group.name);
+            updateUserSidebar();
+          }}
+        >
+          Leave Channel
+        </MainButtonStyled>
+      )}
       {friendProfileToShow && (
         <Modal
           dismissModalAction={() => {
@@ -289,6 +343,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         </Modal>
       )}
     </HeaderWrapper>
-);
-}
-  export default ChatMessageAreaHeader;
+  );
+};
+export default ChatMessageAreaHeader;
