@@ -226,6 +226,7 @@ const Chat: React.FC = () => {
         />
         <ChatMessageArea
           selectedUser={selectedUser}
+          users={users}
           selectedGroup={selectedGroup}
           messages={messages}
           updateUserSidebar={updateUserSidebar}

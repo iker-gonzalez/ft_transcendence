@@ -165,3 +165,71 @@ export function patchChannelPassword(
     });
   }
 }
+
+export function patchMuteUser(
+  channelName: string,
+  mutedIntraId: number,
+  ownerIntraId: number,
+  isMuted: number
+): void {
+  if (channelName && mutedIntraId && ownerIntraId) {
+    console.log('channelName:', channelName);
+    console.log('mutedIntraId:', mutedIntraId);
+    fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${mutedIntraId}/${isMuted}/setMute`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify({
+        ownerIntra: {
+          ownerIntra: ownerIntraId
+        }
+      }),
+    });
+  }
+}
+
+export function setAdminIntra(
+  channelName: string,
+  adminIntraId: number,
+  ownerIntraId: number,
+  isAdmin: number
+): void {
+  if (channelName && adminIntraId && ownerIntraId) {
+    console.log('channelName:', channelName);
+    console.log('adminIntraId:', adminIntraId);
+    console.log('ownerIntraId:', ownerIntraId);
+    fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${adminIntraId}/${isAdmin}/setAdmin`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify({
+        ownerIntra: {
+          ownerIntra: ownerIntraId
+        }
+      }),
+    });
+  }
+}
+
+export function patchBlockUser(
+  userIntraId: number,
+  blockIntraId: number,
+  isBlocked: number
+): void {
+  if (userIntraId && blockIntraId) {
+    console.log('userIntraId:', userIntraId);
+    console.log('blockIntraId:', blockIntraId);
+    console.log('isBlocked:', isBlocked);
+    fetchAuthorized(`${getBaseUrl()}/chat/${userIntraId}/${blockIntraId}/${isBlocked}/setAdmin`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      }
+    });
+  }
+}

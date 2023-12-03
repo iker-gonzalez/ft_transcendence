@@ -71,6 +71,7 @@ interface ChatMessageAreaProps {
   updateUserSidebar: () => void;
   socket: Socket | null;
   channelData: ChannelData | null;
+  users: User[];
 }
 
 /**
@@ -91,6 +92,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   updateUserSidebar,
   socket,
   channelData,
+  users
 }) => {
   const { userData } = useUserData();
 
@@ -131,6 +133,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               updateUserSidebar={updateUserSidebar}
               onNewMessage={handleNewMessage}
               channelData={channelData}
+              users={users}
             />
             <div className="message-list-container">
               <MessageList>
@@ -154,6 +157,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
                 selectedUser={selectedUser}
                 selectedGroup={selectedGroup}
                 onMessageSubmit={handleNewMessage}
+                mutedUsers={channelData?.mutedInfo || []}
               />
             </div>
           </WrapperDiv>

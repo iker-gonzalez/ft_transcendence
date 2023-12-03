@@ -23,6 +23,7 @@ export const useChatData = () => {
         intraId: item.intraId,
         avatar: item.avatar,
         username: item.username,
+        isBlocked: item.isBlocked
       };
     });
     return users;
