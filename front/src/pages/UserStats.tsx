@@ -13,6 +13,7 @@ import { sm } from '../constants/styles';
 
 const WrapperDiv = styled.div`
   .container {
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: stretch;
