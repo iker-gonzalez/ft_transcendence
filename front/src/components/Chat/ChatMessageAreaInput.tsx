@@ -39,7 +39,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
   mutedUsers
 }) => {
 
-  console.log('mutedUsers: ', mutedUsers);
   const [message, setMessage] = useState('');
 
   const { userData } = useUserData();
