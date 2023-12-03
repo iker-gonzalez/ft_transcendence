@@ -184,7 +184,7 @@ const UserStatsMatchList: React.FC<UserStatsMatchListProps> = ({
                   <div className="title-box">
                     <h3 className="title-3 title">Match #{index + 1}</h3>
                     <p className="small timestamp">
-                      Played on {formattedDate} at {formattedTime} for{' '}
+                      {formattedDate} at {formattedTime} for{' '}
                       {formatMsToFullTime(game.elapsedTime)}
                     </p>
                   </div>
