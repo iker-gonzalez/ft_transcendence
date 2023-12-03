@@ -15,7 +15,7 @@ import Leaderboard from './pages/Leaderboard';
 import UserStats from './pages/UserStats';
 import Chat from './pages/Chat';
 import GameSession from './components/Game/GameSession';
-
+import GameQueueInvitation from './components/Game/GameQueueInvitation';
 
 function App() {
   return (
@@ -27,12 +27,12 @@ function App() {
             <Navigation />
             <Routes>
               <Route path="/" element={<SignIn />} />
-              {/* <Route path="/set-profile" element={<SetProfile />} /> */}
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/login" element={<Login />} />
               <Route path="game" element={<Game />}>
                 <Route index element={<GameIndex />} />
                 <Route path="queue" element={<GameQueue />} />
+                <Route path="invitation" element={<GameQueueInvitation />} />
                 <Route path="session" element={<GameSession />} />
                 <Route path="match" element={<GameMatch />} />
               </Route>
