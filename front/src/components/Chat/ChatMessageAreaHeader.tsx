@@ -101,6 +101,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     null;
 
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
   const { launchFlashMessage } = useFlashMessages();
 
   const [channelUsersInfo, setChannelUsersInfo] = useState<UserInfo[] | null>(
@@ -286,12 +287,12 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
               <>
                 {channelData?.type === 'PUBLIC' ? (
                   <>
-                    <MainButtonStyled onClick={() => setPopupVisible(true)}>
+                    <MainButtonStyled onClick={() => setPasswordPopupVisible(true)}>
                       Set Password
                     </MainButtonStyled>
 
-                    {isPopupVisible && (
-                      <Modal dismissModalAction={() => setPopupVisible(false)}>
+                    {isPasswordPopupVisible && (
+                      <Modal dismissModalAction={() => setPasswordPopupVisible(false)}>
                         <input
                           type="password"
                           value={password}
@@ -300,7 +301,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                         <button
                           onClick={() => {
                             setPassword(password);
-                            setPopupVisible(false);
+                            setPasswordPopupVisible(false);
                           }}
                         >
                           Submit
