@@ -95,7 +95,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const { launchFlashMessage } = useFlashMessages();
 
   const [channelUsersInfo, setChannelUsersInfo] = useState<UserInfo[] | null>(null);
-  const [channelOwnerInfo, setChannelOwnerInfo] = useState<number | null>(null);
+  const [channelOwnerIntraId, setChannelOwnerIntraId] = useState<number | null>(null);
   const [channelAdminsInfo, setChannelAdminsInfo] = useState<UserInfo[] | null>(null);
   const [channelBannedInfo, setChannelBannedInfo] = useState<UserInfo[] | null>(null);
   const [channelMutedInfo, setChannelMutedInfo] = useState<UserInfo[] | null>(null);
@@ -103,7 +103,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   useEffect(() => {
     if (channelData) {
       setChannelUsersInfo(channelData.usersInfo || []);
-      setChannelOwnerInfo(channelData.ownerIntra || null);
+      setChannelOwnerIntraId(channelData.ownerIntra || null);
       setChannelAdminsInfo(channelData.adminInfo || null);
       setChannelBannedInfo(channelData.bannedInfo || null);
       setChannelMutedInfo(channelData.mutedInfo || null);
@@ -188,7 +188,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                   userData,
                   contentText: `Hey, ${user.username}! Fancy playing a 1vs1 match together? Click <a href="${window.location.origin}/game">here</a> to start a new game!`,
                 });
-
+  
                 onNewMessage(newDirectMessage);
               } else {
                 launchFlashMessage(
@@ -208,7 +208,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           </MainButtonStyled>
         </div>
       )}
-      {group && (
+      {group && (channelOwnerIntraId === userData?.intraId || channelAdminsInfo?.some(admin => admin.intra === userData?.intraId)) && (
         <div>
           <MainButtonStyled
             onClick={() => {
@@ -219,29 +219,29 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           </MainButtonStyled>
           {channelUsersInfo && isPopupVisible && (
             <Modal
-            dismissModalAction={() => {
-              setPopupVisible(false);
-            }}
+              dismissModalAction={() => {
+                setPopupVisible(false);
+              }}
             >
-            {/* Display the user intra ids here */}
-            {channelUsersInfo.map((channelUserInfo) => {
-              console.log('users in this channel:', channelUsersInfo);
-              // Skip the logged-in user
-              if (channelUserInfo.intra === userData?.intraId) {
-                return null;
-              }
-
-              return (
-                <div key={channelUserInfo.intra}>
-                  {channelUserInfo.username}
-                  {/*If there is time, change to svg*/}
-                  <MainButton onClick={() => setAdmin(channelUserInfo.intra)}>Set Admin</MainButton>
-                  <MainButton onClick={() => mute(channelUserInfo.intra)}>Mute</MainButton>
-                  <MainButton onClick={() => kick(channelUserInfo.intra)}>Kick</MainButton>
-                  <MainButton onClick={() => ban(channelUserInfo.intra)}>Ban</MainButton>
-                </div>
-              );
-            })}
+              {/* Display the user intra ids here */}
+              {channelUsersInfo.map((channelUserInfo) => {
+                console.log('users in this channel:', channelUsersInfo);
+                // Skip the logged-in user
+                if (channelUserInfo.intra === userData?.intraId) {
+                  return null;
+                }
+  
+                return (
+                  <div key={channelUserInfo.intra}>
+                    {channelUserInfo.username}
+                    {/*If there is time, change to svg*/}
+                    <MainButton onClick={() => setAdmin(channelUserInfo.intra)}>Set Admin</MainButton>
+                    <MainButton onClick={() => mute(channelUserInfo.intra)}>Mute</MainButton>
+                    <MainButton onClick={() => kick(channelUserInfo.intra)}>Kick</MainButton>
+                    <MainButton onClick={() => ban(channelUserInfo.intra)}>Ban</MainButton>
+                  </div>
+                );
+              })}
             </Modal>
           )}
           <MainButtonStyled
@@ -249,16 +249,18 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           >
             Password
           </MainButtonStyled>
-          <MainButtonStyled
-            onClick={() => {
-              handleLeaveChannel(group.name);
-              updateUserSidebar();
-            }}
-          >
-            Leave Channel
-          </MainButtonStyled>
-        </div>
-      )}
+          </div>
+          )}
+          {group && (
+            <MainButtonStyled
+              onClick={() => {
+                handleLeaveChannel(group.name);
+                updateUserSidebar();
+              }}
+            >
+              Leave Channel
+            </MainButtonStyled>
+          )}
       {friendProfileToShow && (
         <Modal
           dismissModalAction={() => {
@@ -274,7 +276,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         </Modal>
       )}
     </HeaderWrapper>
-  );
-};
-
-export default ChatMessageAreaHeader;
+);
+}
+  export default ChatMessageAreaHeader;
