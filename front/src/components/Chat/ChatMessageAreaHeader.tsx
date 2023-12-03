@@ -77,6 +77,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     useState<FriendData | null>(null);
 
   console.log('channel data:', channelData);
+  console.log('grop data:', channelData);
 
   const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
@@ -181,9 +182,9 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             marginBottom: group ? '15px' : '',
           }}
         >
-          {user?.username || group?.name || ''}
-          {group?.type === 'PROTECTED' && <span> 🔐</span>}
-          {group?.type === 'PRIVATE' && <span> 🔒</span>}
+          {user?.username || channelData?.roomName || ''}
+          {channelData?.type === 'PROTECTED' && <span> 🔐</span>}
+          {channelData?.type === 'PRIVATE' && <span> 🔒</span>}
         </Title>
       </div>
       {user && (
@@ -252,11 +253,14 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             </Modal>
           )}
           {group && channelOwnerIntraId === userData?.intraId && (
-            <MainButtonStyled
-              onClick={() => console.log('Protect button clicked')}
-            >
-              Password
-            </MainButtonStyled>
+            <>
+              {console.log(group)}
+              <MainButtonStyled
+                onClick={() => console.log('Protect button clicked')}
+              >
+                {channelData?.type === 'PROTECTED' ? 'Remove Password' : 'Set Password'}
+              </MainButtonStyled>
+            </>
           )}
           </div>
           )}
