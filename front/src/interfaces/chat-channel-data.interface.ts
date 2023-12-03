@@ -22,7 +22,7 @@ export interface ChannelData {
     type: string;
     channelMessage: ChannelMessage[];
     usersInfo: UserInfo[];
-    adminInfo: UserInfo[];
+    adminsInfo: UserInfo[];
     mutedInfo: UserInfo[];
     bannedInfo: UserInfo[];
 }

@@ -141,3 +141,27 @@ export function getUsernameFromIntraId(intraId: number): string {
   else if (intraId === 88103) return 'ngasco';
   else return 'Unknown';
 }
+
+export function patchChannelPassword(
+  channelName: string,
+  ownerIntraId: number,
+  password: string | null,
+): void {
+  if (channelName && ownerIntraId) {
+    console.log('channelName:', channelName);
+    console.log('ownerIntraId:', ownerIntraId);
+    fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/updatePassword`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify({
+        ownerIntra: {
+          ownerIntra: ownerIntraId,
+          password: password
+        }
+      }),
+    });
+  }
+}
