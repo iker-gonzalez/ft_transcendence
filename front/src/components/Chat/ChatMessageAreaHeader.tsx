@@ -82,7 +82,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const { userData } = useUserData();
 
   //const [channelData, setChannelData] = useState<ChannelData | null>(null);
-  const { fetchChannelData } = useChannelData();
+  // const { fetchChannelData } = useChannelData();
   
   const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
   useUserFriends();
@@ -95,10 +95,20 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const { launchFlashMessage } = useFlashMessages();
 
   const [channelUsersInfo, setChannelUsersInfo] = useState<UserInfo[] | null>(null);
-  const [channelOwnerInfo, setChannelOwnerInfo] = useState<UserInfo[] | null>(null);
-  //const [channelUsersInfo, setUserIntraIds] = useState<UserInfo[] | null>(null);
-  //const [channelUsersInfo, setUserIntraIds] = useState<UserInfo[] | null>(null);
+  const [channelOwnerInfo, setChannelOwnerInfo] = useState<number | null>(null);
+  const [channelAdminsInfo, setChannelAdminsInfo] = useState<UserInfo[] | null>(null);
+  const [channelBannedInfo, setChannelBannedInfo] = useState<UserInfo[] | null>(null);
+  const [channelMutedInfo, setChannelMutedInfo] = useState<UserInfo[] | null>(null);
 
+  useEffect(() => {
+    if (channelData) {
+      setChannelUsersInfo(channelData.usersInfo || []);
+      setChannelOwnerInfo(channelData.ownerIntra || null);
+      setChannelAdminsInfo(channelData.adminInfo || null);
+      setChannelBannedInfo(channelData.bannedInfo || null);
+      setChannelMutedInfo(channelData.mutedInfo || null);
+    }
+  }, [group, channelData]);
 
   useEffect(() => {
     fetchFriendsList();
@@ -202,7 +212,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         <div>
           <MainButtonStyled
             onClick={() => {
-              setChannelUsersInfo(channelData?.usersInfo || []);
               setPopupVisible(true);
             }}
           >
@@ -212,7 +221,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             <Modal
             dismissModalAction={() => {
               setPopupVisible(false);
-              setChannelUsersInfo([]);
             }}
             >
             {/* Display the user intra ids here */}
