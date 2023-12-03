@@ -16,6 +16,7 @@ import SVG from 'react-inlinesvg';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import GroupMessage from '../../interfaces/chat-group-message.interface';
 import { createNewDirectMessage } from '../../utils/utils';
+import { ChannelMessage, UserInfo, ChannelData } from '../../interfaces/chat-channel-data.interface';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -60,30 +61,7 @@ interface ChatMessageAreaHeaderProps {
   navigateToEmptyChat: () => void;
   updateUserSidebar: () => void;
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
-}
-
-interface ChannelMessage {
-  senderId: string;
-  receiverId: string;
-  content: string;
-  createdAt: string;
-  senderName: string;
-  receiverName: string;
-  senderAvatar: string;
-  receiverAvatar: string;
-}
-
-interface ChannelData {
-  roomName: string;
-  createDate: string;
-  ownerIntra: number;
-  password: null | string;
-  type: string;
-  channelMessage: ChannelMessage[];
-  usersIntra: number[];
-  adminIntra: number[];
-  mutedIntra: number[];
-  bannedIntra: number[];
+  channelData: ChannelData | null;
 }
 
 const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
@@ -93,6 +71,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   navigateToEmptyChat,
   updateUserSidebar,
   onNewMessage,
+  channelData
 }) => {
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
@@ -102,27 +81,32 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   const { userData } = useUserData();
 
-  const [channelData, setChannelData] = useState<ChannelData | null>(null);
+  //const [channelData, setChannelData] = useState<ChannelData | null>(null);
   const { fetchChannelData } = useChannelData();
-
+  
   const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
-    useUserFriends();
-
+  useUserFriends();
+  
   const friend =
-    userFriends.find((userFriend) => userFriend.username === user?.username) ||
-    null;
-
+  userFriends.find((userFriend) => userFriend.username === user?.username) ||
+  null;
+  
   const [isPopupVisible, setPopupVisible] = useState(false);
   const { launchFlashMessage } = useFlashMessages();
-  const [userIntraIds, setUserIntraIds] = useState<number[] | null>(null);
+
+  const [channelUsersInfo, setChannelUsersInfo] = useState<UserInfo[] | null>(null);
+  const [channelOwnerInfo, setChannelOwnerInfo] = useState<UserInfo[] | null>(null);
+  //const [channelUsersInfo, setUserIntraIds] = useState<UserInfo[] | null>(null);
+  //const [channelUsersInfo, setUserIntraIds] = useState<UserInfo[] | null>(null);
+
 
   useEffect(() => {
     fetchFriendsList();
-    const getchChannelData = async () => {
-      const data = await fetchChannelData(group?.name || '');
-      setChannelData(data);
-    };
-    getchChannelData();
+    // const getchChannelData = async () => {
+    //   const data = await fetchChannelData(group?.name || '');
+    //   setChannelData(data);
+    // };
+    // getchChannelData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onUpdateFriendsList = (
@@ -218,34 +202,38 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         <div>
           <MainButtonStyled
             onClick={() => {
-              console.log('Actions button clicked');
-              console.log('channelData', channelData);
-              setUserIntraIds(channelData?.usersIntra || []);
-              console.log('userIntraIds', userIntraIds);
+              setChannelUsersInfo(channelData?.usersInfo || []);
               setPopupVisible(true);
             }}
           >
             Actions
           </MainButtonStyled>
-          {userIntraIds && isPopupVisible && (
+          {channelUsersInfo && isPopupVisible && (
             <Modal
-              dismissModalAction={() => {
-                setPopupVisible(false);
-              }}
+            dismissModalAction={() => {
+              setPopupVisible(false);
+              setChannelUsersInfo([]);
+            }}
             >
-              {/* Display the user intra ids here */}
-              {userIntraIds.map((intraId) => (
-                <div key={intraId}>
-                  {intraId}
+            {/* Display the user intra ids here */}
+            {channelUsersInfo.map((channelUserInfo) => {
+              console.log('users in this channel:', channelUsersInfo);
+              // Skip the logged-in user
+              if (channelUserInfo.intra === userData?.intraId) {
+                return null;
+              }
+
+              return (
+                <div key={channelUserInfo.intra}>
+                  {channelUserInfo.username}
                   {/*If there is time, change to svg*/}
-                  <MainButton onClick={() => setAdmin(intraId)}>
-                    Set Admin
-                  </MainButton>
-                  <MainButton onClick={() => mute(intraId)}>Mute</MainButton>
-                  <MainButton onClick={() => kick(intraId)}>Kick</MainButton>
-                  <MainButton onClick={() => ban(intraId)}>Ban</MainButton>
+                  <MainButton onClick={() => setAdmin(channelUserInfo.intra)}>Set Admin</MainButton>
+                  <MainButton onClick={() => mute(channelUserInfo.intra)}>Mute</MainButton>
+                  <MainButton onClick={() => kick(channelUserInfo.intra)}>Kick</MainButton>
+                  <MainButton onClick={() => ban(channelUserInfo.intra)}>Ban</MainButton>
                 </div>
-              ))}
+              );
+            })}
             </Modal>
           )}
           <MainButtonStyled

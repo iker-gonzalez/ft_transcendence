@@ -14,6 +14,8 @@ import useChatMessageSocket, {
 } from '../components/Chat/useChatMessageSocket';
 import { Socket } from 'socket.io-client';
 import { useChatData, useMessageData } from '../context/ChatDataContext';
+import { ChannelMessage, UserInfo, ChannelData } from '../interfaces/chat-channel-data.interface';
+import { useChannelData } from '../context/ChatDataContext';
 
 const WrapperDiv = styled.div`
   width: 100%;
@@ -40,6 +42,8 @@ const Chat: React.FC = () => {
   const { userData } = useUserData();
 
   const [allGroups, setAllGroups] = useState<Group[]>([]);
+  const [channelData, setChannelData] = useState<ChannelData | null>(null);
+
 
   // Initialize state variables
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -81,6 +85,7 @@ const Chat: React.FC = () => {
   }, [updateChatData]);
 
   const { fetchUserMessages, fetchGroupMessages } = useMessageData();
+  const { fetchChannelData } = useChannelData();
 
   const handleUserClick = async (user: User) => {
     const users = await fetchDirectMessageUsers();
@@ -92,7 +97,7 @@ const Chat: React.FC = () => {
       setUsers((prevUsers) => [...prevUsers, user]);
     }
 
-    const directMessages = await fetchUserMessages(user);
+    const directMessages: DirectMessage[] = await fetchUserMessages(user);
     setSelectedUser(user);
     setSelectedGroup(null);
     console.log('directMessages', directMessages);
@@ -100,11 +105,14 @@ const Chat: React.FC = () => {
   };
 
   const handleGroupClick = async (group: Group) => {
-    const groupMessages = await fetchGroupMessages(group);
+    const groupInfo = await fetchGroupMessages(group);
+    const channelData = await fetchChannelData(group.name);
+    const groupMessages: DirectMessage[] = groupInfo.channelMessage;
     setSelectedGroup(group);
     setSelectedUser(null);
-    console.log('groupMessages', groupMessages.channelMessage);
-    setMessages(groupMessages.channelMessage);
+    console.log('groupMessages', groupMessages);
+    setMessages(groupMessages);
+    setChannelData(channelData);
   };
 
   const [unreadMessages, setUnreadMessages] = useState<{
@@ -234,6 +242,8 @@ const Chat: React.FC = () => {
           socket={socket}
           setSelectedUser={setSelectedUser}
           setSelectedGroup={setSelectedGroup}
+          channelData={channelData}
+
         />
       </WrapperDiv>
     </CenteredLayout>
