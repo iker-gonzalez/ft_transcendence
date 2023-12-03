@@ -76,6 +76,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
 
+  console.log('channel data:', channelData);
+
   const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
 
@@ -104,7 +106,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     if (channelData) {
       setChannelUsersInfo(channelData.usersInfo || []);
       setChannelOwnerIntraId(channelData.ownerIntra || null);
-      setChannelAdminsInfo(channelData.adminInfo || null);
+      setChannelAdminsInfo(channelData.adminsInfo || null);
       setChannelBannedInfo(channelData.bannedInfo || null);
       setChannelMutedInfo(channelData.mutedInfo || null);
     }
@@ -158,10 +160,16 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const kick = (intraId: number) => {
     console.log('kick');
   };
-
+  
   const ban = (intraId: number) => {
     console.log('ban');
   };
+
+  console.log('users in this channel:', channelUsersInfo);
+  console.log('owner in this channel:', channelOwnerIntraId);
+  console.log('admins in this channel:', channelAdminsInfo);
+  console.log('muted in this channel:', channelMutedInfo);
+  console.log('banned in this channel:', channelBannedInfo);
 
   return (
     <HeaderWrapper>
@@ -225,7 +233,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             >
               {/* Display the user intra ids here */}
               {channelUsersInfo.map((channelUserInfo) => {
-                console.log('users in this channel:', channelUsersInfo);
                 // Skip the logged-in user
                 if (channelUserInfo.intra === userData?.intraId) {
                   return null;
@@ -244,11 +251,13 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
               })}
             </Modal>
           )}
-          <MainButtonStyled
-            onClick={() => console.log('Protect button clicked')}
-          >
-            Password
-          </MainButtonStyled>
+          {group && channelOwnerIntraId === userData?.intraId && (
+            <MainButtonStyled
+              onClick={() => console.log('Protect button clicked')}
+            >
+              Password
+            </MainButtonStyled>
+          )}
           </div>
           )}
           {group && (
