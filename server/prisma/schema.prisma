@@ -102,9 +102,10 @@ model ChatMessage {
 }
 
 model UserGameSession {
-  id        String          @id @default(uuid())
-  createdAt DateTime        @default(now())
-  players   UserIntraData[]
+  id           String          @id @default(uuid())
+  createdAt    DateTime        @default(now())
+  invitationId String?
+  players      UserIntraData[]
 }
 
 model UserIntraData {
