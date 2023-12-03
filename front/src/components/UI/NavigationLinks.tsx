@@ -78,37 +78,43 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({
     isPermanent: boolean;
     icon: string;
     text: string;
+    id: string;
   }[] = [
-    { to: '/', isPermanent: true, icon: HomeIcon, text: 'Home' },
+    { to: '/', isPermanent: true, icon: HomeIcon, text: 'Home', id: 'home' },
     {
       to: '/profile',
       isPermanent: false,
       icon: ProfileIcon,
       text: 'Profile',
+      id: 'profile',
     },
     {
       to: '/game',
       isPermanent: false,
       icon: PlayIcon,
       text: 'Play',
+      id: 'game',
     },
     {
       to: '/chat',
       isPermanent: false,
       icon: ChatIcon,
       text: 'Chat',
+      id: 'chat',
     },
     {
       to: '/stats',
       isPermanent: false,
       icon: StatsIcon,
       text: 'Stats',
+      id: 'stats',
     },
     {
       to: '/leaderboard',
       isPermanent: true,
       icon: LeaderboardIcon,
       text: 'Leaderboard',
+      id: 'leader',
     },
   ];
 
@@ -117,6 +123,7 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({
       {links.map((link) => {
         return (
           <Link
+            key={link.id}
             to={link.to}
             className={`${
               !link.isPermanent &&
