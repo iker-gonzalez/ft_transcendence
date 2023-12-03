@@ -37,6 +37,7 @@ export interface IBallData extends ICommonData, IPositionData {
   moveY: number;
   speed: number;
   reset: boolean;
+  isBallPaused: boolean;
 }
 
 export interface IUserData extends ICommonData, IPositionData {
