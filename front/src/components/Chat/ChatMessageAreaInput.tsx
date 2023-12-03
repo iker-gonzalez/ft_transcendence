@@ -8,6 +8,8 @@ import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import MainInput from '../UI/MainInput';
 import { createNewDirectMessage } from '../../utils/utils';
+import { UserInfo } from '../../interfaces/chat-channel-data.interface';
+
 
 const InputContainer = styled.div`
   margin-top: 20px;
@@ -28,12 +30,14 @@ interface MessageInputProps {
   onMessageSubmit: (message: DirectMessage | GroupMessage) => void;
   selectedUser: User | null;
   selectedGroup: Group | null;
+  mutedUsers: UserInfo[];
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
   onMessageSubmit,
   selectedUser,
   selectedGroup,
+  mutedUsers
 }) => {
   const [message, setMessage] = useState('');
 
@@ -42,6 +46,10 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
+
+  const mutedUsersIntraIds = mutedUsers.map((user) => user.intra);
+
+  const isMuted = mutedUsersIntraIds.includes(userData?.intraId || 0);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -82,7 +90,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           value={message}
           onChange={handleChange}
         />
-        <MainButton type="submit">Send</MainButton>
+        <MainButton type="submit" disabled={isMuted}>Send</MainButton>
       </form>
     </InputContainer>
   );

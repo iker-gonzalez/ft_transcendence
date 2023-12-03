@@ -116,7 +116,7 @@ const UnreadMessagesCount = styled.span`
 interface SidebarProps {
   selectedUser: User | null;
   selectedGroup: Group | null;
-  users: Array<{ intraId: number; avatar: string; username: string }>;
+  users: User[];
   userGroups: Group[] | null;
   updateUserSidebar: () => void;
   allGroups: Group[] | null;
@@ -189,6 +189,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     intraId: friend.intraId,
     avatar: friend.avatar,
     username: friend.username,
+    isBlocked: friend.isBlocked,
   }));
 
   console.log('allGroups', allGroups);

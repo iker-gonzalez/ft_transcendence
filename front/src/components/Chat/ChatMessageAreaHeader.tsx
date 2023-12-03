@@ -21,7 +21,12 @@ import {
   UserInfo,
   ChannelData,
 } from '../../interfaces/chat-channel-data.interface';
-import { patchChannelPassword } from '../../utils/utils';
+import {
+  patchChannelPassword,
+  patchMuteUser,
+  setAdminIntra,
+  patchBlockUser
+} from '../../utils/utils';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -67,6 +72,7 @@ interface ChatMessageAreaHeaderProps {
   updateUserSidebar: () => void;
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
   channelData: ChannelData | null;
+  users: User[];
 }
 
 const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
@@ -77,12 +83,14 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   updateUserSidebar,
   onNewMessage,
   channelData,
+  users,
 }) => {
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
 
   console.log('channel data:', channelData);
   console.log('grop data:', channelData);
+  console.log('users with DM:', users);
 
   const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
@@ -92,6 +100,12 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   //const [channelData, setChannelData] = useState<ChannelData | null>(null);
   // const { fetchChannelData } = useChannelData();
+  const mutedUsers = channelData?.mutedInfo || [];
+  const mutedUsersIntraIds = mutedUsers.map((user) => user.intra);
+  //const isMuted = mutedUsersIntraIds.includes(userData?.intraId || 0);
+
+  const adminUsers = channelData?.adminsInfo || [];
+  const adminUsersIntraIds = adminUsers.map((user) => user.intra);
 
   const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
     useUserFriends();
@@ -163,24 +177,49 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   };
 
   const setPassword = (password: string | null) => {
-    patchChannelPassword(channelData!.roomName || '', channelOwnerIntraId || 0, password)
-
+    patchChannelPassword(
+      channelData!.roomName || '',
+      channelOwnerIntraId || 0,
+      password,
+    );
+    // endpoint not working
   };
 
-  const setAdmin = (intraId: number) => {
-    console.log('set admin');
+  const setAdmin = (intraId: number, isAdmin: number) => {
+    setAdminIntra(
+      channelData!.roomName || '',
+      intraId,
+      channelOwnerIntraId || 0,
+      isAdmin,
+    );
   };
 
-  const mute = (intraId: number) => {
-    console.log('mute');
+  const block = (blockIntraId: number, isBlocked: number) => {
+    patchBlockUser(
+      userData?.intraId || 0,
+      blockIntraId,
+      isBlocked,
+    )
+  };
+
+  const mute = (muteIntraId: number, isMuted: number) => {
+    patchMuteUser(
+      channelData!.roomName || '',
+      muteIntraId,
+      channelOwnerIntraId || 0,
+      isMuted,
+    );
+    // endpoint not working
   };
 
   const kick = (intraId: number) => {
     console.log('kick');
+    //socket
   };
 
   const ban = (intraId: number) => {
     console.log('ban');
+    //socket
   };
 
   console.log('users in this channel:', channelUsersInfo);
@@ -229,8 +268,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           <MainButtonStyled onClick={() => setFriendProfileToShow(friend)}>
             Profile
           </MainButtonStyled>
-          <MainButtonStyled onClick={() => console.log('Block button clicked')}>
-            Block
+          <MainButtonStyled onClick={() => block(user.intraId, user.isBlocked ? 0 : 1)}>
+            {user.isBlocked ? 'Unblock' : 'Block'}
           </MainButtonStyled>
         </div>
       )}
@@ -260,17 +299,30 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                     return null;
                   }
 
+                  const isUserMuted = mutedUsersIntraIds?.includes(
+                    channelUserInfo.intra,
+                  );
+                  const isAdmin = adminUsersIntraIds?.includes(
+                    channelUserInfo.intra,
+                  );
+
                   return (
                     <div key={channelUserInfo.intra}>
                       {channelUserInfo.username}
                       {/*If there is time, change to svg*/}
                       <MainButton
-                        onClick={() => setAdmin(channelUserInfo.intra)}
+                        onClick={() =>
+                          setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1)
+                        }
                       >
-                        Set Admin
+                        {isAdmin ? 'Remove Admin' : 'Make Admin'}
                       </MainButton>
-                      <MainButton onClick={() => mute(channelUserInfo.intra)}>
-                        Mute
+                      <MainButton
+                        onClick={() =>
+                          mute(channelUserInfo.intra, isUserMuted ? 0 : 1)
+                        }
+                      >
+                        {isUserMuted ? 'Unmute' : 'Mute'}
                       </MainButton>
                       <MainButton onClick={() => kick(channelUserInfo.intra)}>
                         Kick
@@ -287,12 +339,18 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
               <>
                 {channelData?.type === 'PUBLIC' ? (
                   <>
-                    <MainButtonStyled onClick={() => setPasswordPopupVisible(true)}>
+                    <MainButtonStyled
+                      onClick={() => setPasswordPopupVisible(true)}
+                    >
                       Set Password
                     </MainButtonStyled>
 
                     {isPasswordPopupVisible && (
-                      <Modal dismissModalAction={() => setPasswordPopupVisible(false)}>
+                      <Modal
+                        dismissModalAction={() =>
+                          setPasswordPopupVisible(false)
+                        }
+                      >
                         <input
                           type="password"
                           value={password}
