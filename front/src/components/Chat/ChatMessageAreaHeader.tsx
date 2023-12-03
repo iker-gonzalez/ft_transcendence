@@ -11,13 +11,11 @@ import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import { Socket } from 'socket.io-client';
-import { useChannelData } from '../../context/ChatDataContext';
 import SVG from 'react-inlinesvg';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import GroupMessage from '../../interfaces/chat-group-message.interface';
 import { createNewDirectMessage } from '../../utils/utils';
 import {
-  ChannelMessage,
   UserInfo,
   ChannelData,
 } from '../../interfaces/chat-channel-data.interface';
@@ -27,6 +25,7 @@ import {
   setAdminIntra,
   patchBlockUser
 } from '../../utils/utils';
+import { nanoid } from 'nanoid';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -248,10 +247,20 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           <MainButtonStyled
             onClick={() => {
               if (userData && user) {
+                const invitationUrl =
+                  window.location.origin +
+                  '/game/invitation' +
+                  '?' +
+                  `invited=${user.intraId}` +
+                  '&' +
+                  `inviter=${userData.intraId}` +
+                  '&' +
+                  `id=${nanoid()}`;
+
                 const newDirectMessage: DirectMessage = createNewDirectMessage({
                   selectedUser: user,
                   userData,
-                  contentText: `Hey, ${user.username}! Fancy playing a 1vs1 match together? Click <a href="${window.location.origin}/game">here</a> to start a new game!`,
+                  contentText: `Hey, ${user.username}! Fancy playing a 1vs1 match together? Click <a href="${invitationUrl}">here</a> to start a new game!`,
                 });
 
                 onNewMessage(newDirectMessage);
