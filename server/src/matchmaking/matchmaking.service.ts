@@ -160,4 +160,65 @@ export class MatchmakingService {
       queued: false,
     });
   }
+
+  async inviteUser(body: string): Promise<any> {
+    const {
+      inviter: inviterId,
+      invited: invitedId,
+      id: invitationId,
+    } = JSON.parse(body);
+
+    const inviter = await this.prisma.user.findUnique({
+      where: {
+        intraId: +inviterId,
+      },
+    });
+
+    const invited = await this.prisma.user.findUnique({
+      where: {
+        intraId: +invitedId,
+      },
+    });
+
+    let session = await this.prisma.userGameSession.findFirst({
+      where: {
+        invitationId,
+      },
+      include: {
+        players: true,
+      },
+    });
+
+    if (!session) {
+      const playersData = [inviter, invited].map((user) => {
+        const publicUserData = {
+          intraId: user.intraId,
+          avatar: user.avatar,
+          username: user.username,
+          email: user.email,
+        };
+
+        return publicUserData;
+      });
+
+      session = await this.prisma.userGameSession.create({
+        data: {
+          players: {
+            createMany: {
+              data: playersData,
+            },
+          },
+          invitationId,
+        },
+        include: {
+          players: true,
+        },
+      });
+    }
+
+    return {
+      success: true,
+      data: session,
+    };
+  }
 }
