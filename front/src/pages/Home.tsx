@@ -18,6 +18,7 @@ import { patchUserStatus } from '../utils/utils';
 import UserStatus from '../interfaces/user-status.interface';
 import RoundImg from '../components/UI/RoundImage';
 import { TEST_USERS_DATA } from '../constants/shared';
+import * as THREE from 'three';
 import NET from 'vanta/src/vanta.net';
 import { sm } from '../constants/styles';
 
@@ -138,6 +139,7 @@ const SignIn: React.FC = (): JSX.Element => {
     // Vanta interactive background
     NET({
       el: '#vanta',
+      THREE: THREE,
       mouseControls: true,
       touchControls: true,
       gyroControls: false,
