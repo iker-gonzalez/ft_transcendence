@@ -64,13 +64,13 @@ messages from the account they blocked.
   - [ ] The channel owner can set a password required to access the channel, change it, and also remove it.
   - [ ] The channel owner is a channel administrator. They can set other users as administrators.
   - [ ] A user who is an administrator of a channel can kick, ban or mute (for a limited time) other users, but not the channel owners.
-- [ ] The user should be able to invite other users to play a Pong game through the chat interface.
+- [x] The user should be able to invite other users to play a Pong game through the chat interface.
 - [x] The user should be able to access other players profiles through the chat interface.
 ### Game
 - [x] Therefore, users should be able to play a live Pong game versus another player directly on the website.
 - [x] There must be a matchmaking system: the user can join a queue until they get automatically matched with someone else.
 - [x] It can be a canvas game, or it can be a game rendered in 3D, it can also be ugly, but in any case, it must be faithful to the original Pong (1972).
-- [ ] You must offer some customization options (for example, power-ups or different maps). However, the user should be able to select a default version of the game without any extra features if they want to.
+- [x] You must offer some customization options (for example, power-ups or different maps). However, the user should be able to select a default version of the game without any extra features if they want to.
 - [ ] The game must be responsive!
 - [ ] Think about network issues, like unexpected disconnection or lag. You have to offer the best user experience possible. -> TO CHECK BEFORE SUBMISSION
 
