@@ -4,7 +4,7 @@ import { formatMsToFullTime, getBaseUrl } from '../utils/utils';
 import LoadingFullscreen from '../components/UI/LoadingFullscreen';
 import RoundImg from '../components/UI/RoundImage';
 import styled from 'styled-components';
-import { primaryLightColor } from '../constants/color-tokens';
+import { darkBgColor, primaryLightColor } from '../constants/color-tokens';
 import { sm } from '../constants/styles';
 
 const MainContent = styled.main`
@@ -21,6 +21,7 @@ const MainContent = styled.main`
     th {
       font-size: 0.6rem;
       font-weight: bold;
+      margin-bottom: 16px;
 
       @media (width > ${sm}) {
         font-size: unset;
@@ -36,6 +37,19 @@ const MainContent = styled.main`
 
       &:not(:last-of-type) {
         border-bottom: 1px ${primaryLightColor} solid;
+      }
+
+      &:hover {
+        background-color: ${darkBgColor};
+        transition: background-color 0.3s ease-in-out;
+      }
+
+      &:first-of-type {
+        border-radius: 20px 20px 0 0;
+      }
+
+      &:last-of-type {
+        border-radius: 0 0 20px 20px;
       }
     }
 
