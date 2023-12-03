@@ -164,7 +164,6 @@ export default function GameMatchSolo(): JSX.Element {
     <WrapperDiv>
       <CenteredLayout>
         <h2 className="title title-1 mb-24">Be ready to challenge our AI 🦾</h2>
-        <GameControls />
         <GameCanvasWithAction
           canvasRef={canvasRef}
           background={selectedTheme.backgroundImg}
@@ -187,6 +186,7 @@ export default function GameMatchSolo(): JSX.Element {
             onPowerUpsChange={setSelectedPowerUps}
           />
         )}
+        {!showMainCta && !gameEnd && <GameControls />}
       </CenteredLayout>
       {showAnimation && (
         <GameMatchConfettiAnimation
