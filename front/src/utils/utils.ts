@@ -224,7 +224,7 @@ export function patchBlockUser(
     console.log('userIntraId:', userIntraId);
     console.log('blockIntraId:', blockIntraId);
     console.log('isBlocked:', isBlocked);
-    fetchAuthorized(`${getBaseUrl()}/chat/${userIntraId}/${blockIntraId}/${isBlocked}/setAdmin`, {
+    fetchAuthorized(`${getBaseUrl()}/chat/${userIntraId}/${blockIntraId}/${isBlocked}/blockUser`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
