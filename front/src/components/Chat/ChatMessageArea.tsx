@@ -1,4 +1,4 @@
-import React, { useState, RefObject } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
@@ -9,7 +9,11 @@ import ChatMessageAreaHeader from './ChatMessageAreaHeader';
 import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
-import { darkerBgColor } from '../../constants/color-tokens';
+import {
+  darkerBgColor,
+  primaryAccentColor,
+} from '../../constants/color-tokens';
+import ScrollIntoViewIfNeeded from 'react-scroll-into-view-if-needed';
 
 const MessageAreaContainer = styled.div`
   width: 100%;
@@ -26,22 +30,17 @@ const MessageAreaContainer = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    overflow-y: auto; /* Add scroll behavior when content overflows */
   }
 `;
 
 const WrapperDiv = styled.div`
-  justify-content: flex-start;
-`;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
-const WrapperDiv2 = styled.div`
-  justify-content: flex-start;
-`;
-
-const Title = styled.h2`
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 20px;
+  .message-list-container {
+    overflow-y: auto;
+  }
 `;
 
 const MessageList = styled.ul`
@@ -50,7 +49,41 @@ const MessageList = styled.ul`
 `;
 
 const MessageItem = styled.li`
-  margin: 10px 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  margin-bottom: 15px;
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    margin-right: 8px;
+  }
+
+  .message-container {
+    .message-header {
+      display: flex;
+      justify-content: flex-start;
+      align-items: baseline;
+
+      .username {
+        font-weight: bold;
+        line-height: 1;
+        margin-bottom: 6px;
+        margin-right: 8px;
+      }
+
+      .timestamp {
+        opacity: 0.7;
+        font-size: 0.8rem;
+      }
+    }
+    a {
+      color: ${primaryAccentColor};
+    }
+  }
 `;
 
 const CenteredContainer = styled.div`
@@ -127,33 +160,64 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     <MessageAreaContainer>
       <GradientBorder className="gradient-border">
         {selectedUser || selectedGroup ? (
-          <>
-            <WrapperDiv>
-              <ChatMessageAreaHeader
-                user={selectedUser}
-                group={selectedGroup}
-                socket={socket}
-                navigateToEmptyChat={navigateToEmptyChat}
-                updateUserSidebar={updateUserSidebar}
-              />
+          <WrapperDiv>
+            <ChatMessageAreaHeader
+              user={selectedUser}
+              group={selectedGroup}
+              socket={socket}
+              navigateToEmptyChat={navigateToEmptyChat}
+              updateUserSidebar={updateUserSidebar}
+              onNewMessage={handleNewMessage}
+            />
+            <div className="message-list-container">
               <MessageList>
                 {messages &&
+                  selectedUser &&
                   messages.length > 0 &&
-                  messages.map((message) => (
-                    <MessageItem key={message.id}>
-                      {`${message.senderName}: ${message.content}`}
-                    </MessageItem>
-                  ))}
+                  messages.map((message) => {
+                    return (
+                      <ScrollIntoViewIfNeeded>
+                        <MessageItem key={message.id}>
+                          <img
+                            src={message.senderAvatar}
+                            alt=""
+                            className="avatar"
+                          />
+                          <div className="message-container">
+                            <div className="message-header">
+                              <p className="username">{message.senderName}</p>
+                              <p className="timestamp">
+                                {new Date(
+                                  Date.parse(message.createdAt as string),
+                                ).toLocaleString('us-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: 'numeric',
+                                  minute: 'numeric',
+                                })}
+                              </p>
+                            </div>
+                            <p
+                              dangerouslySetInnerHTML={{
+                                __html: message.content,
+                              }}
+                            />
+                          </div>
+                        </MessageItem>
+                      </ScrollIntoViewIfNeeded>
+                    );
+                  })}
               </MessageList>
-            </WrapperDiv>
-            <WrapperDiv2>
+            </div>
+            <div>
               <MessageInput
                 selectedUser={selectedUser}
                 selectedGroup={selectedGroup}
                 onMessageSubmit={handleNewMessage}
               />
-            </WrapperDiv2>
-          </>
+            </div>
+          </WrapperDiv>
         ) : (
           <CenteredContainer>
             <StyledParagraph>

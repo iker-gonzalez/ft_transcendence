@@ -17,6 +17,7 @@
     "react-inlinesvg": "^4.1.0",
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
+    "react-scroll-into-view-if-needed": "^3.0.1",
     "socket.io-client": "^4.7.2",
     "styled-components": "^6.0.7",
     "uuid": "^9.0.1",
@@ -54,6 +55,7 @@
     "@types/js-cookie": "^3.0.4",
     "@types/react": "^18.2.18",
     "@types/react-dom": "^18.2.7",
+    "@types/react-scroll-into-view-if-needed": "^2.1.4",
     "@types/uuid": "^9.0.5",
     "typescript": "^5.1.6"
   }

@@ -6,4 +6,5 @@ export default interface DirectMessage {
   senderAvatar: string;
   content: string;
   timestamp: string;
+  createdAt?: string; // TODO check why this is returned in message list, but timestamp is used when creating a new message
 }
