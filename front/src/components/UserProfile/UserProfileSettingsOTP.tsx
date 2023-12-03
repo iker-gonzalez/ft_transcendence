@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { primaryAccentColor } from '../../constants/color-tokens';
 import OtpSubmitForm from '../shared/OtpSubmitForm';
 import SecondaryButton from '../UI/SecondaryButton';
+import { useUserData } from '../../context/UserDataContext';
 
 interface UserProfileSettingsOTPProps {
   userData: UserData;
@@ -50,6 +51,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
   const [qrCode, setQrCode] = useState<string | null>(null); // State to store the QR code image URL
   const [otpValue, setOtpValue] = useState(''); // State to store OTP input value
   const { launchFlashMessage } = useFlashMessages();
+  const { setUserData } = useUserData();
 
   useEffect(() => {
     const generateQRCode = async () => {
@@ -106,6 +108,10 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
         console.log('2FA activated');
         setIsActivating(false);
         set2FAOn(true);
+        setUserData({
+          ...userData,
+          isTwoFactorAuthEnabled: false,
+        });
         launchFlashMessage(
           '2FA activated successfully',
           FlashMessageLevel.SUCCESS,
@@ -214,6 +220,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
         <OtpModal
           dismissModalAction={() => {
             setIsDeactivating(false);
+            setOtpValue('');
           }}
           className="qr-modal"
         >
