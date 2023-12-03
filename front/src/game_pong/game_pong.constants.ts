@@ -37,6 +37,7 @@ export const ballDataInit: IBallData = {
   speed: userSpeedInput,
   color: RenderColor.White,
   reset: false,
+  isBallPaused: false,
   top: 0,
   bottom: 0,
   left: 0,
