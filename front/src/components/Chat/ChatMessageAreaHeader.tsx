@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import MainButton from '../UI/MainButton';
-import RoundImg from '../UI/RoundImage';
 import FriendData from '../../interfaces/friend-data.interface';
 import { useUserFriends, useUserData } from '../../context/UserDataContext';
 import ViewNewUserProfile from '../Friends/ViewNewUserProfile';
@@ -23,32 +22,39 @@ import {
   patchChannelPassword,
   patchMuteUser,
   setAdminIntra,
-  patchBlockUser
+  patchBlockUser,
 } from '../../utils/utils';
 import { nanoid } from 'nanoid';
+import SecondaryButton from '../UI/SecondaryButton';
+import DangerButton from '../UI/DangerButton';
 
 const HeaderWrapper = styled.div`
-  position: relative; // Add this line
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  padding: 8px 0;
   margin-bottom: 20px;
   border-bottom: 1px solid white;
-`;
 
-const Title = styled.h2`
-  font-size: 33px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  margin-left: 90px; // Add this line
-`;
-const Avatar = styled(RoundImg)`
-  position: absolute; // Add this line
-  left: 15px; // Add this line
-  top: 5px; // Add this line
-  width: 60px;
-  height: 60px;
-  margin-right: 0px;
+  .user-info-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+    }
+  }
+
+  .actions-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
 `;
 
 const MainButtonStyled = styled(MainButton)`
@@ -56,11 +62,6 @@ const MainButtonStyled = styled(MainButton)`
   margin-bottom: 25px;
   margin-top: 15px;
   margin-right: 15px;
-`;
-
-const StyledSVG = styled(SVG)`
-  width: 10px; // Adjust as needed
-  height: 10px; // Adjust as needed
 `;
 
 interface ChatMessageAreaHeaderProps {
@@ -194,11 +195,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   };
 
   const block = (blockIntraId: number, isBlocked: number) => {
-    patchBlockUser(
-      userData?.intraId || 0,
-      blockIntraId,
-      isBlocked,
-    )
+    patchBlockUser(userData?.intraId || 0, blockIntraId, isBlocked);
   };
 
   const mute = (muteIntraId: number, isMuted: number) => {
@@ -229,22 +226,19 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   return (
     <HeaderWrapper>
-      <div>
-        {user && <Avatar src={user.avatar} alt={user.username} />}
-        <Title
-          style={{
-            marginLeft: group ? '0' : '',
-            marginBottom: group ? '15px' : '',
-          }}
-        >
-          {user?.username || channelData?.roomName || ''}
-          {channelData?.type === 'PROTECTED' && <span> 🔐</span>}
-          {channelData?.type === 'PRIVATE' && <span> 🔒</span>}
-        </Title>
-      </div>
       {user && (
-        <div>
-          <MainButtonStyled
+        <div className="user-info-container">
+          <img src={user.avatar} alt={user.username} className="avatar" />
+          <p className="title-2">
+            {user?.username || channelData?.roomName || ''}
+            {channelData?.type === 'PROTECTED' && <span> 🔐</span>}
+            {channelData?.type === 'PRIVATE' && <span> 🔒</span>}
+          </p>
+        </div>
+      )}
+      {user && (
+        <div className="actions-container">
+          <MainButton
             onClick={() => {
               if (userData && user) {
                 const invitationUrl =
@@ -272,14 +266,16 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
               }
             }}
           >
-            Play
-          </MainButtonStyled>
-          <MainButtonStyled onClick={() => setFriendProfileToShow(friend)}>
+            Challenge
+          </MainButton>
+          <SecondaryButton onClick={() => setFriendProfileToShow(friend)}>
             Profile
-          </MainButtonStyled>
-          <MainButtonStyled onClick={() => block(user.intraId, user.isBlocked ? 0 : 1)}>
+          </SecondaryButton>
+          <DangerButton
+            onClick={() => block(user.intraId, user.isBlocked ? 0 : 1)}
+          >
             {user.isBlocked ? 'Unblock' : 'Block'}
-          </MainButtonStyled>
+          </DangerButton>
         </div>
       )}
       {group &&
