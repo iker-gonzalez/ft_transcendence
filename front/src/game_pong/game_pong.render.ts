@@ -358,11 +358,11 @@ export function render(
     }
   }
 
-  const speedRender: number = ballData.speed * 0.1;
+  const speedRender: number = ballData.speed * 5;
 
   drawText(
     canvas,
-    'Ball Speed: X' + speedRender.toFixed(2),
+    'Ball Speed: ' + speedRender.toFixed(0) + '%',
     (canvas.width / 10) * 4.5,
     (canvas.height / 20) * 19,
     '15px Arial',
@@ -502,9 +502,9 @@ export function matchUser1(
     ballData.moveY = ballData.speed * Math.sin(angleRad);
 
     // Modify values (ball speed % paddle height) to make it more difficult
-    powerUps[0].value ? (ballData.speed += 0.5) : (ballData.speed += 0);
-    powerUps[1].value ? (user1.height -= 10) : (user1.height -= 0);
-    powerUps[1].value ? (user2.height -= 10) : (user2.height -= 0);
+    powerUps[0].value ? (ballData.speed += 1) : (ballData.speed += 0);
+    powerUps[1].value ? (user1.height -= 5) : (user1.height -= 0);
+    powerUps[1].value ? (user2.height -= 5) : (user2.height -= 0);
 
     let themeSound = new Audio(theme.hitSound);
     themeSound.play().catch(function (error: any) {});
