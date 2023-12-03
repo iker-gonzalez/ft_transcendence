@@ -10,7 +10,7 @@ import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
-import { ChannelData } from '../../interfaces/chat-channel-data.interface';
+import { ChannelData, UserInfo } from '../../interfaces/chat-channel-data.interface';
 import ChatMessageItem from './ChatMessageItem';
 
 const MessageAreaContainer = styled.div`
@@ -153,6 +153,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               <MessageInput
                 selectedUser={selectedUser}
                 selectedGroup={selectedGroup}
+                mutedUsers={channelData?.mutedInfo || []}
                 onMessageSubmit={handleNewMessage}
               />
             </div>
