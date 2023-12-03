@@ -172,7 +172,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
             <div className="message-list-container">
               <MessageList>
                 {messages &&
-                  selectedUser &&
+                  (selectedUser || selectedGroup) &&
                   messages.length > 0 &&
                   messages.map((message) => {
                     return (
