@@ -265,7 +265,6 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
             {isPlayer1 ? players[0].username : players[1].username}
           </span>
         </h2>
-        <GameControls />
         <GameCanvasWithAction
           canvasRef={canvasRef}
           background={selectedTheme.backgroundImg}
@@ -312,6 +311,7 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
             cannotActivatePowerUps={!isPlayer1}
           />
         )}
+        {!showCanvasChildren && !opponentLeft && !gameEnd && <GameControls />}
         {gameEnd && <GameMatchEndGameAction />}
       </CenteredLayout>
       {showAnimation && (
