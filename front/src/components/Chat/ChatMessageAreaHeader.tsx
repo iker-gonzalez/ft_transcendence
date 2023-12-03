@@ -70,6 +70,11 @@ interface ChannelMessage {
   receiverAvatar: string;
 }
 
+interface UserInfo {
+  intra: number;
+  username: string;
+}
+
 interface ChannelData {
   roomName: string;
   createDate: string;
@@ -77,10 +82,10 @@ interface ChannelData {
   password: null | string;
   type: string;
   channelMessage: ChannelMessage[];
-  usersIntra: number[];
-  adminIntra: number[];
-  mutedIntra: number[];
-  bannedIntra: number[];
+  usersInfo: UserInfo[];
+  adminInfo: UserInfo[];
+  mutedInfo: UserInfo[];
+  bannedInfo: UserInfo[];
 }
 
 const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
@@ -110,7 +115,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   const [isPopupVisible, setPopupVisible] = useState(false);
   const { launchFlashMessage } = useFlashMessages();
-  const [userIntraIds, setUserIntraIds] = useState<number[] | null>(null);
+  const [userIntraIds, setUserIntraIds] = useState<UserInfo[] | null>(null);
 
   useEffect(() => {
     fetchFriendsList();
@@ -199,7 +204,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             onClick={() => {
               console.log('Actions button clicked');
               console.log('channelData', channelData);
-              setUserIntraIds(channelData?.usersIntra || []);
+              setUserIntraIds(channelData?.usersInfo || []);
               console.log('userIntraIds', userIntraIds);
               setPopupVisible(true);
             }}
@@ -213,14 +218,14 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
               }}
             >
               {/* Display the user intra ids here */}
-              {userIntraIds.map((intraId) => (
-                <div key={intraId}>
-                  {intraId}
+              {userIntraIds.map((userInfo) => (
+                <div key={userInfo.intra}>
+                  {userInfo.username}
                   {/*If there is time, change to svg*/}
-                  <MainButton onClick={() => setAdmin(intraId)}>Set Admin</MainButton>
-                  <MainButton onClick={() => mute(intraId)}>Mute</MainButton>
-                  <MainButton onClick={() => kick(intraId)}>Kick</MainButton>
-                  <MainButton onClick={() => ban(intraId)}>Ban</MainButton>
+                  <MainButton onClick={() => setAdmin(userInfo.intra)}>Set Admin</MainButton>
+                  <MainButton onClick={() => mute(userInfo.intra)}>Mute</MainButton>
+                  <MainButton onClick={() => kick(userInfo.intra)}>Kick</MainButton>
+                  <MainButton onClick={() => ban(userInfo.intra)}>Ban</MainButton>
                 </div>
               ))}
             </Modal>
