@@ -215,7 +215,7 @@ export function render(
     RenderColor.Red,
   );
 
-  if (isGamePaused) {
+  if (ballData.isBallPaused) {
     drawText(
       canvas,
       '   GAME   PAUSED ',
@@ -427,7 +427,7 @@ export function matchUser1(
   powerUps: any,
 ) {
   // Ball motion
-  if (!isBallFrozen && !isGamePaused) {
+  if (!isBallFrozen && !ballData.isBallPaused) {
     ballData.x += ballData.moveX;
     ballData.y += ballData.moveY;
   }
