@@ -45,6 +45,8 @@ const TitleContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+
+  margin-bottom: 8px;
 `;
 
 const PlusSign = styled.button`
@@ -76,6 +78,10 @@ const Title = styled.h2`
 
 const List = styled.ul`
   list-style: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 const ListItem = styled.li`
@@ -90,6 +96,19 @@ const RoundImgStyled = styled(RoundImg)`
   width: 50px;
   height: 50px;
   margin-right: 10px;
+`;
+
+const UserItemDiv = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+
+  .avatar {
+    width: 25px;
+    height: 25px;
+    border-radius: 4px;
+  }
 `;
 
 const UserInfo = styled.div`
@@ -211,13 +230,14 @@ const Sidebar: React.FC<SidebarProps> = ({
           </TitleContainer>
           <List>
             {users.map((user) => (
-              <ListItem
+              <UserItemDiv
                 key={user.intraId}
                 onClick={() => {
                   handleUserClick(user);
                   updateUserSidebar();
                 }}
               >
+                <img src={user.avatar} alt="" className="avatar" />
                 {user.username}
                 {selectedUser?.intraId !== user.intraId &&
                   unreadMessages[user.intraId] > 0 && (
@@ -225,7 +245,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       {unreadMessages[user.intraId]}
                     </UnreadMessagesCount>
                   )}
-              </ListItem>
+              </UserItemDiv>
             ))}
           </List>
         </UserList>
