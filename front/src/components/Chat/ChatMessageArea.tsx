@@ -9,12 +9,9 @@ import ChatMessageAreaHeader from './ChatMessageAreaHeader';
 import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
-import {
-  darkerBgColor,
-  primaryAccentColor,
-} from '../../constants/color-tokens';
-import ScrollIntoViewIfNeeded from 'react-scroll-into-view-if-needed';
+import { darkerBgColor } from '../../constants/color-tokens';
 import { ChannelData } from '../../interfaces/chat-channel-data.interface';
+import ChatMessageItem from './ChatMessageItem';
 
 const MessageAreaContainer = styled.div`
   width: 100%;
@@ -47,44 +44,6 @@ const WrapperDiv = styled.div`
 const MessageList = styled.ul`
   list-style: none;
   padding: 0;
-`;
-
-const MessageItem = styled.li`
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-
-  margin-bottom: 15px;
-
-  .avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
-    margin-right: 8px;
-  }
-
-  .message-container {
-    .message-header {
-      display: flex;
-      justify-content: flex-start;
-      align-items: baseline;
-
-      .username {
-        font-weight: bold;
-        line-height: 1;
-        margin-bottom: 6px;
-        margin-right: 8px;
-      }
-
-      .timestamp {
-        opacity: 0.7;
-        font-size: 0.8rem;
-      }
-    }
-    a {
-      color: ${primaryAccentColor};
-    }
-  }
 `;
 
 const CenteredContainer = styled.div`
@@ -131,7 +90,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   onNewMessage,
   updateUserSidebar,
   socket,
-  channelData
+  channelData,
 }) => {
   const { userData } = useUserData();
 
@@ -178,38 +137,14 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
                 {messages &&
                   (selectedUser || selectedGroup) &&
                   messages.length > 0 &&
-                  messages.map((message) => {
+                  messages.map((message, index) => {
                     return (
-                      <ScrollIntoViewIfNeeded>
-                        <MessageItem key={message.id}>
-                          <img
-                            src={message.senderAvatar}
-                            alt=""
-                            className="avatar"
-                          />
-                          <div className="message-container">
-                            <div className="message-header">
-                              <p className="username">{message.senderName}</p>
-                              <p className="timestamp">
-                                {new Date(
-                                  Date.parse(message.createdAt as string),
-                                ).toLocaleString('us-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                  hour: 'numeric',
-                                  minute: 'numeric',
-                                })}
-                              </p>
-                            </div>
-                            <p
-                              dangerouslySetInnerHTML={{
-                                __html: message.content,
-                              }}
-                            />
-                          </div>
-                        </MessageItem>
-                      </ScrollIntoViewIfNeeded>
+                      <ChatMessageItem
+                        message={message}
+                        isRepeatedMessage={
+                          messages[index - 1]?.senderName === message.senderName
+                        }
+                      />
                     );
                   })}
               </MessageList>
