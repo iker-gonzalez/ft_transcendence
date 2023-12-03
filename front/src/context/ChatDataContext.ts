@@ -3,14 +3,16 @@ import Cookies from 'js-cookie';
 import { useUserData } from './UserDataContext';
 import User from '../interfaces/chat-user.interface';
 import Group from '../interfaces/chat-group.interface';
-import { getIntraIdFromUsername, getUsernameFromIntraId } from '../utils/utils';
+import { getIntraIdFromUsername } from '../utils/utils';
 
 export const useChatData = () => {
   const { userData } = useUserData();
 
   const fetchDirectMessageUsers = async () => {
+    if (!userData) return [];
+
     const response = await fetchAuthorized(
-      `${getBaseUrl()}/chat/${userData?.intraId}/DM`,
+      `${getBaseUrl()}/chat/${userData.intraId}/DM`,
       {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
@@ -23,15 +25,17 @@ export const useChatData = () => {
         intraId: item.intraId,
         avatar: item.avatar,
         username: item.username,
-        isBlocked: item.isBlocked
+        isBlocked: item.isBlocked,
       };
     });
     return users;
   };
 
   const fetchUserGroups = async () => {
+    if (!userData) return [];
+
     const response = await fetchAuthorized(
-      `${getBaseUrl()}/chat/${userData?.intraId}/CM`,
+      `${getBaseUrl()}/chat/${userData.intraId}/CM`,
       {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
@@ -121,6 +125,4 @@ export const useChannelData = () => {
   };
 
   return { fetchChannelData };
-}
-
-
+};

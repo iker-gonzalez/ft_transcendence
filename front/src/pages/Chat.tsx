@@ -14,8 +14,9 @@ import useChatMessageSocket, {
 } from '../components/Chat/useChatMessageSocket';
 import { Socket } from 'socket.io-client';
 import { useChatData, useMessageData } from '../context/ChatDataContext';
-import { ChannelMessage, UserInfo, ChannelData } from '../interfaces/chat-channel-data.interface';
+import { ChannelData } from '../interfaces/chat-channel-data.interface';
 import { useChannelData } from '../context/ChatDataContext';
+import { useNavigate } from 'react-router-dom';
 
 const WrapperDiv = styled.div`
   width: 100%;
@@ -31,6 +32,8 @@ const WrapperDiv = styled.div`
  * @returns React functional component.
  */
 const Chat: React.FC = () => {
+  const navigate = useNavigate();
+
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
@@ -44,7 +47,6 @@ const Chat: React.FC = () => {
   const [allGroups, setAllGroups] = useState<Group[]>([]);
   const [channelData, setChannelData] = useState<ChannelData | null>(null);
 
-
   // Initialize state variables
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
@@ -56,6 +58,12 @@ const Chat: React.FC = () => {
     isSocketConnected: connected,
     isConnectionError: error,
   }: UseChatMessageSocket = useChatMessageSocket();
+
+  useEffect(() => {
+    if (!userData) {
+      navigate('/');
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // Update state variables
@@ -244,7 +252,6 @@ const Chat: React.FC = () => {
           setSelectedUser={setSelectedUser}
           setSelectedGroup={setSelectedGroup}
           channelData={channelData}
-
         />
       </WrapperDiv>
     </CenteredLayout>
