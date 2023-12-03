@@ -21,6 +21,7 @@ import {
   UserInfo,
   ChannelData,
 } from '../../interfaces/chat-channel-data.interface';
+import { patchChannelPassword } from '../../utils/utils';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -160,7 +161,10 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     }
   };
 
-  const setPassword = (password: string | null) => {};
+  const setPassword = (password: string | null) => {
+    patchChannelPassword(channelData!.roomName || '', channelOwnerIntraId || 0, password)
+
+  };
 
   const setAdmin = (intraId: number) => {
     console.log('set admin');
