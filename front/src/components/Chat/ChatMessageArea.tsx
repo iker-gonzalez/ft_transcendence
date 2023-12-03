@@ -10,7 +10,7 @@ import { Socket } from 'socket.io-client';
 import { useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
-import { ChannelData, UserInfo } from '../../interfaces/chat-channel-data.interface';
+import { ChannelData } from '../../interfaces/chat-channel-data.interface';
 import ChatMessageItem from './ChatMessageItem';
 
 const MessageAreaContainer = styled.div`
@@ -37,6 +37,7 @@ const WrapperDiv = styled.div`
   height: 100%;
 
   .message-list-container {
+    height: 100%;
     overflow-y: auto;
   }
 `;
@@ -92,7 +93,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   updateUserSidebar,
   socket,
   channelData,
-  users
+  users,
 }) => {
   const { userData } = useUserData();
 
