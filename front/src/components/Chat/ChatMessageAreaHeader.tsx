@@ -16,6 +16,7 @@ import SVG from 'react-inlinesvg';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import GroupMessage from '../../interfaces/chat-group-message.interface';
 import { createNewDirectMessage } from '../../utils/utils';
+import { ChannelMessage, UserInfo, ChannelData } from '../../interfaces/chat-channel-data.interface';
 
 const HeaderWrapper = styled.div`
   position: relative; // Add this line
@@ -60,35 +61,6 @@ interface ChatMessageAreaHeaderProps {
   navigateToEmptyChat: () => void;
   updateUserSidebar: () => void;
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
-}
-
-interface ChannelMessage {
-  senderId: string;
-  receiverId: string;
-  content: string;
-  createdAt: string;
-  senderName: string;
-  receiverName: string;
-  senderAvatar: string;
-  receiverAvatar: string;
-}
-
-interface UserInfo {
-  intra: number;
-  username: string;
-}
-
-interface ChannelData {
-  roomName: string;
-  createDate: string;
-  ownerIntra: number;
-  password: null | string;
-  type: string;
-  channelMessage: ChannelMessage[];
-  usersInfo: UserInfo[];
-  adminInfo: UserInfo[];
-  mutedInfo: UserInfo[];
-  bannedInfo: UserInfo[];
 }
 
 const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({

@@ -14,6 +14,8 @@ import useChatMessageSocket, {
 } from '../components/Chat/useChatMessageSocket';
 import { Socket } from 'socket.io-client';
 import { useChatData, useMessageData } from '../context/ChatDataContext';
+import { ChannelMessage, UserInfo, ChannelData } from '../interfaces/chat-channel-data.interface';
+
 
 const WrapperDiv = styled.div`
   width: 100%;
@@ -92,7 +94,7 @@ const Chat: React.FC = () => {
       setUsers((prevUsers) => [...prevUsers, user]);
     }
 
-    const directMessages = await fetchUserMessages(user);
+    const directMessages: DirectMessage[] = await fetchUserMessages(user);
     setSelectedUser(user);
     setSelectedGroup(null);
     console.log('directMessages', directMessages);
@@ -100,11 +102,12 @@ const Chat: React.FC = () => {
   };
 
   const handleGroupClick = async (group: Group) => {
-    const groupMessages = await fetchGroupMessages(group);
+    const groupInfo = await fetchGroupMessages(group);
+    const groupMessages: DirectMessage[] = groupInfo.channelMessage;
     setSelectedGroup(group);
     setSelectedUser(null);
-    console.log('groupMessages', groupMessages.channelMessage);
-    setMessages(groupMessages.channelMessage);
+    console.log('groupMessages', groupMessages);
+    setMessages(groupMessages);
   };
 
   const [unreadMessages, setUnreadMessages] = useState<{
