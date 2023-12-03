@@ -70,7 +70,12 @@ export class MatchmakingGateway implements OnGatewayDisconnect {
     );
   }
 
-  handleDisconnect(client: any): Promise<void> {
+  @SubscribeMessage('invite')
+  onInviteUser(client: Socket, data: string): Promise<void> {
+    return this.matchmakingService.inviteUser(data);
+  }
+
+  handleDisconnect(client: Socket): Promise<void> {
     return this.matchmakingService.onRemoveUser(client.id);
   }
 }
