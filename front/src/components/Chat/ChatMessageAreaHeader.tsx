@@ -210,8 +210,14 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                 setPopupVisible(false);
               }}
             >
-              {/* Display the user intra ids here */}
-              {userIntraIds.map((userInfo) => (
+            {/* Display the user intra ids here */}
+            {userIntraIds.map((userInfo) => {
+              // Skip the logged-in user
+              if (userInfo.intra === userData?.intraId) {
+                return null;
+              }
+
+              return (
                 <div key={userInfo.intra}>
                   {userInfo.username}
                   {/*If there is time, change to svg*/}
@@ -220,7 +226,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                   <MainButton onClick={() => kick(userInfo.intra)}>Kick</MainButton>
                   <MainButton onClick={() => ban(userInfo.intra)}>Ban</MainButton>
                 </div>
-              ))}
+              );
+            })}
             </Modal>
           )}
           <MainButtonStyled
