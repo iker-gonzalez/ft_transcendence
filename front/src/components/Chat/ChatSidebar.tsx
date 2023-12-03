@@ -98,7 +98,10 @@ const RoundImgStyled = styled(RoundImg)`
   margin-right: 10px;
 `;
 
-const UserItemDiv = styled.div`
+const UserItemButton = styled.button`
+  color: inherit;
+  font-size: inherit;
+
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -230,7 +233,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </TitleContainer>
           <List>
             {users.map((user) => (
-              <UserItemDiv
+              <UserItemButton
                 key={user.intraId}
                 onClick={() => {
                   handleUserClick(user);
@@ -245,7 +248,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       {unreadMessages[user.intraId]}
                     </UnreadMessagesCount>
                   )}
-              </UserItemDiv>
+              </UserItemButton>
             ))}
           </List>
         </UserList>
@@ -305,7 +308,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <h1 className="title-1 mb-24">Create new channel</h1>
                 <p className="mb-16">
                   You can create a public channel for maximum outreach or make
-                  it private for increased privacy. The group name must be globally unique.
+                  it private for increased privacy. The group name must be
+                  globally unique.
                 </p>
                 <div
                   style={{
