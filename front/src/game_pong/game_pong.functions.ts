@@ -315,7 +315,7 @@ export function initializeEventListeners({
       }
     }
 
-    //Adjust the volume of background music
+    // Adjust the volume of background music
     try {
       if (sounds.music.volume < 1 && event.key === VOLUME_UP_KEY) {
         sounds.music.volume = Math.min(1, sounds.music.volume + 0.1);
@@ -324,7 +324,7 @@ export function initializeEventListeners({
       }
     } catch (err) {}
 
-    //Mute & unmute background music
+    // Mute & unmute background music
     try {
       if (event.key === MUTE_KEY) {
         sounds.music.volume = 0;
@@ -333,7 +333,7 @@ export function initializeEventListeners({
       }
     } catch (err) {}
 
-    //Pause & unpause the game
+    // Pause & unpause the game
     try {
       if (event.key === PAUSE_KEY && ballData.isBallPaused === false) {
         ballData.isBallPaused = true;
