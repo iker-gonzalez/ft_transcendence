@@ -6,7 +6,6 @@ import User from '../interfaces/chat-user.interface';
 import DirectMessage from '../interfaces/chat-message.interface';
 import GroupMessage from '../interfaces/chat-group-message.interface';
 import { useUserData } from '../context/UserDataContext';
-import { getUsernameFromIntraId } from '../utils/utils';
 import CenteredLayout from '../components/UI/CenteredLayout';
 import styled from 'styled-components';
 import useChatMessageSocket, {
@@ -146,12 +145,8 @@ const Chat: React.FC = () => {
           id: messageData.id,
           senderIntraId: parsedData.senderId,
           receiverIntraId: parsedData.receiverId,
-          senderName:
-            getUsernameFromIntraId(parsedData.senderId)?.toString() ||
-            'Anonymous',
-          senderAvatar:
-            getUsernameFromIntraId(parsedData.senderAvatar)?.toString() ||
-            'Anonymous',
+          senderName: messageData.senderName,
+          senderAvatar: messageData.senderAvatar,
           content: parsedData.content,
           timestamp: Date.now().toString(),
         };
