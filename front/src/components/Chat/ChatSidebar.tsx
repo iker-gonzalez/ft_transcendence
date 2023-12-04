@@ -214,8 +214,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     isBlocked: friend.isBlocked,
   }));
 
-  console.log('allGroups', allGroups);
-
   return (
     <SidebarContainer>
       <GradientBorder className="gradient-border">

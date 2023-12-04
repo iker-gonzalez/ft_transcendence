@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
@@ -57,6 +57,16 @@ const StyledParagraph = styled.p`
   text-align: center;
 `;
 
+const Banner = styled.div`
+  background-color: #d11515;
+  color: #ffffff;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  text-align: center;
+`;
+
 interface ChatMessageAreaProps {
   selectedUser: User | null;
   setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
@@ -68,6 +78,7 @@ interface ChatMessageAreaProps {
   socket: Socket | null;
   channelData: ChannelData | null;
   users: User[];
+  onBlockUserChange: () => void;
 }
 
 /**
@@ -85,6 +96,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   setSelectedGroup,
   messages,
   onNewMessage,
+  onBlockUserChange,
   updateUserSidebar,
   socket,
   channelData,
@@ -111,10 +123,37 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     }
   };
 
+  const { fetchDirectMessageUsers, fetchUserGroups, fetchAllGroups } =
+  useChatData();
+  //const [isBlocked, setIsBlocked] = useState(false);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const users: User[] = await fetchDirectMessageUsers();
+      
+  //   };
+  //   fetchData();
+  // }, [isBlocked]);
+
   const navigateToEmptyChat = () => {
     setSelectedUser(null);
     setSelectedGroup(null);
   };
+
+// console.log('selected userRRR: ', selectedUser);
+
+// useEffect(() => {
+//   console.log('pepe');
+//   setIsBlocked(selectedUser?.isBlocked || false);
+// }, [selectedUser?.isBlocked]);
+
+const handleBlockedChange = () => {
+  console.log('handleBlockedChange')
+  onBlockUserChange();
+};
+
+  // console.log('is selected user blocked?: ', selectedUser?.isBlocked);
+  console.log('mensajes: ', messages);
 
   return (
     <MessageAreaContainer>
@@ -122,14 +161,15 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         {selectedUser || selectedGroup ? (
           <WrapperDiv>
             <ChatMessageAreaHeader
-              user={selectedUser}
-              group={selectedGroup}
+              selectedUser={selectedUser}
+              selectedGroup={selectedGroup}
               socket={socket}
               navigateToEmptyChat={navigateToEmptyChat}
               updateUserSidebar={updateUserSidebar}
               onNewMessage={handleNewMessage}
               channelData={channelData}
               users={users}
+              onBlockedChange={handleBlockedChange}
             />
             <div className="message-list-container">
               <ChatMessageAreaList messages={messages} />

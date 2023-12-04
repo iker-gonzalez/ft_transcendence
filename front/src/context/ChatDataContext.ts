@@ -120,9 +120,11 @@ export const useChannelData = () => {
       },
     );
     const data = await response.json();
-    console.log('datafromChannel:', data);
+    // console.log('datafromChannel:', data);
     return data;
   };
 
   return { fetchChannelData };
 };
+
+
