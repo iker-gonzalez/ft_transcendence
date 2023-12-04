@@ -10,7 +10,6 @@ import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import { Socket } from 'socket.io-client';
-import SVG from 'react-inlinesvg';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import GroupMessage from '../../interfaces/chat-group-message.interface';
 import { createNewDirectMessage } from '../../utils/utils';
@@ -107,6 +106,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const adminUsers = channelData?.adminsInfo || [];
   const adminUsersIntraIds = adminUsers.map((user) => user.intra);
 
+  const [isBlocked, setIsBlocked] = useState(user?.isBlocked);
+
   const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
     useUserFriends();
 
@@ -194,9 +195,30 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     );
   };
 
-  const block = (blockIntraId: number, isBlocked: number) => {
-    patchBlockUser(userData?.intraId || 0, blockIntraId, isBlocked);
-  };
+  const block = async (blockUsername: string, blockIntraId: number, isBlocked: number) => {
+    const status_code = await patchBlockUser(userData?.intraId || 0, blockIntraId, isBlocked);
+    if (status_code === 200) {
+      setIsBlocked(prevIsBlocked => !prevIsBlocked);
+      if (isBlocked === 1) {
+      launchFlashMessage(
+        `You have successfully block user ${blockUsername}. You will no longer receive messages from this.`,
+        FlashMessageLevel.SUCCESS,
+      );
+    }
+    else {
+      launchFlashMessage(
+        `You have successfully unblock user ${blockUsername}. You will now receive messages from this.`,
+        FlashMessageLevel.SUCCESS,
+      );
+    }
+  }
+  else {
+    launchFlashMessage(
+      `Something went wrong. Try again later.`,
+      FlashMessageLevel.ERROR,
+    );
+  }
+}
 
   const mute = (muteIntraId: number, isMuted: number) => {
     patchMuteUser(
@@ -272,9 +294,9 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             Profile
           </SecondaryButton>
           <DangerButton
-            onClick={() => block(user.intraId, user.isBlocked ? 0 : 1)}
+            onClick={() => block(user.username, user.intraId, user.isBlocked ? 0 : 1)}
           >
-            {user.isBlocked ? 'Unblock' : 'Block'}
+            {isBlocked ? 'Unblock' : 'Block'}
           </DangerButton>
         </div>
       )}
