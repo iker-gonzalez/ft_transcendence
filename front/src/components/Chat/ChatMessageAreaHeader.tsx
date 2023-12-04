@@ -26,6 +26,7 @@ import {
 import { nanoid } from 'nanoid';
 import SecondaryButton from '../UI/SecondaryButton';
 import DangerButton from '../UI/DangerButton';
+import { useMessageData } from '../../context/ChatDataContext';
 
 interface ChatMessageAreaHeaderProps {
   user?: User | null;
@@ -38,6 +39,7 @@ interface ChatMessageAreaHeaderProps {
   channelData: ChannelData | null;
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  setMessages: React.Dispatch<React.SetStateAction<DirectMessage[]>>;
 }
 
 const HeaderWrapper = styled.div`
@@ -87,6 +89,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   channelData,
   users,
   setUsers,
+  setMessages,
 }) => {
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
@@ -99,6 +102,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     useState<boolean>(false);
 
   const { userData } = useUserData();
+  const { fetchUserMessages } = useMessageData();
   const [password, setPasswordInput] = useState('');
 
   //const [channelData, setChannelData] = useState<ChannelData | null>(null);
@@ -110,10 +114,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const adminUsers = channelData?.adminsInfo || [];
   const adminUsersIntraIds = adminUsers.map((user) => user.intra);
 
-  const [isBlocked, setIsBlocked] = useState(user?.isBlocked);
-
-  const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
-    useUserFriends();
+  const { userFriends, setUserFriends, fetchFriendsList } = useUserFriends();
 
   const friend =
     userFriends.find((userFriend) => userFriend.username === user?.username) ||
@@ -210,8 +211,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       isBlocked,
     );
     if (status_code === 200) {
-      setIsBlocked(!!isBlocked);
-
       setUsers((prevUsers) => {
         return prevUsers.map((user) => {
           if (user.intraId === blockIntraId) {
@@ -241,6 +240,13 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           } user ${blockUsername}.`,
           isBlocked === 1 ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
         );
+      } else {
+        if (user) {
+          // Fetch the user's messages again
+          // in case user navigated away when they first blocked
+          const directMessages: DirectMessage[] = await fetchUserMessages(user);
+          setMessages(directMessages);
+        }
       }
     } else {
       launchFlashMessage(
@@ -282,7 +288,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         <div className="user-info-container">
           <img src={user.avatar} alt={user.username} className="avatar" />
           <p className="title-2">
-            {user?.username || channelData?.roomName || ''}
+            {user?.username || channelData?.roomName || ''}{' '}
+            {user?.isBlocked && <span>🚫</span>}
             {channelData?.type === 'PROTECTED' && <span> 🔐</span>}
             {channelData?.type === 'PRIVATE' && <span> 🔒</span>}
           </p>
@@ -291,6 +298,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       {user && (
         <div className="actions-container">
           <MainButton
+            disabled={user.isBlocked}
             onClick={() => {
               if (userData && user) {
                 const invitationUrl =
@@ -320,15 +328,18 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           >
             Challenge
           </MainButton>
-          <SecondaryButton onClick={() => setFriendProfileToShow(friend)}>
+          <SecondaryButton
+            disabled={user.isBlocked}
+            onClick={() => setFriendProfileToShow(friend)}
+          >
             Profile
           </SecondaryButton>
           <DangerButton
             onClick={() =>
-              block(user.username, user.intraId, isBlocked ? 0 : 1)
+              block(user.username, user.intraId, user.isBlocked ? 0 : 1)
             }
           >
-            {isBlocked ? 'Unblock' : 'Block'}
+            {user.isBlocked ? 'Unblock' : 'Block'}
           </DangerButton>
         </div>
       )}

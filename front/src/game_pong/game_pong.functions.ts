@@ -315,7 +315,7 @@ export function initializeEventListeners({
       }
     }
 
-    //Adjust the volume of background music
+    // Adjust the volume of background music
     try {
       if (sounds.music.volume < 1 && event.key === VOLUME_UP_KEY) {
         sounds.music.volume = Math.min(1, sounds.music.volume + 0.1);
@@ -324,7 +324,7 @@ export function initializeEventListeners({
       }
     } catch (err) {}
 
-    //Mute & unmute background music
+    // Mute & unmute background music
     try {
       if (event.key === MUTE_KEY) {
         sounds.music.volume = 0;
@@ -333,41 +333,43 @@ export function initializeEventListeners({
       }
     } catch (err) {}
 
-    //Pause & unpause the game
-    // try {
-    //   if (event.key === PAUSE_KEY && ballData.isBallPaused === false) {
-    //     ballData.isBallPaused = true;
-    //   } else if (event.key === PAUSE_KEY && ballData.isBallPaused === true) {
-    //     ballData.isBallPaused = false;
-    //   }
-    // } catch (err) {}
+    // Pause & unpause the game
+    try {
+      if (event.key === PAUSE_KEY && ballData.isBallPaused === false) {
+        ballData.isBallPaused = true;
+      } else if (event.key === PAUSE_KEY && ballData.isBallPaused === true) {
+        ballData.isBallPaused = false;
+      }
+    } catch (err) {}
   }
 
   function onMouseMove(event: MouseEvent) {
-    if (isPlayer1) {
-      let rect = canvas.getBoundingClientRect();
-      user1.y = event.clientY - rect.top - user1.height / 2;
-      if (user1.y < thickness + ballData.radius * slit) {
-        user1.y = thickness + ballData.radius * slit;
-      } else if (
-        user1.y >
-        canvas.height - thickness - user1.height - ballData.radius * slit
-      ) {
-        user1.y =
-          canvas.height - thickness - user1.height - ballData.radius * slit;
+    if (!ballData.isBallPaused) {
+      if (isPlayer1) {
+        let rect = canvas.getBoundingClientRect();
+        user1.y = event.clientY - rect.top - user1.height / 2;
+        if (user1.y < thickness + ballData.radius * slit) {
+          user1.y = thickness + ballData.radius * slit;
+        } else if (
+          user1.y >
+          canvas.height - thickness - user1.height - ballData.radius * slit
+        ) {
+          user1.y =
+            canvas.height - thickness - user1.height - ballData.radius * slit;
+        }
       }
-    }
-    if (!isPlayer1 && !isSoloMode(usersData)) {
-      let rect = canvas.getBoundingClientRect();
-      user2.y = event.clientY - rect.top - user2.height / 2;
-      if (user2.y < thickness + ballData.radius * slit) {
-        user2.y = thickness + ballData.radius * slit;
-      } else if (
-        user2.y >
-        canvas.height - thickness - user1.height - ballData.radius * slit
-      ) {
-        user2.y =
-          canvas.height - thickness - user1.height - ballData.radius * slit;
+      if (!isPlayer1 && !isSoloMode(usersData)) {
+        let rect = canvas.getBoundingClientRect();
+        user2.y = event.clientY - rect.top - user2.height / 2;
+        if (user2.y < thickness + ballData.radius * slit) {
+          user2.y = thickness + ballData.radius * slit;
+        } else if (
+          user2.y >
+          canvas.height - thickness - user1.height - ballData.radius * slit
+        ) {
+          user2.y =
+            canvas.height - thickness - user1.height - ballData.radius * slit;
+        }
       }
     }
   }

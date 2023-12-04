@@ -248,6 +248,7 @@ const Chat: React.FC = () => {
           setSelectedUser={setSelectedUser}
           setSelectedGroup={setSelectedGroup}
           channelData={channelData}
+          setMessages={setMessages}
         />
       </WrapperDiv>
     </CenteredLayout>

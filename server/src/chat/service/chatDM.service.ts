@@ -202,6 +202,19 @@ export class ChatDMService {
           blockList: [...user.blockList, userToMuteId],
         },
       });
+
+      const userToMute = await this.prisma.user.findUnique({
+        where: {
+          id: userToMuteId,
+        },
+      });
+
+      await this.prisma.user.update({
+        where: { id: userToMuteId },
+        data: {
+          blockList: [...userToMute.blockList, userId],
+        },
+      });
     } catch (e) {
       throw new BadRequestException(e);
     }
@@ -220,16 +233,28 @@ export class ChatDMService {
         },
       });
 
-      const updatedBlockList = user.blockList.filter(
-        (id) => id !== userToUnMuteId,
-      );
       console.log('unmuteUserDM');
       const isMuted = await this.isUserMuted(userId, userToUnMuteId);
       console.log('isMuted');
       console.log(isMuted);
       await this.prisma.user.update({
         where: { id: userId },
-        data: { blockList: updatedBlockList },
+        data: {
+          blockList: user.blockList.filter((id) => id !== userToUnMuteId),
+        },
+      });
+
+      const userToUnmute = await this.prisma.user.findUnique({
+        where: {
+          id: userToUnMuteId,
+        },
+      });
+
+      await this.prisma.user.update({
+        where: { id: userToUnMuteId },
+        data: {
+          blockList: userToUnmute.blockList.filter((id) => id !== userId),
+        },
       });
     } catch (e) {
       throw new BadRequestException(e);
