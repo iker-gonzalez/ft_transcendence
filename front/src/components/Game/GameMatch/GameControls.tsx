@@ -39,7 +39,7 @@ const GameControls: React.FC<GameControlsProps> = ({
           <dt>Movement</dt>
           <dd>🐁 or ⬆️/⬇️</dd>
           <dt>Music</dt>
-          <dd>H 🔊 - L 🔉 - M 🔇</dd>
+          <dd>H louder - L softer - M 🔇</dd>
           <dt>Pause</dt>
           <dd>P</dd>
         </dl>
