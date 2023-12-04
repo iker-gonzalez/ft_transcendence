@@ -96,9 +96,7 @@ const Chat: React.FC = () => {
   const { fetchChannelData } = useChannelData();
 
   const handleUserClick = async (user: User) => {
-    // console.log('handleUserClick');
     const users = await fetchDirectMessageUsers();
-    // console.log('users:', users);
     setUsers(users);
 
     const userExists = users.some((u: User) => u.intraId === user.intraId);
@@ -110,7 +108,7 @@ const Chat: React.FC = () => {
     const directMessages: DirectMessage[] = await fetchUserMessages(user);
     setSelectedUser(user);
     setSelectedGroup(null);
-    // console.log('directMessages', directMessages);
+    console.log('directMessages', directMessages);
     setMessages(directMessages);
   };
 
@@ -120,7 +118,7 @@ const Chat: React.FC = () => {
     const groupMessages: DirectMessage[] = groupInfo.channelMessage;
     setSelectedGroup(group);
     setSelectedUser(null);
-    // console.log('groupMessages', groupMessages);
+    console.log('groupMessages', groupMessages);
     setMessages(groupMessages);
     setChannelData(channelData);
   };
@@ -135,40 +133,76 @@ const Chat: React.FC = () => {
   const [newMessageSent, setNewMessageSent] = useState(false);
 
   useEffect(() => {
-    // console.log('unread messages stored in local storage');
+    console.log('unread messages stored in local storage');
     localStorage.setItem('unreadMessages', JSON.stringify(unreadMessages));
   }, [unreadMessages]);
 
   useEffect(() => {
     if (isSocketConnected && socket) {
+      const privateMessageListener = (messageData: any) => {
+        const parsedData = JSON.parse(messageData);
+        console.log('messageData', messageData);
+        const newMessage: DirectMessage = {
+          id: messageData.id,
+          senderIntraId: parsedData.senderId,
+          receiverIntraId: parsedData.receiverId,
+          senderName:
+            getUsernameFromIntraId(parsedData.senderId)?.toString() ||
+            'Anonymous',
+          senderAvatar:
+            getUsernameFromIntraId(parsedData.senderAvatar)?.toString() ||
+            'Anonymous',
+          content: parsedData.content,
+          timestamp: Date.now().toString(),
+        };
+        if (
+          parsedData.senderId !== selectedUser?.intraId &&
+          !(
+            typeof parsedData.senderId === 'undefined' &&
+            typeof selectedUser?.intraId === 'undefined'
+          )
+        ) {
+          try {
+            setUnreadMessages((prevUnreadMessages) => {
+              const updatedUnreadMessages = {
+                ...prevUnreadMessages,
+                [parsedData.senderId]:
+                  (prevUnreadMessages[parsedData.senderId] || 0) + 1,
+              };
+              console.log('añade mensaje a local storage');
+              localStorage.setItem(
+                'unreadMessages',
+                JSON.stringify(updatedUnreadMessages),
+              );
 
-      const privateMessageListener = (messageData: string) => {
-        const parsedNewMessage = JSON.parse(messageData);
-        setMessages(prevMessages => [...prevMessages, parsedNewMessage]);
+              return updatedUnreadMessages;
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        }
       };
 
-      const groupMessageListener = (messageData: GroupMessage) => {
+      const groupMessageListener = (messageData: any) => {
         console.log('group message listener triggered');
-        console.log('GroupmessageData', messageData);
-        //const parsedNewMessage = JSON.parse(messageData);
-        //setMessages(prevMessages => [...prevMessages, messageData]);
-
-        // if (!selectedGroup) {
-        //   // console.log('no selected group');
-        //   return;
-        // }
+        console.log('messageData', messageData);
+        if (!selectedGroup) {
+          console.log('no selected group');
+          return;
+        }
       };
 
+      // Add the listeners to the socket
       socket.on(
         `privateMessageReceived/${userData?.intraId.toString()}`,
         privateMessageListener,
       );
-
       socket.on('message', groupMessageListener);
 
+      //Clean up the listener when the component unmounts or when the receiverId changes
       return () => {
         if (socket) {
-          // console.log('cleaning up listeners');
+          console.log('cleaning up listeners');
           socket.off(
             `privateMessageReceived/${userData?.intraId.toString()}`,
             privateMessageListener,
@@ -207,16 +241,11 @@ const Chat: React.FC = () => {
           onNewMessage={(newMessage: DirectMessage | GroupMessage) => {
             setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
             if (selectedUser) {
-              // console.log('new direct message?: ', newMessage);
+              console.log('new direct message?: ', newMessage);
               handleUserClick(selectedUser);
             } else if (selectedGroup) {
-              // console.log('new group message?: ', newMessage);
+              console.log('new group message?: ', newMessage);
               handleGroupClick(selectedGroup);
-            }
-          }}
-          onBlockUserChange={() => {
-            if (selectedUser) {
-              handleUserClick(selectedUser);
             }
           }}
           socket={socket}

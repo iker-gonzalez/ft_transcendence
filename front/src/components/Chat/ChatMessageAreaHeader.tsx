@@ -64,64 +64,55 @@ const MainButtonStyled = styled(MainButton)`
 `;
 
 interface ChatMessageAreaHeaderProps {
-  selectedUser?: User | null;
-  selectedGroup?: Group | null;
+  user?: User | null;
+  group?: Group | null;
   socket: Socket | null;
   navigateToEmptyChat: () => void;
   updateUserSidebar: () => void;
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
   channelData: ChannelData | null;
   users: User[];
-  onBlockedChange: () => void;
 }
 
 const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
-  selectedUser,
-  selectedGroup,
+  user,
+  group,
   socket,
   navigateToEmptyChat,
   updateUserSidebar,
   onNewMessage,
   channelData,
   users,
-  onBlockedChange
 }) => {
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
 
-  // console.log('channel data:', channelData);
-  // console.log('grop data:', channelData);
-  // console.log('users with DM:', users);
+  console.log('channel data:', channelData);
+  console.log('grop data:', channelData);
+  console.log('users with DM:', users);
 
   const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
     useState<boolean>(false);
 
-    // console.log('users:', users);
-    
-    const { userData } = useUserData();
-    const [password, setPasswordInput] = useState('');
-    
-    const mutedUsers = channelData?.mutedInfo || [];
-    const mutedUsersIntraIds = mutedUsers.map((user) => user.intra);
-    
-    const adminUsers = channelData?.adminsInfo || [];
-    const adminUsersIntraIds = adminUsers.map((user) => user.intra);
-    
-  // console.log('is this user blocked:', user?.isBlocked);
-  //const [isBlocked, setIsBlocked] = useState(user?.isBlocked);
-  // console.log('is this user blocked:', isBlocked);
+  const { userData } = useUserData();
+  const [password, setPasswordInput] = useState('');
 
-  // useEffect(() => {
-  //   console.log('entro en el use effect');
-  //   //setIsBlocked(user?.isBlocked);
-  //   onBlockedChange(isBlocked || false);
-  // }, [isBlocked]);
+  //const [channelData, setChannelData] = useState<ChannelData | null>(null);
+  // const { fetchChannelData } = useChannelData();
+  const mutedUsers = channelData?.mutedInfo || [];
+  const mutedUsersIntraIds = mutedUsers.map((user) => user.intra);
+  //const isMuted = mutedUsersIntraIds.includes(userData?.intraId || 0);
+
+  const adminUsers = channelData?.adminsInfo || [];
+  const adminUsersIntraIds = adminUsers.map((user) => user.intra);
+
+  const [isBlocked, setIsBlocked] = useState(user?.isBlocked);
 
   const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
     useUserFriends();
 
   const friend =
-    userFriends.find((userFriend) => userFriend.username === selectedUser?.username) ||
+    userFriends.find((userFriend) => userFriend.username === user?.username) ||
     null;
 
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -152,7 +143,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       setChannelBannedInfo(channelData.bannedInfo || null);
       setChannelMutedInfo(channelData.mutedInfo || null);
     }
-  }, [selectedGroup, channelData]);
+  }, [group, channelData]);
 
   useEffect(() => {
     fetchFriendsList();
@@ -202,26 +193,20 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       channelOwnerIntraId || 0,
       isAdmin,
     );
-    // endpoint not working
   };
 
   const block = async (blockUsername: string, blockIntraId: number, isBlocked: number) => {
-    // console.log('entering block function');
     const status_code = await patchBlockUser(userData?.intraId || 0, blockIntraId, isBlocked);
     if (status_code === 200) {
-      //setIsBlocked(prevIsBlocked => !prevIsBlocked);
+      setIsBlocked(prevIsBlocked => !prevIsBlocked);
       if (isBlocked === 1) {
       launchFlashMessage(
-
         `You have successfully ${
           isBlocked === 1 ? 'blocked' : 'unblocked'
         } user ${blockUsername}.`,
         isBlocked === 1 ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
       );
-      //setIsBlocked(false);
-      // console.log('isBlocked value', isBlocked);
     }
-    onBlockedChange();
   }
   else {
     launchFlashMessage(
@@ -251,43 +236,43 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     //socket
   };
 
-  // console.log('users in this channel:', channelUsersInfo);
-  // console.log('owner in this channel:', channelOwnerIntraId);
-  // console.log('admins in this channel:', channelAdminsInfo);
-  // console.log('muted in this channel:', channelMutedInfo);
-  // console.log('banned in this channel:', channelBannedInfo);
+  console.log('users in this channel:', channelUsersInfo);
+  console.log('owner in this channel:', channelOwnerIntraId);
+  console.log('admins in this channel:', channelAdminsInfo);
+  console.log('muted in this channel:', channelMutedInfo);
+  console.log('banned in this channel:', channelBannedInfo);
 
   return (
     <HeaderWrapper>
-      {selectedUser && (
+      {user && (
         <div className="user-info-container">
-          <img src={selectedUser.avatar} alt={selectedUser.username} className="avatar" />
+          <img src={user.avatar} alt={user.username} className="avatar" />
           <p className="title-2">
-            {selectedUser?.username || channelData?.roomName || ''}
+            {user?.username || channelData?.roomName || ''}
             {channelData?.type === 'PROTECTED' && <span> 🔐</span>}
             {channelData?.type === 'PRIVATE' && <span> 🔒</span>}
           </p>
         </div>
       )}
-      {selectedUser && (
+      {user && (
         <div className="actions-container">
           <MainButton
             onClick={() => {
-              if (userData && selectedUser) {
+              if (userData && user) {
                 const invitationUrl =
                   window.location.origin +
                   '/game/invitation' +
                   '?' +
-                  `invited=${selectedUser.intraId}` +
+                  `invited=${user.intraId}` +
                   '&' +
                   `inviter=${userData.intraId}` +
                   '&' +
                   `id=${nanoid()}`;
 
                 const newDirectMessage: DirectMessage = createNewDirectMessage({
-                  selectedUser: selectedUser,
+                  selectedUser: user,
                   userData,
-                  contentText: `Hey, ${selectedUser.username}! Fancy playing a 1vs1 match together? Click <a href="${invitationUrl}">here</a> to start a new game!`,
+                  contentText: `Hey, ${user.username}! Fancy playing a 1vs1 match together? Click <a href="${invitationUrl}">here</a> to start a new game!`,
                 });
 
                 onNewMessage(newDirectMessage);
@@ -309,11 +294,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
               block(user.username, user.intraId, isBlocked ? 0 : 1)
             }
           >
-            {selectedUser ? 'Unblock' : 'Block'}
+            {isBlocked ? 'Unblock' : 'Block'}
           </DangerButton>
         </div>
       )}
-      {selectedGroup &&
+      {group &&
         (channelOwnerIntraId === userData?.intraId ||
           channelAdminsInfo?.some(
             (admin) => admin.intra === userData?.intraId,
@@ -375,7 +360,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                 })}
               </Modal>
             )}
-            {selectedGroup && channelOwnerIntraId === userData?.intraId && (
+            {group && channelOwnerIntraId === userData?.intraId && (
               <>
                 {channelData?.type === 'PUBLIC' ? (
                   <>
@@ -421,10 +406,10 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             )}
           </div>
         )}
-      {selectedGroup && (
+      {group && (
         <DangerButton
           onClick={() => {
-            handleLeaveChannel(selectedGroup.name);
+            handleLeaveChannel(group.name);
             updateUserSidebar();
           }}
         >
