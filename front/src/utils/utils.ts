@@ -170,17 +170,17 @@ export function patchMuteUser(
   }
 }
 
-export function setAdminIntra(
+export async function setAdminIntra(
   channelName: string,
   adminIntraId: number,
   ownerIntraId: number,
   isAdmin: number
-): void {
+): Promise<number> {
   if (channelName && adminIntraId && ownerIntraId) {
     console.log('channelName:', channelName);
     console.log('adminIntraId:', adminIntraId);
     console.log('ownerIntraId:', ownerIntraId);
-    fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${adminIntraId}/${isAdmin}/setAdmin`, {
+    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${adminIntraId}/${isAdmin}/setAdmin`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -190,7 +190,9 @@ export function setAdminIntra(
           ownerIntra: ownerIntraId
       }),
     });
+    return response.status;
   }
+  return 0;
 }
 
 export async function patchBlockUser(

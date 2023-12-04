@@ -27,6 +27,7 @@ import { nanoid } from 'nanoid';
 import SecondaryButton from '../UI/SecondaryButton';
 import DangerButton from '../UI/DangerButton';
 import { useMessageData } from '../../context/ChatDataContext';
+import { stat } from 'fs';
 
 interface ChatMessageAreaHeaderProps {
   user?: User | null;
@@ -205,16 +206,29 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     }
   };
 
-  const setAdmin = (
+  const setAdmin = async (
     intraId: number, 
     isAdmin: number
     ) => {
-    setAdminIntra(
+    const status_code = await setAdminIntra(
       channelData!.roomName || '',
       intraId,
       channelOwnerIntraId || 0,
       isAdmin,
     );
+    if (status_code === 200) {
+      launchFlashMessage(
+        `You have successfully ${
+          isAdmin ? 'set' : 'removed'
+        } the admin role for the user ${intraId}.`,
+        FlashMessageLevel.SUCCESS,
+      );
+    } else {
+      launchFlashMessage(
+        `Something went wrong. Try again later.`,
+        FlashMessageLevel.ERROR,
+      );
+    }
   };
 
   const block = async (
@@ -398,8 +412,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                       {channelUserInfo.username}
                       {/*If there is time, change to svg*/}
                       <MainButton
-                        onClick={() =>
+                        onClick={() => {
                           setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1)
+                          setPopupVisible(false);
+                        }
+                          
                         }
                       >
                         {isAdmin ? 'Remove Admin' : 'Make Admin'}
