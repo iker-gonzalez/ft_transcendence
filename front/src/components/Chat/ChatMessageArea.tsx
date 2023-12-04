@@ -11,7 +11,7 @@ import { useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
 import { ChannelData } from '../../interfaces/chat-channel-data.interface';
-import ChatMessageItem from './ChatMessageItem';
+import ChatMessageAreaList from './ChatMessageAreaList';
 
 const MessageAreaContainer = styled.div`
   width: 100%;
@@ -40,11 +40,6 @@ const WrapperDiv = styled.div`
     height: 100%;
     overflow-y: auto;
   }
-`;
-
-const MessageList = styled.ul`
-  list-style: none;
-  padding: 0;
 `;
 
 const CenteredContainer = styled.div`
@@ -137,21 +132,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               users={users}
             />
             <div className="message-list-container">
-              <MessageList>
-                {messages &&
-                  (selectedUser || selectedGroup) &&
-                  messages.length > 0 &&
-                  messages.map((message, index) => {
-                    return (
-                      <ChatMessageItem
-                        message={message}
-                        isRepeatedMessage={
-                          messages[index - 1]?.senderName === message.senderName
-                        }
-                      />
-                    );
-                  })}
-              </MessageList>
+              <ChatMessageAreaList messages={messages} />
             </div>
             <div>
               <MessageInput
