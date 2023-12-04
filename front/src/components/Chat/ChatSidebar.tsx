@@ -241,7 +241,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 }}
               >
                 <img src={user.avatar} alt="" className="avatar" />
-                {user.username}
+                {user.username} {user.isBlocked && '🚫'}
                 {selectedUser?.intraId !== user.intraId &&
                   unreadMessages[user.intraId] > 0 && (
                     <UnreadMessagesCount>
