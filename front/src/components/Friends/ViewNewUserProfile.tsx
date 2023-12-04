@@ -64,7 +64,7 @@ type ViewNewUserProfileProps = {
   foundUserData: UserCoreData;
   isAlreadyFriend?: boolean;
   shouldHideFriendCta?: boolean;
-  onUpdateFriendsList: (
+  onUpdateFriendsList?: (
     friendsList: FriendData[],
     successMessage: string,
   ) => void;
@@ -94,7 +94,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
     if (data.created === 1) {
       const friendsList: FriendData[] = data.data.friends;
       const successMessage = foundUserData!.username + ' was added to friends!';
-      onUpdateFriendsList(friendsList, successMessage);
+      onUpdateFriendsList!(friendsList, successMessage);
     } else {
       const errorMessage = data.message!;
       console.warn('Error adding a new friend:', errorMessage);
@@ -119,7 +119,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
       const successMessage: string = `${
         foundUserData!.username
       } was removed from your friends!`;
-      onUpdateFriendsList(data.data.friends, successMessage);
+      onUpdateFriendsList!(data.data.friends, successMessage);
     } else {
       const errorMessage = data.message!;
       console.warn('Error adding a new friend:', errorMessage);
