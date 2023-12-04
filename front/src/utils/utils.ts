@@ -131,6 +131,7 @@ export function patchChannelPassword(
   if (channelName && ownerIntraId) {
     console.log('channelName:', channelName);
     console.log('ownerIntraId:', ownerIntraId);
+    console.log('password:', password);
     fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/updatePassword`, {
       method: 'PATCH',
       headers: {
@@ -138,10 +139,8 @@ export function patchChannelPassword(
         Authorization: `Bearer ${Cookies.get('token')}`,
       },
       body: JSON.stringify({
-        ownerIntra: {
           ownerIntra: ownerIntraId,
           password: password
-        }
       }),
     });
   }
@@ -163,9 +162,7 @@ export function patchMuteUser(
         Authorization: `Bearer ${Cookies.get('token')}`,
       },
       body: JSON.stringify({
-        ownerIntra: {
           ownerIntra: ownerIntraId
-        }
       }),
     });
   }
@@ -188,9 +185,7 @@ export function setAdminIntra(
         Authorization: `Bearer ${Cookies.get('token')}`,
       },
       body: JSON.stringify({
-        ownerIntra: {
           ownerIntra: ownerIntraId
-        }
       }),
     });
   }
