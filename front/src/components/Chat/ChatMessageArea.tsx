@@ -26,6 +26,7 @@ interface ChatMessageAreaProps {
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setMessages: React.Dispatch<React.SetStateAction<DirectMessage[]>>;
+  onNewAction: (selectedGroup: Group) => void;
 }
 
 const MessageAreaContainer = styled.div`
@@ -93,6 +94,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   users,
   setUsers,
   setMessages,
+  onNewAction
 }) => {
   const { userData } = useUserData();
 
@@ -137,6 +139,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               users={users}
               setUsers={setUsers}
               setMessages={setMessages}
+              onNewAction={() => onNewAction(selectedGroup as Group)}
             />
             <div className="message-list-container">
               <ChatMessageAreaList

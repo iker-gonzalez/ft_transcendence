@@ -249,6 +249,7 @@ const Chat: React.FC = () => {
           setSelectedGroup={setSelectedGroup}
           channelData={channelData}
           setMessages={setMessages}
+          onNewAction={handleGroupClick}
         />
       </WrapperDiv>
     </CenteredLayout>
