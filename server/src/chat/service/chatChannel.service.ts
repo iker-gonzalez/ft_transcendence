@@ -202,14 +202,14 @@ export class ChatChannelService {
 
   
   async createChannel(
-    adminId: string,
+    ownerID: string,
     channelName: string,
     access: string,
     password: string,
   ): Promise<void> 
   {
     try{
-        if (!adminId)
+        if (!ownerID)
         throw new BadRequestException('adminId does not exist in DB');
 
     if (access == "PUBLIC")
@@ -219,7 +219,7 @@ export class ChatChannelService {
       await this.prisma.chatRoom.create({
         data:{
           name: channelName,
-          ownerId: adminId,
+          ownerId: ownerID,
           type: ChannelType.PUBLIC,
         }
       })
@@ -229,7 +229,7 @@ export class ChatChannelService {
       await this.prisma.chatRoom.create({
         data:{
           name: channelName,
-          ownerId: adminId,
+          ownerId: ownerID,
           type: ChannelType.PROTECTED,
           password: password,
         }
@@ -240,11 +240,13 @@ export class ChatChannelService {
     await this.prisma.chatRoom.create({
       data:{
         name: channelName,
-        ownerId: adminId,
+        ownerId: ownerID,
         type: ChannelType.PRIVATE,
       }
     })
   };
+
+  await this.addAddminToChannel(channelName, ownerID, ownerID);
   }
     catch(e)
     {
@@ -516,7 +518,7 @@ try{
      });
 
     // Si el usuario al que se quiere hacer administrador no es un usuario del chatRomm.
-    if (!existingUser)
+    if (!existingUser && newAdminId != foundChatRoom.ownerId )
     {
         throw new BadRequestException ("user is not from this channel");
      // await this.addUserToChannel(newAdminId, channelRoom);
