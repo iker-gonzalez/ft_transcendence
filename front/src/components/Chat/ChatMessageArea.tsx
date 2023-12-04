@@ -25,6 +25,7 @@ interface ChatMessageAreaProps {
   channelData: ChannelData | null;
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  setMessages: React.Dispatch<React.SetStateAction<DirectMessage[]>>;
 }
 
 const MessageAreaContainer = styled.div`
@@ -91,6 +92,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   channelData,
   users,
   setUsers,
+  setMessages,
 }) => {
   const { userData } = useUserData();
 
@@ -134,6 +136,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               channelData={channelData}
               users={users}
               setUsers={setUsers}
+              setMessages={setMessages}
             />
             <div className="message-list-container">
               <ChatMessageAreaList
