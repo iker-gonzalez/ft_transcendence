@@ -27,6 +27,7 @@ import SecondaryButton from '../UI/SecondaryButton';
 import DangerButton from '../UI/DangerButton';
 import { useMessageData } from '../../context/ChatDataContext';
 import { stat } from 'fs';
+import { on } from 'events';
 
 interface ChatMessageAreaHeaderProps {
   user?: User | null;
@@ -40,6 +41,7 @@ interface ChatMessageAreaHeaderProps {
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setMessages: React.Dispatch<React.SetStateAction<DirectMessage[]>>;
+  onNewAction: (selectedGroup: Group) => void;
 }
 
 const HeaderWrapper = styled.div`
@@ -90,12 +92,13 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   users,
   setUsers,
   setMessages,
+  onNewAction
 }) => {
   const [showFriendProfile, setShowFriendProfile] = useState<Boolean>(false);
 
-  console.log('channel data:', channelData);
-  console.log('grop data:', channelData);
-  console.log('users with DM:', users);
+  // console.log('channel data:', channelData);
+  // console.log('grop data:', channelData);
+  // console.log('users with DM:', users);
 
   const { userData } = useUserData();
   const { fetchUserMessages } = useMessageData();
@@ -298,11 +301,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     //socket
   };
 
-  console.log('users in this channel:', channelUsersInfo);
-  console.log('owner in this channel:', channelOwnerIntraId);
+  // console.log('users in this channel:', channelUsersInfo);
+  // console.log('owner in this channel:', channelOwnerIntraId);
   console.log('admins in this channel:', channelAdminsInfo);
-  console.log('muted in this channel:', channelMutedInfo);
-  console.log('banned in this channel:', channelBannedInfo);
+  // console.log('muted in this channel:', channelMutedInfo);
+  // console.log('banned in this channel:', channelBannedInfo);
 
   return (
     <HeaderWrapper>
@@ -406,6 +409,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                         onClick={() => {
                           setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1);
                           setPopupVisible(false);
+                          onNewAction(group);
                         }}
                       >
                         {isAdmin ? 'Remove Admin' : 'Make Admin'}
@@ -414,6 +418,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                         onClick={() => {
                           mute(channelUserInfo.intra, isUserMuted ? 0 : 1)
                           setPopupVisible(false);
+                          onNewAction(group);
                           }
                         }
                       >
