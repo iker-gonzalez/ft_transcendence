@@ -470,7 +470,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         >
           <ViewNewUserProfile
             foundUserData={friendProfileToShow}
-            isAlreadyFriend={true}
             onUpdateFriendsList={onUpdateFriendsList}
           />
         </Modal>
