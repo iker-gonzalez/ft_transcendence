@@ -215,21 +215,23 @@ export function setAdminIntra(
   }
 }
 
-export function patchBlockUser(
+export async function patchBlockUser(
   userIntraId: number,
   blockIntraId: number,
   isBlocked: number
-): void {
+): Promise<number> {
   if (userIntraId && blockIntraId) {
     console.log('userIntraId:', userIntraId);
     console.log('blockIntraId:', blockIntraId);
     console.log('isBlocked:', isBlocked);
-    fetchAuthorized(`${getBaseUrl()}/chat/${userIntraId}/${blockIntraId}/${isBlocked}/blockUser`, {
+    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${userIntraId}/${blockIntraId}/${isBlocked}/blockUser`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${Cookies.get('token')}`,
       }
     });
+    return response.status;
   }
+  return 0;
 }
