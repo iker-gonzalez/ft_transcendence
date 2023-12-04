@@ -19,6 +19,7 @@ import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import MainInput from '../UI/MainInput';
 import MainSelect from '../UI/MainSelect';
+import ChatSidebarConvoList from './ChatSidebarConvoList';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -98,22 +99,6 @@ const RoundImgStyled = styled(RoundImg)`
   margin-right: 10px;
 `;
 
-const UserItemButton = styled.button`
-  color: inherit;
-  font-size: inherit;
-
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 8px;
-
-  .avatar {
-    width: 25px;
-    height: 25px;
-    border-radius: 4px;
-  }
-`;
-
 const UserInfo = styled.div`
   flex: 1;
   margin-right: 10px;
@@ -121,18 +106,6 @@ const UserInfo = styled.div`
 
 const Username = styled.h3`
   font-size: 1.5em;
-`;
-
-const UnreadMessagesCount = styled.span`
-  display: inline-block;
-  color: black;
-  background-color: yellow;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  text-align: center;
-  line-height: 20px;
-  margin-left: 10px;
 `;
 
 interface SidebarProps {
@@ -176,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchFriendsList();
     const token = Cookies.get('token');
     fetchUserData(token as string);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleJoinRoom = (newGroup: Group, password: string) => {
     if (newGroup.name.trim() !== '' && newGroup.name && socket) {
@@ -230,24 +203,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             </PlusSign>
           </TitleContainer>
           <List>
-            {users.map((user) => (
-              <UserItemButton
-                key={user.intraId}
-                onClick={() => {
-                  handleUserClick(user);
-                  updateUserSidebar();
-                }}
-              >
-                <img src={user.avatar} alt="" className="avatar" />
-                {user.username} {user.isBlocked && '🚫'}
-                {selectedUser?.intraId !== user.intraId &&
-                  unreadMessages[user.intraId] > 0 && (
-                    <UnreadMessagesCount>
-                      {unreadMessages[user.intraId]}
-                    </UnreadMessagesCount>
-                  )}
-              </UserItemButton>
-            ))}
+            <ChatSidebarConvoList
+              users={users}
+              handleUserClick={handleUserClick}
+              updateUserSidebar={updateUserSidebar}
+            />
           </List>
         </UserList>
         {isPopupVisible && (
