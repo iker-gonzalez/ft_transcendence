@@ -92,6 +92,14 @@ export class ChatDMService {
       },
     });
 
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        friends: true,
+      },
+    });
+    const userFriendsList = user.friends.map((friend) => friend.intraId);
+
     // Crear DTO para enviar el is del usuario, el avartar y el nombre
     const allUserDMWithDTO = [];
     for (const userId2 of uniqueUsers) {
@@ -103,6 +111,11 @@ export class ChatDMService {
           username: true,
         },
       });
+
+      if (!userFriendsList.includes(userObj.intraId)) {
+        continue;
+      }
+
       const userDTO = new AllUsersDMWithDTO();
       userDTO.id = userId2;
       userDTO.avatar = userObj.avatar;

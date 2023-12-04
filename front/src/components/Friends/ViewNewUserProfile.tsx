@@ -32,7 +32,7 @@ const WrapperDiv = styled.div`
     margin: 0 auto;
 
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     gap: 50px;
   }
@@ -63,7 +63,8 @@ const WrapperDiv = styled.div`
 type ViewNewUserProfileProps = {
   foundUserData: UserCoreData;
   isAlreadyFriend?: boolean;
-  onUpdateFriendsList: (
+  shouldHideFriendCta?: boolean;
+  onUpdateFriendsList?: (
     friendsList: FriendData[],
     successMessage: string,
   ) => void;
@@ -72,6 +73,7 @@ type ViewNewUserProfileProps = {
 const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
   foundUserData,
   isAlreadyFriend,
+  shouldHideFriendCta,
   onUpdateFriendsList,
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
@@ -92,7 +94,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
     if (data.created === 1) {
       const friendsList: FriendData[] = data.data.friends;
       const successMessage = foundUserData!.username + ' was added to friends!';
-      onUpdateFriendsList(friendsList, successMessage);
+      onUpdateFriendsList!(friendsList, successMessage);
     } else {
       const errorMessage = data.message!;
       console.warn('Error adding a new friend:', errorMessage);
@@ -117,7 +119,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
       const successMessage: string = `${
         foundUserData!.username
       } was removed from your friends!`;
-      onUpdateFriendsList(data.data.friends, successMessage);
+      onUpdateFriendsList!(data.data.friends, successMessage);
     } else {
       const errorMessage = data.message!;
       console.warn('Error adding a new friend:', errorMessage);
@@ -135,15 +137,17 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
             <p className="small">{foundUserData.email}</p>
           </div>
         </div>
-        <div className="actions-container">
-          {isAlreadyFriend ? (
-            <SecondaryButton onClick={removeUserFromFriends}>
-              Unfriend 💔
-            </SecondaryButton>
-          ) : (
-            <MainButton onClick={addUserToFriend}>Add to friends</MainButton>
-          )}
-        </div>
+        {!shouldHideFriendCta && (
+          <div className="actions-container">
+            {isAlreadyFriend ? (
+              <SecondaryButton onClick={removeUserFromFriends}>
+                Unfriend 💔
+              </SecondaryButton>
+            ) : (
+              <MainButton onClick={addUserToFriend}>Add to friends</MainButton>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="user-data-container">

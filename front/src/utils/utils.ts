@@ -123,96 +123,78 @@ export function createNewDirectMessage({
   };
 }
 
-// Temporary function to get the intra ID of a user from their username until endpoint is implemented
-export function getIntraIdFromUsername(username: string): number {
-  if (username === 'ikgonzal') return 88036;
-  else if (username === 'test-') return 666;
-  else if (username === 'test2-') return 667;
-  else if (username === 'test3-') return 668;
-  else if (username === 'ngasco') return 88103;
-  else return -1;
-}
-
-export function getUsernameFromIntraId(intraId: number): string {
-  if (intraId === 88036) return 'ikgonzal';
-  else if (intraId === 666) return 'test-';
-  else if (intraId === 667) return 'test2-';
-  else if (intraId === 668) return 'test3-';
-  else if (intraId === 88103) return 'ngasco';
-  else return 'Unknown';
-}
-
-export function patchChannelPassword(
+export async function patchChannelPassword(
   channelName: string,
   ownerIntraId: number,
   password: string | null,
-): void {
+): Promise<number> {
   if (channelName && ownerIntraId) {
     console.log('channelName:', channelName);
     console.log('ownerIntraId:', ownerIntraId);
-    fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/updatePassword`, {
+    console.log('password:', password);
+    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/updatePassword`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${Cookies.get('token')}`,
       },
       body: JSON.stringify({
-        ownerIntra: {
           ownerIntra: ownerIntraId,
           password: password
-        }
       }),
     });
+    return response.status;
   }
+  return 0;
 }
 
-export function patchMuteUser(
+export async function patchMuteUser(
   channelName: string,
   mutedIntraId: number,
   ownerIntraId: number,
   isMuted: number
-): void {
+): Promise<number> {
   if (channelName && mutedIntraId && ownerIntraId) {
     console.log('channelName:', channelName);
     console.log('mutedIntraId:', mutedIntraId);
-    fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${mutedIntraId}/${isMuted}/setMute`, {
+    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${mutedIntraId}/${isMuted}/setMute`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${Cookies.get('token')}`,
       },
       body: JSON.stringify({
-        ownerIntra: {
           ownerIntra: ownerIntraId
-        }
       }),
     });
+    return response.status;
   }
+  return 0;
 }
 
-export function setAdminIntra(
+export async function setAdminIntra(
   channelName: string,
   adminIntraId: number,
   ownerIntraId: number,
   isAdmin: number
-): void {
+): Promise<number> {
   if (channelName && adminIntraId && ownerIntraId) {
     console.log('channelName:', channelName);
     console.log('adminIntraId:', adminIntraId);
     console.log('ownerIntraId:', ownerIntraId);
-    fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${adminIntraId}/${isAdmin}/setAdmin`, {
+    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${adminIntraId}/${isAdmin}/setAdmin`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${Cookies.get('token')}`,
       },
       body: JSON.stringify({
-        ownerIntra: {
           ownerIntra: ownerIntraId
-        }
       }),
     });
+    return response.status;
   }
+  return 0;
 }
 
 export async function patchBlockUser(
