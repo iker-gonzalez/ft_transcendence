@@ -26,6 +26,7 @@ import {
 import { nanoid } from 'nanoid';
 import SecondaryButton from '../UI/SecondaryButton';
 import DangerButton from '../UI/DangerButton';
+import { useMessageData } from '../../context/ChatDataContext';
 
 interface ChatMessageAreaHeaderProps {
   user?: User | null;
@@ -38,6 +39,7 @@ interface ChatMessageAreaHeaderProps {
   channelData: ChannelData | null;
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  setMessages: React.Dispatch<React.SetStateAction<DirectMessage[]>>;
 }
 
 const HeaderWrapper = styled.div`
@@ -87,6 +89,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   channelData,
   users,
   setUsers,
+  setMessages,
 }) => {
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
@@ -99,6 +102,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     useState<boolean>(false);
 
   const { userData } = useUserData();
+  const { fetchUserMessages } = useMessageData();
   const [password, setPasswordInput] = useState('');
 
   //const [channelData, setChannelData] = useState<ChannelData | null>(null);
@@ -236,6 +240,13 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           } user ${blockUsername}.`,
           isBlocked === 1 ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
         );
+      } else {
+        if (user) {
+          // Fetch the user's messages again
+          // in case user navigated away when they first blocked
+          const directMessages: DirectMessage[] = await fetchUserMessages(user);
+          setMessages(directMessages);
+        }
       }
     } else {
       launchFlashMessage(
