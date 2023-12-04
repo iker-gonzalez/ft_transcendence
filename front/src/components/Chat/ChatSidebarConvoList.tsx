@@ -40,6 +40,10 @@ const UserItemButton = styled.button`
     height: 25px;
     border-radius: 4px;
   }
+
+  .blocked-icon {
+    font-size: 0.8rem;
+  }
 `;
 
 // const UnreadMessagesCount = styled.span`
@@ -73,7 +77,8 @@ const ChatSidebarConvoList: React.FC<ChatSidebarConvoListProps> = ({
           className={selectedItem === index ? 'selected' : ''}
         >
           <img src={user.avatar} alt="" className="avatar" />
-          {user.username} {user.isBlocked && '🚫'}
+          {user.username}{' '}
+          {user.isBlocked && <span className="blocked-icon">🚫</span>}
           {/* TODO check what this is for */}
           {/* {selectedUser?.intraId !== user.intraId &&
             unreadMessages[user.intraId] > 0 && (
