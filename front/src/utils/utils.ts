@@ -148,16 +148,16 @@ export async function patchChannelPassword(
   return 0;
 }
 
-export function patchMuteUser(
+export async function patchMuteUser(
   channelName: string,
   mutedIntraId: number,
   ownerIntraId: number,
   isMuted: number
-): void {
+): Promise<number> {
   if (channelName && mutedIntraId && ownerIntraId) {
     console.log('channelName:', channelName);
     console.log('mutedIntraId:', mutedIntraId);
-    fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${mutedIntraId}/${isMuted}/setMute`, {
+    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${mutedIntraId}/${isMuted}/setMute`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -167,7 +167,9 @@ export function patchMuteUser(
           ownerIntra: ownerIntraId
       }),
     });
+    return response.status;
   }
+  return 0;
 }
 
 export async function setAdminIntra(
