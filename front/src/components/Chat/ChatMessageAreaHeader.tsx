@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import MainButton from '../UI/MainButton';
-import FriendData from '../../interfaces/friend-data.interface';
 import { useUserFriends, useUserData } from '../../context/UserDataContext';
 import ViewNewUserProfile from '../Friends/ViewNewUserProfile';
 import Modal from '../UI/Modal';
@@ -27,6 +26,7 @@ import { nanoid } from 'nanoid';
 import SecondaryButton from '../UI/SecondaryButton';
 import DangerButton from '../UI/DangerButton';
 import { useMessageData } from '../../context/ChatDataContext';
+import { stat } from 'fs';
 
 interface ChatMessageAreaHeaderProps {
   user?: User | null;
@@ -91,15 +91,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   setUsers,
   setMessages,
 }) => {
-  const [friendProfileToShow, setFriendProfileToShow] =
-    useState<FriendData | null>(null);
+  const [showFriendProfile, setShowFriendProfile] = useState<Boolean>(false);
 
   console.log('channel data:', channelData);
   console.log('grop data:', channelData);
   console.log('users with DM:', users);
-
-  const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
-    useState<boolean>(false);
 
   const { userData } = useUserData();
   const { fetchUserMessages } = useMessageData();
@@ -114,11 +110,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const adminUsers = channelData?.adminsInfo || [];
   const adminUsersIntraIds = adminUsers.map((user) => user.intra);
 
-  const { userFriends, setUserFriends, fetchFriendsList } = useUserFriends();
+  const { userFriends, fetchFriendsList } = useUserFriends();
 
-  const friend =
-    userFriends.find((userFriend) => userFriend.username === user?.username) ||
-    null;
+  const friend = userFriends.find(
+    (userFriend) => userFriend.username === user?.username,
+  );
 
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
@@ -154,17 +150,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     fetchFriendsList();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const onUpdateFriendsList = (
-    newFriendsList: FriendData[],
-    successMessage: string,
-  ): void => {
-    setUserFriends(newFriendsList);
-    setFriendProfileToShow(null);
-    setShowAddNewFriendFlow(false);
-
-    launchFlashMessage(successMessage, FlashMessageLevel.SUCCESS);
-  };
-
   const handleLeaveChannel = (roomName: string) => {
     if (roomName.trim() !== '' && roomName && socket) {
       const payload = {
@@ -182,22 +167,47 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     }
   };
 
-  const setPassword = (password: string | null) => {
-    patchChannelPassword(
+  const setPassword = async (password: string | null) => {
+    const status_code = await patchChannelPassword(
       channelData!.roomName || '',
       channelOwnerIntraId || 0,
       password,
     );
-    // endpoint not working
+    if (status_code === 200) {
+      launchFlashMessage(
+        `You have successfully ${
+          password ? 'set' : 'removed'
+        } the password for the channel ${channelData!.roomName || ''}.`,
+        FlashMessageLevel.SUCCESS,
+      );
+    } else {
+      launchFlashMessage(
+        `Something went wrong. Try again later.`,
+        FlashMessageLevel.ERROR,
+      );
+    }
   };
 
-  const setAdmin = (intraId: number, isAdmin: number) => {
-    setAdminIntra(
+  const setAdmin = async (intraId: number, isAdmin: number) => {
+    const status_code = await setAdminIntra(
       channelData!.roomName || '',
       intraId,
       channelOwnerIntraId || 0,
       isAdmin,
     );
+    if (status_code === 200) {
+      launchFlashMessage(
+        `You have successfully ${
+          isAdmin ? 'set' : 'removed'
+        } the admin role for the user ${intraId}.`,
+        FlashMessageLevel.SUCCESS,
+      );
+    } else {
+      launchFlashMessage(
+        `Something went wrong. Try again later.`,
+        FlashMessageLevel.ERROR,
+      );
+    }
   };
 
   const block = async (
@@ -256,14 +266,26 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     }
   };
 
-  const mute = (muteIntraId: number, isMuted: number) => {
-    patchMuteUser(
+  const mute = async (muteIntraId: number, isMuted: number) => {
+    const status_code = await patchMuteUser(
       channelData!.roomName || '',
       muteIntraId,
       channelOwnerIntraId || 0,
       isMuted,
     );
-    // endpoint not working
+    if (status_code === 200) {
+      launchFlashMessage(
+        `You have successfully ${
+          isMuted ? 'muted' : 'unmuted'
+        } the user ${muteIntraId}.`,
+        FlashMessageLevel.SUCCESS,
+      );
+    } else {
+      launchFlashMessage(
+        `Something went wrong. Try again later.`,
+        FlashMessageLevel.ERROR,
+      );
+    }
   };
 
   const kick = (intraId: number) => {
@@ -330,7 +352,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           </MainButton>
           <SecondaryButton
             disabled={user.isBlocked}
-            onClick={() => setFriendProfileToShow(friend)}
+            onClick={() => setShowFriendProfile(true)}
           >
             Profile
           </SecondaryButton>
@@ -381,15 +403,18 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                       {channelUserInfo.username}
                       {/*If there is time, change to svg*/}
                       <MainButton
-                        onClick={() =>
-                          setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1)
-                        }
+                        onClick={() => {
+                          setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1);
+                          setPopupVisible(false);
+                        }}
                       >
                         {isAdmin ? 'Remove Admin' : 'Make Admin'}
                       </MainButton>
                       <MainButton
-                        onClick={() =>
+                        onClick={() => {
                           mute(channelUserInfo.intra, isUserMuted ? 0 : 1)
+                          setPopupVisible(false);
+                          }
                         }
                       >
                         {isUserMuted ? 'Unmute' : 'Mute'}
@@ -461,17 +486,16 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           Leave Channel
         </DangerButton>
       )}
-      {friendProfileToShow && (
+      {showFriendProfile && friend && (
         <Modal
           dismissModalAction={() => {
-            setFriendProfileToShow(null);
+            setShowFriendProfile(false);
           }}
           showFullScreen={true}
         >
           <ViewNewUserProfile
-            foundUserData={friendProfileToShow}
-            isAlreadyFriend={true}
-            onUpdateFriendsList={onUpdateFriendsList}
+            foundUserData={friend}
+            shouldHideFriendCta={true}
           />
         </Modal>
       )}
