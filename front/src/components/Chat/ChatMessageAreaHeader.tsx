@@ -466,7 +466,9 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                         <button
                           onClick={() => {
                             setPassword(password);
+                            setPasswordInput('');
                             setPasswordPopupVisible(false);
+                            onNewAction(group);
                           }}
                         >
                           Submit
@@ -479,6 +481,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                     onClick={() => {
                       console.log('Unprotect button clicked');
                       setPassword(null);
+                      onNewAction(group);
                     }}
                   >
                     Remove Password
