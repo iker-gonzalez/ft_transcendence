@@ -182,16 +182,33 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     }
   };
 
-  const setPassword = (password: string | null) => {
-    patchChannelPassword(
+  const setPassword = async (
+    password: string | null
+    ) => {
+    const status_code = await patchChannelPassword(
       channelData!.roomName || '',
       channelOwnerIntraId || 0,
       password,
     );
-    // endpoint not working
+    if (status_code === 200) {
+      launchFlashMessage(
+        `You have successfully ${
+          password ? 'set' : 'removed'
+        } the password for the channel ${channelData!.roomName || ''}.`,
+        FlashMessageLevel.SUCCESS,
+      );
+    } else {
+      launchFlashMessage(
+        `Something went wrong. Try again later.`,
+        FlashMessageLevel.ERROR,
+      );
+    }
   };
 
-  const setAdmin = (intraId: number, isAdmin: number) => {
+  const setAdmin = (
+    intraId: number, 
+    isAdmin: number
+    ) => {
     setAdminIntra(
       channelData!.roomName || '',
       intraId,
