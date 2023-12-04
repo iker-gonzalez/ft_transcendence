@@ -22,7 +22,7 @@ const Button = styled.button`
     cursor: not-allowed;
   }
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: ${darkBgColor};
   }
 `;
