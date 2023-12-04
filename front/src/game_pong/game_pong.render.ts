@@ -56,30 +56,7 @@ export function render(
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   // To clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  //Background
-  // console.log('All themes -> ', gameThemes);
-  // console.log('Selected theme -> ', theme);
-  //
-  // if (theme.id === 'classic') {
-  //   console.log('****** theme is classic');
-  // drawImg(
-  //   canvas,
-  //   canvasImages.canvasBgImage,
-  //   0,
-  //   0,
-  //   canvas.width,
-  //   canvas.height,
-  // );
-  // } else if (theme.id === 'star-wars') {
-  //   console.log('****** theme is star wars');
-  // } else if (theme.id === 'football') {
-  //   console.log('****** theme is football');
-  // } else {
-  //   console.log('****** theme is default');
-  //   drawRect(canvas, 0, 0, canvas.width, canvas.height, RenderColor.Black);
-  // }
-
+  
   // Above wall
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
 
@@ -444,8 +421,8 @@ export function matchUser1(
 
   // Change direction of ball motion when it hits walls
   if (
-    ballData.y - ballData.radius - thickness < 0 ||
-    ballData.y + ballData.radius + thickness > canvas.height
+    ballData.y - ballData.radius - thickness <= 0 ||
+    ballData.y + ballData.radius + thickness >= canvas.height
   ) {
     ballData.moveY = -ballData.moveY;
   }
