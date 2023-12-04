@@ -192,6 +192,7 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
                     <ViewNewUserProfile
                       foundUserData={friendProfileToShow}
                       isAlreadyFriend={true}
+                      shouldHideFriendCta={true}
                       onUpdateFriendsList={onUpdateFriendsList}
                     />
                   </Modal>
