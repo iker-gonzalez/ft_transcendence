@@ -282,7 +282,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         <div className="user-info-container">
           <img src={user.avatar} alt={user.username} className="avatar" />
           <p className="title-2">
-            {user?.username || channelData?.roomName || ''}
+            {user?.username || channelData?.roomName || ''}{' '}
+            {user?.isBlocked && <span>🚫</span>}
             {channelData?.type === 'PROTECTED' && <span> 🔐</span>}
             {channelData?.type === 'PRIVATE' && <span> 🔒</span>}
           </p>
@@ -291,6 +292,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       {user && (
         <div className="actions-container">
           <MainButton
+            disabled={isBlocked}
             onClick={() => {
               if (userData && user) {
                 const invitationUrl =
@@ -320,7 +322,10 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           >
             Challenge
           </MainButton>
-          <SecondaryButton onClick={() => setFriendProfileToShow(friend)}>
+          <SecondaryButton
+            disabled={isBlocked}
+            onClick={() => setFriendProfileToShow(friend)}
+          >
             Profile
           </SecondaryButton>
           <DangerButton

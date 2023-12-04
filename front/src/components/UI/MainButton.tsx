@@ -18,7 +18,7 @@ const Button = styled.button`
     cursor: not-allowed;
   }
 
-  &:hover {
+  &:hover:not(:disabled) {
     filter: brightness(1.1);
   }
 `;
