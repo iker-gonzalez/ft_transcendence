@@ -32,7 +32,7 @@ const WrapperDiv = styled.div`
     margin: 0 auto;
 
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     gap: 50px;
   }
@@ -63,6 +63,7 @@ const WrapperDiv = styled.div`
 type ViewNewUserProfileProps = {
   foundUserData: UserCoreData;
   isAlreadyFriend?: boolean;
+  shouldHideFriendCta?: boolean;
   onUpdateFriendsList: (
     friendsList: FriendData[],
     successMessage: string,
@@ -72,6 +73,7 @@ type ViewNewUserProfileProps = {
 const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
   foundUserData,
   isAlreadyFriend,
+  shouldHideFriendCta,
   onUpdateFriendsList,
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
@@ -135,15 +137,17 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
             <p className="small">{foundUserData.email}</p>
           </div>
         </div>
-        <div className="actions-container">
-          {isAlreadyFriend ? (
-            <SecondaryButton onClick={removeUserFromFriends}>
-              Unfriend 💔
-            </SecondaryButton>
-          ) : (
-            <MainButton onClick={addUserToFriend}>Add to friends</MainButton>
-          )}
-        </div>
+        {!shouldHideFriendCta && (
+          <div className="actions-container">
+            {isAlreadyFriend ? (
+              <SecondaryButton onClick={removeUserFromFriends}>
+                Unfriend 💔
+              </SecondaryButton>
+            ) : (
+              <MainButton onClick={addUserToFriend}>Add to friends</MainButton>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="user-data-container">
