@@ -56,7 +56,7 @@ export function render(
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   // To clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
+
   // Above wall
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
 
