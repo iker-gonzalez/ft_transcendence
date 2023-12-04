@@ -123,16 +123,16 @@ export function createNewDirectMessage({
   };
 }
 
-export function patchChannelPassword(
+export async function patchChannelPassword(
   channelName: string,
   ownerIntraId: number,
   password: string | null,
-): void {
+): Promise<number> {
   if (channelName && ownerIntraId) {
     console.log('channelName:', channelName);
     console.log('ownerIntraId:', ownerIntraId);
     console.log('password:', password);
-    fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/updatePassword`, {
+    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/updatePassword`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -143,7 +143,9 @@ export function patchChannelPassword(
           password: password
       }),
     });
+    return response.status;
   }
+  return 0;
 }
 
 export function patchMuteUser(
