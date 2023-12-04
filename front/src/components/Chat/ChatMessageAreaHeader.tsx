@@ -92,7 +92,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   users,
   setUsers,
   setMessages,
-  onNewAction
+  onNewAction,
 }) => {
   const [showFriendProfile, setShowFriendProfile] = useState<Boolean>(false);
 
@@ -403,33 +403,40 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
                   return (
                     <div key={channelUserInfo.intra}>
-                      {channelUserInfo.username}
-                      {/*If there is time, change to svg*/}
-                      <MainButton
-                        onClick={() => {
-                          setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1);
-                          setPopupVisible(false);
-                          onNewAction(group);
-                        }}
-                      >
-                        {isAdmin ? 'Remove Admin' : 'Make Admin'}
-                      </MainButton>
-                      <MainButton
-                        onClick={() => {
-                          mute(channelUserInfo.intra, isUserMuted ? 0 : 1)
-                          setPopupVisible(false);
-                          onNewAction(group);
-                          }
-                        }
-                      >
-                        {isUserMuted ? 'Unmute' : 'Mute'}
-                      </MainButton>
-                      <MainButton onClick={() => kick(channelUserInfo.intra)}>
-                        Kick
-                      </MainButton>
-                      <MainButton onClick={() => ban(channelUserInfo.intra)}>
-                        Ban
-                      </MainButton>
+                      {channelUserInfo.intra !== channelOwnerIntraId && (
+                        <>
+                          {channelUserInfo.username}
+                          {/*If there is time, change to svg*/}
+                          <MainButton
+                            onClick={() => {
+                              setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1);
+                              setPopupVisible(false);
+                              onNewAction(group);
+                            }}
+                          >
+                            {isAdmin ? 'Remove Admin' : 'Make Admin'}
+                          </MainButton>
+                          <MainButton
+                            onClick={() => {
+                              mute(channelUserInfo.intra, isUserMuted ? 0 : 1);
+                              setPopupVisible(false);
+                              onNewAction(group);
+                            }}
+                          >
+                            {isUserMuted ? 'Unmute' : 'Mute'}
+                          </MainButton>
+                          <MainButton
+                            onClick={() => kick(channelUserInfo.intra)}
+                          >
+                            Kick
+                          </MainButton>
+                          <MainButton
+                            onClick={() => ban(channelUserInfo.intra)}
+                          >
+                            Ban
+                          </MainButton>
+                        </>
+                      )}
                     </div>
                   );
                 })}
