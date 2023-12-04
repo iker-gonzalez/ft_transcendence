@@ -13,6 +13,20 @@ import { darkerBgColor } from '../../constants/color-tokens';
 import { ChannelData } from '../../interfaces/chat-channel-data.interface';
 import ChatMessageAreaList from './ChatMessageAreaList';
 
+interface ChatMessageAreaProps {
+  selectedUser: User | null;
+  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
+  selectedGroup: Group | null;
+  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
+  messages: DirectMessage[];
+  onNewMessage: (message: DirectMessage | GroupMessage) => void;
+  updateUserSidebar: () => void;
+  socket: Socket | null;
+  channelData: ChannelData | null;
+  users: User[];
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+}
+
 const MessageAreaContainer = styled.div`
   width: 100%;
   display: flex;
@@ -57,19 +71,6 @@ const StyledParagraph = styled.p`
   text-align: center;
 `;
 
-interface ChatMessageAreaProps {
-  selectedUser: User | null;
-  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
-  selectedGroup: Group | null;
-  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
-  messages: DirectMessage[];
-  onNewMessage: (message: DirectMessage | GroupMessage) => void;
-  updateUserSidebar: () => void;
-  socket: Socket | null;
-  channelData: ChannelData | null;
-  users: User[];
-}
-
 /**
  * ChatMessageArea component that displays the messages of the selected chat.
  * @param selectedUser The selected user to chat with.
@@ -89,6 +90,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   socket,
   channelData,
   users,
+  setUsers,
 }) => {
   const { userData } = useUserData();
 
@@ -123,6 +125,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
           <WrapperDiv>
             <ChatMessageAreaHeader
               user={selectedUser}
+              setSelectedUser={setSelectedUser}
               group={selectedGroup}
               socket={socket}
               navigateToEmptyChat={navigateToEmptyChat}
@@ -130,9 +133,13 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               onNewMessage={handleNewMessage}
               channelData={channelData}
               users={users}
+              setUsers={setUsers}
             />
             <div className="message-list-container">
-              <ChatMessageAreaList messages={messages} />
+              <ChatMessageAreaList
+                messages={messages}
+                selectedUser={selectedUser}
+              />
             </div>
             <div>
               <MessageInput

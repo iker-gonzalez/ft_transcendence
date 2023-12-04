@@ -27,6 +27,19 @@ import { nanoid } from 'nanoid';
 import SecondaryButton from '../UI/SecondaryButton';
 import DangerButton from '../UI/DangerButton';
 
+interface ChatMessageAreaHeaderProps {
+  user?: User | null;
+  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
+  group?: Group | null;
+  socket: Socket | null;
+  navigateToEmptyChat: () => void;
+  updateUserSidebar: () => void;
+  onNewMessage: (message: DirectMessage | GroupMessage) => void;
+  channelData: ChannelData | null;
+  users: User[];
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+}
+
 const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -63,19 +76,9 @@ const MainButtonStyled = styled(MainButton)`
   margin-right: 15px;
 `;
 
-interface ChatMessageAreaHeaderProps {
-  user?: User | null;
-  group?: Group | null;
-  socket: Socket | null;
-  navigateToEmptyChat: () => void;
-  updateUserSidebar: () => void;
-  onNewMessage: (message: DirectMessage | GroupMessage) => void;
-  channelData: ChannelData | null;
-  users: User[];
-}
-
 const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   user,
+  setSelectedUser,
   group,
   socket,
   navigateToEmptyChat,
@@ -83,6 +86,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   onNewMessage,
   channelData,
   users,
+  setUsers,
 }) => {
   const [friendProfileToShow, setFriendProfileToShow] =
     useState<FriendData | null>(null);
@@ -195,26 +199,56 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     );
   };
 
-  const block = async (blockUsername: string, blockIntraId: number, isBlocked: number) => {
-    const status_code = await patchBlockUser(userData?.intraId || 0, blockIntraId, isBlocked);
+  const block = async (
+    blockUsername: string,
+    blockIntraId: number,
+    isBlocked: number,
+  ) => {
+    const status_code = await patchBlockUser(
+      userData?.intraId || 0,
+      blockIntraId,
+      isBlocked,
+    );
     if (status_code === 200) {
-      setIsBlocked(prevIsBlocked => !prevIsBlocked);
+      setIsBlocked(!!isBlocked);
+
+      setUsers((prevUsers) => {
+        return prevUsers.map((user) => {
+          if (user.intraId === blockIntraId) {
+            return {
+              ...user,
+              isBlocked: !!isBlocked,
+            };
+          }
+          return user;
+        });
+      });
+
+      setSelectedUser((prevUser) => {
+        if (prevUser?.intraId === blockIntraId) {
+          return {
+            ...prevUser,
+            isBlocked: !!isBlocked,
+          };
+        }
+        return prevUser;
+      });
+
       if (isBlocked === 1) {
+        launchFlashMessage(
+          `You have successfully ${
+            isBlocked === 1 ? 'blocked' : 'unblocked'
+          } user ${blockUsername}.`,
+          isBlocked === 1 ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
+        );
+      }
+    } else {
       launchFlashMessage(
-        `You have successfully ${
-          isBlocked === 1 ? 'blocked' : 'unblocked'
-        } user ${blockUsername}.`,
-        isBlocked === 1 ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
+        `Something went wrong. Try again later.`,
+        FlashMessageLevel.ERROR,
       );
     }
-  }
-  else {
-    launchFlashMessage(
-      `Something went wrong. Try again later.`,
-      FlashMessageLevel.ERROR,
-    );
-  }
-}
+  };
 
   const mute = (muteIntraId: number, isMuted: number) => {
     patchMuteUser(
