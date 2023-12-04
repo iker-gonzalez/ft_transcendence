@@ -23,6 +23,7 @@ const WrapperDiv = styled.div`
 
   width: fit-content;
   min-width: 300px;
+  max-width: 400px;
   min-height: 100px;
 
   background-color: ${primaryColor};
@@ -37,7 +38,7 @@ const WrapperDiv = styled.div`
   justify-content: flex-start;
   align-items: center;
 
-  padding: 20px;
+  padding: 35px 25px 35px;
   border-radius: 5px;
 
   .close-btn {
