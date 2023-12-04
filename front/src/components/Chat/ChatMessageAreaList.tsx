@@ -2,9 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import ChatMessageItem from './ChatMessageItem';
+import User from '../../interfaces/chat-user.interface';
 
 type ChatMessageAreaListProps = {
   messages: DirectMessage[];
+  selectedUser: User | null;
 };
 
 const MessageList = styled.ul`
@@ -17,12 +19,29 @@ const EmpyStateDiv = styled.div`
   justify-content: center;
   align-items: center;
 
+  > * {
+    max-width: 4in;
+    text-align: center;
+  }
+
   height: 100%;
 `;
 
 const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
   messages,
+  selectedUser,
 }): JSX.Element => {
+  if (selectedUser?.isBlocked) {
+    return (
+      <EmpyStateDiv>
+        <p>
+          This user is blocked. You won't be able to read this conversation
+          until you unblock them.
+        </p>
+      </EmpyStateDiv>
+    );
+  }
+
   if (messages.length === 0) {
     return (
       <EmpyStateDiv>
