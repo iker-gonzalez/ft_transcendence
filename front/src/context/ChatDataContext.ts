@@ -3,7 +3,6 @@ import Cookies from 'js-cookie';
 import { useUserData } from './UserDataContext';
 import User from '../interfaces/chat-user.interface';
 import Group from '../interfaces/chat-group.interface';
-import { getIntraIdFromUsername } from '../utils/utils';
 
 export const useChatData = () => {
   const { userData } = useUserData();
@@ -80,9 +79,8 @@ export const useMessageData = () => {
   const { userData } = useUserData();
 
   const fetchUserMessages = async (user: User) => {
-    const userIntraId = getIntraIdFromUsername(user.username); //temporary until endpoint is fixed
     const response = await fetchAuthorized(
-      `${getBaseUrl()}/chat/${userData?.intraId}/${userIntraId}/DM`,
+      `${getBaseUrl()}/chat/${userData?.intraId}/${user.intraId}/DM`,
       /* temporary until endpoint is fixed */ {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
