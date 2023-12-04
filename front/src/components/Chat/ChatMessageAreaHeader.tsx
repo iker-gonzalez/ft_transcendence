@@ -212,16 +212,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       //setIsBlocked(prevIsBlocked => !prevIsBlocked);
       if (isBlocked === 1) {
       launchFlashMessage(
-        `You have successfully block user ${blockUsername}. You will no longer receive messages from this.`,
-        FlashMessageLevel.SUCCESS,
-      );
-      //setIsBlocked(true);
-      // console.log('isBlocked value', isBlocked);
-    }
-    else {
-      launchFlashMessage(
-        `You have successfully unblock user ${blockUsername}. You will now receive messages from this.`,
-        FlashMessageLevel.SUCCESS,
+
+        `You have successfully ${
+          isBlocked === 1 ? 'blocked' : 'unblocked'
+        } user ${blockUsername}.`,
+        isBlocked === 1 ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
       );
       //setIsBlocked(false);
       // console.log('isBlocked value', isBlocked);
@@ -310,11 +305,9 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             Profile
           </SecondaryButton>
           <DangerButton
-            onClick={() => {
-              console.log('block button clicked');
-              block(selectedUser.username, selectedUser.intraId, selectedUser.isBlocked ? 0 : 1)}
+            onClick={() =>
+              block(user.username, user.intraId, isBlocked ? 0 : 1)
             }
-              
           >
             {selectedUser ? 'Unblock' : 'Block'}
           </DangerButton>

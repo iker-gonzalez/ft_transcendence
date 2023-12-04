@@ -117,10 +117,10 @@ export class ChatController {
             console.log("blocked patch");
             console.log(b_block);
 
-            this.chatDMService.blockUserDM(userId, ToBlockId);
+            return this.chatDMService.blockUserDM(userId, ToBlockId);
           }
           else
-            this.chatDMService.unblockUserDM(userId, ToBlockId);
+            return this.chatDMService.unblockUserDM(userId, ToBlockId);
 
       } 
         catch (error) {

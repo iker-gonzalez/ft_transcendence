@@ -19,6 +19,13 @@ export class ChatDMService {
     userId1: string,
     userId2: string,
   ): Promise<ConversationMessageDTO[]> {
+    if (
+      (await this.isUserMuted(userId1, userId2)) ||
+      (await this.isUserMuted(userId2, userId1))
+    ) {
+      return [];
+    }
+
     const conversationMessages = await this.prisma.directMessage.findMany({
       where: {
         OR: [
@@ -184,11 +191,15 @@ export class ChatDMService {
         },
       });
 
-      console.log('Blo');
+      const blockList = user.blockList;
+      if (blockList.includes(userToMuteId)) {
+        throw new BadRequestException('User already blocked');
+      }
+
       await this.prisma.user.update({
         where: { id: userId },
         data: {
-          blockList: { push: userToMuteId },
+          blockList: [...user.blockList, userToMuteId],
         },
       });
     } catch (e) {
