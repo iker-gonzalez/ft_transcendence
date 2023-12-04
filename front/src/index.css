@@ -15,6 +15,18 @@ code {
     monospace;
 }
 
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #797c80;
+  border-radius: 20px;
+  border: transparent;
+}
+
 @font-face {
   font-family: 'Dogica';
   src: local('Dogica'), url('./assets/fonts/Dogica.ttf') format('truetype');
