@@ -344,30 +344,32 @@ export function initializeEventListeners({
   }
 
   function onMouseMove(event: MouseEvent) {
-    if (isPlayer1) {
-      let rect = canvas.getBoundingClientRect();
-      user1.y = event.clientY - rect.top - user1.height / 2;
-      if (user1.y < thickness + ballData.radius * slit) {
-        user1.y = thickness + ballData.radius * slit;
-      } else if (
-        user1.y >
-        canvas.height - thickness - user1.height - ballData.radius * slit
-      ) {
-        user1.y =
-          canvas.height - thickness - user1.height - ballData.radius * slit;
+    if (!ballData.isBallPaused) {
+      if (isPlayer1) {
+        let rect = canvas.getBoundingClientRect();
+        user1.y = event.clientY - rect.top - user1.height / 2;
+        if (user1.y < thickness + ballData.radius * slit) {
+          user1.y = thickness + ballData.radius * slit;
+        } else if (
+          user1.y >
+          canvas.height - thickness - user1.height - ballData.radius * slit
+        ) {
+          user1.y =
+            canvas.height - thickness - user1.height - ballData.radius * slit;
+        }
       }
-    }
-    if (!isPlayer1 && !isSoloMode(usersData)) {
-      let rect = canvas.getBoundingClientRect();
-      user2.y = event.clientY - rect.top - user2.height / 2;
-      if (user2.y < thickness + ballData.radius * slit) {
-        user2.y = thickness + ballData.radius * slit;
-      } else if (
-        user2.y >
-        canvas.height - thickness - user1.height - ballData.radius * slit
-      ) {
-        user2.y =
-          canvas.height - thickness - user1.height - ballData.radius * slit;
+      if (!isPlayer1 && !isSoloMode(usersData)) {
+        let rect = canvas.getBoundingClientRect();
+        user2.y = event.clientY - rect.top - user2.height / 2;
+        if (user2.y < thickness + ballData.radius * slit) {
+          user2.y = thickness + ballData.radius * slit;
+        } else if (
+          user2.y >
+          canvas.height - thickness - user1.height - ballData.radius * slit
+        ) {
+          user2.y =
+            canvas.height - thickness - user1.height - ballData.radius * slit;
+        }
       }
     }
   }
