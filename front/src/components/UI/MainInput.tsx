@@ -13,6 +13,11 @@ const MainInput = styled.input`
   padding: 10px 25px;
   color: ${primaryLightColor};
   font-size: 16px;
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
 `;
 
 export default MainInput;
