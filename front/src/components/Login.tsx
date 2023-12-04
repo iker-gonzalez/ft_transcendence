@@ -32,7 +32,7 @@ const Login: React.FC = (): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
 
   const handleActivateWithOTP = () => {
-    console.log(otpValue);
+    // console.log(otpValue);
     sessionStorage.setItem('otpValue', otpValue);
     // Get the otpValue from the state
     if (otpValue) {
