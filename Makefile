@@ -25,7 +25,3 @@ up: stop
 
 up-build: stop
 	docker-compose up --build
-
-win: clean
-	docker compose -f ./docker-compose.yaml up -d --build
-	docker compose logs --follow
