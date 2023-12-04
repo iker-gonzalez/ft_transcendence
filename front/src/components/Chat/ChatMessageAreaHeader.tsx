@@ -110,10 +110,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const adminUsers = channelData?.adminsInfo || [];
   const adminUsersIntraIds = adminUsers.map((user) => user.intra);
 
-  const [isBlocked, setIsBlocked] = useState(user?.isBlocked);
-
-  const { userFriends, setUserFriends, fetchFriendsList, isFetchingFriends } =
-    useUserFriends();
+  const { userFriends, setUserFriends, fetchFriendsList } = useUserFriends();
 
   const friend =
     userFriends.find((userFriend) => userFriend.username === user?.username) ||
@@ -210,8 +207,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       isBlocked,
     );
     if (status_code === 200) {
-      setIsBlocked(!!isBlocked);
-
       setUsers((prevUsers) => {
         return prevUsers.map((user) => {
           if (user.intraId === blockIntraId) {
@@ -292,7 +287,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       {user && (
         <div className="actions-container">
           <MainButton
-            disabled={isBlocked}
+            disabled={user.isBlocked}
             onClick={() => {
               if (userData && user) {
                 const invitationUrl =
@@ -323,17 +318,17 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             Challenge
           </MainButton>
           <SecondaryButton
-            disabled={isBlocked}
+            disabled={user.isBlocked}
             onClick={() => setFriendProfileToShow(friend)}
           >
             Profile
           </SecondaryButton>
           <DangerButton
             onClick={() =>
-              block(user.username, user.intraId, isBlocked ? 0 : 1)
+              block(user.username, user.intraId, user.isBlocked ? 0 : 1)
             }
           >
-            {isBlocked ? 'Unblock' : 'Block'}
+            {user.isBlocked ? 'Unblock' : 'Block'}
           </DangerButton>
         </div>
       )}
