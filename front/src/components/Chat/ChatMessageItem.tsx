@@ -12,7 +12,7 @@ const WrapperLi = styled.li`
   justify-content: flex-start;
   align-items: flex-start;
 
-  margin-bottom: 15px;
+  margin-bottom: 8px;
 
   .avatar {
     width: ${avatarWidth};
