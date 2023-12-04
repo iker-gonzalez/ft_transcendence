@@ -36,9 +36,10 @@ const MessageInput: React.FC<MessageInputProps> = ({
   onMessageSubmit,
   selectedUser,
   selectedGroup,
-  mutedUsers
+  mutedUsers,
 }) => {
 
+  //console.log("isUserBlocked in input: ", isUserBlocked);
   const [message, setMessage] = useState('');
 
   const { userData } = useUserData();
@@ -63,7 +64,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         onMessageSubmit(newDirectMessage);
         setMessage('');
       } else if (selectedGroup) {
-        console.log('new group message: ', message);
+        // console.log('new group message: ', message);
         const newGroupMessage: GroupMessage = {
           id:
             Math.random().toString(36).substring(2, 15) +
@@ -80,6 +81,9 @@ const MessageInput: React.FC<MessageInputProps> = ({
       }
     }
   };
+  
+  const isDisabled = Boolean((selectedGroup && isMuted) || (selectedUser && selectedUser.isBlocked));
+
 
   return (
     <InputContainer>
@@ -90,7 +94,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           value={message}
           onChange={handleChange}
         />
-        <MainButton type="submit" disabled={isMuted} title={isMuted ? "You are currently muted on this chat" : ""}>Send</MainButton>
+        <MainButton type="submit" disabled={isDisabled} title={isDisabled ? "You are currently muted on this chat" : ""}>Send</MainButton>
       </form>
     </InputContainer>
   );
