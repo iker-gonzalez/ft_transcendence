@@ -183,9 +183,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     }
   };
 
-  const setPassword = async (
-    password: string | null
-    ) => {
+  const setPassword = async (password: string | null) => {
     const status_code = await patchChannelPassword(
       channelData!.roomName || '',
       channelOwnerIntraId || 0,
@@ -206,10 +204,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     }
   };
 
-  const setAdmin = async (
-    intraId: number, 
-    isAdmin: number
-    ) => {
+  const setAdmin = async (intraId: number, isAdmin: number) => {
     const status_code = await setAdminIntra(
       channelData!.roomName || '',
       intraId,
@@ -287,14 +282,26 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     }
   };
 
-  const mute = (muteIntraId: number, isMuted: number) => {
-    patchMuteUser(
+  const mute = async (muteIntraId: number, isMuted: number) => {
+    const status_code = await patchMuteUser(
       channelData!.roomName || '',
       muteIntraId,
       channelOwnerIntraId || 0,
       isMuted,
     );
-    // endpoint not working
+    if (status_code === 200) {
+      launchFlashMessage(
+        `You have successfully ${
+          isMuted ? 'muted' : 'unmuted'
+        } the user ${muteIntraId}.`,
+        FlashMessageLevel.SUCCESS,
+      );
+    } else {
+      launchFlashMessage(
+        `Something went wrong. Try again later.`,
+        FlashMessageLevel.ERROR,
+      );
+    }
   };
 
   const kick = (intraId: number) => {
@@ -413,17 +420,17 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                       {/*If there is time, change to svg*/}
                       <MainButton
                         onClick={() => {
-                          setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1)
+                          setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1);
                           setPopupVisible(false);
-                        }
-                          
-                        }
+                        }}
                       >
                         {isAdmin ? 'Remove Admin' : 'Make Admin'}
                       </MainButton>
                       <MainButton
-                        onClick={() =>
+                        onClick={() => {
                           mute(channelUserInfo.intra, isUserMuted ? 0 : 1)
+                          setPopupVisible(false);
+                          }
                         }
                       >
                         {isUserMuted ? 'Unmute' : 'Mute'}
