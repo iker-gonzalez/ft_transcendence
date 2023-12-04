@@ -145,7 +145,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               <MessageInput
                 selectedUser={selectedUser}
                 selectedGroup={selectedGroup}
-                mutedUsers={channelData?.mutedInfo || []}
                 onMessageSubmit={handleNewMessage}
               />
             </div>
