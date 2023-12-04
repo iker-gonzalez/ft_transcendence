@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import MainButton from '../UI/MainButton';
-import FriendData from '../../interfaces/friend-data.interface';
 import { useUserFriends, useUserData } from '../../context/UserDataContext';
 import ViewNewUserProfile from '../Friends/ViewNewUserProfile';
 import Modal from '../UI/Modal';
@@ -91,15 +90,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   setUsers,
   setMessages,
 }) => {
-  const [friendProfileToShow, setFriendProfileToShow] =
-    useState<FriendData | null>(null);
+  const [showFriendProfile, setShowFriendProfile] = useState<Boolean>(false);
 
   console.log('channel data:', channelData);
   console.log('grop data:', channelData);
   console.log('users with DM:', users);
-
-  const [showAddNewFriendFlow, setShowAddNewFriendFlow] =
-    useState<boolean>(false);
 
   const { userData } = useUserData();
   const { fetchUserMessages } = useMessageData();
@@ -114,11 +109,11 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const adminUsers = channelData?.adminsInfo || [];
   const adminUsersIntraIds = adminUsers.map((user) => user.intra);
 
-  const { userFriends, setUserFriends, fetchFriendsList } = useUserFriends();
+  const { userFriends, fetchFriendsList } = useUserFriends();
 
-  const friend =
-    userFriends.find((userFriend) => userFriend.username === user?.username) ||
-    null;
+  const friend = userFriends.find(
+    (userFriend) => userFriend.username === user?.username,
+  );
 
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
@@ -153,17 +148,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   useEffect(() => {
     fetchFriendsList();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const onUpdateFriendsList = (
-    newFriendsList: FriendData[],
-    successMessage: string,
-  ): void => {
-    setUserFriends(newFriendsList);
-    setFriendProfileToShow(null);
-    setShowAddNewFriendFlow(false);
-
-    launchFlashMessage(successMessage, FlashMessageLevel.SUCCESS);
-  };
 
   const handleLeaveChannel = (roomName: string) => {
     if (roomName.trim() !== '' && roomName && socket) {
@@ -330,7 +314,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           </MainButton>
           <SecondaryButton
             disabled={user.isBlocked}
-            onClick={() => setFriendProfileToShow(friend)}
+            onClick={() => setShowFriendProfile(true)}
           >
             Profile
           </SecondaryButton>
@@ -461,16 +445,16 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           Leave Channel
         </DangerButton>
       )}
-      {friendProfileToShow && (
+      {showFriendProfile && friend && (
         <Modal
           dismissModalAction={() => {
-            setFriendProfileToShow(null);
+            setShowFriendProfile(false);
           }}
           showFullScreen={true}
         >
           <ViewNewUserProfile
-            foundUserData={friendProfileToShow}
-            onUpdateFriendsList={onUpdateFriendsList}
+            foundUserData={friend}
+            shouldHideFriendCta={true}
           />
         </Modal>
       )}
