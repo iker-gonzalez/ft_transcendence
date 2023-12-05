@@ -261,32 +261,34 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <p className="mb-24">Chat with one of your friends</p>
                 <List>
                   {userFriendsConverted.length > 0 ? (
-                    userFriendsConverted.map((friend) => (
-                      <ListItem
-                        key={friend.intraId}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <RoundImgStyled src={friend.avatar} alt="" />
-                        <UserInfo>
-                          <Username>{friend.username}</Username>
-                        </UserInfo>
-                        <UserStatusInfo intraId={friend.intraId} />
-                        <MainButton
-                          onClick={() => {
-                            handleUserClick(friend);
-                            setPopupVisible(false);
-                          }}
+                    userFriendsConverted
+                      .sort((a, b) => a.username.localeCompare(b.username))
+                      .map((friend) => (
+                        <ListItem
+                          key={friend.intraId}
                           style={{
-                            marginLeft: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
                           }}
                         >
-                          Chat
-                        </MainButton>
-                      </ListItem>
-                    ))
+                          <RoundImgStyled src={friend.avatar} alt="" />
+                          <UserInfo>
+                            <Username>{friend.username}</Username>
+                          </UserInfo>
+                          <UserStatusInfo intraId={friend.intraId} />
+                          <MainButton
+                            onClick={() => {
+                              handleUserClick(friend);
+                              setPopupVisible(false);
+                            }}
+                            style={{
+                              marginLeft: '24px',
+                            }}
+                          >
+                            Chat
+                          </MainButton>
+                        </ListItem>
+                      ))
                   ) : (
                     <p>
                       It seems you do not have any friends yet. Go to your
