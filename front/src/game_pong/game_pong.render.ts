@@ -372,7 +372,6 @@ export function resetBall(
   const newUserData1: IUserData = user1;
   const newUserData2: IUserData = user2;
   newBallData.reset = true;
-
   newBallData.speed = speed;
   newUserData1.height = 100;
   newUserData2.height = 100;
