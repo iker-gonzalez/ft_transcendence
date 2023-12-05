@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   darkBgColor,
@@ -53,10 +53,6 @@ const UserItemButton = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
-
-    > span {
-      margin-left: 4px;
-    }
   }
 `;
 
@@ -64,14 +60,20 @@ const ChatSidebarChannelList: React.FC<ChatSidebarConvoListProps> = ({
   userGroups,
   handleGroupClick,
 }): JSX.Element => {
+  const [selectedItem, setSelectedItem] = useState<number>(-1);
+
   return (
     <>
       {userGroups
         .sort((a, b) => a.name.localeCompare(b.name))
-        .map((group) => (
+        .map((group, index) => (
           <UserItemButton
             key={group.name}
-            onClick={() => handleGroupClick(group)}
+            onClick={() => {
+              handleGroupClick(group);
+              setSelectedItem(index);
+            }}
+            className={selectedItem === index ? 'selected' : ''}
           >
             <div className="avatar">
               <span>
