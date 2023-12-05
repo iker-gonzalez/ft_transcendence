@@ -388,49 +388,6 @@ export class ChatController {
       }
     }
 
-/*    @Post(':channelRoom/:ownerIntra/:password/addPassword')
-    @ApiParam({ name: 'channelRoom' }) 
-    @ApiParam({ name: 'ownerIntra' }) 
-    @ApiParam({ name: 'password' }) 
-    @ApiOperation({
-      summary: swaggerConstants.chat.addOrModifyPassword.summary,
-    })
-    async postaddPasswordChannel( 
-      @Param('channelRoom') channelRoom: string,
-      @Param('ownerIntra') ownerIntra: string,
-      @Param('password') password: string,
-    ) : Promise<void> { 
-      console.log("postaddPasswordChannel post");
-      try{
-        const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
-        this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, password, ChannelType.PROTECTED);
-      }
-      catch (error) {
-          console.error("Error:", error);
-      }
-    }
-
-    @Post(':channelRoom/:ownerIntra/:password/deletePassword')
-    @ApiParam({ name: 'channelRoom' }) 
-    @ApiParam({ name: 'ownerIntra' }) 
-    @ApiParam({ name: 'password' })
-    @ApiOperation({
-      summary: swaggerConstants.chat.deletePassword.summary,
-    })
-    async postdeletePasswordChannel( 
-      @Param('channelRoom') channelRoom: string,
-      @Param('ownerIntra') ownerIntra: string,
-    ) : Promise<void> { 
-      console.log("postaddPasswordChannel post");
-      try{
-        const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
-        this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, null, ChannelType.PUBLIC);
-      }
-      catch (error) {
-          console.error("Error:", error);
-      }
-    }
-*/
     @Get(':password/:roomName/isPasswordCorrect') // Define la ruta para los parámetros userId1 y userId2
     @ApiParam({ name: 'password' })
     @ApiParam({ name: 'roomName' })
@@ -446,7 +403,10 @@ export class ChatController {
     ) : Promise<boolean> {  
       console.log("isPasswordCorrect get");
       try{
-        await this.chatChannelService.isPasswordCorrect(roomName,password);
+        if (await this.chatChannelService.isPasswordCorrect(roomName,password))
+          return true;
+        else
+          return false;
       }
       catch (error) { 
           console.error("Error:", error);
