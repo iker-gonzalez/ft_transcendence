@@ -113,18 +113,21 @@ const Chat: React.FC = () => {
 
   const handleGroupClick = async (group: Group) => {
     const groupInfo = await fetchGroupMessages(group);
-    const groupMessages: DirectMessage[] = groupInfo.channelMessage.map((message: DirectMessage) => ({
-      ...message,
-    }));
+    const groupMessages: DirectMessage[] = groupInfo.channelMessage.map(
+      (message: DirectMessage) => ({
+        ...message,
+      }),
+    );
     setSelectedGroup(group);
     setSelectedUser(null);
     console.log('groupMessages', groupMessages);
     setMessages(groupMessages);
-    setChannelData(channelData);
+
+    const freshChannelData = await fetchChannelData(group.name);
+    setChannelData(freshChannelData);
   };
 
   const [newMessageSent, setNewMessageSent] = useState(false);
-
 
   useEffect(() => {
     if (isSocketConnected && socket) {
@@ -146,7 +149,10 @@ const Chat: React.FC = () => {
         `privateMessageReceived/${userData?.intraId.toString()}`,
         privateMessageListener,
       );
-      socket.on(`groupMessage/${userData?.intraId.toString()}`, groupMessageListener);
+      socket.on(
+        `groupMessage/${userData?.intraId.toString()}`,
+        groupMessageListener,
+      );
 
       //Clean up the listener when the component unmounts or when the receiverId changes
       return () => {
@@ -156,7 +162,10 @@ const Chat: React.FC = () => {
             `privateMessageReceived/${userData?.intraId.toString()}`,
             privateMessageListener,
           );
-          socket.off(`groupMessage/${userData?.intraId.toString()}`, groupMessageListener);
+          socket.off(
+            `groupMessage/${userData?.intraId.toString()}`,
+            groupMessageListener,
+          );
         }
       };
     }
