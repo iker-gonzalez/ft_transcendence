@@ -7,6 +7,7 @@ import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import styled from 'styled-components';
 import { CHANNEL_TYPES } from '../../constants/shared';
+import MainPasswordInput from '../UI/MainPasswordInput';
 
 type ChatSidebarNewChannelModalProps = {
   roomName: string;
@@ -150,10 +151,9 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
         </div>
         {groupNature === CHANNEL_TYPES.PROTECTED && (
           <div className="form-container">
-            <MainInput
-              type="password"
+            <MainPasswordInput
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: any) => setPassword(e.target.value)}
               placeholder="Enter password"
             />
             <MainButton
