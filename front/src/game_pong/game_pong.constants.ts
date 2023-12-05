@@ -35,7 +35,7 @@ export const ballDataInit: IBallData = {
   radius: +CANVAS_WIDTH / BALL_SIZE_RATIO,
   moveX: BALL_VELOCITY,
   moveY: BALL_VELOCITY,
-  speed: userSpeedInput,
+  speed: speed,
   color: RenderColor.White,
   reset: false,
   isBallPaused: false,
