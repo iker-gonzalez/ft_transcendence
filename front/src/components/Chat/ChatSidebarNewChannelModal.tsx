@@ -200,23 +200,25 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
                   <option key="default" value="default">
                     Choose a channel
                   </option>
-                  {filteredGroups.map((group) => (
-                    <option key={group.id} value={group.name}>
-                      <span>
-                        {(() => {
-                          switch (group.type) {
-                            case CHANNEL_TYPES.PROTECTED:
-                              return '🔐';
-                            case CHANNEL_TYPES.PRIVATE:
-                              return '🔒';
-                            default:
-                              return '🌐';
-                          }
-                        })()}
-                      </span>{' '}
-                      {group.name}
-                    </option>
-                  ))}
+                  {filteredGroups
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((group) => (
+                      <option key={group.id} value={group.name}>
+                        <span>
+                          {(() => {
+                            switch (group.type) {
+                              case CHANNEL_TYPES.PROTECTED:
+                                return '🔐';
+                              case CHANNEL_TYPES.PRIVATE:
+                                return '🔒';
+                              default:
+                                return '🌐';
+                            }
+                          })()}
+                        </span>{' '}
+                        {group.name}
+                      </option>
+                    ))}
                 </MainSelect>
               );
             })()}
