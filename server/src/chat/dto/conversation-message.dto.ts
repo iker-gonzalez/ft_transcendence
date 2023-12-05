@@ -6,7 +6,7 @@ export class ConversationMessageDTO {
         description: swaggerConstants.dto.conversationMessageDTO.data.description,
         example: swaggerConstants.dto.conversationMessageDTO.data.example,
       })
-      
+    
     senderId: string | null;
     receiverId: string | null;
     content: string;
@@ -15,8 +15,11 @@ export class ConversationMessageDTO {
     receiverName: string | null;
     senderAvatar: string | null;
     receiverAvatar: string | null;
+
+    roomName: string | null;
   
-    constructor(message: DirectMessage | any , sender: any | null, receiver: User | null) {
+    constructor(message: DirectMessage | any , sender: any | null, receiver: User | null,
+      roomName: string | null) {
      // this.senderId = message.senderId || null;
      // this.receiverId = message.receiverId || null;
       this.content = message.content;
@@ -25,6 +28,8 @@ export class ConversationMessageDTO {
       this.receiverName = receiver?.username || null;
       this.senderAvatar = sender?.avatar || null;
       this.receiverAvatar = receiver?.avatar || null;
+      
+      this.roomName = roomName || null;
     }
   }
   

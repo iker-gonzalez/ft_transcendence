@@ -192,7 +192,7 @@ async handleUnmuteUserDM(client, payload) {
 
       // Enviar mensage a todos los usuarios del grupo
       const userIntra = await this.chatDMservice.findUserIntraById(usuario.userId);
-      this.server.emit(`message/${userIntra}`,
+      this.server.emit(`groupMessage/${userIntra}`,
       JSON.stringify(payload))
 
     }
