@@ -21,7 +21,8 @@ import GamePowerUp from '../interfaces/game-power-up.interface';
 
 export const thickness: number = 10;
 export const slit: number = 3;
-export const userSpeedInput: number = 20;
+export const speed: number = 20;
+export const userSpeedInput: number = speed;
 export const stepPaddle: number = 5;
 const BALL_SIZE_RATIO: number = 60;
 const USER_SIZE_RATIO: number = 90;

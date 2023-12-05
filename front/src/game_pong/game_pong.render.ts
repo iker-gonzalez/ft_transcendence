@@ -7,6 +7,7 @@ import {
   slit,
   thickness,
   gamePowerUps,
+  speed,
 } from './game_pong.constants';
 import {
   InitializeCanvasImages,
@@ -372,7 +373,7 @@ export function resetBall(
   const newUserData2: IUserData = user2;
   newBallData.reset = true;
 
-  newBallData.speed = userSpeedInput;
+  newBallData.speed = speed;
   newUserData1.height = 100;
   newUserData2.height = 100;
 
