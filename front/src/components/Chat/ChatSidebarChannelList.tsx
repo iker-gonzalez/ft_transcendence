@@ -40,8 +40,8 @@ const UserItemButton = styled.button`
   }
 
   .avatar {
-    width: 25px;
-    height: 25px;
+    width: 22px;
+    height: 22px;
     border: 1px ${darkBgColor} solid;
     border-radius: 4px;
 
@@ -53,6 +53,10 @@ const UserItemButton = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
+
+    > span {
+      margin-left: 4px;
+    }
   }
 `;
 
@@ -70,16 +74,18 @@ const ChatSidebarChannelList: React.FC<ChatSidebarConvoListProps> = ({
             onClick={() => handleGroupClick(group)}
           >
             <div className="avatar">
-              {(() => {
-                switch (group.type) {
-                  case CHANNEL_TYPES.PROTECTED:
-                    return '🔐';
-                  case CHANNEL_TYPES.PRIVATE:
-                    return '🔒';
-                  default:
-                    return '🌐';
-                }
-              })()}
+              <span>
+                {(() => {
+                  switch (group.type) {
+                    case CHANNEL_TYPES.PROTECTED:
+                      return '🔐';
+                    case CHANNEL_TYPES.PRIVATE:
+                      return '🔒';
+                    default:
+                      return '🌐';
+                  }
+                })()}
+              </span>
             </div>
             {group.name}
           </UserItemButton>
