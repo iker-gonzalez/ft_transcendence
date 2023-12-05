@@ -1030,9 +1030,9 @@ async addUserToPrivateChannel(userIdAdd: string, ownerId: string, channelName: s
 }
 
 // alternativa 2 para enviar mensages
-async obtenerUsuariosDeChatRoom(roomId: string) {
-  const chatRoom = await this.prisma.chatRoom.findUnique({
-    where: { id: roomId },
+async getUsersFromChatRoom(roomName: string) {
+  const chatRoom = await this.prisma.chatRoom.findFirst({
+    where: { name: roomName },
     include: { users: true },
   });
 
