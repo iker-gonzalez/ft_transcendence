@@ -51,9 +51,9 @@ export class ChatDMService {
     const conversationDTO = [];
     for (const message of conversationMessages) {
       if (message.senderId == userId1) {
-        conversationDTO.push(new ConversationMessageDTO(message, user1, user2));
+        conversationDTO.push(new ConversationMessageDTO(message, user1, user2, null));
       } else
-        conversationDTO.push(new ConversationMessageDTO(message, user2, user1));
+        conversationDTO.push(new ConversationMessageDTO(message, user2, user1, null));
     }
     return conversationDTO;
   }
