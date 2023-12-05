@@ -52,16 +52,21 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
 
   return (
     <MessageList>
-      {messages.map((message, index) => {
-        return (
-          <ChatMessageItem
-            message={message}
-            isRepeatedMessage={
-              messages[index - 1]?.senderName === message.senderName
-            }
-          />
-        );
-      })}
+      {messages
+        .filter(
+          (message) => message.senderName === selectedUser?.username || message.receiverIntraId === selectedUser?.intraId
+        
+        )
+        .map((message, index) => {
+          return (
+            <ChatMessageItem
+              message={message}
+              isRepeatedMessage={
+                messages[index - 1]?.senderName === message.senderName
+              }
+            />
+          );
+        })}
     </MessageList>
   );
 };

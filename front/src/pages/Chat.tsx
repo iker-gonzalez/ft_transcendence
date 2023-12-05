@@ -114,7 +114,10 @@ const Chat: React.FC = () => {
   const handleGroupClick = async (group: Group) => {
     const groupInfo = await fetchGroupMessages(group);
     const channelData = await fetchChannelData(group.name);
-    const groupMessages: DirectMessage[] = groupInfo.channelMessage;
+    const groupMessages: DirectMessage[] = groupInfo.channelMessage.map((message: DirectMessage) => ({
+      ...message,
+      roomName: channelData.roomName,
+    }));
     setSelectedGroup(group);
     setSelectedUser(null);
     console.log('groupMessages', groupMessages);
