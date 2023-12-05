@@ -479,9 +479,9 @@ export function matchUser1(
     ballData.moveY = ballData.speed * Math.sin(angleRad);
 
     // Modify values (ball speed % paddle height) to make it more difficult
-    powerUps[0].value ? (ballData.speed += 1) : (ballData.speed += 0);
-    powerUps[1].value ? (user1.height -= 5) : (user1.height -= 0);
-    powerUps[1].value ? (user2.height -= 5) : (user2.height -= 0);
+    powerUps[0].value ? (ballData.speed += 2) : (ballData.speed += 0);
+    powerUps[1].value ? (user1.height -= 2) : (user1.height -= 0);
+    powerUps[1].value ? (user2.height -= 2) : (user2.height -= 0);
 
     let themeSound = new Audio(theme.hitSound);
     themeSound.play().catch(function (error: any) {});
