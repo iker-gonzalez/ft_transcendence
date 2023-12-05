@@ -21,12 +21,13 @@ import GamePowerUp from '../interfaces/game-power-up.interface';
 
 export const thickness: number = 10;
 export const slit: number = 3;
-export const userSpeedInput: number = 20;
+export const speed: number = 20;
+export const userSpeedInput: number = speed;
 export const stepPaddle: number = 5;
 const BALL_SIZE_RATIO: number = 60;
 const USER_SIZE_RATIO: number = 90;
 export const NET_SIZE_RATIO: number = 90;
-export const BALL_VELOCITY: number = userSpeedInput;
+export const BALL_VELOCITY: number = userSpeedInput / 2;
 
 export const ballDataInit: IBallData = {
   x: 0,
@@ -34,7 +35,7 @@ export const ballDataInit: IBallData = {
   radius: +CANVAS_WIDTH / BALL_SIZE_RATIO,
   moveX: BALL_VELOCITY,
   moveY: BALL_VELOCITY,
-  speed: userSpeedInput,
+  speed: speed,
   color: RenderColor.White,
   reset: false,
   isBallPaused: false,

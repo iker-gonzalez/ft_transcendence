@@ -32,8 +32,10 @@ export class ChatChannelService {
         select: {
           room: {
             select: {
+              id: true,
               name: true,
-              // Otros campos de ChatRoom que desees incluir
+              type: true,
+              ownerId: true,
             },
           },
         },
@@ -169,7 +171,12 @@ export class ChatChannelService {
       allExistingChannelsDTO.push(existingChannelsDTO);
 
     }
-    return allExistingChannelsDTO;
+
+    const sortedAllExistingChannelsDTO = allExistingChannelsDTO.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+
+    return sortedAllExistingChannelsDTO;
   }
 
 

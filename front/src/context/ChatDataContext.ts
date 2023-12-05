@@ -47,6 +47,7 @@ export const useChatData = () => {
         id: item.id,
         name: item.name,
         type: item.type,
+        ownerId: item.ownerId,
       };
     });
     return groups;
@@ -124,5 +125,3 @@ export const useChannelData = () => {
 
   return { fetchChannelData };
 };
-
-

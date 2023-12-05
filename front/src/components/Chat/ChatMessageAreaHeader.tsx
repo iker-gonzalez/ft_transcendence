@@ -11,7 +11,6 @@ import User from '../../interfaces/chat-user.interface';
 import { Socket } from 'socket.io-client';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import GroupMessage from '../../interfaces/chat-group-message.interface';
-import { createNewDirectMessage } from '../../utils/utils';
 import {
   UserInfo,
   ChannelData,
@@ -22,12 +21,10 @@ import {
   setAdminIntra,
   patchBlockUser,
 } from '../../utils/utils';
-import { nanoid } from 'nanoid';
-import SecondaryButton from '../UI/SecondaryButton';
 import DangerButton from '../UI/DangerButton';
 import { useMessageData } from '../../context/ChatDataContext';
-import { stat } from 'fs';
-import { on } from 'events';
+import ChatMessageAreaHeaderName from './ChatMessageAreaHeaderName';
+import ChatMessageAreaHeaderConvoActions from './ChatMessageAreaHeaderConvoActions';
 
 interface ChatMessageAreaHeaderProps {
   user?: User | null;
@@ -94,7 +91,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   setMessages,
   onNewAction,
 }) => {
-  const [showFriendProfile, setShowFriendProfile] = useState<Boolean>(false);
+  const [showFriendProfile, setShowFriendProfile] = useState<boolean>(false);
 
   // console.log('channel data:', channelData);
   // console.log('grop data:', channelData);
@@ -309,64 +306,16 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   return (
     <HeaderWrapper>
-      {user && (
-        <div className="user-info-container">
-          <img src={user.avatar} alt={user.username} className="avatar" />
-          <p className="title-2">
-            {user?.username || channelData?.roomName || ''}{' '}
-            {user?.isBlocked && <span>🚫</span>}
-            {channelData?.type === 'PROTECTED' && <span> 🔐</span>}
-            {channelData?.type === 'PRIVATE' && <span> 🔒</span>}
-          </p>
-        </div>
-      )}
-      {user && (
-        <div className="actions-container">
-          <MainButton
-            disabled={user.isBlocked}
-            onClick={() => {
-              if (userData && user) {
-                const invitationUrl =
-                  window.location.origin +
-                  '/game/invitation' +
-                  '?' +
-                  `invited=${user.intraId}` +
-                  '&' +
-                  `inviter=${userData.intraId}` +
-                  '&' +
-                  `id=${nanoid()}`;
+      <ChatMessageAreaHeaderName user={user} channelData={channelData} />
 
-                const newDirectMessage: DirectMessage = createNewDirectMessage({
-                  selectedUser: user,
-                  userData,
-                  contentText: `Hey, ${user.username}! Fancy playing a 1vs1 match together? Click <a href="${invitationUrl}">here</a> to start a new game!`,
-                });
-
-                onNewMessage(newDirectMessage);
-              } else {
-                launchFlashMessage(
-                  'Something went wrong. Try again later.',
-                  FlashMessageLevel.ERROR,
-                );
-              }
-            }}
-          >
-            Challenge
-          </MainButton>
-          <SecondaryButton
-            disabled={user.isBlocked}
-            onClick={() => setShowFriendProfile(true)}
-          >
-            Profile
-          </SecondaryButton>
-          <DangerButton
-            onClick={() =>
-              block(user.username, user.intraId, user.isBlocked ? 0 : 1)
-            }
-          >
-            {user.isBlocked ? 'Unblock' : 'Block'}
-          </DangerButton>
-        </div>
+      {user && userData && (
+        <ChatMessageAreaHeaderConvoActions
+          user={user}
+          userData={userData}
+          onNewMessage={onNewMessage}
+          setShowFriendProfile={setShowFriendProfile}
+          block={block}
+        />
       )}
       {group &&
         (channelOwnerIntraId === userData?.intraId ||
@@ -498,7 +447,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             updateUserSidebar();
           }}
         >
-          Leave Channel
+          Leave channel
         </DangerButton>
       )}
       {showFriendProfile && friend && (

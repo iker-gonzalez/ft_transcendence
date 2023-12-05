@@ -10,6 +10,7 @@ import {
   darkBgColor,
   darkerBgColor,
   primaryAccentColor,
+  primaryLightColor,
 } from '../../constants/color-tokens';
 import MainButton from '../UI/MainButton';
 import RoundImg from '../UI/RoundImage';
@@ -18,10 +19,10 @@ import { Socket } from 'socket.io-client';
 import Cookies from 'js-cookie';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
-import MainInput from '../UI/MainInput';
-import MainSelect from '../UI/MainSelect';
 import ChatSidebarConvoList from './ChatSidebarConvoList';
 import { checkIfPasswordIsValid } from '../../utils/utils';
+import ChatSidebarNewChannelModal from './ChatSidebarNewChannelModal';
+import ChatSidebarChannelList from './ChatSidebarChannelList';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -63,7 +64,7 @@ const PlusSign = styled.button`
   align-items: center;
 
   font-size: 28px;
-  color: ${primaryAccentColor};
+  color: ${primaryLightColor};
   background: none;
   cursor: pointer;
   margin-left: 10px;
@@ -133,7 +134,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   selectedUser,
   selectedGroup,
   socket,
-  channelData
+  channelData,
 }) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
@@ -151,9 +152,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     null,
   );
 
-  const [selectedProtectedGroup, setSelectedProtectedGroup] = useState<Group | null>(null);
-
-  
+  const [selectedProtectedGroup, setSelectedProtectedGroup] =
+    useState<Group | null>(null);
 
   useEffect(() => {
     if (channelData) {
@@ -170,32 +170,34 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleJoinRoom = async (newGroup: Group, password: string) => {
     console.log('handleJoinRoom');
     if (newGroup.name.trim() !== '' && newGroup.name && socket) {
-        const payload = {
-          roomName: newGroup.name,
-          intraId: userData?.intraId,
-          type: newGroup.type,
-          password: password,
-        };
-        if (newGroup.type === 'PROTECTED') {
-          const passwordCheckResult = await checkChannelPassword(newGroup, password);
-          if (passwordCheckResult !== 200)
-          {
-            launchFlashMessage( 
-              `The password you entered is incorrect. Please try again.`,
-              FlashMessageLevel.ERROR,
-            );
-            return 1;
-          }
-        }
-          socket.emit('joinRoom', payload);
-          setPopupVisible(false);
+      const payload = {
+        roomName: newGroup.name,
+        intraId: userData?.intraId,
+        type: newGroup.type,
+        password: password,
+      };
+      if (newGroup.type === 'PROTECTED') {
+        const passwordCheckResult = await checkChannelPassword(
+          newGroup,
+          password,
+        );
+        if (passwordCheckResult !== 200) {
           launchFlashMessage(
-            `You have successfully joined the room ${newGroup.name}!`,
-            FlashMessageLevel.SUCCESS,
+            `The password you entered is incorrect. Please try again.`,
+            FlashMessageLevel.ERROR,
           );
-          return 0;
+          return 1;
+        }
+      }
+      socket.emit('joinRoom', payload);
+      setPopupVisible(false);
+      launchFlashMessage(
+        `You have successfully joined the room ${newGroup.name}!`,
+        FlashMessageLevel.SUCCESS,
+      );
+      return 0;
     }
-};
+  };
 
   const checkChannelPassword = async (group: Group, password: string) => {
     if (password.trim() === '') {
@@ -205,7 +207,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       );
       return -1;
     }
-    const status_code = await checkIfPasswordIsValid(group.name, password, channelData!.ownerIntra);
+    const status_code = await checkIfPasswordIsValid(
+      group.name,
+      password,
+      channelData!.ownerIntra,
+    );
     console.log('status_code:', status_code);
     return status_code;
   };
@@ -256,32 +262,34 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <p className="mb-24">Chat with one of your friends</p>
                 <List>
                   {userFriendsConverted.length > 0 ? (
-                    userFriendsConverted.map((friend) => (
-                      <ListItem
-                        key={friend.intraId}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <RoundImgStyled src={friend.avatar} alt="" />
-                        <UserInfo>
-                          <Username>{friend.username}</Username>
-                        </UserInfo>
-                        <UserStatusInfo intraId={friend.intraId} />
-                        <MainButton
-                          onClick={() => {
-                            handleUserClick(friend);
-                            setPopupVisible(false);
-                          }}
+                    userFriendsConverted
+                      .sort((a, b) => a.username.localeCompare(b.username))
+                      .map((friend) => (
+                        <ListItem
+                          key={friend.intraId}
                           style={{
-                            marginLeft: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
                           }}
                         >
-                          Chat
-                        </MainButton>
-                      </ListItem>
-                    ))
+                          <RoundImgStyled src={friend.avatar} alt="" />
+                          <UserInfo>
+                            <Username>{friend.username}</Username>
+                          </UserInfo>
+                          <UserStatusInfo intraId={friend.intraId} />
+                          <MainButton
+                            onClick={() => {
+                              handleUserClick(friend);
+                              setPopupVisible(false);
+                            }}
+                            style={{
+                              marginLeft: '24px',
+                            }}
+                          >
+                            Chat
+                          </MainButton>
+                        </ListItem>
+                      ))
                   ) : (
                     <p>
                       It seems you do not have any friends yet. Go to your
@@ -291,127 +299,24 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </List>
               </>
             ) : (
-              <>
-                <h1 className="title-1 mb-24">Create new channel</h1>
-                <div className="mb-16">
-                  <p className="mb-8">
-                    You can create a public channel for maximum outreach or make
-                    it private for increased privacy.
-                  </p>
-                  <p>The group name must be globally unique.</p>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '8px',
-                  }}
-                  className="mb-24"
-                >
-                  <MainInput
-                    minLength={1}
-                    maxLength={10}
-                    type="text"
-                    value={roomName}
-                    onChange={(e) => {
-                      setRoomName(e.target.value);
-                      setIsRoomNameValid(
-                        !allGroups?.some(
-                          (group) => group.name === e.target.value,
-                        ),
-                      );
-                    }}
-                    placeholder="Enter room name"
-                    style={{ borderColor: isRoomNameValid ? '' : 'red' }}
-                  />
-                  <MainSelect
-                    value={groupNature}
-                    onChange={(e) => {
-                      setGroupNature(e.target.value);
-                      setPassword('');
-                    }}
-                  >
-                    <option value="PUBLIC">Public</option>
-                    <option value="PRIVATE">Private</option>
-                    <option value="PROTECTED">Protected</option>
-                  </MainSelect>
-                </div>
-                {groupNature === 'PROTECTED' && (
-                  <MainInput
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter password"
-                    className="mb-16"
-                  />
-                )}
-                <MainButton
-                  onClick={ async () => {
-                    if (!roomName) {
-                      launchFlashMessage(
-                        `Room name cannot be empty. Please choose a name.`,
-                        FlashMessageLevel.ERROR,
-                      );
-                      return;
-                    }
-                    const newGroup: Group = {
-                      id:
-                        Math.random().toString(36).substring(2, 15) +
-                        Math.random().toString(36).substring(2, 15),
-                      name: roomName,
-                      type: groupNature,
-                    };
-                    if ((await handleJoinRoom(newGroup, password)) === 0) {
-                      updateUserSidebar();
-                    }
-                    // Reset inputs
-                    setRoomName('');
-                    setGroupNature('PUBLIC');
-                    setPassword('');
-                  }}
-                  disabled={!isRoomNameValid}
-                >
-                  Join Channel
-                </MainButton>
-                <p>Or join an existing one</p>
-                <List>
-                  {allGroups &&
-                    allGroups
-                      .filter(
-                        (group) =>
-                          userGroups &&
-                          !userGroups.some(
-                            (userGroup) => userGroup.name === group.name,
-                          ),
-                      )
-                      .filter(
-                        (group) =>
-                          group.type === 'PUBLIC' || group.type === 'PROTECTED',
-                      )
-                      .map((group) => (
-                        <ListItem
-                          key={group.name}
-                          onClick={() => {
-                            if (group.type === 'PROTECTED') {
-                              setPopupVisible(false);
-                              // Open password input popup
-                              setPasswordPopupVisible(true);
-                              setSelectedProtectedGroup(group);
-                            } else {
-                              handleJoinRoom(group, ''); // no password
-                              updateUserSidebar();
-                              handleGroupClick(group);
-                              setPopupVisible(false);
-                            }
-                          }}
-                        >
-                          {group.name}
-                          {group.type === 'PROTECTED' && ' 🔒'}
-                        </ListItem>
-                      ))}
-                </List>
-              </>
+              <ChatSidebarNewChannelModal
+                roomName={roomName}
+                setRoomName={setRoomName}
+                isRoomNameValid={isRoomNameValid}
+                setIsRoomNameValid={setIsRoomNameValid}
+                allGroups={allGroups}
+                groupNature={groupNature}
+                setGroupNature={setGroupNature}
+                password={password}
+                setPassword={setPassword}
+                handleJoinRoom={handleJoinRoom}
+                updateUserSidebar={updateUserSidebar}
+                userGroups={userGroups}
+                setPopupVisible={setPopupVisible}
+                setPasswordPopupVisible={setPasswordPopupVisible}
+                setSelectedProtectedGroup={setSelectedProtectedGroup}
+                handleGroupClick={handleGroupClick}
+              />
             )}
           </Modal>
         )}
@@ -438,7 +343,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                 placeholder="Enter password"
                 required
               />
-              <button type="submit" onClick={() => console.log('Button clicked')}>Join</button>
+              <button
+                type="submit"
+                onClick={() => console.log('Button clicked')}
+              >
+                Join
+              </button>
             </form>
           </Modal>
         )}
@@ -455,17 +365,12 @@ const Sidebar: React.FC<SidebarProps> = ({
             </PlusSign>
           </TitleContainer>
           <List>
-            {userGroups &&
-              userGroups.map((group) => (
-                <ListItem
-                  key={group.name}
-                  onClick={() => handleGroupClick(group)}
-                >
-                  {group.name}
-                  {group.type === 'PROTECTED' && <span> 🔐</span>}
-                  {group.type === 'PRIVATE' && <span> 🔒</span>}
-                </ListItem>
-              ))}
+            {userGroups && (
+              <ChatSidebarChannelList
+                userGroups={userGroups}
+                handleGroupClick={handleGroupClick}
+              />
+            )}
           </List>
         </UserList>
       </GradientBorder>
