@@ -170,8 +170,8 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
         <div className="existing-channels-container">
           <p className="title-1 mb-16">Or join an existing one</p>
           <p className="mb-16">
-            Some channels are public and can be joined freely. For others (🔒),
-            you will need a password.
+            Some channels are public and can be joined freely. Some others are
+            private and you need a password to join them.
           </p>
           <div className="form-container">
             {(() => {
@@ -200,12 +200,25 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
                   <option key="default" value="default">
                     Choose a channel
                   </option>
-                  {filteredGroups.map((group) => (
-                    <option key={group.id} value={group.name}>
-                      {group.name}
-                      {group.type === CHANNEL_TYPES.PROTECTED && ' 🔒'}
-                    </option>
-                  ))}
+                  {filteredGroups
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((group) => (
+                      <option key={group.id} value={group.name}>
+                        <span>
+                          {(() => {
+                            switch (group.type) {
+                              case CHANNEL_TYPES.PROTECTED:
+                                return '🔐';
+                              case CHANNEL_TYPES.PRIVATE:
+                                return '🔒';
+                              default:
+                                return '🌐';
+                            }
+                          })()}
+                        </span>{' '}
+                        {group.name}
+                      </option>
+                    ))}
                 </MainSelect>
               );
             })()}
