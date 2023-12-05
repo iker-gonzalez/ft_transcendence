@@ -3,10 +3,7 @@ import DangerButton from '../UI/DangerButton';
 import MainButton from '../UI/MainButton';
 import UserData from '../../interfaces/user-data.interface';
 import Modal from '../UI/Modal';
-import {
-  ChannelData,
-  UserInfo,
-} from '../../interfaces/chat-channel-data.interface';
+import { ChannelData } from '../../interfaces/chat-channel-data.interface';
 import Group from '../../interfaces/chat-group.interface';
 import { Socket } from 'socket.io-client';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
@@ -46,21 +43,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   const [channelOwnerIntraId, setChannelOwnerIntraId] = useState<number | null>(
     null,
   );
-  const [channelAdminsInfo, setChannelAdminsInfo] = useState<UserInfo[] | null>(
-    null,
-  );
-  const [channelBannedInfo, setChannelBannedInfo] = useState<UserInfo[] | null>(
-    null,
-  );
-  const [channelMutedInfo, setChannelMutedInfo] = useState<UserInfo[] | null>(
-    null,
-  );
-  const [channelUsersInfo, setChannelUsersInfo] = useState<UserInfo[] | null>(
-    null,
-  );
-
-  const mutedUsers = channelData?.mutedInfo || [];
-  const mutedUsersIntraIds = mutedUsers.map((user) => user.intra);
 
   const adminUsers = channelData?.adminsInfo || [];
   const adminUsersIntraIds = adminUsers.map((user) => user.intra);
@@ -68,10 +50,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   useEffect(() => {
     if (channelData) {
       setChannelOwnerIntraId(channelData.ownerIntra || null);
-      setChannelAdminsInfo(channelData.adminsInfo || null);
-      setChannelBannedInfo(channelData.bannedInfo || null);
-      setChannelMutedInfo(channelData.mutedInfo || null);
-      setChannelUsersInfo(channelData.usersInfo || []);
     }
   }, [group, channelData]);
 
@@ -188,20 +166,23 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
           >
             Actions
           </MainButton>
-          {channelUsersInfo && isPopupVisible && (
+          {channelData && isPopupVisible && (
             <Modal
               dismissModalAction={() => {
                 setPopupVisible(false);
               }}
             >
               {/* Display the user intra ids here */}
-              {channelUsersInfo.map((channelUserInfo) => {
+              {channelData.usersInfo.map((channelUserInfo) => {
                 // Skip the logged-in user
                 if (channelUserInfo.intra === userData?.intraId) {
                   return null;
                 }
 
-                const isUserMuted = mutedUsersIntraIds?.includes(
+                const mutedUsersIntraIds = channelData.mutedInfo.map(
+                  (user) => user.intra,
+                );
+                const isUserMuted = mutedUsersIntraIds.includes(
                   channelUserInfo.intra,
                 );
                 const isAdmin = adminUsersIntraIds?.includes(
@@ -210,7 +191,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
 
                 return (
                   <div key={channelUserInfo.intra}>
-                    {channelUserInfo.intra !== channelOwnerIntraId && (
+                    {channelUserInfo.intra !== channelData.ownerIntra && (
                       <>
                         {channelUserInfo.username}
                         {/*If there is time, change to svg*/}
