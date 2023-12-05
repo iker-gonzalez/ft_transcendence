@@ -169,7 +169,12 @@ export class ChatChannelService {
       allExistingChannelsDTO.push(existingChannelsDTO);
 
     }
-    return allExistingChannelsDTO;
+
+    const sortedAllExistingChannelsDTO = allExistingChannelsDTO.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+
+    return sortedAllExistingChannelsDTO;
   }
 
 

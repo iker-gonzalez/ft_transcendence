@@ -128,7 +128,11 @@ export class ChatDMService {
       allUserDMWithDTO.push(userDTO);
     }
 
-    return allUserDMWithDTO;
+    const sortedAllUserDMWithDTO = allUserDMWithDTO.sort((a, b) => {
+      return a.username.localeCompare(b.username);
+    });
+
+    return sortedAllUserDMWithDTO;
   }
 
   async findUserIdByIntraId(intraId: number): Promise<string> {
