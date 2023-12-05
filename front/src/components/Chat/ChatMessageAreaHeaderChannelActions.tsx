@@ -3,10 +3,7 @@ import DangerButton from '../UI/DangerButton';
 import MainButton from '../UI/MainButton';
 import UserData from '../../interfaces/user-data.interface';
 import Modal from '../UI/Modal';
-import {
-  ChannelData,
-  UserInfo,
-} from '../../interfaces/chat-channel-data.interface';
+import { ChannelData } from '../../interfaces/chat-channel-data.interface';
 import Group from '../../interfaces/chat-group.interface';
 import { Socket } from 'socket.io-client';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
@@ -16,6 +13,8 @@ import {
   patchMuteUser,
   setAdminIntra,
 } from '../../utils/utils';
+import styled from 'styled-components';
+import MainInput from '../UI/MainInput';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -26,6 +25,32 @@ type ChatMessageAreaHeaderChannelActionsProps = {
   socket: Socket;
   setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
 };
+
+const WrapperDiv = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+
+  .main-actions-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+`;
+
+const PasswordModal = styled(Modal)`
+  .edit-password-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 32px;
+  }
+`;
 
 const ChatMessageAreaHeaderChannelActions: React.FC<
   ChatMessageAreaHeaderChannelActionsProps
@@ -46,21 +71,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   const [channelOwnerIntraId, setChannelOwnerIntraId] = useState<number | null>(
     null,
   );
-  const [channelAdminsInfo, setChannelAdminsInfo] = useState<UserInfo[] | null>(
-    null,
-  );
-  const [channelBannedInfo, setChannelBannedInfo] = useState<UserInfo[] | null>(
-    null,
-  );
-  const [channelMutedInfo, setChannelMutedInfo] = useState<UserInfo[] | null>(
-    null,
-  );
-  const [channelUsersInfo, setChannelUsersInfo] = useState<UserInfo[] | null>(
-    null,
-  );
-
-  const mutedUsers = channelData?.mutedInfo || [];
-  const mutedUsersIntraIds = mutedUsers.map((user) => user.intra);
 
   const adminUsers = channelData?.adminsInfo || [];
   const adminUsersIntraIds = adminUsers.map((user) => user.intra);
@@ -68,10 +78,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   useEffect(() => {
     if (channelData) {
       setChannelOwnerIntraId(channelData.ownerIntra || null);
-      setChannelAdminsInfo(channelData.adminsInfo || null);
-      setChannelBannedInfo(channelData.bannedInfo || null);
-      setChannelMutedInfo(channelData.mutedInfo || null);
-      setChannelUsersInfo(channelData.usersInfo || []);
     }
   }, [group, channelData]);
 
@@ -179,152 +185,170 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
 
   return (
     <>
-      {canSeeActions() && (
-        <div>
-          <MainButton
-            onClick={() => {
-              setPopupVisible(true);
-            }}
-          >
-            Actions
-          </MainButton>
-          {channelUsersInfo && isPopupVisible && (
-            <Modal
-              dismissModalAction={() => {
-                setPopupVisible(false);
+      <WrapperDiv>
+        {canSeeActions() && (
+          <div className="main-actions-container">
+            <MainButton
+              onClick={() => {
+                setPopupVisible(true);
               }}
             >
-              {/* Display the user intra ids here */}
-              {channelUsersInfo.map((channelUserInfo) => {
-                // Skip the logged-in user
-                if (channelUserInfo.intra === userData?.intraId) {
-                  return null;
-                }
+              Actions
+            </MainButton>
+            {channelData && isPopupVisible && (
+              <Modal
+                dismissModalAction={() => {
+                  setPopupVisible(false);
+                }}
+              >
+                {/* Display the user intra ids here */}
+                {channelData.usersInfo.map((channelUserInfo) => {
+                  // Skip the logged-in user
+                  if (channelUserInfo.intra === userData?.intraId) {
+                    return null;
+                  }
 
-                const isUserMuted = mutedUsersIntraIds?.includes(
-                  channelUserInfo.intra,
-                );
-                const isAdmin = adminUsersIntraIds?.includes(
-                  channelUserInfo.intra,
-                );
+                  const mutedUsersIntraIds = channelData.mutedInfo.map(
+                    (user) => user.intra,
+                  );
+                  const isUserMuted = mutedUsersIntraIds.includes(
+                    channelUserInfo.intra,
+                  );
+                  const isAdmin = adminUsersIntraIds?.includes(
+                    channelUserInfo.intra,
+                  );
 
-                return (
-                  <div key={channelUserInfo.intra}>
-                    {channelUserInfo.intra !== channelOwnerIntraId && (
-                      <>
-                        {channelUserInfo.username}
-                        {/*If there is time, change to svg*/}
-                        <MainButton
+                  return (
+                    <div key={channelUserInfo.intra}>
+                      {channelUserInfo.intra !== channelData.ownerIntra && (
+                        <>
+                          {channelUserInfo.username}
+                          {/*If there is time, change to svg*/}
+                          <MainButton
+                            onClick={() => {
+                              setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1);
+                              setPopupVisible(false);
+                              onNewAction(group);
+                            }}
+                          >
+                            {isAdmin ? 'Remove Admin' : 'Make Admin'}
+                          </MainButton>
+                          <MainButton
+                            onClick={() => {
+                              mute(channelUserInfo.intra, isUserMuted ? 0 : 1);
+                              setPopupVisible(false);
+                              onNewAction(group);
+                            }}
+                          >
+                            {isUserMuted ? 'Unmute' : 'Mute'}
+                          </MainButton>
+                          <MainButton
+                            onClick={() => kick(channelUserInfo.intra)}
+                          >
+                            Kick
+                          </MainButton>
+                          <MainButton
+                            onClick={() => ban(channelUserInfo.intra)}
+                          >
+                            Ban
+                          </MainButton>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </Modal>
+            )}
+            {group && channelOwnerIntraId === userData?.intraId && (
+              <>
+                {channelData?.type === 'PUBLIC' ? (
+                  <>
+                    <MainButton onClick={() => setPasswordPopupVisible(true)}>
+                      Set Password
+                    </MainButton>
+
+                    {isPasswordPopupVisible && (
+                      <Modal
+                        dismissModalAction={() =>
+                          setPasswordPopupVisible(false)
+                        }
+                      >
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPasswordInput(e.target.value)}
+                        />
+                        <button
                           onClick={() => {
-                            setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1);
-                            setPopupVisible(false);
+                            setPassword(password);
+                            setPasswordInput('');
+                            setPasswordPopupVisible(false);
                             onNewAction(group);
                           }}
                         >
-                          {isAdmin ? 'Remove Admin' : 'Make Admin'}
-                        </MainButton>
-                        <MainButton
-                          onClick={() => {
-                            mute(channelUserInfo.intra, isUserMuted ? 0 : 1);
-                            setPopupVisible(false);
-                            onNewAction(group);
-                          }}
-                        >
-                          {isUserMuted ? 'Unmute' : 'Mute'}
-                        </MainButton>
-                        <MainButton onClick={() => kick(channelUserInfo.intra)}>
-                          Kick
-                        </MainButton>
-                        <MainButton onClick={() => ban(channelUserInfo.intra)}>
-                          Ban
-                        </MainButton>
-                      </>
+                          Submit
+                        </button>
+                      </Modal>
                     )}
-                  </div>
-                );
-              })}
-            </Modal>
-          )}
-          {group && channelOwnerIntraId === userData?.intraId && (
-            <>
-              {channelData?.type === 'PUBLIC' ? (
-                <>
-                  <MainButton onClick={() => setPasswordPopupVisible(true)}>
-                    Set Password
-                  </MainButton>
-
-                  {isPasswordPopupVisible && (
-                    <Modal
-                      dismissModalAction={() => setPasswordPopupVisible(false)}
-                    >
-                      <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPasswordInput(e.target.value)}
-                      />
-                      <button
-                        onClick={() => {
-                          setPassword(password);
-                          setPasswordInput('');
-                          setPasswordPopupVisible(false);
-                          onNewAction(group);
-                        }}
-                      >
-                        Submit
-                      </button>
-                    </Modal>
-                  )}
-                </>
-              ) : channelData?.type === 'PROTECTED' ? (
-                <>
-                  <MainButton onClick={() => setPasswordPopupVisible(true)}>
-                    Modify or Remove Password
-                  </MainButton>
-
-                  {isPasswordPopupVisible && (
-                    <Modal
-                      dismissModalAction={() => setPasswordPopupVisible(false)}
-                    >
-                      <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPasswordInput(e.target.value)}
-                      />
-                      <button
-                        onClick={() => {
-                          setPassword(password);
-                          setPasswordInput('');
-                          setPasswordPopupVisible(false);
-                          onNewAction(group);
-                        }}
-                      >
-                        Modify Password
-                      </button>
-                      <button
-                        onClick={() => {
-                          setPassword(null);
-                          setPasswordPopupVisible(false);
-                          onNewAction(group);
-                        }}
-                      >
-                        Remove Password
-                      </button>
-                    </Modal>
-                  )}
-                </>
-              ) : null}
-            </>
-          )}
-        </div>
+                  </>
+                ) : channelData?.type === 'PROTECTED' ? (
+                  <>
+                    <MainButton onClick={() => setPasswordPopupVisible(true)}>
+                      Edit password
+                    </MainButton>
+                  </>
+                ) : null}
+              </>
+            )}
+          </div>
+        )}
+        <DangerButton
+          onClick={() => {
+            handleLeaveChannel(group.name);
+            updateUserSidebar();
+          }}
+        >
+          Leave
+        </DangerButton>
+      </WrapperDiv>
+      {isPasswordPopupVisible && (
+        <PasswordModal
+          dismissModalAction={() => setPasswordPopupVisible(false)}
+        >
+          <h1 className="title-1 mb-16">Edit password</h1>
+          <p className="mb-16">Here you can edit your current password.</p>
+          <div className="edit-password-container">
+            <MainInput
+              type="password"
+              placeholder="Enter a new password"
+              value={password}
+              onChange={(e) => setPasswordInput(e.target.value)}
+            />
+            <MainButton
+              onClick={() => {
+                setPassword(password);
+                setPasswordInput('');
+                setPasswordPopupVisible(false);
+                onNewAction(group);
+              }}
+            >
+              Confirm
+            </MainButton>
+          </div>
+          <div>
+            <p className="mb-16">Or maybe you'd rather delete it altogether.</p>
+            <DangerButton
+              onClick={() => {
+                setPassword(null);
+                setPasswordPopupVisible(false);
+                onNewAction(group);
+              }}
+            >
+              Remove Password
+            </DangerButton>
+          </div>
+        </PasswordModal>
       )}
-      <DangerButton
-        onClick={() => {
-          handleLeaveChannel(group.name);
-          updateUserSidebar();
-        }}
-      >
-        Leave
-      </DangerButton>
     </>
   );
 };
