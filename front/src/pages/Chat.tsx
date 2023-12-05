@@ -226,6 +226,7 @@ const Chat: React.FC = () => {
           selectedUser={selectedUser}
           selectedGroup={selectedGroup}
           socket={socket}
+          channelData={channelData}
         />
         <ChatMessageArea
           selectedUser={selectedUser}

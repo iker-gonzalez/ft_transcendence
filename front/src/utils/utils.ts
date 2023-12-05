@@ -217,3 +217,19 @@ export async function patchBlockUser(
   }
   return 0;
 }
+
+export async function checkIfPasswordIsValid(
+  groupName: string,
+  password: string,
+  ownerIntraId: number
+): Promise<number> {
+
+  const response = await fetchAuthorized(`${getBaseUrl()}/chat/${password}/${groupName}/isPasswordCorrect`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${Cookies.get('token')}`,
+    },
+  });
+  return response.status;
+}

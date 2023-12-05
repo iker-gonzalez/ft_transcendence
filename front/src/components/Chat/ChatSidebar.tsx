@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
+import { ChannelData } from '../../interfaces/chat-channel-data.interface';
 import Modal from '../UI/Modal';
 import { useUserFriends, useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
@@ -20,6 +21,8 @@ import { useFlashMessages } from '../../context/FlashMessagesContext';
 import MainInput from '../UI/MainInput';
 import MainSelect from '../UI/MainSelect';
 import ChatSidebarConvoList from './ChatSidebarConvoList';
+import { checkIfPasswordIsValid } from '../../utils/utils';
+import { stat } from 'fs';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -119,6 +122,7 @@ interface SidebarProps {
   handleGroupClick: (group: Group) => void;
   unreadMessages: { [key: string]: number };
   socket: Socket | null;
+  channelData: ChannelData | null;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -132,8 +136,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   selectedUser,
   selectedGroup,
   socket,
+  channelData
 }) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
   const [activeModalContent, setActiveModalContent] = useState<
     'directMessages' | 'groupChats'
   >('directMessages');
@@ -144,6 +150,19 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [groupNature, setGroupNature] = useState('PUBLIC');
   const [password, setPassword] = useState('');
   const [isRoomNameValid, setIsRoomNameValid] = useState(true);
+  const [channelOwnerIntraId, setChannelOwnerIntraId] = useState<number | null>(
+    null,
+  );
+
+  const [selectedProtectedGroup, setSelectedProtectedGroup] = useState<Group | null>(null);
+
+  
+
+  useEffect(() => {
+    if (channelData) {
+      setChannelOwnerIntraId(channelData.ownerIntra || null);
+    }
+  }, [selectedGroup, channelData]);
 
   useEffect(() => {
     fetchFriendsList();
@@ -151,33 +170,47 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchUserData(token as string);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleJoinRoom = (newGroup: Group, password: string) => {
+  const handleJoinRoom = async (newGroup: Group, password: string) => {
+    console.log('handleJoinRoom');
     if (newGroup.name.trim() !== '' && newGroup.name && socket) {
-      if (
-        userGroups &&
-        userGroups.some((group) => group.name === newGroup.name)
-      ) {
-        launchFlashMessage(
-          `The group name ${newGroup.name} already exists. Please choose a different name.`,
-          FlashMessageLevel.ERROR,
-        );
-        return 1;
-      } else {
         const payload = {
           roomName: newGroup.name,
           intraId: userData?.intraId,
           type: newGroup.type,
           password: password,
         };
-        socket.emit('joinRoom', payload);
-        setPopupVisible(false);
-        launchFlashMessage(
-          `You have successfully joined the room ${newGroup.name}!`,
-          FlashMessageLevel.SUCCESS,
-        );
-        return 0;
-      }
+        if (newGroup.type === 'PROTECTED') {
+          const passwordCheckResult = await checkChannelPassword(newGroup, password);
+          if (passwordCheckResult !== 200)
+          {
+            launchFlashMessage( 
+              `The password you entered is incorrect. Please try again.`,
+              FlashMessageLevel.ERROR,
+            );
+            return 1;
+          }
+        }
+          socket.emit('joinRoom', payload);
+          setPopupVisible(false);
+          launchFlashMessage(
+            `You have successfully joined the room ${newGroup.name}!`,
+            FlashMessageLevel.SUCCESS,
+          );
+          return 0;
     }
+};
+
+  const checkChannelPassword = async (group: Group, password: string) => {
+    if (password.trim() === '') {
+      launchFlashMessage(
+        `Please enter a password to join the group ${group.name}.`,
+        FlashMessageLevel.ERROR,
+      );
+      return -1;
+    }
+    const status_code = await checkIfPasswordIsValid(group.name, password, channelData!.ownerIntra);
+    console.log('status_code:', status_code);
+    return status_code;
   };
 
   const userFriendsConverted = userFriends.map((friend) => ({
@@ -214,7 +247,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           <Modal
             dismissModalAction={() => {
               setPopupVisible(false);
-
               // Reset inputs
               setRoomName('');
               setGroupNature('PUBLIC');
@@ -317,9 +349,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                     className="mb-16"
                   />
                 )}
-
                 <MainButton
-                  onClick={() => {
+                  onClick={ async () => {
                     if (!roomName) {
                       launchFlashMessage(
                         `Room name cannot be empty. Please choose a name.`,
@@ -334,10 +365,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                       name: roomName,
                       type: groupNature,
                     };
-                    if (handleJoinRoom(newGroup, password) === 0) {
+                    if ((await handleJoinRoom(newGroup, password)) === 0) {
                       updateUserSidebar();
                     }
-
                     // Reset inputs
                     setRoomName('');
                     setGroupNature('PUBLIC');
@@ -366,10 +396,17 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <ListItem
                           key={group.name}
                           onClick={() => {
-                            handleJoinRoom(group, ''); // no password
-                            updateUserSidebar();
-                            handleGroupClick(group);
-                            setPopupVisible(false);
+                            if (group.type === 'PROTECTED') {
+                              setPopupVisible(false);
+                              // Open password input popup
+                              setPasswordPopupVisible(true);
+                              setSelectedProtectedGroup(group);
+                            } else {
+                              handleJoinRoom(group, ''); // no password
+                              updateUserSidebar();
+                              handleGroupClick(group);
+                              setPopupVisible(false);
+                            }
                           }}
                         >
                           {group.name}
@@ -379,6 +416,33 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </List>
               </>
             )}
+          </Modal>
+        )}
+        {isPasswordPopupVisible && (
+          <Modal dismissModalAction={() => setPasswordPopupVisible(false)}>
+            <h2>Enter Password</h2>
+            <form
+              onSubmit={(e) => {
+                console.log('is form submitting?');
+                console.log('selectedGroup: ', selectedProtectedGroup);
+                e.preventDefault();
+                if (selectedProtectedGroup) {
+                  console.log('entra aqui');
+                  handleJoinRoom(selectedProtectedGroup, password);
+                }
+                setPassword('');
+                setPasswordPopupVisible(false);
+              }}
+            >
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                required
+              />
+              <button type="submit" onClick={() => console.log('Button clicked')}>Joinnnnnn</button>
+            </form>
           </Modal>
         )}
         <UserList>
