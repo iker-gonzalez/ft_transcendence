@@ -15,6 +15,7 @@ import {
 } from '../../utils/utils';
 import styled from 'styled-components';
 import MainInput from '../UI/MainInput';
+import MainPasswordInput from '../UI/MainPasswordInput';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -337,11 +338,10 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
           )}
 
           <div className="edit-password-container">
-            <MainInput
-              type="password"
+            <MainPasswordInput
               placeholder="Enter a new password"
               value={password}
-              onChange={(e) => setPasswordInput(e.target.value)}
+              onChange={(e: any) => setPasswordInput(e.target.value)}
             />
             <MainButton
               onClick={() => {
