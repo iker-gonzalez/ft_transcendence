@@ -16,3 +16,9 @@ export const TEST_USERS_DATA: { code: string; avatar: string }[] = [
     avatar: process.env.REACT_APP_USER_TEST_3_AVATAR || '',
   },
 ];
+
+export const CHANNEL_TYPES = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE',
+  PROTECTED: 'PROTECTED',
+};
