@@ -2,7 +2,7 @@ import { styled } from 'styled-components';
 
 import { blackColor, primaryColor } from '../../constants/color-tokens';
 
-const Button = styled.button`
+const MainButton = styled.button`
   padding: 10px 25px;
   background-color: ${primaryColor};
   color: ${blackColor};
@@ -23,4 +23,4 @@ const Button = styled.button`
   }
 `;
 
-export default Button;
+export default MainButton;
