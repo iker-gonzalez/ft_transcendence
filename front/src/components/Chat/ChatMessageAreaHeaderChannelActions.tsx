@@ -47,8 +47,10 @@ const PasswordModal = styled(Modal)`
     justify-content: center;
     align-items: center;
     gap: 8px;
+  }
 
-    margin-bottom: 32px;
+  .delete-password-container {
+    margin-top: 32px;
   }
 `;
 
@@ -192,6 +194,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               onClick={() => {
                 setPopupVisible(true);
               }}
+              disabled={channelData?.usersInfo.length === 1}
             >
               Actions
             </MainButton>
@@ -264,7 +267,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                 {channelData?.type === 'PUBLIC' ? (
                   <>
                     <MainButton onClick={() => setPasswordPopupVisible(true)}>
-                      Set Password
+                      Set password
                     </MainButton>
 
                     {isPasswordPopupVisible && (
@@ -315,8 +318,24 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         <PasswordModal
           dismissModalAction={() => setPasswordPopupVisible(false)}
         >
-          <h1 className="title-1 mb-16">Edit password</h1>
-          <p className="mb-16">Here you can edit your current password.</p>
+          {channelData?.password ? (
+            <>
+              <h1 className="title-1 mb-16">Edit your password</h1>
+              <p className="mb-24">Choose a new password for this channel.</p>
+            </>
+          ) : (
+            <>
+              <h1 className="title-1 mb-16">Set a password</h1>
+              <div className="mb-24">
+                <p className="mb-8">Set a password for this channel.</p>
+                <p>
+                  By doing so, the channel won't be public anymore. Users that
+                  don't have the password won't be able to join.
+                </p>
+              </div>
+            </>
+          )}
+
           <div className="edit-password-container">
             <MainInput
               type="password"
@@ -335,18 +354,24 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               Confirm
             </MainButton>
           </div>
-          <div>
-            <p className="mb-16">Or maybe you'd rather delete it altogether.</p>
-            <DangerButton
-              onClick={() => {
-                setPassword(null);
-                setPasswordPopupVisible(false);
-                onNewAction(group);
-              }}
-            >
-              Remove Password
-            </DangerButton>
-          </div>
+          {channelData?.password && (
+            <div className="delete-password-container">
+              <h1 className="title-1 mb-16">Delete your password</h1>
+              <p className="mb-24">
+                If you choose to do so, the channel will become public and,
+                thus, its content will be visible to anyone.
+              </p>
+              <DangerButton
+                onClick={() => {
+                  setPassword(null);
+                  setPasswordPopupVisible(false);
+                  onNewAction(group);
+                }}
+              >
+                Remove Password
+              </DangerButton>
+            </div>
+          )}
         </PasswordModal>
       )}
     </>
