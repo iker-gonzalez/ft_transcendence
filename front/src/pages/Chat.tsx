@@ -122,19 +122,8 @@ const Chat: React.FC = () => {
     setChannelData(channelData);
   };
 
-  const [unreadMessages, setUnreadMessages] = useState<{
-    [key: string]: number;
-  }>(() => {
-    const savedUnreadMessages = localStorage.getItem('unreadMessages');
-    return savedUnreadMessages ? JSON.parse(savedUnreadMessages) : {};
-  });
-
   const [newMessageSent, setNewMessageSent] = useState(false);
 
-  useEffect(() => {
-    console.log('unread messages stored in local storage');
-    localStorage.setItem('unreadMessages', JSON.stringify(unreadMessages));
-  }, [unreadMessages]);
 
   useEffect(() => {
     if (isSocketConnected && socket) {
@@ -188,7 +177,6 @@ const Chat: React.FC = () => {
           allGroups={allGroups}
           handleUserClick={handleUserClick}
           handleGroupClick={handleGroupClick}
-          unreadMessages={unreadMessages}
           selectedUser={selectedUser}
           selectedGroup={selectedGroup}
           socket={socket}
