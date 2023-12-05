@@ -97,7 +97,7 @@ export class ChatChannelService {
       const conversationDTO = [];
       for (const message of conversationsChannel )
       {
-          conversationDTO.push(new ConversationMessageDTO(message, message.sender, null));
+          conversationDTO.push(new ConversationMessageDTO(message, message.sender, null, roomName));
       }
 
       const ownerIntra = await this.findUserIntraById(chatRoom.ownerId);
@@ -832,7 +832,8 @@ try{
         });
         
     // Echar usuario
-  //  await this.leaveUserFromChannel(channelRoom, banUserId);
+
+  //z  await this.leaveUserFromChannel(channelRoom, banUser Id);
   }
 catch(error){
     console.error("Error:", error);
