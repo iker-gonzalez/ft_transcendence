@@ -22,7 +22,6 @@ import MainInput from '../UI/MainInput';
 import MainSelect from '../UI/MainSelect';
 import ChatSidebarConvoList from './ChatSidebarConvoList';
 import { checkIfPasswordIsValid } from '../../utils/utils';
-import { stat } from 'fs';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -120,7 +119,6 @@ interface SidebarProps {
   allGroups: Group[] | null;
   handleUserClick: (user: User) => void;
   handleGroupClick: (group: Group) => void;
-  unreadMessages: { [key: string]: number };
   socket: Socket | null;
   channelData: ChannelData | null;
 }
@@ -132,7 +130,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   allGroups,
   handleUserClick,
   handleGroupClick,
-  unreadMessages,
   selectedUser,
   selectedGroup,
   socket,
@@ -441,7 +438,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 placeholder="Enter password"
                 required
               />
-              <button type="submit" onClick={() => console.log('Button clicked')}>Joinnnnnn</button>
+              <button type="submit" onClick={() => console.log('Button clicked')}>Join</button>
             </form>
           </Modal>
         )}
