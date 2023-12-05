@@ -20,9 +20,9 @@ import ChatMessageAreaHeaderChannelActions from './ChatMessageAreaHeaderChannelA
 interface ChatMessageAreaHeaderProps {
   user?: User | null;
   setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
   group?: Group | null;
   socket: Socket | null;
-  navigateToEmptyChat: () => void;
   updateUserSidebar: () => void;
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
   channelData: ChannelData | null;
@@ -64,9 +64,9 @@ const HeaderWrapper = styled.div`
 const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   user,
   setSelectedUser,
+  setSelectedGroup,
   group,
   socket,
-  navigateToEmptyChat,
   updateUserSidebar,
   onNewMessage,
   channelData,
@@ -154,7 +154,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   return (
     <HeaderWrapper>
       <ChatMessageAreaHeaderName user={user} channelData={channelData} />
-  
       {user && userData && (
         <ChatMessageAreaHeaderConvoActions
           user={user}
@@ -167,12 +166,12 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       {group && socket && (
         <ChatMessageAreaHeaderChannelActions
           group={group}
+          socket={socket}
           userData={userData}
           channelData={channelData}
           onNewAction={onNewAction}
           updateUserSidebar={updateUserSidebar}
-          socket={socket}
-          navigateToEmptyChat={navigateToEmptyChat}
+          setSelectedGroup={setSelectedGroup}
         />
       )}
       {showFriendProfile && friend && (

@@ -94,7 +94,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   users,
   setUsers,
   setMessages,
-  onNewAction
+  onNewAction,
 }) => {
   const { userData } = useUserData();
 
@@ -132,7 +132,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               setSelectedUser={setSelectedUser}
               group={selectedGroup}
               socket={socket}
-              navigateToEmptyChat={navigateToEmptyChat}
+              setSelectedGroup={setSelectedGroup}
               updateUserSidebar={updateUserSidebar}
               onNewMessage={handleNewMessage}
               channelData={channelData}
