@@ -133,7 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   selectedUser,
   selectedGroup,
   socket,
-  channelData
+  channelData,
 }) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
@@ -151,9 +151,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     null,
   );
 
-  const [selectedProtectedGroup, setSelectedProtectedGroup] = useState<Group | null>(null);
-
-  
+  const [selectedProtectedGroup, setSelectedProtectedGroup] =
+    useState<Group | null>(null);
 
   useEffect(() => {
     if (channelData) {
@@ -170,32 +169,34 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleJoinRoom = async (newGroup: Group, password: string) => {
     console.log('handleJoinRoom');
     if (newGroup.name.trim() !== '' && newGroup.name && socket) {
-        const payload = {
-          roomName: newGroup.name,
-          intraId: userData?.intraId,
-          type: newGroup.type,
-          password: password,
-        };
-        if (newGroup.type === 'PROTECTED') {
-          const passwordCheckResult = await checkChannelPassword(newGroup, password);
-          if (passwordCheckResult !== 200)
-          {
-            launchFlashMessage( 
-              `The password you entered is incorrect. Please try again.`,
-              FlashMessageLevel.ERROR,
-            );
-            return 1;
-          }
-        }
-          socket.emit('joinRoom', payload);
-          setPopupVisible(false);
+      const payload = {
+        roomName: newGroup.name,
+        intraId: userData?.intraId,
+        type: newGroup.type,
+        password: password,
+      };
+      if (newGroup.type === 'PROTECTED') {
+        const passwordCheckResult = await checkChannelPassword(
+          newGroup,
+          password,
+        );
+        if (passwordCheckResult !== 200) {
           launchFlashMessage(
-            `You have successfully joined the room ${newGroup.name}!`,
-            FlashMessageLevel.SUCCESS,
+            `The password you entered is incorrect. Please try again.`,
+            FlashMessageLevel.ERROR,
           );
-          return 0;
+          return 1;
+        }
+      }
+      socket.emit('joinRoom', payload);
+      setPopupVisible(false);
+      launchFlashMessage(
+        `You have successfully joined the room ${newGroup.name}!`,
+        FlashMessageLevel.SUCCESS,
+      );
+      return 0;
     }
-};
+  };
 
   const checkChannelPassword = async (group: Group, password: string) => {
     if (password.trim() === '') {
@@ -205,7 +206,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       );
       return -1;
     }
-    const status_code = await checkIfPasswordIsValid(group.name, password, channelData!.ownerIntra);
+    const status_code = await checkIfPasswordIsValid(
+      group.name,
+      password,
+      channelData!.ownerIntra,
+    );
     console.log('status_code:', status_code);
     return status_code;
   };
@@ -347,7 +352,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   />
                 )}
                 <MainButton
-                  onClick={ async () => {
+                  onClick={async () => {
                     if (!roomName) {
                       launchFlashMessage(
                         `Room name cannot be empty. Please choose a name.`,
@@ -438,7 +443,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                 placeholder="Enter password"
                 required
               />
-              <button type="submit" onClick={() => console.log('Button clicked')}>Join</button>
+              <button
+                type="submit"
+                onClick={() => console.log('Button clicked')}
+              >
+                Join
+              </button>
             </form>
           </Modal>
         )}
@@ -456,16 +466,18 @@ const Sidebar: React.FC<SidebarProps> = ({
           </TitleContainer>
           <List>
             {userGroups &&
-              userGroups.map((group) => (
-                <ListItem
-                  key={group.name}
-                  onClick={() => handleGroupClick(group)}
-                >
-                  {group.name}
-                  {group.type === 'PROTECTED' && <span> 🔐</span>}
-                  {group.type === 'PRIVATE' && <span> 🔒</span>}
-                </ListItem>
-              ))}
+              userGroups
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((group) => (
+                  <ListItem
+                    key={group.name}
+                    onClick={() => handleGroupClick(group)}
+                  >
+                    {group.name}
+                    {group.type === 'PROTECTED' && <span> 🔐</span>}
+                    {group.type === 'PRIVATE' && <span> 🔒</span>}
+                  </ListItem>
+                ))}
           </List>
         </UserList>
       </GradientBorder>
