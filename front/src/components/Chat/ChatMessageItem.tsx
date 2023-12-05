@@ -55,12 +55,11 @@ const WrapperLi = styled.li`
 const ChatMessageItem: React.FC<{
   message: DirectMessage;
   isRepeatedMessage: boolean;
-  key: string;
-}> = ({ message, isRepeatedMessage, key }): JSX.Element => {
+}> = ({ message, isRepeatedMessage }): JSX.Element => {
   return (
     <>
       <ScrollIntoViewIfNeeded>
-        <WrapperLi key={key}>
+        <WrapperLi>
           {!isRepeatedMessage && (
             <img src={message.senderAvatar} alt="" className="avatar" />
           )}
