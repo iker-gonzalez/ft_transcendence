@@ -24,7 +24,7 @@ type ChatMessageAreaHeaderChannelActionsProps = {
   onNewAction: (group: Group) => void;
   updateUserSidebar: () => void;
   socket: Socket;
-  navigateToEmptyChat: () => void;
+  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
 };
 
 const ChatMessageAreaHeaderChannelActions: React.FC<
@@ -36,7 +36,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   onNewAction,
   updateUserSidebar,
   socket,
-  navigateToEmptyChat,
+  setSelectedGroup,
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
   const [password, setPasswordInput] = useState('');
@@ -74,23 +74,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
       setChannelUsersInfo(channelData.usersInfo || []);
     }
   }, [group, channelData]);
-
-  const handleLeaveChannel = (roomName: string) => {
-    if (roomName.trim() !== '' && roomName && socket) {
-      const payload = {
-        roomName: roomName,
-        intraId: userData?.intraId,
-      };
-
-      socket.emit('leaveRoom', payload);
-
-      launchFlashMessage(
-        `You have successfully left the room ${roomName}!`,
-        FlashMessageLevel.SUCCESS,
-      );
-      navigateToEmptyChat();
-    }
-  };
 
   const kick = (intraId: number) => {
     console.log('kick');
@@ -167,10 +150,28 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     }
   };
 
-  const canSeeActions = () => {
+  const handleLeaveChannel = (roomName: string) => {
+    if (socket) {
+      const payload = {
+        roomName: roomName,
+        intraId: userData?.intraId,
+      };
+      socket.emit('leaveRoom', payload);
+
+      launchFlashMessage(
+        `You left the room ${roomName}!`,
+        FlashMessageLevel.SUCCESS,
+      );
+      setSelectedGroup(null);
+    }
+  };
+
+  const canSeeActions = (): boolean => {
     const isOwner = channelData?.ownerIntra === userData?.intraId;
-    const isAdmin = channelData?.adminsInfo?.some(
-      (admin: any) => admin.intra === userData?.intraId,
+    const isAdmin = Boolean(
+      channelData?.adminsInfo?.some(
+        (admin: any) => admin.intra === userData?.intraId,
+      ),
     );
 
     return isOwner || isAdmin;
@@ -322,7 +323,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
           updateUserSidebar();
         }}
       >
-        Leave channel
+        Leave
       </DangerButton>
     </>
   );
