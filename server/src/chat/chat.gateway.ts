@@ -118,11 +118,19 @@ async handleUnmuteUserDM(client, payload) {
         );
       } else {
         if (payload.type == 'PROTECTED')
-          await this.chatChannelservice.isPasswordCorrect(
+        {
+
+          if (!this.chatChannelservice.isPasswordCorrect(
             payload.roomName,
             payload.password,
-          );
-
+            ))
+            {
+              //! Mirar esto
+              // client.emit('joinedRoom', `Incorrect password ${payload.roomName}`);
+              // return;
+             throw new BadGatewayException('Cannot access to a private channel');
+            }
+          }
         if (payload.type == 'PRIVATE')
           throw new BadGatewayException('Cannot access to a private channel');
       }

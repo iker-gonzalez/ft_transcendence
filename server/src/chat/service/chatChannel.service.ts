@@ -10,6 +10,7 @@ import { ConversationMessageDTO } from '../dto/conversation-message.dto';
 import passport from 'passport';
 import { AllChannelInfo } from '../dto/all-channel-info.dto';
 import { IntraUsernameDTO } from '../dto/intra-username.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChatChannelService {
@@ -233,12 +234,14 @@ export class ChatChannelService {
     }
     else if (access == "PROTECTED")
     {
+      const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+      
       await this.prisma.chatRoom.create({
         data:{
           name: channelName,
           ownerId: ownerID,
           type: ChannelType.PROTECTED,
-          password: password,
+          password: hashedPassword,
         }
       })
     }
@@ -893,45 +896,7 @@ catch(error){
   /********************************************************** */
 
 // add password
-async addPasswordChannel(
-   channelRoom: string,
-   ownerId: string,
-   password: string,
- ): Promise<void> 
-{
-
-try{
-
-  if (!channelRoom || !ownerId || !password)
-  throw new BadRequestException ("channelRoom or ownerIntra or password  are null");
-
-  // Get el Channel
-  const foundChatRoom = await this.prisma.chatRoom.findFirst({
-    where: { name: channelRoom,},
-    include:{
-      users:true },});
-  if (!foundChatRoom)
-  throw new BadRequestException ("channelRoom not exist");
-
-  // Check permision
-  if (ownerId != foundChatRoom.ownerId)
-    throw new BadRequestException ("It is not the owner or admin of the channel, not premissions to do this");
-
-  // Buscar el ChatRoomUser por userId
- // const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
-  // Update the chat room
-  await this.prisma.chatRoom.update({
-    where: { id: foundChatRoom.id },
-    data: { password: password,
-            type: ChannelType.PROTECTED },
-  });
-  }
-catch(error){
-    console.error("Error:", error);
-  }
-}
 // change password
-
 // delete password
 async modifyPasswordAndTypeChannel(
   channelRoom: string,
@@ -959,11 +924,18 @@ try{
    throw new BadRequestException ("It is not the owner or admin of the channel, not premissions to do this");
 
  // Buscar el ChatRoomUser por userId
-// const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+ const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+ console.log("hashedPassword");
+ console.log(hashedPassword);
+ console.log("foundChatRoom.password");
+ console.log(foundChatRoom.password);
+ console.log("password");
+ console.log(password);
+
  // Update the chat room
  await this.prisma.chatRoom.update({
    where: { id: foundChatRoom.id },
-   data: { password: password,
+   data: { password: hashedPassword,
            type: type },
  });
  }
@@ -976,7 +948,7 @@ catch(error){
 async isPasswordCorrect(
   channelRoom: string,
   password: string,
-): Promise<void> 
+): Promise<boolean> 
 {
 
 try{
@@ -995,15 +967,18 @@ try{
 
  console.log(password);
  console.log(foundChatRoom.password);
- 
-if (foundChatRoom.password != password)
-throw new BadRequestException ("Incorrect password");
+ // Compara los hashes
+ const passwordsMatch = await bcrypt.compare(password, foundChatRoom.password);
+console.log(passwordsMatch);
+if (!passwordsMatch)
+  return false;
  }
 catch(error){
   throw new BadRequestException(error);
   
    console.error("Error:", error);
  }
+ return true;
 }
 // make private
 async addUserToPrivateChannel(userIdAdd: string, ownerId: string, channelName: string,
