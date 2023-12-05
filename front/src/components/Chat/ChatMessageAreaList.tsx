@@ -3,10 +3,12 @@ import styled from 'styled-components';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import ChatMessageItem from './ChatMessageItem';
 import User from '../../interfaces/chat-user.interface';
+import Group from '../../interfaces/chat-group.interface';
 
 type ChatMessageAreaListProps = {
   messages: DirectMessage[];
   selectedUser: User | null;
+  selectedGroup: Group | null;
 };
 
 const MessageList = styled.ul`
@@ -30,7 +32,9 @@ const EmpyStateDiv = styled.div`
 const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
   messages,
   selectedUser,
+  selectedGroup,
 }): JSX.Element => {
+  console.log('hola buenas');
   if (selectedUser?.isBlocked) {
     return (
       <EmpyStateDiv>
@@ -41,8 +45,30 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
       </EmpyStateDiv>
     );
   }
+  console.log('messagesss', messages);
+  let filteredMessages = messages;
+  console.log('hola buenas2');
+  
+  if (selectedUser) {
+    filteredMessages = messages.filter(
+      message => {
+        // console.log('message.senderIntraId: ', message.senderIntraId);
+        // console.log('message.receiverIntraId: ', message.receiverIntraId);
+        // console.log('selectedUser.intraId: ', selectedUser.intraId);
+        return (
+          selectedUser.intraId === message.senderIntraId ||
+          selectedUser.intraId === message.receiverIntraId
+        );
+      }
+    )
+  } else if (selectedGroup) {
+    filteredMessages = messages.filter(
+      // TODO: pending to include roomName in the channelMessage object when retrieving the messages of a channel
+      message => selectedGroup.name === message.roomName
+    );
+  }
 
-  if (messages.length === 0) {
+  if (filteredMessages.length === 0 || (!selectedUser && !selectedGroup)) {
     return (
       <EmpyStateDiv>
         <p>There are no messages to show</p>
@@ -50,15 +76,19 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
     );
   }
 
+  // console.log('selectedUser: ', selectedUser);
+  // console.log('selectedGroup: ', selectedGroup);
+  // console.log('filteredMessages: ', filteredMessages);
+
   return (
     <MessageList>
-      {messages.map((message, index) => {
+      {filteredMessages.map((message, index) => {
         return (
           <ChatMessageItem
             key={message.id}
             message={message}
             isRepeatedMessage={
-              messages[index - 1]?.senderName === message.senderName
+              filteredMessages[index - 1]?.senderName === message.senderName
             }
           />
         );
