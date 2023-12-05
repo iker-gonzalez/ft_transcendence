@@ -307,7 +307,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   return (
     <HeaderWrapper>
       <ChatMessageAreaHeaderName user={user} channelData={channelData} />
-
+  
       {user && userData && (
         <ChatMessageAreaHeaderConvoActions
           user={user}
@@ -342,14 +342,14 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                   if (channelUserInfo.intra === userData?.intraId) {
                     return null;
                   }
-
+  
                   const isUserMuted = mutedUsersIntraIds?.includes(
                     channelUserInfo.intra,
                   );
                   const isAdmin = adminUsersIntraIds?.includes(
                     channelUserInfo.intra,
                   );
-
+  
                   return (
                     <div key={channelUserInfo.intra}>
                       {channelUserInfo.intra !== channelOwnerIntraId && (
@@ -400,7 +400,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                     >
                       Set Password
                     </MainButtonStyled>
-
+  
                     {isPasswordPopupVisible && (
                       <Modal
                         dismissModalAction={() =>
@@ -426,15 +426,46 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
                     )}
                   </>
                 ) : channelData?.type === 'PROTECTED' ? (
-                  <MainButtonStyled
-                    onClick={() => {
-                      console.log('Unprotect button clicked');
-                      setPassword(null);
-                      onNewAction(group);
-                    }}
-                  >
-                    Remove Password
-                  </MainButtonStyled>
+                  <>
+                    <MainButtonStyled
+                      onClick={() => setPasswordPopupVisible(true)}
+                    >
+                      Modify or Remove Password
+                    </MainButtonStyled>
+  
+                    {isPasswordPopupVisible && (
+                      <Modal
+                        dismissModalAction={() =>
+                          setPasswordPopupVisible(false)
+                        }
+                      >
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPasswordInput(e.target.value)}
+                        />
+                        <button
+                          onClick={() => {
+                            setPassword(password);
+                            setPasswordInput('');
+                            setPasswordPopupVisible(false);
+                            onNewAction(group);
+                          }}
+                        >
+                          Modify Password
+                        </button>
+                        <button
+                          onClick={() => {
+                            setPassword(null);
+                            setPasswordPopupVisible(false);
+                            onNewAction(group);
+                          }}
+                        >
+                          Remove Password
+                        </button>
+                      </Modal>
+                    )}
+                  </>
                 ) : null}
               </>
             )}
