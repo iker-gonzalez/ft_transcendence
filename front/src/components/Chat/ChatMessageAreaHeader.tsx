@@ -41,19 +41,6 @@ const HeaderWrapper = styled.div`
   margin-bottom: 20px;
   border-bottom: 1px solid white;
 
-  .user-info-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-    }
-  }
-
   .actions-container {
     display: flex;
     align-items: center;
