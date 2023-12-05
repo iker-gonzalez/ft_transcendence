@@ -10,6 +10,7 @@ import {
   darkBgColor,
   darkerBgColor,
   primaryAccentColor,
+  primaryLightColor,
 } from '../../constants/color-tokens';
 import MainButton from '../UI/MainButton';
 import RoundImg from '../UI/RoundImage';
@@ -21,6 +22,7 @@ import { useFlashMessages } from '../../context/FlashMessagesContext';
 import ChatSidebarConvoList from './ChatSidebarConvoList';
 import { checkIfPasswordIsValid } from '../../utils/utils';
 import ChatSidebarNewChannelModal from './ChatSidebarNewChannelModal';
+import ChatSidebarChannelList from './ChatSidebarChannelList';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -62,7 +64,7 @@ const PlusSign = styled.button`
   align-items: center;
 
   font-size: 28px;
-  color: ${primaryAccentColor};
+  color: ${primaryLightColor};
   background: none;
   cursor: pointer;
   margin-left: 10px;
@@ -363,19 +365,12 @@ const Sidebar: React.FC<SidebarProps> = ({
             </PlusSign>
           </TitleContainer>
           <List>
-            {userGroups &&
-              userGroups
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((group) => (
-                  <ListItem
-                    key={group.name}
-                    onClick={() => handleGroupClick(group)}
-                  >
-                    {group.name}
-                    {group.type === 'PROTECTED' && <span> 🔐</span>}
-                    {group.type === 'PRIVATE' && <span> 🔒</span>}
-                  </ListItem>
-                ))}
+            {userGroups && (
+              <ChatSidebarChannelList
+                userGroups={userGroups}
+                handleGroupClick={handleGroupClick}
+              />
+            )}
           </List>
         </UserList>
       </GradientBorder>
