@@ -48,23 +48,21 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
   console.log('messagesss', messages);
   let filteredMessages = messages;
   console.log('hola buenas2');
-  
+
   if (selectedUser) {
-    filteredMessages = messages.filter(
-      message => {
-        // console.log('message.senderIntraId: ', message.senderIntraId);
-        // console.log('message.receiverIntraId: ', message.receiverIntraId);
-        // console.log('selectedUser.intraId: ', selectedUser.intraId);
-        return (
-          selectedUser.intraId === message.senderIntraId ||
-          selectedUser.intraId === message.receiverIntraId
-        );
-      }
-    )
+    filteredMessages = messages.filter((message) => {
+      // console.log('message.senderIntraId: ', message.senderIntraId);
+      // console.log('message.receiverIntraId: ', message.receiverIntraId);
+      // console.log('selectedUser.intraId: ', selectedUser.intraId);
+      return (
+        selectedUser.intraId === message.senderIntraId ||
+        selectedUser.intraId === message.receiverIntraId
+      );
+    });
   } else if (selectedGroup) {
     filteredMessages = messages.filter(
       // TODO: pending to include roomName in the channelMessage object when retrieving the messages of a channel
-      message => selectedGroup.name === message.roomName
+      (message) => selectedGroup.name === message.roomName,
     );
   }
 
@@ -84,13 +82,14 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
     <MessageList>
       {filteredMessages.map((message, index) => {
         return (
-          <ChatMessageItem
-            key={message.id}
-            message={message}
-            isRepeatedMessage={
-              filteredMessages[index - 1]?.senderName === message.senderName
-            }
-          />
+          <div key={`${message.id}-${index}`}>
+            <ChatMessageItem
+              message={message}
+              isRepeatedMessage={
+                messages[index - 1]?.senderName === message.senderName
+              }
+            />
+          </div>
         );
       })}
     </MessageList>
