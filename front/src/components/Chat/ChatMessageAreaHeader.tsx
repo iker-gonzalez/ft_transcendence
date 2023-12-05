@@ -26,8 +26,7 @@ import { nanoid } from 'nanoid';
 import SecondaryButton from '../UI/SecondaryButton';
 import DangerButton from '../UI/DangerButton';
 import { useMessageData } from '../../context/ChatDataContext';
-import { stat } from 'fs';
-import { on } from 'events';
+import ChatMessageAreaHeaderName from './ChatMessageAreaHeaderName';
 
 interface ChatMessageAreaHeaderProps {
   user?: User | null;
@@ -309,17 +308,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   return (
     <HeaderWrapper>
-      {user && (
-        <div className="user-info-container">
-          <img src={user.avatar} alt={user.username} className="avatar" />
-          <p className="title-2">
-            {user?.username || channelData?.roomName || ''}{' '}
-            {user?.isBlocked && <span>🚫</span>}
-            {channelData?.type === 'PROTECTED' && <span> 🔐</span>}
-            {channelData?.type === 'PRIVATE' && <span> 🔒</span>}
-          </p>
-        </div>
-      )}
+      <ChatMessageAreaHeaderName user={user} channelData={channelData} />
       {user && (
         <div className="actions-container">
           <MainButton
@@ -498,7 +487,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
             updateUserSidebar();
           }}
         >
-          Leave Channel
+          Leave channel
         </DangerButton>
       )}
       {showFriendProfile && friend && (
