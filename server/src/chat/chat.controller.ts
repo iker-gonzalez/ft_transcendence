@@ -64,7 +64,7 @@ export class ChatController {
       try{
         const userId1 = await this.chatDMService.findUserIdByIntraId(parseInt(userIntraId1, 10));
         const userId2 = await this.chatDMService.findUserIdByIntraId(parseInt(userIntraId2, 10));
-        return this.chatDMService.getDMBetweenUsers(userId1, userId2);
+        return await  this.chatDMService.getDMBetweenUsers(userId1, userId2);
       }
       catch (error) { 
           console.error("Error:", error); 
@@ -88,7 +88,7 @@ export class ChatController {
       console.log("getAllUserDMWith get");
       console.log(userId);
         try{
-        return this.chatDMService.getAllUserDMWith(userId);
+        return await this.chatDMService.getAllUserDMWith(userId);
       } 
         catch (error) {
             console.error("Error:", error);
