@@ -6,7 +6,7 @@ import {
   primaryLightColor,
 } from '../../constants/color-tokens';
 
-const Button = styled.button`
+const SecondaryButton = styled.button`
   padding: 10px 25px;
   background-color: transparent;
   color: ${primaryLightColor};
@@ -27,4 +27,4 @@ const Button = styled.button`
   }
 `;
 
-export default Button;
+export default SecondaryButton;
