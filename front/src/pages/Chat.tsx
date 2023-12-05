@@ -138,44 +138,10 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     if (isSocketConnected && socket) {
-      const privateMessageListener = (messageData: any) => {
+      const privateMessageListener = (messageData: string) => {
         const parsedData = JSON.parse(messageData);
+        setMessages((prevMessages) => [...prevMessages, parsedData]);
         console.log('messageData', messageData);
-        const newMessage: DirectMessage = {
-          id: messageData.id,
-          senderIntraId: parsedData.senderId,
-          receiverIntraId: parsedData.receiverId,
-          senderName: messageData.senderName,
-          senderAvatar: messageData.senderAvatar,
-          content: parsedData.content,
-          timestamp: Date.now().toString(),
-        };
-        if (
-          parsedData.senderId !== selectedUser?.intraId &&
-          !(
-            typeof parsedData.senderId === 'undefined' &&
-            typeof selectedUser?.intraId === 'undefined'
-          )
-        ) {
-          try {
-            setUnreadMessages((prevUnreadMessages) => {
-              const updatedUnreadMessages = {
-                ...prevUnreadMessages,
-                [parsedData.senderId]:
-                  (prevUnreadMessages[parsedData.senderId] || 0) + 1,
-              };
-              console.log('añade mensaje a local storage');
-              localStorage.setItem(
-                'unreadMessages',
-                JSON.stringify(updatedUnreadMessages),
-              );
-
-              return updatedUnreadMessages;
-            });
-          } catch (error) {
-            console.log(error);
-          }
-        }
       };
 
       const groupMessageListener = (messageData: any) => {
