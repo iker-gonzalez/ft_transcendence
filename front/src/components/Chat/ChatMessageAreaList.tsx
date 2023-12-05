@@ -34,6 +34,7 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
   selectedUser,
   selectedGroup,
 }): JSX.Element => {
+  console.log('hola buenas');
   if (selectedUser?.isBlocked) {
     return (
       <EmpyStateDiv>
@@ -44,16 +45,22 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
       </EmpyStateDiv>
     );
   }
-
+  console.log('messagesss', messages);
   let filteredMessages = messages;
-
+  console.log('hola buenas2');
+  
   if (selectedUser) {
     filteredMessages = messages.filter(
-      message =>
-        // TODO: pending to include senderIntraId and receiverIntraId in the DM between two usersendpoint
-        selectedUser.intraId === message.senderIntraId ||
-        selectedUser.intraId === message.receiverIntraId
-    );
+      message => {
+        // console.log('message.senderIntraId: ', message.senderIntraId);
+        // console.log('message.receiverIntraId: ', message.receiverIntraId);
+        // console.log('selectedUser.intraId: ', selectedUser.intraId);
+        return (
+          selectedUser.intraId === message.senderIntraId ||
+          selectedUser.intraId === message.receiverIntraId
+        );
+      }
+    )
   } else if (selectedGroup) {
     filteredMessages = messages.filter(
       // TODO: pending to include roomName in the channelMessage object when retrieving the messages of a channel
@@ -69,9 +76,9 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
     );
   }
 
-  console.log('selectedUser: ', selectedUser);
-  console.log('selectedGroup: ', selectedGroup);
-  console.log('filteredMessages: ', filteredMessages);
+  // console.log('selectedUser: ', selectedUser);
+  // console.log('selectedGroup: ', selectedGroup);
+  // console.log('filteredMessages: ', filteredMessages);
 
   return (
     <MessageList>
