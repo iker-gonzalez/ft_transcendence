@@ -109,14 +109,16 @@ async handleUnmuteUserDM(client, payload) {
       const channelExist = await this.chatChannelservice.channelExist(
         payload.roomName,
       );
-      if (!channelExist) {
+      if (!channelExist) 
+      {
         await this.chatChannelservice.createChannel(
           userId,
           payload.roomName,
           payload.type,
           payload.password,
         );
-      } else {
+      }
+      else {
         if (payload.type == 'PROTECTED')
         {
 
@@ -170,7 +172,9 @@ async handleUnmuteUserDM(client, payload) {
       const userId = await this.chatDMservice.findUserIdByIntraId(
         payload.intraId,
       );
+      console.log("userId");
       console.log(userId);
+      console.log(payload.roomName);
       await this.chatChannelservice.addChannelMessageToUser(
         payload.roomName,
         userId,
@@ -178,22 +182,21 @@ async handleUnmuteUserDM(client, payload) {
       );
 
       // Enviar el mensaje a todos los clientes en la sala
-      this.server.to(payload.roomName).emit('message', payload);
+      //this.server.to(payload.roomName).emit('message', payload);
 
-      /*
-    const chatRoom= await this.chatChannelservice.obtenerUsuariosDeChatRoom(payload.roomName);
+      
+    const chatRoom= await this.chatChannelservice. getUsersFromChatRoom(payload.roomName);
     console.log("jhkjhkjh");
 
     for (const usuario of chatRoom) {
 
-      // Aquí puedes realizar operaciones con cada usuario
-      console.log(usuario.userId);
+      // Enviar mensage a todos los usuarios del grupo
       const userIntra = await this.chatDMservice.findUserIntraById(usuario.userId);
-      this.server.emit(`privateMessageReceived/${payload.userIntra}`,
+      this.server.emit(`message/${userIntra}`,
       JSON.stringify(payload))
 
     }
-    */
+    
     } catch (error) {
       console.error('Error:', error);
     }
