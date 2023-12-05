@@ -434,7 +434,6 @@ export class ChatController {
     @Get(':password/:roomName/isPasswordCorrect') // Define la ruta para los parámetros userId1 y userId2
     @ApiParam({ name: 'password' })
     @ApiParam({ name: 'roomName' })
-    @ApiBody({ description: 'JSON body with the ownerIntra', type: RoomOwnerIntraDTO })
     @ApiOperation({
       summary: swaggerConstants.chat.isPasswordCorrect.summary, 
     })
