@@ -124,7 +124,7 @@ async handleUnmuteUserDM(client, payload) {
           );
 
         if (payload.type == 'PRIVATE')
-          throw new BadGatewayException('Cannot access to a private chaner');
+          throw new BadGatewayException('Cannot access to a private channel');
       }
       await this.chatChannelservice.addUserToChannel(userId, payload.roomName);
 
