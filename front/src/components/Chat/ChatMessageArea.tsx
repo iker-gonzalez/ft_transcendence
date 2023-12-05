@@ -145,6 +145,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               <ChatMessageAreaList
                 messages={messages}
                 selectedUser={selectedUser}
+                selectedGroup={selectedGroup}
               />
             </div>
             <div>

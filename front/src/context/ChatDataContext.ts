@@ -89,6 +89,8 @@ export const useMessageData = () => {
       },
     );
     const data = await response.json();
+    // here receiverIntraId and senderIntraId will be incorporated to the message object
+    console.log('la data suprema:', data);
     return data;
   };
 
