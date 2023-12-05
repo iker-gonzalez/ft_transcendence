@@ -151,35 +151,37 @@ const UserProfileFriends: React.FC = (): JSX.Element => {
               <>
                 <PaginatedSection numberOfItems={2}>
                   <ul className="friends-list">
-                    {userFriends.map((friend) => {
-                      return (
-                        <li key={friend.intraId} className="user-item">
-                          <div className="user-info">
-                            <RoundImg
-                              src={friend.avatar}
-                              alt=""
-                              className="avatar"
-                            />
-                            <div>
-                              <h3 className="title-2 mb-8">
-                                {friend.username}
-                              </h3>
-                              <p className="small mb-8">{friend.email}</p>
+                    {userFriends
+                      .sort((a, b) => a.username.localeCompare(b.username))
+                      .map((friend) => {
+                        return (
+                          <li key={friend.intraId} className="user-item">
+                            <div className="user-info">
+                              <RoundImg
+                                src={friend.avatar}
+                                alt=""
+                                className="avatar"
+                              />
+                              <div>
+                                <h3 className="title-2 mb-8">
+                                  {friend.username}
+                                </h3>
+                                <p className="small mb-8">{friend.email}</p>
+                              </div>
                             </div>
-                          </div>
-                          <UserStatusInfo intraId={friend.intraId} />
-                          <MainButton
-                            onClick={() => setFriendProfileToShow(friend)}
-                          >
-                            {window.innerWidth > parseInt(sm) ? (
-                              'View profile'
-                            ) : (
-                              <span aria-label="view-profile">👤</span>
-                            )}
-                          </MainButton>
-                        </li>
-                      );
-                    })}
+                            <UserStatusInfo intraId={friend.intraId} />
+                            <MainButton
+                              onClick={() => setFriendProfileToShow(friend)}
+                            >
+                              {window.innerWidth > parseInt(sm) ? (
+                                'View profile'
+                              ) : (
+                                <span aria-label="view-profile">👤</span>
+                              )}
+                            </MainButton>
+                          </li>
+                        );
+                      })}
                   </ul>
                 </PaginatedSection>
                 {friendProfileToShow && (
