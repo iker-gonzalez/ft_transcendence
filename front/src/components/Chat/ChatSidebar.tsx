@@ -441,7 +441,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 placeholder="Enter password"
                 required
               />
-              <button type="submit" onClick={() => console.log('Button clicked')}>Joinnnnnn</button>
+              <button type="submit" onClick={() => console.log('Button clicked')}>Join</button>
             </form>
           </Modal>
         )}
