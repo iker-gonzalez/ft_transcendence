@@ -21,6 +21,7 @@ import { useFlashMessages } from '../../context/FlashMessagesContext';
 import ChatSidebarConvoList from './ChatSidebarConvoList';
 import { checkIfPasswordIsValid } from '../../utils/utils';
 import ChatSidebarNewChannelModal from './ChatSidebarNewChannelModal';
+import ChatSidebarChannelList from './ChatSidebarChannelList';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -363,19 +364,12 @@ const Sidebar: React.FC<SidebarProps> = ({
             </PlusSign>
           </TitleContainer>
           <List>
-            {userGroups &&
-              userGroups
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((group) => (
-                  <ListItem
-                    key={group.name}
-                    onClick={() => handleGroupClick(group)}
-                  >
-                    {group.name}
-                    {group.type === 'PROTECTED' && <span> 🔐</span>}
-                    {group.type === 'PRIVATE' && <span> 🔒</span>}
-                  </ListItem>
-                ))}
+            {userGroups && (
+              <ChatSidebarChannelList
+                userGroups={userGroups}
+                handleGroupClick={handleGroupClick}
+              />
+            )}
           </List>
         </UserList>
       </GradientBorder>

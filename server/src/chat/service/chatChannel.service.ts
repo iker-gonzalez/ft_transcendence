@@ -32,8 +32,10 @@ export class ChatChannelService {
         select: {
           room: {
             select: {
+              id: true,
               name: true,
-              // Otros campos de ChatRoom que desees incluir
+              type: true,
+              ownerId: true,
             },
           },
         },
