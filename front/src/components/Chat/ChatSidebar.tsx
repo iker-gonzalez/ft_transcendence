@@ -10,6 +10,7 @@ import {
   darkBgColor,
   darkerBgColor,
   primaryAccentColor,
+  primaryLightColor,
 } from '../../constants/color-tokens';
 import MainButton from '../UI/MainButton';
 import RoundImg from '../UI/RoundImage';
@@ -63,7 +64,7 @@ const PlusSign = styled.button`
   align-items: center;
 
   font-size: 28px;
-  color: ${primaryAccentColor};
+  color: ${primaryLightColor};
   background: none;
   cursor: pointer;
   margin-left: 10px;
