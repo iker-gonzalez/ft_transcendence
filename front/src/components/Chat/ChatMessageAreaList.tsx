@@ -55,6 +55,7 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
       {messages.map((message, index) => {
         return (
           <ChatMessageItem
+            key={message.id}
             message={message}
             isRepeatedMessage={
               messages[index - 1]?.senderName === message.senderName
