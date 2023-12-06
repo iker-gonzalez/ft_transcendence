@@ -8,6 +8,8 @@ import { useFlashMessages } from '../../context/FlashMessagesContext';
 import styled from 'styled-components';
 import { CHANNEL_TYPES } from '../../constants/shared';
 import MainPasswordInput from '../UI/MainPasswordInput';
+import ContrastPanel from '../UI/ContrastPanel';
+import { darkBgColor } from '../../constants/color-tokens';
 
 type ChatSidebarNewChannelModalProps = {
   roomName: string;
@@ -106,7 +108,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
 
   return (
     <WrapperDiv>
-      <div>
+      <ContrastPanel $backgroundColor={darkBgColor}>
         <h1 className="title-1 mb-24">Create a new channel</h1>
         <div className="mb-16">
           <p className="mb-8">
@@ -164,10 +166,13 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
             </MainButton>
           </div>
         )}
-      </div>
+      </ContrastPanel>
 
       {allGroups && (
-        <div className="existing-channels-container">
+        <ContrastPanel
+          $backgroundColor={darkBgColor}
+          className="existing-channels-container"
+        >
           <p className="title-1 mb-16">Or join an existing one</p>
           <p className="mb-16">
             Some channels are public and can be joined freely. Some others are
@@ -230,7 +235,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
               Join
             </MainButton>
           </div>
-        </div>
+        </ContrastPanel>
       )}
     </WrapperDiv>
   );
