@@ -138,7 +138,7 @@ export function drawSparksTrail(
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   if (!ctx) return;
 
-  const lastSparks = sparksTrail.slice(-100);
+  const lastSparks = sparksTrail.slice(-20);
 
   lastSparks.forEach((sparksTrail, index) => {
     const opacity = (index / lastSparks.length) * opacityGrade;
