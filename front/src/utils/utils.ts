@@ -263,3 +263,26 @@ export function getUsernameFromIntraId(intraId: number): string {
   else
     return 'Unknown';
 }
+
+export async function inviteFriendToChannel(
+  channelName: string,
+  friendIntraId: number,
+  ownerIntraId: number,
+): Promise<number> {
+  if (channelName && friendIntraId && ownerIntraId) {
+    console.log('channelName:', channelName);
+    console.log('friendIntraId:', friendIntraId);
+    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${friendIntraId}/${channelName}/1/setUserToPrivateChannel`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify({
+          ownerIntra: ownerIntraId
+      }),
+    });
+    return response.status;
+  }
+  return 0;
+}
