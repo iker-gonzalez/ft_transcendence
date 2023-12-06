@@ -128,7 +128,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
             .includes(channelUserInfo.intra);
 
           return (
-            <option value={channelUserInfo.intra}>
+            <option value={channelUserInfo.intra} key={channelUserInfo.intra}>
               {channelUserInfo.username}
             </option>
             //   <div key={channelUserInfo.intra}>
