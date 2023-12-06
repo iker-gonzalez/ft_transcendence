@@ -9,7 +9,6 @@ import GradientBorder from '../UI/GradientBorder';
 import {
   darkBgColor,
   darkerBgColor,
-  primaryAccentColor,
   primaryLightColor,
 } from '../../constants/color-tokens';
 import MainButton from '../UI/MainButton';
@@ -23,6 +22,7 @@ import ChatSidebarConvoList from './ChatSidebarConvoList';
 import { checkIfPasswordIsValid } from '../../utils/utils';
 import ChatSidebarNewChannelModal from './ChatSidebarNewChannelModal';
 import ChatSidebarChannelList from './ChatSidebarChannelList';
+import ChatSidebarJoinProtectedModal from './ChatSidebarJoinProtectedModal';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -322,34 +322,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
         {isPasswordPopupVisible && (
           <Modal dismissModalAction={() => setPasswordPopupVisible(false)}>
-            <h2>Enter Password</h2>
-            <form
-              onSubmit={(e) => {
-                console.log('is form submitting?');
-                console.log('selectedGroup: ', selectedProtectedGroup);
-                e.preventDefault();
-                if (selectedProtectedGroup) {
-                  console.log('entra aqui');
-                  handleJoinRoom(selectedProtectedGroup, password);
-                }
-                setPassword('');
-                setPasswordPopupVisible(false);
-              }}
-            >
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                required
-              />
-              <button
-                type="submit"
-                onClick={() => console.log('Button clicked')}
-              >
-                Join
-              </button>
-            </form>
+            <ChatSidebarJoinProtectedModal
+              selectedProtectedGroup={selectedGroup}
+              handleJoinRoom={handleJoinRoom}
+              setPasswordPopupVisible={setPasswordPopupVisible}
+            />
           </Modal>
         )}
         <UserList>
