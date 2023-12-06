@@ -10,6 +10,8 @@ import MainSelect from '../UI/MainSelect';
 import DangerButton from '../UI/DangerButton';
 import ContrastPanel from '../UI/ContrastPanel';
 import { darkBgColor } from '../../constants/color-tokens';
+import SecondaryButton from '../UI/SecondaryButton';
+import styled from 'styled-components';
 
 type ChatMessageAreaHeaderUsersModalProps = {
   channelData: ChannelData;
@@ -25,6 +27,19 @@ type ChatMessageAreaHeaderUsersModalProps = {
   onNewAction: (selectedGroup: Group) => void;
   group: Group;
 };
+
+const UserManagementContainer = styled.div`
+  > * {
+    width: 100%;
+  }
+
+  .actions-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+`;
 
 const ChatMessageAreaHeaderUsersModal: React.FC<
   ChatMessageAreaHeaderUsersModalProps
@@ -52,6 +67,9 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
   };
 
   const mute = async (muteIntraId: number, isMuted: number) => {
+    setPopupVisible(false);
+    onNewAction(group);
+
     const status_code = await patchMuteUser(
       channelData!.roomName || '',
       muteIntraId,
@@ -112,59 +130,17 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
         className="mb-24"
       >
         <option>Choose a member</option>
-        {channelData.usersInfo.map((channelUserInfo, index) => {
-          // Do not show current user
-          if (channelUserInfo.intra === userData?.intraId) {
-            return null;
-          }
-
-          const isUserMuted = channelData.mutedInfo
-            .map((user) => user.intra)
-            .includes(channelUserInfo.intra);
-
-          const adminUsers = channelData?.adminsInfo || [];
-          const isAdmin = adminUsers
-            .map((user) => user.intra)
-            .includes(channelUserInfo.intra);
-
-          return (
-            <option value={channelUserInfo.intra} key={channelUserInfo.intra}>
-              {channelUserInfo.username}
-            </option>
-            //   <div key={channelUserInfo.intra}>
-            //     {channelUserInfo.intra !== channelData.ownerIntra && (
-            //       <>
-            //         {channelUserInfo.username}
-            //         {/*If there is time, change to svg*/}
-            //         <MainButton
-            //           onClick={() => {
-            //             setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1);
-            //             setPopupVisible(false);
-            //             onNewAction(group);
-            //           }}
-            //         >
-            //           {isAdmin ? 'Remove Admin' : 'Make Admin'}
-            //         </MainButton>
-            //         <MainButton
-            //           onClick={() => {
-            //             mute(channelUserInfo.intra, isUserMuted ? 0 : 1);
-            //             setPopupVisible(false);
-            //             onNewAction(group);
-            //           }}
-            //         >
-            //           {isUserMuted ? 'Unmute' : 'Mute'}
-            //         </MainButton>
-            //         <MainButton onClick={() => kick(channelUserInfo.intra)}>
-            //           Kick
-            //         </MainButton>
-            //         <MainButton onClick={() => ban(channelUserInfo.intra)}>
-            //           Ban
-            //         </MainButton>
-            //       </>
-            //     )}
-            //   </div>
-          );
-        })}
+        {channelData.usersInfo
+          .filter(
+            (channelUserInfo) => channelUserInfo.intra !== userData?.intraId,
+          )
+          .map((channelUserInfo) => {
+            return (
+              <option value={channelUserInfo.intra} key={channelUserInfo.intra}>
+                {channelUserInfo.username}
+              </option>
+            );
+          })}
       </MainSelect>
       {(() => {
         const selectedUserData = channelData.usersInfo.find(
@@ -172,50 +148,83 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
         );
 
         if (selectedUserData) {
+          const isUserMuted = channelData.mutedInfo
+            .map((user) => user.intra)
+            .includes(selectedUserData.intra);
+
           const adminUsers = channelData?.adminsInfo || [];
           const isAdmin = adminUsers
             .map((user) => user.intra)
             .includes(selectedUserData.intra);
 
           return (
-            <ContrastPanel $backgroundColor={darkBgColor}>
-              <h2 className="title-3 mb-8">Admin privileges</h2>
-              <p className="mb-16">
-                If you decide to make {selectedUserData.username} an admin, they
-                will be able to manage the other members of this channel
-              </p>
-              <div>
-                {isAdmin ? (
-                  <DangerButton
+            <UserManagementContainer>
+              <ContrastPanel $backgroundColor={darkBgColor} className="mb-16">
+                <h2 className="title-3 mb-8">Admin privileges</h2>
+                <p className="mb-16">
+                  If you decide to make {selectedUserData.username} an admin,
+                  they will be able to manage the other members of this channel
+                </p>
+                <div>
+                  {isAdmin ? (
+                    <DangerButton
+                      onClick={() => {
+                        setAdmin(
+                          selectedUserData.intra,
+                          isAdmin,
+                          selectedUserData.username,
+                        );
+                        setPopupVisible(false);
+                        onNewAction(group);
+                      }}
+                    >
+                      Revoke admin role
+                    </DangerButton>
+                  ) : (
+                    <MainButton
+                      onClick={() => {
+                        setAdmin(
+                          selectedUserData.intra,
+                          isAdmin,
+                          selectedUserData.username,
+                        );
+                        setPopupVisible(false);
+                        onNewAction(group);
+                      }}
+                    >
+                      Make admin
+                    </MainButton>
+                  )}
+                </div>
+              </ContrastPanel>
+              <ContrastPanel
+                $backgroundColor={darkBgColor}
+                className="user-actions-container"
+              >
+                <h2 className="title-3 mb-8">
+                  Issues with {selectedUserData.username}?
+                </h2>
+                <p className="mb-16">
+                  We hope it won't be necessary, but you have the option of
+                  silencing, kicking, or bannning {selectedUserData.username}.
+                </p>
+                <div className="actions-container">
+                  <SecondaryButton
                     onClick={() => {
-                      setAdmin(
-                        selectedUserData.intra,
-                        isAdmin,
-                        selectedUserData.username,
-                      );
-                      setPopupVisible(false);
-                      onNewAction(group);
+                      mute(selectedUserData.intra, isUserMuted ? 0 : 1);
                     }}
                   >
-                    Revoke admin role
-                  </DangerButton>
-                ) : (
-                  <MainButton
-                    onClick={() => {
-                      setAdmin(
-                        selectedUserData.intra,
-                        isAdmin,
-                        selectedUserData.username,
-                      );
-                      setPopupVisible(false);
-                      onNewAction(group);
-                    }}
-                  >
-                    Make admin
+                    {isUserMuted ? 'Unmute' : 'Mute'}
+                  </SecondaryButton>
+                  <MainButton onClick={() => kick(selectedUserData.intra)}>
+                    Kick
                   </MainButton>
-                )}
-              </div>
-            </ContrastPanel>
+                  <DangerButton onClick={() => ban(selectedUserData.intra)}>
+                    Ban
+                  </DangerButton>
+                </div>
+              </ContrastPanel>
+            </UserManagementContainer>
           );
         }
 
