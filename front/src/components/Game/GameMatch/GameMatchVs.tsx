@@ -311,7 +311,9 @@ const GameMatchVs: React.FC<GameMatchVsProps> = ({
             cannotActivatePowerUps={!isPlayer1}
           />
         )}
-        {!showCanvasChildren && !opponentLeft && !gameEnd && <GameControls />}
+        {!showCanvasChildren && !opponentLeft && !gameEnd && (
+          <GameControls isPlayer1={isPlayer1} />
+        )}
         {gameEnd && <GameMatchEndGameAction />}
       </CenteredLayout>
       {showAnimation && (
