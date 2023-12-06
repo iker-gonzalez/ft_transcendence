@@ -2,6 +2,7 @@ export default interface DirectMessage {
   id: string;
   senderIntraId: number;
   receiverIntraId: number;
+  receiverName: string;
   senderName: string;
   senderAvatar: string;
   content: string;
