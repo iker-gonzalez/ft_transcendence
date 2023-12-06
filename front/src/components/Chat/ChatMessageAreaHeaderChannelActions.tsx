@@ -8,7 +8,7 @@ import Group from '../../interfaces/chat-group.interface';
 import { Socket } from 'socket.io-client';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
-import { patchChannelPassword, setAdminIntra } from '../../utils/utils';
+import { patchChannelPassword, setAdminIntra, inviteFriendToChannel } from '../../utils/utils';
 import styled from 'styled-components';
 import MainPasswordInput from '../UI/MainPasswordInput';
 import Badge from '../UI/Badge';
@@ -87,13 +87,38 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   );
 
   const { userFriends, fetchFriendsList } = useUserFriends();
-  const handleInvitePopUp = async () => {
+  const triggerInvitePopUp = async () => {
     if (userFriends.length === 0) {
       await fetchFriendsList();
     }
     setFriendsToInvite(userFriends);
     setInviteModalVisible(true);
     console.log('invite');
+  };
+
+  // channelName: string,
+  // friendIntraId: number,
+  // ownerIntraId: number,
+
+  const handleInvite = async (userAddIntra: number) => {
+    console.log('friend to invite intraId', userAddIntra);
+    const status_code = await inviteFriendToChannel(
+      channelData!.roomName || '',
+      userAddIntra,
+      channelOwnerIntraId || 0,
+    );
+    if (status_code === 200) {
+      launchFlashMessage(
+        `You have successfully invited the user ${userAddIntra}.`,
+        FlashMessageLevel.SUCCESS,
+      );
+    } else {
+      launchFlashMessage(
+        `Something went wrong. Try again later.`,
+        FlashMessageLevel.ERROR,
+      );
+    }
+    setInviteModalVisible(false);
   };
 
   const [isInviteModalVisible, setInviteModalVisible] = useState(false);
@@ -154,6 +179,8 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     return isOwner() || isAdmin();
   };
 
+  console.log('channelData. type', channelData?.type);
+
   return (
     <>
       <WrapperDiv>
@@ -174,8 +201,10 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         )}
         {canSeeActions() && (
           <div className="main-actions-container">
-            <MainButton onClick={handleInvitePopUp}>Invite</MainButton>
-            {isInviteModalVisible && (
+            {channelData?.type === 'PRIVATE' && (
+            <MainButton onClick={triggerInvitePopUp}>Invite</MainButton>
+            )}
+            {isInviteModalVisible && channelData?.type === 'PRIVATE' && (
               <Modal
                 dismissModalAction={() => {
                   setInviteModalVisible(false);
@@ -194,7 +223,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                       <p>{friend.username}</p>
                       <MainButton
                         onClick={() => {
-                          // handle the invite action
+                          handleInvite(friend.intraId);
                         }}
                       >
                         Invite
