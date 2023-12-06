@@ -175,6 +175,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                   setPopupVisible={setPopupVisible}
                   onNewAction={onNewAction}
                   group={group}
+                  socket={socket}
                 />
               </Modal>
             )}

@@ -12,6 +12,7 @@ import ContrastPanel from '../UI/ContrastPanel';
 import { darkBgColor } from '../../constants/color-tokens';
 import SecondaryButton from '../UI/SecondaryButton';
 import styled from 'styled-components';
+import { Socket } from 'socket.io-client';
 
 type ChatMessageAreaHeaderUsersModalProps = {
   channelData: ChannelData;
@@ -26,6 +27,7 @@ type ChatMessageAreaHeaderUsersModalProps = {
   setPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
   onNewAction: (selectedGroup: Group) => void;
   group: Group;
+  socket: Socket;
 };
 
 const UserManagementContainer = styled.div`
@@ -51,14 +53,24 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
   setPopupVisible,
   onNewAction,
   group,
+  socket
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
 
   const [selectedUser, setSelectedUser] = React.useState<number | null>(null);
 
   const kick = (intraId: number) => {
-    console.log('kick');
-    //socket
+    
+    const payload = {
+      roomName: group.name,
+      adminId: userData?.intraId,
+      intraId: intraId
+    };
+    socket.emit('kickUser', payload);
+    launchFlashMessage(
+      `You have successfully kicked the user ${intraId}.`,
+      FlashMessageLevel.SUCCESS,
+    );
   };
 
   const ban = (intraId: number) => {
@@ -216,7 +228,11 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                   >
                     {isUserMuted ? 'Unmute' : 'Mute'}
                   </SecondaryButton>
-                  <MainButton onClick={() => kick(selectedUserData.intra)}>
+                  <MainButton onClick={() => {
+                    kick(selectedUserData.intra);
+                    setPopupVisible(false);
+                  }
+                  }>
                     Kick
                   </MainButton>
                   <DangerButton onClick={() => ban(selectedUserData.intra)}>
