@@ -8,14 +8,11 @@ import Group from '../../interfaces/chat-group.interface';
 import { Socket } from 'socket.io-client';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
-import {
-  patchChannelPassword,
-  patchMuteUser,
-  setAdminIntra,
-} from '../../utils/utils';
+import { patchChannelPassword, setAdminIntra } from '../../utils/utils';
 import styled from 'styled-components';
 import MainPasswordInput from '../UI/MainPasswordInput';
 import Badge from '../UI/Badge';
+import ChatMessageAreaHeaderUsersModal from './ChatMessageAreaHeaderUsersModal';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -80,46 +77,11 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     null,
   );
 
-  const adminUsers = channelData?.adminsInfo || [];
-  const adminUsersIntraIds = adminUsers.map((user) => user.intra);
-
   useEffect(() => {
     if (channelData) {
       setChannelOwnerIntraId(channelData.ownerIntra || null);
     }
   }, [group, channelData]);
-
-  const kick = (intraId: number) => {
-    console.log('kick');
-    //socket
-  };
-
-  const ban = (intraId: number) => {
-    console.log('ban');
-    //socket
-  };
-
-  const mute = async (muteIntraId: number, isMuted: number) => {
-    const status_code = await patchMuteUser(
-      channelData!.roomName || '',
-      muteIntraId,
-      channelOwnerIntraId || 0,
-      isMuted,
-    );
-    if (status_code === 200) {
-      launchFlashMessage(
-        `You have successfully ${
-          isMuted ? 'muted' : 'unmuted'
-        } the user ${muteIntraId}.`,
-        FlashMessageLevel.SUCCESS,
-      );
-    } else {
-      launchFlashMessage(
-        `Something went wrong. Try again later.`,
-        FlashMessageLevel.ERROR,
-      );
-    }
-  };
 
   const setPassword = async (password: string | null) => {
     const status_code = await patchChannelPassword(
@@ -132,28 +94,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         `You have successfully ${
           password ? 'set' : 'removed'
         } the password for the channel ${channelData!.roomName || ''}.`,
-        FlashMessageLevel.SUCCESS,
-      );
-    } else {
-      launchFlashMessage(
-        `Something went wrong. Try again later.`,
-        FlashMessageLevel.ERROR,
-      );
-    }
-  };
-
-  const setAdmin = async (intraId: number, isAdmin: number) => {
-    const status_code = await setAdminIntra(
-      channelData!.roomName || '',
-      intraId,
-      channelOwnerIntraId || 0,
-      isAdmin,
-    );
-    if (status_code === 200) {
-      launchFlashMessage(
-        `You have successfully ${
-          isAdmin ? 'set' : 'removed'
-        } the admin role for the user ${intraId}.`,
         FlashMessageLevel.SUCCESS,
       );
     } else {
@@ -226,62 +166,15 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                   setPopupVisible(false);
                 }}
               >
-                {/* Display the user intra ids here */}
-                {channelData.usersInfo.map((channelUserInfo) => {
-                  // Skip the logged-in user
-                  if (channelUserInfo.intra === userData?.intraId) {
-                    return null;
-                  }
-
-                  const mutedUsersIntraIds = channelData.mutedInfo.map(
-                    (user) => user.intra,
-                  );
-                  const isUserMuted = mutedUsersIntraIds.includes(
-                    channelUserInfo.intra,
-                  );
-                  const isAdmin = adminUsersIntraIds?.includes(
-                    channelUserInfo.intra,
-                  );
-
-                  return (
-                    <div key={channelUserInfo.intra}>
-                      {channelUserInfo.intra !== channelData.ownerIntra && (
-                        <>
-                          {channelUserInfo.username}
-                          {/*If there is time, change to svg*/}
-                          <MainButton
-                            onClick={() => {
-                              setAdmin(channelUserInfo.intra, isAdmin ? 0 : 1);
-                              setPopupVisible(false);
-                              onNewAction(group);
-                            }}
-                          >
-                            {isAdmin ? 'Remove Admin' : 'Make Admin'}
-                          </MainButton>
-                          <MainButton
-                            onClick={() => {
-                              mute(channelUserInfo.intra, isUserMuted ? 0 : 1);
-                              setPopupVisible(false);
-                              onNewAction(group);
-                            }}
-                          >
-                            {isUserMuted ? 'Unmute' : 'Mute'}
-                          </MainButton>
-                          <MainButton
-                            onClick={() => kick(channelUserInfo.intra)}
-                          >
-                            Kick
-                          </MainButton>
-                          <MainButton
-                            onClick={() => ban(channelUserInfo.intra)}
-                          >
-                            Ban
-                          </MainButton>
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
+                <ChatMessageAreaHeaderUsersModal
+                  channelData={channelData}
+                  userData={userData}
+                  setAdminIntra={setAdminIntra}
+                  channelOwnerIntraId={channelOwnerIntraId}
+                  setPopupVisible={setPopupVisible}
+                  onNewAction={onNewAction}
+                  group={group}
+                />
               </Modal>
             )}
             {group && channelOwnerIntraId === userData?.intraId && (
