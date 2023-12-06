@@ -79,9 +79,10 @@ export const useChatData = () => {
 export const useMessageData = () => {
   const { userData } = useUserData();
 
-  const fetchUserMessages = async (user: User) => {
+  const fetchUserMessages = async (userIntraId: number) => {
+    //if (!userIntraId) return [];
     const response = await fetchAuthorized(
-      `${getBaseUrl()}/chat/${userData?.intraId}/${user.intraId}/DM`,
+      `${getBaseUrl()}/chat/${userData?.intraId}/${userIntraId}/DM`,
       /* temporary until endpoint is fixed */ {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
