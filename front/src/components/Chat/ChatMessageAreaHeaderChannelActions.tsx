@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import MainPasswordInput from '../UI/MainPasswordInput';
 import Badge from '../UI/Badge';
 import ChatMessageAreaHeaderUsersModal from './ChatMessageAreaHeaderUsersModal';
+import { CHANNEL_TYPES } from '../../constants/shared';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -179,37 +180,11 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
             )}
             {group && channelOwnerIntraId === userData?.intraId && (
               <>
-                {channelData?.type === 'PUBLIC' ? (
-                  <>
-                    <MainButton onClick={() => setPasswordPopupVisible(true)}>
-                      Set password
-                    </MainButton>
-
-                    {isPasswordPopupVisible && (
-                      <Modal
-                        dismissModalAction={() =>
-                          setPasswordPopupVisible(false)
-                        }
-                      >
-                        <input
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPasswordInput(e.target.value)}
-                        />
-                        <button
-                          onClick={() => {
-                            setPassword(password);
-                            setPasswordInput('');
-                            setPasswordPopupVisible(false);
-                            onNewAction(group);
-                          }}
-                        >
-                          Submit
-                        </button>
-                      </Modal>
-                    )}
-                  </>
-                ) : channelData?.type === 'PROTECTED' ? (
+                {channelData?.type === CHANNEL_TYPES.PUBLIC ? (
+                  <MainButton onClick={() => setPasswordPopupVisible(true)}>
+                    Set password
+                  </MainButton>
+                ) : channelData?.type === CHANNEL_TYPES.PROTECTED ? (
                   <>
                     <MainButton onClick={() => setPasswordPopupVisible(true)}>
                       Edit password
@@ -282,7 +257,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                   onNewAction(group);
                 }}
               >
-                Remove Password
+                Remove password
               </DangerButton>
             </div>
           )}
