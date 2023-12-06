@@ -41,6 +41,24 @@ const WrapperDiv = styled.div`
     gap: 8px;
   }
 
+  .password-containers-wrapper {
+    margin: 0 auto;
+    width: fit-content;
+  }
+
+  .password-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .confirm-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+  }
+
   .existing-channels-container {
     margin-top: 32px;
   }
@@ -67,8 +85,15 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
   const { launchFlashMessage } = useFlashMessages();
   const [selectedExistingGroup, setSelectedExistingGroup] =
     React.useState<Group | null>(null);
+  const [confirmationPassword, setConfirmationPassword] = React.useState('');
 
   const onJoiningNewChannel = async (): Promise<void> => {
+    if (password !== confirmationPassword) {
+      launchFlashMessage(`Passwords do not match.`, FlashMessageLevel.ERROR);
+      setConfirmationPassword('');
+      return;
+    }
+
     if (!roomName) {
       launchFlashMessage(
         `Room name cannot be empty. Please choose a name.`,
@@ -90,6 +115,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
     setRoomName('');
     setGroupNature(CHANNEL_TYPES.PUBLIC);
     setPassword('');
+    setConfirmationPassword('');
   };
 
   const onJoiningExistingChannel = async (group: Group) => {
@@ -152,18 +178,27 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
           )}
         </div>
         {groupNature === CHANNEL_TYPES.PROTECTED && (
-          <div className="form-container">
-            <MainPasswordInput
-              value={password}
-              onChange={(e: any) => setPassword(e.target.value)}
-              placeholder="Enter password"
-            />
-            <MainButton
-              onClick={onJoiningNewChannel}
-              disabled={!isRoomNameValid}
-            >
-              Create
-            </MainButton>
+          <div className="password-containers-wrapper">
+            <div className="password-container mb-8">
+              <MainPasswordInput
+                value={password}
+                onChange={(e: any) => setPassword(e.target.value)}
+                placeholder="Enter password"
+              />
+            </div>
+            <div className="confirm-container">
+              <MainPasswordInput
+                value={confirmationPassword}
+                onChange={(e: any) => setConfirmationPassword(e.target.value)}
+                placeholder="Enter password"
+              />
+              <MainButton
+                onClick={onJoiningNewChannel}
+                disabled={!isRoomNameValid}
+              >
+                Create
+              </MainButton>
+            </div>
           </div>
         )}
       </ContrastPanel>
