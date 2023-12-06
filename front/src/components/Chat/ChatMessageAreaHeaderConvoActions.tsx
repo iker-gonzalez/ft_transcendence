@@ -1,7 +1,6 @@
 import React from 'react';
 import DangerButton from '../UI/DangerButton';
 import MainButton from '../UI/MainButton';
-import SecondaryButton from '../UI/SecondaryButton';
 import User from '../../interfaces/chat-user.interface';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import { createNewDirectMessage } from '../../utils/utils';
@@ -15,19 +14,12 @@ type ChatMessageAreaHeaderConvoActionsProps = {
   user: User;
   userData: UserData;
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
-  setShowFriendProfile: React.Dispatch<React.SetStateAction<boolean>>;
   block: (username: string, intraId: number, block: number) => void;
 };
 
 const ChatMessageAreaHeaderConvoActions: React.FC<
   ChatMessageAreaHeaderConvoActionsProps
-> = ({
-  user,
-  userData,
-  onNewMessage,
-  setShowFriendProfile,
-  block,
-}): JSX.Element => {
+> = ({ user, userData, onNewMessage, block }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
 
   return (
@@ -65,12 +57,6 @@ const ChatMessageAreaHeaderConvoActions: React.FC<
           >
             Challenge
           </MainButton>
-          <SecondaryButton
-            disabled={user.isBlocked}
-            onClick={() => setShowFriendProfile(true)}
-          >
-            Profile
-          </SecondaryButton>
           <DangerButton
             onClick={() =>
               block(user.username, user.intraId, user.isBlocked ? 0 : 1)
