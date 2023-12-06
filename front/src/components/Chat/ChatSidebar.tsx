@@ -24,6 +24,7 @@ import ChatSidebarNewChannelModal from './ChatSidebarNewChannelModal';
 import ChatSidebarChannelList from './ChatSidebarChannelList';
 import ChatSidebarJoinProtectedModal from './ChatSidebarJoinProtectedModal';
 import { useNavigate } from 'react-router-dom';
+import ChatSidebarUpdate from '../../interfaces/chat-sidebar-update.interface';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -153,6 +154,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [channelOwnerIntraId, setChannelOwnerIntraId] = useState<number | null>(
     null,
   );
+  const [wasSectionUpdated, setWasSectionUpdated] =
+    useState<ChatSidebarUpdate>(null);
 
   const [selectedProtectedGroup, setSelectedProtectedGroup] =
     useState<Group | null>(null);
@@ -245,6 +248,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               users={users}
               handleUserClick={handleUserClick}
               updateUserSidebar={updateUserSidebar}
+              wasSectionUpdated={wasSectionUpdated}
+              setWasSectionUpdated={setWasSectionUpdated}
             />
           </List>
         </UserList>
@@ -361,6 +366,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               <ChatSidebarChannelList
                 userGroups={userGroups}
                 handleGroupClick={handleGroupClick}
+                wasSectionUpdated={wasSectionUpdated}
+                setWasSectionUpdated={setWasSectionUpdated}
               />
             )}
           </List>
