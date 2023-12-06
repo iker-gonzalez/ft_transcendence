@@ -12,6 +12,8 @@ import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
 import { ChannelData } from '../../interfaces/chat-channel-data.interface';
 import ChatMessageAreaList from './ChatMessageAreaList';
+import ChatAnimationData from '../../assets/lotties/chat.json';
+import Lottie from 'lottie-react';
 
 interface ChatMessageAreaProps {
   selectedUser: User | null;
@@ -64,13 +66,15 @@ const CenteredContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
-`;
 
-const StyledParagraph = styled.p`
-  font-size: 24px;
-  font-weight: bold;
-  color: white;
-  text-align: center;
+  > p {
+    text-align: center;
+  }
+
+  .chat-lottie {
+    width: 100%;
+    max-width: 400px;
+  }
 `;
 
 /**
@@ -117,11 +121,6 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     }
   };
 
-  const navigateToEmptyChat = () => {
-    setSelectedUser(null);
-    setSelectedGroup(null);
-  };
-
   return (
     <MessageAreaContainer>
       <GradientBorder className="gradient-border">
@@ -159,9 +158,10 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
           </WrapperDiv>
         ) : (
           <CenteredContainer>
-            <StyledParagraph>
-              Chat with your friends or participate in our community groups!
-            </StyledParagraph>
+            <p className="title-2 mb-16">
+              Chat with your friends or participate in our community channels!
+            </p>
+            <Lottie animationData={ChatAnimationData} className="chat-lottie" />
           </CenteredContainer>
         )}
       </GradientBorder>

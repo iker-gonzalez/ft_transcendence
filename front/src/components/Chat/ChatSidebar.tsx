@@ -23,6 +23,7 @@ import { checkIfPasswordIsValid } from '../../utils/utils';
 import ChatSidebarNewChannelModal from './ChatSidebarNewChannelModal';
 import ChatSidebarChannelList from './ChatSidebarChannelList';
 import ChatSidebarJoinProtectedModal from './ChatSidebarJoinProtectedModal';
+import { useNavigate } from 'react-router-dom';
 
 const SidebarContainer = styled.div`
   flex-basis: 30%;
@@ -136,6 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   socket,
   channelData,
 }) => {
+  const navigate = useNavigate();
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
   const [activeModalContent, setActiveModalContent] = useState<
@@ -258,10 +260,29 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             {activeModalContent === 'directMessages' ? (
               <>
-                <h1 className="title-1 mb-16">Send new message</h1>
-                <p className="mb-24">Chat with one of your friends</p>
+                <h1 className="title-1 mb-8">New direct message</h1>
+                {userFriendsConverted.length > 0 ? (
+                  <p className="mb-24">
+                    Start chatting now with one of your friends.
+                  </p>
+                ) : (
+                  <>
+                    <p className="mb-24">
+                      You can only chat with users in your friends list.
+                      <br />
+                      Go to your profile and find some friends to chat with!
+                    </p>
+                    <MainButton
+                      onClick={() => {
+                        navigate('/profile');
+                      }}
+                    >
+                      Go to profile
+                    </MainButton>
+                  </>
+                )}
                 <List>
-                  {userFriendsConverted.length > 0 ? (
+                  {userFriendsConverted.length > 0 &&
                     userFriendsConverted
                       .sort((a, b) => a.username.localeCompare(b.username))
                       .map((friend) => (
@@ -289,13 +310,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             Chat
                           </MainButton>
                         </ListItem>
-                      ))
-                  ) : (
-                    <p>
-                      It seems you do not have any friends yet. Go to your
-                      profile and find some friends to chat with!
-                    </p>
-                  )}
+                      ))}
                 </List>
               </>
             ) : (
