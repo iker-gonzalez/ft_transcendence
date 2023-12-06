@@ -74,8 +74,16 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
   };
 
   const ban = (intraId: number) => {
-    console.log('ban');
-    //socket
+    const payload = {
+      roomName: group.name,
+      adminId: userData?.intraId,
+      intraId: intraId
+    };
+    socket.emit('banUser', payload);
+    launchFlashMessage(
+      `You have successfully banned the user ${intraId}.`,
+      FlashMessageLevel.SUCCESS,
+    );
   };
 
   const mute = async (muteIntraId: number, isMuted: number) => {
@@ -231,11 +239,17 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                   <MainButton onClick={() => {
                     kick(selectedUserData.intra);
                     setPopupVisible(false);
+                    onNewAction(group);
                   }
                   }>
                     Kick
                   </MainButton>
-                  <DangerButton onClick={() => ban(selectedUserData.intra)}>
+                  <DangerButton onClick={() => {
+                    ban(selectedUserData.intra);
+                    setPopupVisible(false);
+                    onNewAction(group);
+                  }
+                  }>
                     Ban
                   </DangerButton>
                 </div>
