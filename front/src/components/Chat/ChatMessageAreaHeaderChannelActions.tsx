@@ -14,8 +14,8 @@ import {
   setAdminIntra,
 } from '../../utils/utils';
 import styled from 'styled-components';
-import MainInput from '../UI/MainInput';
 import MainPasswordInput from '../UI/MainPasswordInput';
+import Badge from '../UI/Badge';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -33,6 +33,11 @@ const WrapperDiv = styled.div`
   justify-content: flex-end;
   align-items: center;
   gap: 8px;
+
+  .admin-label {
+    margin-right: auto;
+    margin-left: 12px;
+  }
 
   .main-actions-container {
     display: flex;
@@ -175,20 +180,36 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     }
   };
 
-  const canSeeActions = (): boolean => {
-    const isOwner = channelData?.ownerIntra === userData?.intraId;
-    const isAdmin = Boolean(
+  const isOwner = () => channelData?.ownerIntra === userData?.intraId;
+  const isAdmin = () =>
+    Boolean(
       channelData?.adminsInfo?.some(
         (admin: any) => admin.intra === userData?.intraId,
       ),
     );
 
-    return isOwner || isAdmin;
+  const canSeeActions = (): boolean => {
+    return isOwner() || isAdmin();
   };
 
   return (
     <>
       <WrapperDiv>
+        {(isAdmin() || isOwner()) && (
+          <Badge className="admin-label">
+            <p>
+              {(() => {
+                if (isAdmin()) {
+                  return 'Admin';
+                } else if (isOwner()) {
+                  return 'Owner';
+                } else {
+                  return 'Admin + Owner';
+                }
+              })()}
+            </p>
+          </Badge>
+        )}
         {canSeeActions() && (
           <div className="main-actions-container">
             <MainButton
