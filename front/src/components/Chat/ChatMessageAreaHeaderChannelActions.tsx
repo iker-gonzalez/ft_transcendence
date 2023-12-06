@@ -21,6 +21,8 @@ import { CHANNEL_TYPES } from '../../constants/shared';
 import { useUserFriends } from '../../context/UserDataContext';
 import User from '../../interfaces/chat-user.interface';
 import SecondaryButton from '../UI/SecondaryButton';
+import MainSelect from '../UI/MainSelect';
+import { primaryColor } from '../../constants/color-tokens';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -54,6 +56,24 @@ const WrapperDiv = styled.div`
 
     button {
       white-space: nowrap;
+    }
+  }
+`;
+
+const FriendInvitationModal = styled(Modal)`
+  .friend-invitation-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    img {
+      height: 38px;
+      width: 38px;
+      object-fit: cover;
+
+      border: 1px solid ${primaryColor};
+      border-radius: 5px;
     }
   }
 `;
@@ -98,7 +118,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     }
     setFriendsToInvite(userFriends);
     setInviteModalVisible(true);
-    console.log('invite');
   };
 
   // channelName: string,
@@ -128,6 +147,9 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
 
   const [isInviteModalVisible, setInviteModalVisible] = useState(false);
   const [friendsToInvite, setFriendsToInvite] = useState<User[]>([]); // replace User with your user type
+  const [selectedFriendToInvite, setSelectedFriendToInvite] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     if (channelData) {
@@ -210,32 +232,54 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               <MainButton onClick={triggerInvitePopUp}>Invite</MainButton>
             )}
             {isInviteModalVisible && channelData?.type === 'PRIVATE' && (
-              <Modal
+              <FriendInvitationModal
                 dismissModalAction={() => {
                   setInviteModalVisible(false);
                 }}
               >
-                <h1>Invite Friends</h1>
-                {friendsToInvite
-                  .filter(
-                    (friend) =>
-                      !channelData?.usersInfo.some(
-                        (user) => user.username === friend.username,
-                      ),
-                  )
-                  .map((friend) => (
-                    <div key={friend.intraId}>
-                      <p>{friend.username}</p>
-                      <MainButton
-                        onClick={() => {
-                          handleInvite(friend.intraId);
-                        }}
-                      >
-                        Invite
-                      </MainButton>
-                    </div>
-                  ))}
-              </Modal>
+                <h1 className="title-1 mb-8">Invite friends to channel</h1>
+                <p className="mb-24">
+                  Select a friend to invite them to this channel.
+                </p>
+                <div className="friend-invitation-form">
+                  {(() => {
+                    const selectFriendData = friendsToInvite.find(
+                      (friend) => friend.intraId === selectedFriendToInvite,
+                    );
+
+                    if (selectFriendData) {
+                      return <img src={selectFriendData.avatar} alt="" />;
+                    }
+                  })()}
+                  <MainSelect
+                    onChange={(e) => {
+                      setSelectedFriendToInvite(+e.target.value);
+                    }}
+                  >
+                    <option>Select a friend</option>
+                    {friendsToInvite
+                      .filter(
+                        (friend) =>
+                          !channelData?.usersInfo.some(
+                            (user) => user.username === friend.username,
+                          ),
+                      )
+                      .map((friend) => (
+                        <option key={friend.intraId} value={friend.intraId}>
+                          <p>{friend.username}</p>
+                        </option>
+                      ))}
+                  </MainSelect>
+                  <MainButton
+                    onClick={() => {
+                      if (selectedFriendToInvite)
+                        handleInvite(selectedFriendToInvite);
+                    }}
+                  >
+                    Invite
+                  </MainButton>
+                </div>
+              </FriendInvitationModal>
             )}
             <SecondaryButton
               onClick={() => {
