@@ -43,7 +43,6 @@ const ChatMessageAreaHeaderName: React.FC<ChatMessageAreaHeaderNameProps> = ({
     return (
       <WrapperDiv>
         <p className="title-2">
-          {channelData.roomName}{' '}
           {(() => {
             switch (channelData.type) {
               case 'PUBLIC':
@@ -55,7 +54,8 @@ const ChatMessageAreaHeaderName: React.FC<ChatMessageAreaHeaderNameProps> = ({
               default:
                 return null;
             }
-          })()}
+          })()}{' '}
+          {channelData.roomName}
         </p>
       </WrapperDiv>
     );
