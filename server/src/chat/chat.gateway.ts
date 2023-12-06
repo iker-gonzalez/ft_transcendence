@@ -247,7 +247,7 @@ async handleUnmuteUserDM(client, payload) {
         payload.intraId,
       );
       const addminId = await this.chatDMservice.findUserIdByIntraId(
-        payload.addAdminId,
+        payload.adminId,
       );
       await this.chatChannelservice.banUserInChannel(
         payload.roomName,
@@ -295,3 +295,4 @@ async handleUnmuteUserDM(client, payload) {
     }
   }
 }
+q
