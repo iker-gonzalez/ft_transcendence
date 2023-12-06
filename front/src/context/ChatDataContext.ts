@@ -8,7 +8,7 @@ export const useChatData = () => {
   const { userData } = useUserData();
 
   const fetchDirectMessageUsers = async () => {
-    if (!userData) return [];
+    if (!userData?.intraId) return [];
 
     const response = await fetchAuthorized(
       `${getBaseUrl()}/chat/${userData.intraId}/DM`,
