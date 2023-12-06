@@ -14,8 +14,6 @@ import {
 import {
   InitializeCanvasImages,
   countDownToStart,
-  drawRect,
-  drawText,
   initializeCanvasImages,
   initializeEventListeners,
   initializeSocketLogic,
@@ -29,7 +27,6 @@ import {
   INetData,
   ISounds,
   IUserData,
-  RenderColor,
 } from './game_pong.interfaces';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
@@ -41,10 +38,7 @@ const fps: number = 30;
 let computedFps: number = (1000 / fps) * 2;
 let computedFpsSoloMode: number = computedFps * 0.55;
 let computedFpsMultiMode: number = computedFps * 1;
-let matchFinish: boolean = false;
 export const matchPoints: number = 5;
-let countDown: number = 3;
-let isFirstRun: boolean = true;
 
 type GameLoopFunctionParams = {
   canvas: HTMLCanvasElement;
@@ -69,7 +63,8 @@ export async function gameLoop({
   powerUps,
 }: GameLoopFunctionParams) {
   // Reset state when a new game starts
-  matchFinish = false;
+  let countDown: number = 3;
+  let matchFinish = false;
   const startedAt: Date = new Date();
 
   console.log('theme is', theme);
@@ -120,11 +115,8 @@ export async function gameLoop({
   );
 
   console.log('Is Ball Frozen? ', isBallFrozen);
-  if (isFirstRun) {
-    countDownToStart(countDown, canvas, sounds);
-    isFirstRun = false;
-  }
-  
+  countDownToStart(countDown, canvas, sounds);
+
   // Abort game if the user closes the tab
   onAbortGame(socket, sessionId, isPlayer1);
 
@@ -147,7 +139,6 @@ export async function gameLoop({
       canvasImages,
       thickness,
       theme,
-      isFirstRun,
       countDown,
       powerUps,
     });
@@ -170,6 +161,8 @@ export async function gameLoop({
     canvasImages,
     theme,
     powerUps,
+    countDown,
+    matchFinish,
   });
 }
 
@@ -193,6 +186,8 @@ type GameFunctionParams = {
   canvasImages: InitializeCanvasImages;
   theme: GameTheme;
   powerUps: any;
+  countDown: number;
+  matchFinish: boolean;
 };
 
 function game({
@@ -212,6 +207,8 @@ function game({
   canvasImages,
   theme,
   powerUps,
+  countDown,
+  matchFinish,
 }: GameFunctionParams) {
   // Clean up if one of the players leaves the game
   const isAbortedMatch = true;
@@ -227,9 +224,7 @@ function game({
       userData: usersData.user1,
       sounds,
       isAbortedMatch,
-      isFirstRun,
       countDown,
-      isBallFrozen,
     });
   });
   socket.on(`gameAborted/user2/${sessionId}`, () => {
@@ -244,9 +239,7 @@ function game({
       userData: usersData.user2,
       sounds,
       isAbortedMatch,
-      isFirstRun,
       countDown,
-      isBallFrozen,
     });
   });
 
@@ -287,9 +280,7 @@ function game({
             player: user1,
             userData: usersData.user1,
             sounds,
-            isFirstRun,
             countDown,
-            isBallFrozen,
           });
           // Then of bot
           // Delay is required by the server to process the data
@@ -303,9 +294,7 @@ function game({
               player: user2,
               userData: botUserData,
               sounds,
-              isFirstRun,
               countDown,
-              isBallFrozen,
             });
           }, 100);
           matchFinish = true;
@@ -319,12 +308,6 @@ function game({
           }),
         );
       }
-
-      // console.log('Is Ball Frozen? ', isBallFrozen);
-      // if (isFirstRun) {
-      //   countDownToStart(countDown, canvas);
-      //   isFirstRun = false;
-      // }
 
       requestAnimationFrame(function () {
         game({
@@ -344,6 +327,8 @@ function game({
           canvasImages,
           theme,
           powerUps,
+          countDown,
+          matchFinish,
         });
       });
     },
