@@ -126,7 +126,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         if (user) {
           // Fetch the user's messages again
           // in case user navigated away when they first blocked
-          const directMessages: DirectMessage[] = await fetchUserMessages(user);
+          const directMessages: DirectMessage[] = await fetchUserMessages(user.intraId);
           setMessages(directMessages);
         }
       }

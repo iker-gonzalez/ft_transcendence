@@ -4,11 +4,14 @@ import DirectMessage from '../../interfaces/chat-message.interface';
 import ChatMessageItem from './ChatMessageItem';
 import User from '../../interfaces/chat-user.interface';
 import Group from '../../interfaces/chat-group.interface';
+import UserData from '../../interfaces/user-data.interface';
+// import getUsernameFromIntraId from '../../utils/utils';
 
 type ChatMessageAreaListProps = {
   messages: DirectMessage[];
   selectedUser: User | null;
   selectedGroup: Group | null;
+  userData: UserData | null;
 };
 
 const MessageList = styled.ul`
@@ -33,6 +36,7 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
   messages,
   selectedUser,
   selectedGroup,
+  userData
 }): JSX.Element => {
   console.log('hola buenas');
   if (selectedUser?.isBlocked) {
@@ -46,17 +50,19 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
     );
   }
   console.log('messagesss', messages);
+  console.log('selectedUser: ', selectedUser);
   let filteredMessages = messages;
-  console.log('hola buenas2');
 
   if (selectedUser) {
     filteredMessages = messages.filter((message) => {
+      // console.log('message: ', message);
       // console.log('message.senderIntraId: ', message.senderIntraId);
       // console.log('message.receiverIntraId: ', message.receiverIntraId);
       // console.log('selectedUser.intraId: ', selectedUser.intraId);
+      // console.log('userData?.intraId: ', userData?.intraId);
       return (
-        selectedUser.intraId === message.senderIntraId ||
-        selectedUser.intraId === message.receiverIntraId
+        selectedUser.username === message.senderName ||
+        selectedUser.username === message.receiverName
       );
     });
   } else if (selectedGroup) {
@@ -66,7 +72,7 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
     );
   }
 
-  if (filteredMessages.length === 0 || (!selectedUser && !selectedGroup)) {
+  if (filteredMessages.length === 0) {
     return (
       <EmpyStateDiv>
         <p>There are no messages to show</p>
@@ -74,7 +80,7 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
     );
   }
 
-  // console.log('selectedUser: ', selectedUser);
+  console.log('selectedUser: ', selectedUser);
   // console.log('selectedGroup: ', selectedGroup);
   // console.log('filteredMessages: ', filteredMessages);
 
