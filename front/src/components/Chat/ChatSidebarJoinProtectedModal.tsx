@@ -20,11 +20,12 @@ const ChatSidebarJoinProtectedModal: React.FC<
   handleJoinRoom,
   setPasswordPopupVisible,
 }): JSX.Element => {
+  
   const [password, setPassword] = useState('');
 
   const onJoiningProtectedChannel = () => {
     console.log('is form submitting?');
-    console.log('selectedGroup: ', selectedProtectedGroup);
+    console.log('selectedGroup: ', selectedProtectedGroup); // esta llegando vacio
     if (selectedProtectedGroup) {
       console.log('entra aqui');
       handleJoinRoom(selectedProtectedGroup, password);

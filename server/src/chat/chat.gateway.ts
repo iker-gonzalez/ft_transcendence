@@ -220,12 +220,14 @@ async handleUnmuteUserDM(client, payload) {
 
   @SubscribeMessage('kickUser')
   async handleKickUser(client: Socket, payload) {
+    console.log('----kickUser event-----');
+    console.log('payload:', payload);
     try {
       const userId = await this.chatDMservice.findUserIdByIntraId(
         payload.intraId,
       );
       const addminId = await this.chatDMservice.findUserIdByIntraId(
-        payload.addAdminId,
+        payload.adminId,
       );
       await this.chatChannelservice.kickUserInChannel(
         payload.roomName,
