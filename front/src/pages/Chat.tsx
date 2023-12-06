@@ -136,6 +136,7 @@ const Chat: React.FC = () => {
         const directMessages: DirectMessage[] = await fetchUserMessages(parsedData.senderIntraId);
         setMessages(directMessages);
         console.log('messageData', messageData);
+        updateUserSidebar();
       };
 
       const groupMessageListener = (messageData: string) => {
