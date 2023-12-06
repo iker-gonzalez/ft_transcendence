@@ -186,7 +186,7 @@ export default function GameMatchSolo(): JSX.Element {
             onPowerUpsChange={setSelectedPowerUps}
           />
         )}
-        {!showMainCta && !gameEnd && <GameControls />}
+        {!showMainCta && !gameEnd && <GameControls isPlayer1={true} />}
       </CenteredLayout>
       {showAnimation && (
         <GameMatchConfettiAnimation
