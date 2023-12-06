@@ -7,10 +7,15 @@ import {
 } from '../../constants/color-tokens';
 import Group from '../../interfaces/chat-group.interface';
 import { CHANNEL_TYPES } from '../../constants/shared';
+import ChatSidebarUpdate, {
+  CHAT_SIDEBAR_UPDATE,
+} from '../../interfaces/chat-sidebar-update.interface';
 
 type ChatSidebarConvoListProps = {
   userGroups: Group[];
   handleGroupClick: (group: Group) => void;
+  wasSectionUpdated: ChatSidebarUpdate;
+  setWasSectionUpdated: React.Dispatch<React.SetStateAction<ChatSidebarUpdate>>;
 };
 
 const UserItemButton = styled.button`
@@ -59,6 +64,8 @@ const UserItemButton = styled.button`
 const ChatSidebarChannelList: React.FC<ChatSidebarConvoListProps> = ({
   userGroups,
   handleGroupClick,
+  wasSectionUpdated,
+  setWasSectionUpdated,
 }): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<number>(-1);
 
@@ -72,8 +79,16 @@ const ChatSidebarChannelList: React.FC<ChatSidebarConvoListProps> = ({
             onClick={() => {
               handleGroupClick(group);
               setSelectedItem(index);
+              setWasSectionUpdated(
+                CHAT_SIDEBAR_UPDATE.CHANNELS as ChatSidebarUpdate,
+              );
             }}
-            className={selectedItem === index ? 'selected' : ''}
+            className={
+              selectedItem === index &&
+              wasSectionUpdated === CHAT_SIDEBAR_UPDATE.CHANNELS
+                ? 'selected'
+                : ''
+            }
           >
             <div className="avatar">
               <span>

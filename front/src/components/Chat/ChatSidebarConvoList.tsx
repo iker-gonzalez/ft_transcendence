@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import User from '../../interfaces/chat-user.interface';
 import styled from 'styled-components';
-import { primaryColor, primaryLightColor } from '../../constants/color-tokens';
+import { primaryColor } from '../../constants/color-tokens';
+import ChatSidebarUpdate, {
+  CHAT_SIDEBAR_UPDATE,
+} from '../../interfaces/chat-sidebar-update.interface';
 
 type ChatSidebarConvoListProps = {
   users: User[];
   handleUserClick: (user: User) => void;
   updateUserSidebar: () => void;
+  wasSectionUpdated: ChatSidebarUpdate;
+  setWasSectionUpdated: React.Dispatch<React.SetStateAction<ChatSidebarUpdate>>;
 };
 
 const UserItemButton = styled.button`
@@ -62,6 +67,8 @@ const ChatSidebarConvoList: React.FC<ChatSidebarConvoListProps> = ({
   users,
   handleUserClick,
   updateUserSidebar,
+  wasSectionUpdated,
+  setWasSectionUpdated,
 }): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<number>(-1);
   return (
@@ -73,8 +80,14 @@ const ChatSidebarConvoList: React.FC<ChatSidebarConvoListProps> = ({
             handleUserClick(user);
             updateUserSidebar();
             setSelectedItem(index);
+            setWasSectionUpdated(CHAT_SIDEBAR_UPDATE.CHAT as ChatSidebarUpdate);
           }}
-          className={selectedItem === index ? 'selected' : ''}
+          className={
+            selectedItem === index &&
+            wasSectionUpdated === CHAT_SIDEBAR_UPDATE.CHAT
+              ? 'selected'
+              : ''
+          }
         >
           <img src={user.avatar} alt="" className="avatar" />
           {user.username}{' '}
