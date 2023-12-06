@@ -104,7 +104,9 @@ const Chat: React.FC = () => {
       setUsers((prevUsers) => [...prevUsers, user]);
     }
 
-    const directMessages: DirectMessage[] = await fetchUserMessages(user.intraId);
+    const directMessages: DirectMessage[] = await fetchUserMessages(
+      user.intraId,
+    );
     setSelectedUser(user);
     setSelectedGroup(null);
     console.log('directMessages', directMessages);
@@ -146,8 +148,8 @@ const Chat: React.FC = () => {
           // ID returned by BE but not needed in FE
           delete parsedMessageData.id;
           setMessages((prevState) => [...prevState, parsedMessageData]);
+          updateUserSidebar();
         }
-        updateUserSidebar();
       };
 
       const groupMessageListener = (messageData: string) => {
