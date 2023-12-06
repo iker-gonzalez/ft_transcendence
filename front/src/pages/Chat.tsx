@@ -104,7 +104,7 @@ const Chat: React.FC = () => {
       setUsers((prevUsers) => [...prevUsers, user]);
     }
 
-    const directMessages: DirectMessage[] = await fetchUserMessages(user);
+    const directMessages: DirectMessage[] = await fetchUserMessages(user.intraId);
     setSelectedUser(user);
     setSelectedGroup(null);
     console.log('directMessages', directMessages);
@@ -131,9 +131,10 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     if (isSocketConnected && socket) {
-      const privateMessageListener = (messageData: string) => {
+      const privateMessageListener = async (messageData: string) => {
         const parsedData = JSON.parse(messageData);
-        setMessages((prevMessages) => [...prevMessages, parsedData]);
+        const directMessages: DirectMessage[] = await fetchUserMessages(parsedData.senderIntraId);
+        setMessages(directMessages);
         console.log('messageData', messageData);
       };
 

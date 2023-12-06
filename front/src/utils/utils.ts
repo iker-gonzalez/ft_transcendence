@@ -116,6 +116,7 @@ export function createNewDirectMessage({
       Math.random().toString(36).substring(2, 15),
     senderIntraId: userData.intraId || 0,
     receiverIntraId: selectedUser.intraId || 0,
+    receiverName: selectedUser.username || 'Anonymous',
     senderName: userData.username || 'Anonymous',
     senderAvatar: userData.avatar || 'Anonymous',
     content: contentText,
@@ -232,4 +233,33 @@ export async function checkIfPasswordIsValid(
     },
   });
   return response.status;
+}
+
+
+// Temporary function to get the intra ID of a user from their username until endpoint is implemented
+export function getIntraIdFromUsername(username: string): number {
+  if (username === 'ikgonzal')
+    return 88036;
+  else if (username === 'test-')
+    return 666;
+  else if (username === 'test2-')
+    return 667;
+  else if (username === 'test3-')
+    return 668;
+  else
+    return -1;
+}
+
+// Temporary function to get the intra ID of a user from their username until endpoint is implemented
+export function getUsernameFromIntraId(intraId: number): string {
+  if (intraId === 88036)
+    return 'ikgonzal';
+  else if (intraId === 666)
+    return 'test-';
+  else if (intraId === 667)
+    return 'test2-';
+  else if (intraId === 668)
+    return 'test3-';
+  else
+    return 'Unknown';
 }
