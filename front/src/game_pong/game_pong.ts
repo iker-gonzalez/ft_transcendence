@@ -72,10 +72,8 @@ export async function gameLoop({
   matchFinish = false;
   const startedAt: Date = new Date();
 
-  // TODO render theme assets in game
   console.log('theme is', theme);
 
-  // TODO render powerUps in game
   console.log('powerUps are', powerUps[0], powerUps[1]);
 
   // Update initial data
