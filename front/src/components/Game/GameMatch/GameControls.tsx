@@ -4,6 +4,7 @@ import ContrastPanel from '../../UI/ContrastPanel';
 
 type GameControlsProps = {
   className?: string;
+  isPlayer1?: boolean;
 };
 
 const WrapperDiv = styled.div`
@@ -30,6 +31,7 @@ const WrapperDiv = styled.div`
 
 const GameControls: React.FC<GameControlsProps> = ({
   className,
+  isPlayer1,
 }): JSX.Element => {
   return (
     <ContrastPanel>
@@ -40,8 +42,12 @@ const GameControls: React.FC<GameControlsProps> = ({
           <dd>🐁 or ⬆️/⬇️</dd>
           <dt>Music</dt>
           <dd>H louder - L softer - M 🔇</dd>
-          <dt>Pause</dt>
-          <dd>P</dd>
+          {isPlayer1 && (
+            <>
+              <dt>Pause</dt>
+              <dd>P</dd>
+            </>
+          )}
         </dl>
       </WrapperDiv>
     </ContrastPanel>
