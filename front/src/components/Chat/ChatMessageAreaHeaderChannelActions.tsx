@@ -8,7 +8,11 @@ import Group from '../../interfaces/chat-group.interface';
 import { Socket } from 'socket.io-client';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
-import { patchChannelPassword, setAdminIntra, inviteFriendToChannel } from '../../utils/utils';
+import {
+  patchChannelPassword,
+  setAdminIntra,
+  inviteFriendToChannel,
+} from '../../utils/utils';
 import styled from 'styled-components';
 import MainPasswordInput from '../UI/MainPasswordInput';
 import Badge from '../UI/Badge';
@@ -16,6 +20,7 @@ import ChatMessageAreaHeaderUsersModal from './ChatMessageAreaHeaderUsersModal';
 import { CHANNEL_TYPES } from '../../constants/shared';
 import { useUserFriends } from '../../context/UserDataContext';
 import User from '../../interfaces/chat-user.interface';
+import SecondaryButton from '../UI/SecondaryButton';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -202,7 +207,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         {canSeeActions() && (
           <div className="main-actions-container">
             {channelData?.type === 'PRIVATE' && (
-            <MainButton onClick={triggerInvitePopUp}>Invite</MainButton>
+              <MainButton onClick={triggerInvitePopUp}>Invite</MainButton>
             )}
             {isInviteModalVisible && channelData?.type === 'PRIVATE' && (
               <Modal
@@ -232,14 +237,14 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                   ))}
               </Modal>
             )}
-            <MainButton
+            <SecondaryButton
               onClick={() => {
                 setPopupVisible(true);
               }}
               disabled={channelData?.usersInfo.length === 1}
             >
               Manage
-            </MainButton>
+            </SecondaryButton>
             {channelData && isPopupVisible && (
               <Modal
                 dismissModalAction={() => {
@@ -258,21 +263,25 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                 />
               </Modal>
             )}
-            {group && channelOwnerIntraId === userData?.intraId && (
-              <>
-                {channelData?.type === CHANNEL_TYPES.PUBLIC ? (
-                  <MainButton onClick={() => setPasswordPopupVisible(true)}>
-                    Set password
-                  </MainButton>
-                ) : channelData?.type === CHANNEL_TYPES.PROTECTED ? (
-                  <>
-                    <MainButton onClick={() => setPasswordPopupVisible(true)}>
-                      Edit password
-                    </MainButton>
-                  </>
-                ) : null}
-              </>
-            )}
+            {(() => {
+              const isUserOwner = channelData?.ownerIntra === userData?.intraId;
+              if (
+                group &&
+                channelData &&
+                isUserOwner &&
+                (channelData.type === CHANNEL_TYPES.PUBLIC ||
+                  channelData.type === CHANNEL_TYPES.PROTECTED)
+              ) {
+                return (
+                  <SecondaryButton
+                    onClick={() => setPasswordPopupVisible(true)}
+                  >
+                    Password
+                  </SecondaryButton>
+                );
+              }
+              return null;
+            })()}
           </div>
         )}
         <DangerButton
