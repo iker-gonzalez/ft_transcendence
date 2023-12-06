@@ -202,8 +202,8 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
                   </option>
                   {filteredGroups
                     .sort((a, b) => a.name.localeCompare(b.name))
-                    .map((group) => (
-                      <option key={group.id} value={group.name}>
+                    .map((group, index) => (
+                      <option key={`${group.id}-${index}`} value={group.name}>
                         {(() => {
                           switch (group.type) {
                             case CHANNEL_TYPES.PROTECTED:
