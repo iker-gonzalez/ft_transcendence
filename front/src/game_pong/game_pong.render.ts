@@ -178,7 +178,7 @@ export function render(
     usersData.user1.username,
     (canvas.width / 10) * 4,
     canvas.height / 10,
-    '20px Courier',
+    '20px Verdana',
     'right',
     RenderColor.Yellow,
   );
@@ -188,7 +188,7 @@ export function render(
     String(user1.score),
     (canvas.width / 10) * 4,
     canvas.height / 6,
-    '40px Courier',
+    '40px Verdana',
     'right',
     RenderColor.Red,
   );
@@ -196,10 +196,10 @@ export function render(
   if (ballData.isBallPaused) {
     drawText(
       canvas,
-      '   GAME   PAUSED ',
+      '    GAME      PAUSED ',
       canvas.width / 2,
       canvas.height / 2,
-      '50px Courier',
+      '50px Verdana',
       'center',
       RenderColor.Red,
     );
@@ -211,7 +211,7 @@ export function render(
       'BOT',
       (canvas.width / 10) * 6,
       canvas.height / 10,
-      '20px Courier',
+      '20px Verdana',
       'left',
       RenderColor.Yellow,
     );
@@ -221,7 +221,7 @@ export function render(
       usersData.user2!.username,
       (canvas.width / 10) * 6,
       canvas.height / 10,
-      '20px Courier',
+      '20px Verdana',
       'left',
       RenderColor.Yellow,
     );
@@ -232,7 +232,7 @@ export function render(
     String(user2.score),
     (canvas.width / 10) * 6,
     canvas.height / 6,
-    '40px Courier',
+    '40px Verdana',
     'left',
     RenderColor.Red,
   );
@@ -243,7 +243,7 @@ export function render(
       '🏆',
       (canvas.width / 10) * 4,
       canvas.height / 4.5,
-      '30px Courier',
+      '30px Verdana',
       'right',
       RenderColor.Green,
     );
@@ -255,7 +255,7 @@ export function render(
       'GAME OVER',
       450,
       300,
-      '60px Courier',
+      '60px Verdana',
       'center',
       RenderColor.Red,
     );
@@ -267,7 +267,7 @@ export function render(
       usersData.user1.username + ' wins',
       450,
       410,
-      '40px Courier',
+      '40px Verdana',
       'center',
       RenderColor.Green,
     );
@@ -279,7 +279,7 @@ export function render(
       '🏆',
       (canvas.width / 10) * 6,
       canvas.height / 4.5,
-      '30px Courier',
+      '30px Verdana',
       'left',
       RenderColor.Green,
     );
@@ -293,7 +293,7 @@ export function render(
         'GAME OVER',
         450,
         300,
-        '60px Courier',
+        '60px Verdana',
         'center',
         RenderColor.Red,
       );
@@ -306,7 +306,7 @@ export function render(
           usersData.user1.username + ' wins',
           450,
           410,
-          '40px Courier',
+          '40px Verdana',
           'center',
           RenderColor.Green,
         );
@@ -317,7 +317,7 @@ export function render(
             'BOT wins',
             450,
             410,
-            '40px Courier',
+            '40px Verdana',
             'center',
             RenderColor.Green,
           );
@@ -327,7 +327,7 @@ export function render(
             usersData.user2!.username + ' wins',
             450,
             410,
-            '40px Courier',
+            '40px Verdana',
             'center',
             RenderColor.Green,
           );
