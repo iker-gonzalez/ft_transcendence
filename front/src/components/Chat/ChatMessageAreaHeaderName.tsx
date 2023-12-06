@@ -6,6 +6,7 @@ import styled from 'styled-components';
 type ChatMessageAreaHeaderNameProps = {
   user: User | null | undefined;
   channelData: ChannelData | null;
+  setShowFriendProfile: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const WrapperDiv = styled.div`
@@ -16,21 +17,30 @@ const WrapperDiv = styled.div`
   justify-content: center;
   gap: 8px;
 
-  .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
+  .avatar-button {
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+    }
   }
 `;
 
 const ChatMessageAreaHeaderName: React.FC<ChatMessageAreaHeaderNameProps> = ({
   user,
   channelData,
+  setShowFriendProfile,
 }) => {
   if (user) {
     return (
       <WrapperDiv>
-        <img src={user.avatar} alt={user.username} className="avatar" />
+        <button
+          disabled={user.isBlocked}
+          onClick={() => setShowFriendProfile(true)}
+          className="avatar-button"
+        >
+          <img src={user.avatar} alt={user.username} className="avatar" />
+        </button>
         <p className="title-2">
           {user.username}
           {user.isBlocked && <span>🚫</span>}
