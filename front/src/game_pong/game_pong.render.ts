@@ -2,13 +2,7 @@ import { Socket } from 'socket.io-client';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
 import { matchPoints } from './game_pong';
-import {
-  userSpeedInput,
-  slit,
-  thickness,
-  gamePowerUps,
-  speed,
-} from './game_pong.constants';
+import { userSpeedInput, slit, thickness, speed } from './game_pong.constants';
 import {
   InitializeCanvasImages,
   ballTrailClean,
@@ -21,7 +15,6 @@ import {
   drawSparksTrail,
   drawText,
   isBallFrozen,
-  isGamePaused,
   isSoloMode,
   sparks,
   sparksTrailClean,
@@ -572,9 +565,7 @@ type OnGameEndArgs = {
   userData: any;
   sounds: any;
   isAbortedMatch?: boolean;
-  isFirstRun: boolean;
   countDown: number;
-  isBallFrozen: boolean;
 };
 
 export function onGameEnd({
@@ -587,9 +578,7 @@ export function onGameEnd({
   userData,
   sounds,
   isAbortedMatch = false,
-  isFirstRun,
   countDown,
-  isBallFrozen,
 }: OnGameEndArgs) {
   // TODO check this, looks like it's not working
   eventList.forEach(function ({ typeEvent, handler }) {
@@ -604,9 +593,6 @@ export function onGameEnd({
 
   ballTrailClean();
   sparksTrailClean();
-
-  isFirstRun = true;
-  countDown = 3;
 
   // In case of aborted match
   // We don't want to send match data to the API
