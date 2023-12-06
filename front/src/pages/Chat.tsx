@@ -134,20 +134,32 @@ const Chat: React.FC = () => {
   useEffect(() => {
     if (isSocketConnected && socket) {
       const privateMessageListener = async (messageData: string) => {
-        const parsedMessageData = JSON.parse(messageData);
+        const {
+          content,
+          receiverIntraId,
+          receiverName,
+          timestamp,
+          senderIntraId,
+          senderAvatar,
+          senderName,
+        } = JSON.parse(messageData);
 
-        const isCurrentUserSender =
-          selectedUser?.intraId === parsedMessageData.senderIntraId;
-        const isCurrentUserReceiver =
-          selectedUser?.intraId === parsedMessageData.receiverIntraId;
+        const isCurrentUserSender = selectedUser?.intraId === senderIntraId;
+        const isCurrentUserReceiver = selectedUser?.intraId === receiverIntraId;
 
-        if (
-          (isCurrentUserSender || isCurrentUserReceiver) &&
-          parsedMessageData.receiverIntraId === userData?.intraId
-        ) {
-          // ID returned by BE but not needed in FE
-          delete parsedMessageData.id;
-          setMessages((prevState) => [...prevState, parsedMessageData]);
+        if (isCurrentUserSender || isCurrentUserReceiver) {
+          setMessages((prevState: any[]) => {
+            const newMessage = {
+              content,
+              createdAt: new Date(timestamp).toISOString(),
+              receiverAvatar: '',
+              receiverName,
+              roomName: null,
+              senderAvatar,
+              senderName,
+            } as any;
+            return [...prevState, newMessage];
+          });
           updateUserSidebar();
         }
       };
