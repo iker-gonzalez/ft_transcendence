@@ -114,60 +114,60 @@ export function render(
   if (sounds.music.volume === 0) {
     drawText(
       canvas,
-      '🔇',
+      ' 🔇 ',
       canvas.width / 2,
       canvas.height / 8,
-      '30px',
+      '40px Verdana',
       'center',
       RenderColor.White,
     );
   } else if (sounds.music.volume > 0 && sounds.music.volume < 0.2) {
     drawText(
       canvas,
-      '🔈',
+      ' 🔈 ',
       canvas.width / 2,
       canvas.height / 8,
-      '30px',
+      '40px Verdana',
       'center',
       RenderColor.White,
     );
   } else if (sounds.music.volume >= 0.2 && sounds.music.volume < 0.4) {
     drawText(
       canvas,
-      '🔉',
+      ' 🔉 ',
       canvas.width / 2,
       canvas.height / 8,
-      '40px',
+      '50px Verdana',
       'center',
       RenderColor.White,
     );
   } else if (sounds.music.volume >= 0.4 && sounds.music.volume < 0.6) {
     drawText(
       canvas,
-      '🔉',
+      ' 🔉 ',
       canvas.width / 2,
       canvas.height / 8,
-      '50px',
+      '60px Verdana',
       'center',
       RenderColor.White,
     );
   } else if (sounds.music.volume >= 0.6 && sounds.music.volume < 0.8) {
     drawText(
       canvas,
-      '🔊',
+      ' 🔊 ',
       canvas.width / 2,
       canvas.height / 8,
-      '60px',
+      '70px Verdana',
       'center',
       RenderColor.White,
     );
   } else if (sounds.music.volume >= 0.8) {
     drawText(
       canvas,
-      '🔔',
+      ' 🔊 ',
       canvas.width / 2,
       canvas.height / 8,
-      '70px Courier',
+      '80px Verdana',
       'center',
       RenderColor.White,
     );
