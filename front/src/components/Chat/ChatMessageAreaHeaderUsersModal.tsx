@@ -53,18 +53,17 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
   setPopupVisible,
   onNewAction,
   group,
-  socket
+  socket,
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
 
   const [selectedUser, setSelectedUser] = React.useState<number | null>(null);
 
   const kick = (intraId: number) => {
-    
     const payload = {
       roomName: group.name,
       adminId: userData?.intraId,
-      intraId: intraId
+      intraId: intraId,
     };
     socket.emit('kickUser', payload);
     launchFlashMessage(
@@ -77,7 +76,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     const payload = {
       roomName: group.name,
       adminId: userData?.intraId,
-      intraId: intraId
+      intraId: intraId,
     };
     socket.emit('banUser', payload);
     launchFlashMessage(
@@ -178,83 +177,87 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
             .includes(selectedUserData.intra);
 
           return (
-            <UserManagementContainer>
-              <ContrastPanel $backgroundColor={darkBgColor} className="mb-16">
-                <h2 className="title-3 mb-8">Admin privileges</h2>
-                <p className="mb-16">
-                  If you decide to make {selectedUserData.username} an admin,
-                  they will be able to manage the other members of this channel
-                </p>
-                <div>
-                  {isAdmin ? (
-                    <DangerButton
+            <>
+              <UserManagementContainer>
+                <ContrastPanel $backgroundColor={darkBgColor} className="mb-16">
+                  <h2 className="title-3 mb-8">Admin privileges</h2>
+                  <p className="mb-16">
+                    If you decide to make {selectedUserData.username} an admin,
+                    they will be able to manage the other members of this
+                    channel
+                  </p>
+                  <div>
+                    {isAdmin ? (
+                      <DangerButton
+                        onClick={() => {
+                          setAdmin(
+                            selectedUserData.intra,
+                            isAdmin,
+                            selectedUserData.username,
+                          );
+                          setPopupVisible(false);
+                          onNewAction(group);
+                        }}
+                      >
+                        Revoke admin role
+                      </DangerButton>
+                    ) : (
+                      <MainButton
+                        onClick={() => {
+                          setAdmin(
+                            selectedUserData.intra,
+                            isAdmin,
+                            selectedUserData.username,
+                          );
+                          setPopupVisible(false);
+                          onNewAction(group);
+                        }}
+                      >
+                        Make admin
+                      </MainButton>
+                    )}
+                  </div>
+                </ContrastPanel>
+                <ContrastPanel
+                  $backgroundColor={darkBgColor}
+                  className="user-actions-container"
+                >
+                  <h2 className="title-3 mb-8">Issues with a member?</h2>
+                  <p className="mb-16">
+                    We're sorry you're experiencing trouble. If you need, you
+                    have the option of silencing, kicking, or bannning{' '}
+                    {selectedUserData.username}.
+                  </p>
+                  <div className="actions-container">
+                    <SecondaryButton
                       onClick={() => {
-                        setAdmin(
-                          selectedUserData.intra,
-                          isAdmin,
-                          selectedUserData.username,
-                        );
-                        setPopupVisible(false);
-                        onNewAction(group);
+                        mute(selectedUserData.intra, isUserMuted ? 0 : 1);
                       }}
                     >
-                      Revoke admin role
-                    </DangerButton>
-                  ) : (
+                      {isUserMuted ? 'Unmute' : 'Mute'}
+                    </SecondaryButton>
                     <MainButton
                       onClick={() => {
-                        setAdmin(
-                          selectedUserData.intra,
-                          isAdmin,
-                          selectedUserData.username,
-                        );
+                        kick(selectedUserData.intra);
                         setPopupVisible(false);
                         onNewAction(group);
                       }}
                     >
-                      Make admin
+                      Kick
                     </MainButton>
-                  )}
-                </div>
-              </ContrastPanel>
-              <ContrastPanel
-                $backgroundColor={darkBgColor}
-                className="user-actions-container"
-              >
-                <h2 className="title-3 mb-8">
-                  Issues with {selectedUserData.username}?
-                </h2>
-                <p className="mb-16">
-                  We hope it won't be necessary, but you have the option of
-                  silencing, kicking, or bannning {selectedUserData.username}.
-                </p>
-                <div className="actions-container">
-                  <SecondaryButton
-                    onClick={() => {
-                      mute(selectedUserData.intra, isUserMuted ? 0 : 1);
-                    }}
-                  >
-                    {isUserMuted ? 'Unmute' : 'Mute'}
-                  </SecondaryButton>
-                  <MainButton onClick={() => {
-                    kick(selectedUserData.intra);
-                    setPopupVisible(false);
-                    onNewAction(group);
-                  }
-                  }>
-                    Kick
-                  </MainButton>
-                  <DangerButton onClick={() => {
-                    ban(selectedUserData.intra);
-                    setPopupVisible(false);
-                    onNewAction(group);
-                  }
-                  }>
-                    Ban
-                  </DangerButton>
-                </div>
-              </ContrastPanel>
-            </UserManagementContainer>
+                    <DangerButton
+                      onClick={() => {
+                        ban(selectedUserData.intra);
+                        setPopupVisible(false);
+                        onNewAction(group);
+                      }}
+                    >
+                      Ban
+                    </DangerButton>
+                  </div>
+                </ContrastPanel>
+              </UserManagementContainer>
+            </>
           );
         }
 
