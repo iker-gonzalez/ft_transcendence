@@ -36,15 +36,15 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
   messages,
   selectedUser,
   selectedGroup,
-  userData
+  userData,
 }): JSX.Element => {
   console.log('hola buenas');
   if (selectedUser?.isBlocked) {
     return (
       <EmpyStateDiv>
         <p>
-          This user is blocked. You won't be able to read this conversation
-          until you unblock them.
+          This conversation is blocked. To read this conversation, unblock your
+          friend or wait for them to unblock you.
         </p>
       </EmpyStateDiv>
     );
