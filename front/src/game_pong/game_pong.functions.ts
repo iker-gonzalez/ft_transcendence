@@ -176,7 +176,7 @@ export function drawText(
 ): void {
   const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
   if (!ctx) return;
- 
+
   ctx.fillStyle = color;
   ctx.textAlign = align;
   ctx.font = font;
@@ -432,7 +432,6 @@ export type InitializeSocketLogicArgs = {
   canvasImages: InitializeCanvasImages;
   thickness: number;
   theme: GameTheme;
-  isFirstRun: boolean;
   countDown: number;
   powerUps: any;
 };
@@ -455,7 +454,6 @@ export function initializeSocketLogic({
   canvasImages,
   thickness,
   theme,
-  isFirstRun,
   countDown,
   powerUps,
 }: InitializeSocketLogicArgs) {
@@ -486,14 +484,10 @@ export function initializeSocketLogic({
             player: user1,
             userData: usersData.user1,
             sounds,
-            isFirstRun,
             countDown,
-            isBallFrozen,
           });
         matchFinish = true;
         isBallFrozen = true;
-        //  isFirstRun = true;
-        //  countDown = 3;
       }
 
       matchUser1(canvas, ballData, user1, user2, sounds, theme, powerUps);
@@ -547,9 +541,7 @@ export function initializeSocketLogic({
             player: user2,
             userData: usersData.user2,
             sounds,
-            isFirstRun,
             countDown,
-            isBallFrozen,
           });
         matchFinish = true;
         isBallFrozen = true;
@@ -595,6 +587,7 @@ export function onAbortGame(
       },
     );
   };
+  isBallFrozen = true;
 }
 
 export async function countDownToStart(
@@ -639,7 +632,6 @@ export async function countDownToStart(
         }
       }
       countDown--;
-      console.log('Count down value -> ', countDown);
       if (countDown === 0) {
         resolve();
         isBallFrozen = false;
