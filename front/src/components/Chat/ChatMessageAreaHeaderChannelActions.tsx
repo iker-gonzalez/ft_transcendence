@@ -14,6 +14,8 @@ import MainPasswordInput from '../UI/MainPasswordInput';
 import Badge from '../UI/Badge';
 import ChatMessageAreaHeaderUsersModal from './ChatMessageAreaHeaderUsersModal';
 import { CHANNEL_TYPES } from '../../constants/shared';
+import { useUserFriends } from '../../context/UserDataContext';
+import User from '../../interfaces/chat-user.interface';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -83,6 +85,19 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   const [channelOwnerIntraId, setChannelOwnerIntraId] = useState<number | null>(
     null,
   );
+
+  const { userFriends, fetchFriendsList } = useUserFriends();
+  const handleInvitePopUp = async () => {
+    if (userFriends.length === 0) {
+      await fetchFriendsList();
+    }
+    setFriendsToInvite(userFriends);
+    setInviteModalVisible(true);
+    console.log('invite');
+  };
+
+  const [isInviteModalVisible, setInviteModalVisible] = useState(false);
+  const [friendsToInvite, setFriendsToInvite] = useState<User[]>([]); // replace User with your user type
 
   useEffect(() => {
     if (channelData) {
@@ -159,6 +174,35 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         )}
         {canSeeActions() && (
           <div className="main-actions-container">
+            <MainButton onClick={handleInvitePopUp}>Invite</MainButton>
+            {isInviteModalVisible && (
+              <Modal
+                dismissModalAction={() => {
+                  setInviteModalVisible(false);
+                }}
+              >
+                <h1>Invite Friends</h1>
+                {friendsToInvite
+                  .filter(
+                    (friend) =>
+                      !channelData?.usersInfo.some(
+                        (user) => user.username === friend.username,
+                      ),
+                  )
+                  .map((friend) => (
+                    <div key={friend.intraId}>
+                      <p>{friend.username}</p>
+                      <MainButton
+                        onClick={() => {
+                          // handle the invite action
+                        }}
+                      >
+                        Invite
+                      </MainButton>
+                    </div>
+                  ))}
+              </Modal>
+            )}
             <MainButton
               onClick={() => {
                 setPopupVisible(true);
