@@ -132,10 +132,21 @@ const Chat: React.FC = () => {
   useEffect(() => {
     if (isSocketConnected && socket) {
       const privateMessageListener = async (messageData: string) => {
-        const parsedData = JSON.parse(messageData);
-        const directMessages: DirectMessage[] = await fetchUserMessages(parsedData.senderIntraId);
-        setMessages(directMessages);
-        console.log('messageData', messageData);
+        const parsedMessageData = JSON.parse(messageData);
+
+        const isCurrentUserSender =
+          selectedUser?.intraId === parsedMessageData.senderIntraId;
+        const isCurrentUserReceiver =
+          selectedUser?.intraId === parsedMessageData.receiverIntraId;
+
+        if (
+          (isCurrentUserSender || isCurrentUserReceiver) &&
+          parsedMessageData.receiverIntraId === userData?.intraId
+        ) {
+          // ID returned by BE but not needed in FE
+          delete parsedMessageData.id;
+          setMessages((prevState) => [...prevState, parsedMessageData]);
+        }
         updateUserSidebar();
       };
 
