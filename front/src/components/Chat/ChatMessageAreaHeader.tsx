@@ -34,8 +34,10 @@ interface ChatMessageAreaHeaderProps {
 
 const HeaderWrapper = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 
   padding: 8px 0;
   margin-bottom: 20px;

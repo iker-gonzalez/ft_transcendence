@@ -26,7 +26,8 @@ type ChatMessageAreaHeaderChannelActionsProps = {
 };
 
 const WrapperDiv = styled.div`
-  width: 100%;
+  flex: 1;
+
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -34,7 +35,6 @@ const WrapperDiv = styled.div`
 
   .admin-label {
     margin-right: auto;
-    margin-left: 12px;
   }
 
   .main-actions-container {
@@ -42,6 +42,12 @@ const WrapperDiv = styled.div`
     justify-content: center;
     align-items: center;
     gap: 8px;
+
+    margin-left: 24px;
+
+    button {
+      white-space: nowrap;
+    }
   }
 `;
 
@@ -159,7 +165,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               }}
               disabled={channelData?.usersInfo.length === 1}
             >
-              Actions
+              Manage
             </MainButton>
             {channelData && isPopupVisible && (
               <Modal
