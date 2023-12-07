@@ -48,6 +48,20 @@ const UserManagementContainer = styled.div`
     align-items: center;
     gap: 8px;
   }
+
+  .actions-legend {
+    text-align: left;
+    li {
+      list-style: disc;
+      margin-left: 12%;
+      margin-bottom: 8px;
+      line-height: 1.5;
+
+      span {
+        font-weight: bold;
+      }
+    }
+  }
 `;
 
 const ConfirmationModal = styled(Modal)`
@@ -285,11 +299,28 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                   className="user-actions-container"
                 >
                   <h2 className="title-3 mb-8">Issues with a member?</h2>
-                  <p className="mb-16">
-                    We're sorry you're experiencing trouble. If you need, you
-                    have the option of silencing, kicking, or bannning{' '}
-                    {selectedUserData.username}.
-                  </p>
+                  <div className="mb-24">
+                    <p className="mb-16">
+                      We're sorry you're experiencing trouble. If you need, you
+                      have the option of:
+                    </p>
+                    <ul className="actions-legend">
+                      <li>
+                        <span>silencing</span>: to hide{' '}
+                        {selectedUserData.username}
+                        's messages
+                      </li>
+                      <li>
+                        <span>kicking out:</span> to remove{' '}
+                        {selectedUserData.username} from channel
+                      </li>
+                      <li>
+                        <span>banning:</span> to prevent{' '}
+                        {selectedUserData.username} from joining the channel
+                        again.
+                      </li>
+                    </ul>
+                  </div>
                   <div className="actions-container">
                     <SecondaryButton
                       onClick={() => {
