@@ -140,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   socket,
   channelData,
   setSelectedUser,
-  setSelectedGroup
+  setSelectedGroup,
 }) => {
   const navigate = useNavigate();
   const [isPopupVisible, setPopupVisible] = useState(false);
