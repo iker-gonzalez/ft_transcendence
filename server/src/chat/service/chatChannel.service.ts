@@ -104,7 +104,6 @@ export class ChatChannelService {
       
       const allinfo = new AllChannelInfo(conversationDTO, chatRoom, ownerIntra);
 
-      console.log("GET ADMINNN");
       console.log(chatRoom.users);
       allinfo.setIntrasOfMemeber((await this.findUserIntraAndUsernmameById(chatRoom.users)), "users");
       allinfo.setIntrasOfMemeber((await this.findUserIntraAndUsernmameById(chatRoom.adminUsers)), "admin");
@@ -741,6 +740,36 @@ try{
     console.error("Error:", error);
   }
 }
+
+async getMutedUsers(channelRoom: string): Promise<any> 
+{
+  const roomData = await this.prisma.chatRoom.findUnique({
+    where: { id: channelRoom },
+    include: { mutedUsers: true },
+  });
+
+  if (!roomData) {
+    throw new BadRequestException("Channel not found");
+  }
+
+  const mutedUsers = roomData.mutedUsers.map((user) => user.userId);
+
+  const mutedUsersIntraIds = [];
+  for (const id of mutedUsers) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: { username: true },
+    });
+
+    mutedUsersIntraIds.push({username: user.username});
+  }
+
+  return {
+    found: 1,
+    data: mutedUsersIntraIds,
+  }
+}
+
 
 // Kick user
 async kickUserInChannel(

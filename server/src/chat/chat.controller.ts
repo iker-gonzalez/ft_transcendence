@@ -292,6 +292,12 @@ export class ChatController {
     }
 
 
+    @Get(':channelRoom/mutedUsers')
+    async getMutedUsers(@Param('channelRoom') channelRoom: string) {
+      console.log("channelRoom getMutedUsers", channelRoom)
+      return this.chatChannelService.getMutedUsers(channelRoom);
+    }
+
     @Patch(':channelRoom/:userToMuteIntra/:b_mute/setMute') 
     @ApiParam({ name: 'channelRoom' }) 
     @ApiParam({ name: 'userToMuteIntra' })

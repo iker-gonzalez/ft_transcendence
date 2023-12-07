@@ -100,7 +100,11 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     );
   };
 
-  const mute = async (muteIntraId: number, isMuted: number) => {
+  const mute = async (
+    muteIntraId: number,
+    mutedUserUsername: string,
+    isMuted: number,
+  ) => {
     setPopupVisible(false);
     onNewAction(group);
 
@@ -121,14 +125,11 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
 
     if (res.status === 200) {
       launchFlashMessage(
-        `You have successfully ${
-          isMuted ? 'muted' : 'unmuted'
-        } the user ${muteIntraId}.`,
-        FlashMessageLevel.SUCCESS,
+        `You have ${isMuted ? 'muted' : 'unmuted'} ${mutedUserUsername}.`,
+        isMuted ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
       );
     } else {
       // Only errors meaningful to the user
-      console.log('res.status', res.status)
       if (res.status === 422) {
         const data = await res.json();
         launchFlashMessage(data.message, FlashMessageLevel.ERROR);
@@ -265,15 +266,23 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                         if (!isUserMuted) {
                           setConfirmationModalInfo({
                             title: 'Do you confirm muting?',
-                            subtitle: `You are about to mute ${selectedUserData.username}. They will stay in the channel, but will not be able to send new messages.`,
+                            subtitle: `You are about to mute ${selectedUserData.username}. They will stay in the channel, but will their messages will be hidden.`,
                             action: () => {
-                              mute(selectedUserData.intra, 1);
+                              mute(
+                                selectedUserData.intra,
+                                selectedUserData.username,
+                                1,
+                              );
                               setPopupVisible(false);
                               onNewAction(group);
                             },
                           });
                         } else {
-                          mute(selectedUserData.intra, 0);
+                          mute(
+                            selectedUserData.intra,
+                            selectedUserData.username,
+                            0,
+                          );
                         }
                       }}
                     >
