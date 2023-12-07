@@ -5,6 +5,7 @@ import {
   darkestBgColor,
   primaryColor,
 } from '../../constants/color-tokens';
+import User from '../../interfaces/chat-user.interface';
 import Group from '../../interfaces/chat-group.interface';
 import { CHANNEL_TYPES } from '../../constants/shared';
 import ChatSidebarUpdate, {
@@ -16,6 +17,8 @@ type ChatSidebarConvoListProps = {
   handleGroupClick: (group: Group) => void;
   wasSectionUpdated: ChatSidebarUpdate;
   setWasSectionUpdated: React.Dispatch<React.SetStateAction<ChatSidebarUpdate>>;
+  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
 };
 
 const UserItemButton = styled.button`
@@ -66,6 +69,8 @@ const ChatSidebarChannelList: React.FC<ChatSidebarConvoListProps> = ({
   handleGroupClick,
   wasSectionUpdated,
   setWasSectionUpdated,
+  setSelectedUser,
+  setSelectedGroup
 }): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<number>(-1);
 
@@ -77,6 +82,8 @@ const ChatSidebarChannelList: React.FC<ChatSidebarConvoListProps> = ({
           <UserItemButton
             key={group.name}
             onClick={() => {
+              setSelectedGroup(group);
+              setSelectedUser(null);
               handleGroupClick(group);
               setSelectedItem(index);
               setWasSectionUpdated(

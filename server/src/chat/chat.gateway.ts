@@ -165,7 +165,7 @@ async handleUnmuteUserDM(client, payload) {
     try {
       // Actualizar la DB
       const userId = await this.chatDMservice.findUserIdByIntraId(
-        payload.intraId,
+        payload.senderIntraId,
       );
       await this.chatChannelservice.addChannelMessageToUser(
         payload.roomName,
@@ -182,8 +182,9 @@ async handleUnmuteUserDM(client, payload) {
     for (const usuario of chatRoom) {
       // Enviar mensage a todos los usuarios del grupo
       const userIntra = await this.chatDMservice.findUserIntraById(usuario.userId);
-      this.server.emit(`groupMessage/${userIntra}`,
-      JSON.stringify(payload))
+      if (userIntra != payload.senderIntraId) {
+        this.server.emit(`groupMessage/${userIntra}`, JSON.stringify(payload))
+      }
 
     }
     
