@@ -36,8 +36,6 @@ export class ChatGateway implements OnGatewayConnection {
 
   @SubscribeMessage('privateMessage')
   async handlePrivateMessage(client, payload) {
-    console.log('receiverId:');
-    console.log(payload.receiverId);
     try {
       // Prueba para el get de lo DM
       const senderId = await this.chatDMservice.findUserIdByIntraId(
@@ -97,15 +95,10 @@ async handleUnmuteUserDM(client, payload) {
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(client: Socket, payload) {
     // Unir al cliente a la sala
-    console.log('joiRoom event');
-    console.log(payload.roomName);
-    console.log(payload.intraId);
-    console.log('type:', payload.type);
     try {
       const userId = await this.chatDMservice.findUserIdByIntraId(
         payload.intraId,
       );
-      console.log(userId);
       const channelExist = await this.chatChannelservice.channelExist(
         payload.roomName,
       );
@@ -118,7 +111,6 @@ async handleUnmuteUserDM(client, payload) {
         );
       } else {
         if (payload.type == 'PROTECTED') {
-          console.log('PROTECTE GROUP');
           if (
             !(await this.chatChannelservice.isPasswordCorrect(
               payload.roomName,
@@ -148,25 +140,10 @@ async handleUnmuteUserDM(client, payload) {
     } catch (error) {
       console.error('Error:', error);
     }
-
-    // Obtener la lista de clientes en la sala
-    // const io = this.server;
-    // const room = io.of('/').in(roomName) as any; // Afirmación de tipo
-    // room.clients((error, clients) => {
-    //   if (!error) {
-    //     console.log(`Clientes en la sala ${roomName}:`, clients);
-    //   }
-    // });
   }
 
   @SubscribeMessage('sendMessageToRoom')
   async handleSendMessageToRoom(client: Socket, payload) {
-    // id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-    // senderName: userData?.username || 'Anonymous',
-    // senderAvatar: userData?.avatar || 'Anonymous',
-    // content: newMessage,
-    // timestamp: new Date().toString(),
-
     try {
       // Actualizar la DB
       const userId = await this.chatDMservice.findUserIdByIntraId(
@@ -177,9 +154,6 @@ async handleUnmuteUserDM(client, payload) {
         userId,
         payload.content,
       );
-
-      // Enviar el mensaje a todos los clientes en la sala
-      //this.server.to(payload.roomName).emit('message', payload);
 
       const chatRoom = await this.chatChannelservice.getUsersFromChatRoom(
         payload.roomName,
@@ -247,8 +221,6 @@ async handleUnmuteUserDM(client, payload) {
 
   @SubscribeMessage('banUser')
   async handleBanUser(client: Socket, payload) {
-    console.log('----banUser event-----');
-    console.log('payload:', payload);
     try {
       const userId = await this.chatDMservice.findUserIdByIntraId(
         payload.intraId,

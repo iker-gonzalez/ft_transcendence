@@ -50,7 +50,6 @@ const GameQueueInvitation: React.FC = (): JSX.Element => {
           id: searchParams.get('id'),
         }),
         (newSessionRes: GameSessionRes) => {
-          console.log('newSessionRes', newSessionRes);
           const setSessionData = sessionDataState[1];
           setSessionData(newSessionRes.data);
 
