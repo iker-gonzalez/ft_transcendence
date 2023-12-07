@@ -403,6 +403,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                   setPasswordPopupVisible(false);
                   onNewAction(group);
                 }}
+                disabled={password.length === 0 || confirmPassword.length === 0}
               >
                 Confirm
               </MainButton>
