@@ -1,17 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import ChatMessageItem from './ChatMessageItem';
 import User from '../../interfaces/chat-user.interface';
 import Group from '../../interfaces/chat-group.interface';
-import UserData from '../../interfaces/user-data.interface';
 import moment from 'moment';
+import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 
 type ChatMessageAreaListProps = {
   messages: DirectMessage[];
   selectedUser: User | null;
   selectedGroup: Group | null;
-  userData: UserData | null;
 };
 
 const MessageList = styled.ul`
@@ -36,9 +35,23 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
   messages,
   selectedUser,
   selectedGroup,
-  userData,
 }): JSX.Element => {
-  console.log('hola buenas');
+  const [mutedUsers, setMutedUsers] = React.useState<{ username: string }[]>(
+    [],
+  );
+
+  useEffect(() => {
+    if (selectedGroup) {
+      fetchAuthorized(`${getBaseUrl()}/chat/${selectedGroup.id}/mutedUsers`)
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          setMutedUsers(data.data);
+        });
+    }
+  }, [messages, selectedGroup]);
+
   if (selectedUser?.isBlocked) {
     return (
       <EmpyStateDiv>
@@ -49,64 +62,63 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
       </EmpyStateDiv>
     );
   }
-  console.log('messagesss', messages);
-  console.log('selectedUser: ', selectedUser);
-  let filteredMessages = messages;
-
-  if (selectedUser) {
-    filteredMessages = messages.filter((message) => {
-      return (
-        selectedUser.username === message.senderName ||
-        selectedUser.username === message.receiverName
-      );
-    });
-  } else if (selectedGroup) {
-    filteredMessages = messages.filter(
-      (message) => selectedGroup.name === message.roomName,
-    );
-  }
-
-  if (filteredMessages.length === 0) {
-    return (
-      <EmpyStateDiv>
-        <p>There are no messages to show</p>
-      </EmpyStateDiv>
-    );
-  }
 
   return (
     <MessageList>
-      {filteredMessages.map((message, index) => {
-        return (
-          <div key={`${message.id}-${index}`}>
-            <ChatMessageItem
-              message={message}
-              isRepeatedMessage={(() => {
-                const previousMessage = messages[index - 1];
+      {messages.length === 0 ? (
+        <EmpyStateDiv>
+          <p>There are no messages to show</p>
+        </EmpyStateDiv>
+      ) : (
+        messages
+          .filter((message) => {
+            if (selectedUser) {
+              return (
+                selectedUser.username === message.senderName ||
+                selectedUser.username === message.receiverName
+              );
+            } else if (selectedGroup) {
+              const isMutedUser = mutedUsers?.some(
+                (mutedUser) => message.senderName === mutedUser.username,
+              );
 
-                if (!previousMessage) return false;
-                if (message.createdAt) {
-                  const isSameSender =
-                    previousMessage.senderName === message.senderName;
+              return selectedGroup.name === message.roomName && !isMutedUser;
+            }
 
-                  const differenceInMinutes = moment(message.createdAt)
-                    .seconds(0)
-                    .diff(
-                      moment(previousMessage.createdAt).seconds(0),
-                      'minutes',
-                    );
+            return true;
+          })
+          .map((message, index) => {
+            return (
+              <div key={`${message.id}-${index}`}>
+                <ChatMessageItem
+                  message={message}
+                  isRepeatedMessage={(() => {
+                    const previousMessage = messages[index - 1];
 
-                  const wasSentAtSameTime = differenceInMinutes === 0;
+                    if (!previousMessage) return false;
+                    if (message.createdAt) {
+                      const isSameSender =
+                        previousMessage.senderName === message.senderName;
 
-                  return isSameSender && wasSentAtSameTime;
-                }
+                      const differenceInMinutes = moment(message.createdAt)
+                        .seconds(0)
+                        .diff(
+                          moment(previousMessage.createdAt).seconds(0),
+                          'minutes',
+                        );
 
-                return false;
-              })()}
-            />
-          </div>
-        );
-      })}
+                      const wasSentAtSameTime = differenceInMinutes === 0;
+
+                      return isSameSender && wasSentAtSameTime;
+                    }
+
+                    return false;
+                  })()}
+                />
+              </div>
+            );
+          })
+      )}
     </MessageList>
   );
 };
