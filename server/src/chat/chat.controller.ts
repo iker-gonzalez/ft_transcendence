@@ -397,17 +397,10 @@ export class ChatController {
       @Param('roomName') roomName: string,
     ) : Promise<boolean> {  
       console.log("isPasswordCorrect get");
-      try{
         if (await this.chatChannelService.isPasswordCorrect(roomName,password))
-          return true;
+          return;
         else
-          return false;
-      }
-      catch (error) { 
-          console.error("Error:", error);
-          return false;
-      }
-      return true;
+          throw new BadRequestException('Invalid password');
     }
 
     @Patch(':userAddIntra/:roomName/:b_bool/setUserToPrivateChannel') // Define la ruta para los parámetros userId1 y userId2

@@ -217,7 +217,6 @@ export async function patchBlockUser(
 export async function checkIfPasswordIsValid(
   groupName: string,
   password: string,
-  ownerIntraId: number
 ): Promise<number> {
 
   const response = await fetchAuthorized(`${getBaseUrl()}/chat/${password}/${groupName}/isPasswordCorrect`, {

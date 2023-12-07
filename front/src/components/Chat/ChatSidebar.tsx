@@ -19,7 +19,7 @@ import Cookies from 'js-cookie';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
 import ChatSidebarConvoList from './ChatSidebarConvoList';
-import { checkIfPasswordIsValid } from '../../utils/utils';
+import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import ChatSidebarNewChannelModal from './ChatSidebarNewChannelModal';
 import ChatSidebarChannelList from './ChatSidebarChannelList';
 import ChatSidebarJoinProtectedModal from './ChatSidebarJoinProtectedModal';
@@ -157,7 +157,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [wasSectionUpdated, setWasSectionUpdated] =
     useState<ChatSidebarUpdate>(null);
 
-  const [selectedProtectedGroup, setSelectedProtectedGroup] =
+  const [selectedProtectedGroupToJoin, setSelectedProtectedGroupToJoin] =
     useState<Group | null>(null);
 
   useEffect(() => {
@@ -173,8 +173,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleJoinRoom = async (newGroup: Group, password: string) => {
-    console.log('handleJoinRoom');
-    if (newGroup.name.trim() !== '' && newGroup.name && socket) {
+    if (newGroup.name && socket) {
       const payload = {
         roomName: newGroup.name,
         intraId: userData?.intraId,
@@ -182,43 +181,40 @@ const Sidebar: React.FC<SidebarProps> = ({
         password: password,
       };
       if (newGroup.type === 'PROTECTED') {
-        const passwordCheckResult = await checkChannelPassword(
-          newGroup,
-          password,
+        const { status } = await fetchAuthorized(
+          `${getBaseUrl()}/chat/${password}/${newGroup.name}/isPasswordCorrect`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${Cookies.get('token')}`,
+            },
+          },
         );
-        if (passwordCheckResult !== 200) {
+
+        if (status !== 200) {
           launchFlashMessage(
-            `The password you entered is incorrect. Please try again.`,
+            `The password you entered is wrong.`,
             FlashMessageLevel.ERROR,
           );
           return 1;
         }
       }
+
       socket.emit('joinRoom', payload);
       setPopupVisible(false);
       launchFlashMessage(
-        `You have successfully joined the room ${newGroup.name}!`,
+        `You have joined the room ${newGroup.name}!`,
         FlashMessageLevel.SUCCESS,
       );
       return 0;
-    }
-  };
-
-  const checkChannelPassword = async (group: Group, password: string) => {
-    if (password.trim() === '') {
+    } else {
       launchFlashMessage(
-        `Please enter a password to join the group ${group.name}.`,
+        `An error occured while joining the room ${newGroup.name}. Please try again.`,
         FlashMessageLevel.ERROR,
       );
-      return -1;
+      return 1;
     }
-    const status_code = await checkIfPasswordIsValid(
-      group.name,
-      password,
-      channelData!.ownerIntra,
-    );
-    console.log('status_code:', status_code);
-    return status_code;
   };
 
   const userFriendsConverted = userFriends.map((friend) => ({
@@ -334,7 +330,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 userGroups={userGroups}
                 setPopupVisible={setPopupVisible}
                 setPasswordPopupVisible={setPasswordPopupVisible}
-                setSelectedProtectedGroup={setSelectedProtectedGroup}
+                setSelectedProtectedGroupToJoin={
+                  setSelectedProtectedGroupToJoin
+                }
                 handleGroupClick={handleGroupClick}
               />
             )}
@@ -343,9 +341,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         {isPasswordPopupVisible && (
           <Modal dismissModalAction={() => setPasswordPopupVisible(false)}>
             <ChatSidebarJoinProtectedModal
-              selectedProtectedGroup={selectedGroup}
               handleJoinRoom={handleJoinRoom}
               setPasswordPopupVisible={setPasswordPopupVisible}
+              selectedProtectedGroupToJoin={selectedProtectedGroupToJoin}
             />
           </Modal>
         )}
