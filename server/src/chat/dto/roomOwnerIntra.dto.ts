@@ -5,11 +5,10 @@ import { IsArray, IsHash, IsInt, IsString, IsUUID, isArray, isInt, isUUID } from
 import { Hash } from 'crypto';
 
 export class RoomOwnerIntraDTO {
-     @ApiProperty({
+  @ApiProperty({
     description: swaggerConstants.dto.roomOwnerIntraDTO.data.description,
     example: swaggerConstants.dto.roomOwnerIntraDTO.data.example,
   })
-    @IsInt()
-    ownerIntra: number;
-  }
-  
+  @IsInt()
+  ownerIntra: number;
+}
