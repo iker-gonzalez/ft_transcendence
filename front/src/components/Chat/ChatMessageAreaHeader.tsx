@@ -16,6 +16,8 @@ import { useMessageData } from '../../context/ChatDataContext';
 import ChatMessageAreaHeaderName from './ChatMessageAreaHeaderName';
 import ChatMessageAreaHeaderConvoActions from './ChatMessageAreaHeaderConvoActions';
 import ChatMessageAreaHeaderChannelActions from './ChatMessageAreaHeaderChannelActions';
+import { darkBgColor, primaryColor } from '../../constants/color-tokens';
+import UsersIcon from '../../assets/svg/users.svg';
 
 interface ChatMessageAreaHeaderProps {
   user?: User | null;
@@ -47,6 +49,33 @@ const HeaderWrapper = styled.div`
     display: flex;
     align-items: center;
     gap: 16px;
+  }
+
+  .users-count {
+    border: 2px solid ${primaryColor};
+    background-color: ${primaryColor};
+    border-radius: 8px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+
+    cursor: help;
+
+    .counter {
+      padding: 2px 8px;
+      background-color: ${darkBgColor};
+      border-radius: 6px 0 0 6px;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .icon {
+      height: 20px;
+      object-fit: contain;
+      padding: 1px 6px;
+    }
   }
 `;
 
@@ -151,6 +180,27 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         channelData={channelData}
         setShowFriendProfile={setShowFriendProfile}
       />
+      {(() => {
+        if (channelData) {
+          const { usersInfo } = channelData;
+
+          const sortedUsersList = usersInfo
+            .map((user) => user.username)
+            .sort((a, b) => a.localeCompare(b))
+            .join(', ');
+
+          return (
+            <div className="users-count" title={sortedUsersList}>
+              <p aria-label={`${usersInfo.length} members`} className="counter">
+                {usersInfo.length}
+              </p>
+              <img src={UsersIcon} alt="" className="icon" />
+            </div>
+          );
+        }
+
+        return <></>;
+      })()}
       {user && userData && (
         <ChatMessageAreaHeaderConvoActions
           user={user}
