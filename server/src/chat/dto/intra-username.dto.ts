@@ -10,17 +10,16 @@ export class IntraUsernameDTO {
   //      example: swaggerConstants.dto.allExistingChannelsDTO.data.example,
   //    }) 
 
-  
-    @IsNumber()
-    intra: number;
 
-    @IsString()
-    username: string;
+  @IsNumber()
+  intra: number;
 
-    constructor(intra: number, username: string) {
-      this.intra = intra;
-      this.username = username;
+  @IsString()
+  username: string;
+
+  constructor(intra: number, username: string) {
+    this.intra = intra;
+    this.username = username;
   }
 
 }
-  
