@@ -7,7 +7,7 @@ export const testUserData: IntraUserDataDto = {
   email: 'test@42urduliz.com',
   intraId: 666,
   isTwoFactorAuthEnabled: false,
-  username: 'test-',
+  username: 'jroek',
 };
 
 export const testUser2Data: IntraUserDataDto = {
@@ -17,7 +17,7 @@ export const testUser2Data: IntraUserDataDto = {
   email: 'test2@42urduliz.com',
   intraId: 667,
   isTwoFactorAuthEnabled: false,
-  username: 'test2-',
+  username: 'vsmith',
 };
 
 export const testUser3Data: IntraUserDataDto = {
@@ -27,5 +27,5 @@ export const testUser3Data: IntraUserDataDto = {
   email: 'test3@42urduliz.com',
   intraId: 668,
   isTwoFactorAuthEnabled: false,
-  username: 'test3-',
+  username: 'rroan',
 };
