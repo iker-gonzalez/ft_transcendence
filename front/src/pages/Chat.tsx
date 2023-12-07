@@ -4,7 +4,6 @@ import ChatMessageArea from '../components/Chat/ChatMessageArea';
 import Group from '../interfaces/chat-group.interface';
 import User from '../interfaces/chat-user.interface';
 import DirectMessage from '../interfaces/chat-message.interface';
-import GroupMessage from '../interfaces/chat-group-message.interface';
 import { useUserData } from '../context/UserDataContext';
 import CenteredLayout from '../components/UI/CenteredLayout';
 import styled from 'styled-components';
@@ -123,12 +122,16 @@ const Chat: React.FC = () => {
   const handleGroupClick = async (group: Group) => {
     const groupInfo = await fetchGroupMessages(group);
     let groupMessages: DirectMessage[] = [];
-    
-    if (groupInfo.channelMessage && groupInfo.channelMessage.length > 0) {
-      groupMessages = groupInfo.channelMessage.map((message: DirectMessage) => ({
-        ...message,
-      }));
+  
+    if (groupInfo.channelMessage) {
+      const channelMessage = await groupInfo.channelMessage;
+      if (channelMessage.length > 0) {
+        groupMessages = channelMessage.map((message: DirectMessage) => ({
+          ...message,
+        }));
+      }
     }
+  
     setMessages(groupMessages);
     const freshChannelData = await fetchChannelData(group.name);
     setChannelData(freshChannelData);
@@ -143,7 +146,7 @@ const Chat: React.FC = () => {
           content,
           receiverIntraId,
           receiverName,
-          timestamp,
+          createdAt,
           senderIntraId,
           senderAvatar,
           senderName,
@@ -152,14 +155,11 @@ const Chat: React.FC = () => {
         const isCurrentUserSender = selectedUser?.intraId === senderIntraId;
         const isCurrentUserReceiver = selectedUser?.intraId === receiverIntraId;
 
-        console.log('selectedUser', selectedUser);
-        console.log('selectedGroup', selectedGroup);
-
         if ((isCurrentUserSender || isCurrentUserReceiver) && !selectedGroup) {
           setMessages((prevState: any[]) => {
             const newMessage = {
               content,
-              createdAt: new Date(timestamp).toISOString(),
+              createdAt,
               receiverAvatar: '',
               receiverName,
               roomName: null,
@@ -178,7 +178,7 @@ const Chat: React.FC = () => {
           const {
             content,
             roomName,
-            timestamp,
+            createdAt,
             senderIntraId,
             senderAvatar,
             senderName,
@@ -192,16 +192,16 @@ const Chat: React.FC = () => {
               const newMessage = {
                 content,
                 roomName,
-                createdAt: new Date(timestamp).toISOString(),
+                createdAt,
                 senderIntraId,
                 senderAvatar,
                 senderName,
               } as any;
+              console.log('timestam group', newMessage.createdAt);
               return [...prevState, newMessage];
             });
           }
           updateUserSidebar();
-
       };
 
       // Add the listeners to the socket
@@ -230,7 +230,6 @@ const Chat: React.FC = () => {
     }
 
   }, [newMessageSent, isSocketConnected, selectedUser, selectedGroup]);
-
 
   function updateUserSidebar() {
     setUpdateChatData((prevState) => !prevState);
@@ -270,13 +269,17 @@ const Chat: React.FC = () => {
           messages={messages}
           updateUserSidebar={updateUserSidebar}
           onNewMessage={(newMessage: any) => {
+            console.log('newMessage???', newMessage);
             setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
             if (selectedUser) {
+              setMessages((prevState) => [...prevState, newMessage]);
               // console.log('new direct message?: ', newMessage);
-              handleUserClick(selectedUser);
+              // handleUserClick(selectedUser);
             } else if (selectedGroup) {
+              console.log('new group message?: ', newMessage);
               // console.log('new group message?: ', newMessage);
               setMessages((prevState) => [...prevState, newMessage]);
+              // handleGroupClick(selectedGroup);
             }
           }}
           socket={socket}
