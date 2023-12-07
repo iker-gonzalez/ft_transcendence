@@ -49,64 +49,59 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
       </EmpyStateDiv>
     );
   }
-  console.log('messagesss', messages);
-  console.log('selectedUser: ', selectedUser);
-  let filteredMessages = messages;
-
-  if (selectedUser) {
-    filteredMessages = messages.filter((message) => {
-      return (
-        selectedUser.username === message.senderName ||
-        selectedUser.username === message.receiverName
-      );
-    });
-  } else if (selectedGroup) {
-    filteredMessages = messages.filter(
-      (message) => selectedGroup.name === message.roomName,
-    );
-  }
-
-  if (filteredMessages.length === 0) {
-    return (
-      <EmpyStateDiv>
-        <p>There are no messages to show</p>
-      </EmpyStateDiv>
-    );
-  }
 
   return (
     <MessageList>
-      {filteredMessages.map((message, index) => {
-        return (
-          <div key={`${message.id}-${index}`}>
-            <ChatMessageItem
-              message={message}
-              isRepeatedMessage={(() => {
-                const previousMessage = messages[index - 1];
+      {messages.length === 0 ? (
+        <EmpyStateDiv>
+          <p>There are no messages to show</p>
+        </EmpyStateDiv>
+      ) : (
+        messages
+          .filter((message) => {
+            if (selectedUser) {
+              return (
+                selectedUser.username === message.senderName ||
+                selectedUser.username === message.receiverName
+              );
+            } else if (selectedGroup) {
+              return selectedGroup.name === message.roomName;
+            }
 
-                if (!previousMessage) return false;
-                if (message.createdAt) {
-                  const isSameSender =
-                    previousMessage.senderName === message.senderName;
+            return true;
+          })
+          .map((message, index) => {
+            return (
+              <div key={`${message.id}-${index}`}>
+                <ChatMessageItem
+                  message={message}
+                  isRepeatedMessage={(() => {
+                    const previousMessage = messages[index - 1];
 
-                  const differenceInMinutes = moment(message.createdAt)
-                    .seconds(0)
-                    .diff(
-                      moment(previousMessage.createdAt).seconds(0),
-                      'minutes',
-                    );
+                    if (!previousMessage) return false;
+                    if (message.createdAt) {
+                      const isSameSender =
+                        previousMessage.senderName === message.senderName;
 
-                  const wasSentAtSameTime = differenceInMinutes === 0;
+                      const differenceInMinutes = moment(message.createdAt)
+                        .seconds(0)
+                        .diff(
+                          moment(previousMessage.createdAt).seconds(0),
+                          'minutes',
+                        );
 
-                  return isSameSender && wasSentAtSameTime;
-                }
+                      const wasSentAtSameTime = differenceInMinutes === 0;
 
-                return false;
-              })()}
-            />
-          </div>
-        );
-      })}
+                      return isSameSender && wasSentAtSameTime;
+                    }
+
+                    return false;
+                  })()}
+                />
+              </div>
+            );
+          })
+      )}
     </MessageList>
   );
 };
