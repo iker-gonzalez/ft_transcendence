@@ -6,8 +6,8 @@ services:
       context: ./
       dockerfile: ./docker/backend/dockerfile
     container_name: backend
-    depends_on:
-      - dev-db
+    # depends_on:
+    #   - dev-db
     environment:
       API_PORT: 3000
       DATABASE_URL: "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@dev-db:5432/${DATABASE_NAME}?schema=public"
@@ -127,4 +127,4 @@ services:
 networks:
   frontend_network:
   backend_network:
-  backend_test_network:
+  # backend_test_network:
