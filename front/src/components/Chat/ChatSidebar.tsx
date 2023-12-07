@@ -176,7 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchUserData(token as string);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleJoinRoom = async (newGroup: Group, password: string) => {
+  const handleJoinRoom = async (newGroup: Group, password: string, isNewGroup: boolean) => {
     if (newGroup.name && socket) {
       const payload = {
         roomName: newGroup.name,
@@ -184,7 +184,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         type: newGroup.type,
         password: password,
       };
-      if (newGroup.type === 'PROTECTED') {
+      if (newGroup.type === 'PROTECTED' && !isNewGroup) {
         const { status } = await fetchAuthorized(
           `${getBaseUrl()}/chat/${password}/${newGroup.name}/isPasswordCorrect`,
           {
@@ -195,7 +195,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             },
           },
         );
-
+          console.log('status', status);
         if (status !== 200) {
           launchFlashMessage(
             `The password you entered is wrong.`,
