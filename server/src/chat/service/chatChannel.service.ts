@@ -1001,6 +1001,7 @@ export class ChatChannelService {
       console.log(foundChatRoom.password);
       // Compara los hashes
       const passwordsMatch = await bcrypt.compare(password, foundChatRoom.password);
+      console.log("passwordsMatch");
       console.log(passwordsMatch);
       if (!passwordsMatch)
         return false;
