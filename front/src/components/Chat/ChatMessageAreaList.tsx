@@ -69,7 +69,7 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
               return (
                 <p className="small mb-24">
                   ℹ️ You were muted by an admin of this channel. You cannot
-                  write new messages.
+                  write new messages until you are unmuted.
                 </p>
               );
             } else {

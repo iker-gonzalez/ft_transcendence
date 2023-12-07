@@ -10,6 +10,7 @@ import { useFlashMessages } from '../../../context/FlashMessagesContext';
 import FlashMessageLevel from '../../../interfaces/flash-message-color.interface';
 import { useGameRouteContext } from '../../../pages/Game';
 import { getIsPlayer1 } from '../../../utils/utils';
+import Badge from '../../UI/Badge';
 
 interface GameMatchQueueSessionProps {
   players: GameSessionUser[];
@@ -39,6 +40,29 @@ const WrapperDiv = styled.div`
       img {
         width: 130px;
       }
+    }
+
+    .title-container {
+      position: relative;
+
+      .badge {
+        position: absolute;
+        top: 50%;
+        left: 105%;
+        transform: translateY(-50%);
+
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .disclaimer {
+    margin-top: 24px;
+    text-align: center;
+    max-width: 500px;
+
+    span {
+      font-weight: bold;
     }
   }
 `;
@@ -117,7 +141,14 @@ const GameMatchQueueSession: React.FC<GameMatchQueueSessionProps> = ({
           return (
             <div key={player.id}>
               <div className="user-box mb-24">
-                <p className="title-1 mb-8">{player.username}</p>
+                <div className="title-container">
+                  <p className="title-1 mb-8">{player.username}</p>
+                  {getIsPlayer1(players, player.intraId) && (
+                    <Badge className="badge">
+                      <p className="small">Session leader</p>
+                    </Badge>
+                  )}
+                </div>
                 <RoundImg alt="" src={player.avatar} />
               </div>
               <UserStatsInfo
@@ -129,6 +160,11 @@ const GameMatchQueueSession: React.FC<GameMatchQueueSessionProps> = ({
         })}
       </div>
       <MainButton onClick={onGoToMatch}>Go to match</MainButton>
+
+      <p className="disclaimer">
+        ℹ️ With great power comes great responsibility. Only the{' '}
+        <span>session leader</span> can configure the match and pause the game.
+      </p>
     </WrapperDiv>
   );
 };
