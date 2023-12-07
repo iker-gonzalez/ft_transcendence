@@ -9,7 +9,7 @@ import { AllUsersDMWithDTO } from './../dto/all-users-DM-with.dto';
 
 @Injectable()
 export class ChatDMService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /********************************************************** */
   //                     END POINT GETTER                     //

@@ -7,9 +7,9 @@ export class GetDirectMessageDto {
   @IsNumber()
   found: number;
 
- // @ApiProperty({
- //   description: swaggerConstants.dto.getFriendsResponse.data.description,
- //   example: swaggerConstants.dto.getFriendsResponse.data.example,
- // })
+  // @ApiProperty({
+  //   description: swaggerConstants.dto.getFriendsResponse.data.description,
+  //   example: swaggerConstants.dto.getFriendsResponse.data.example,
+  // })
   data: UserWithDirectMessageDto;
 }

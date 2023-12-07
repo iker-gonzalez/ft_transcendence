@@ -6,16 +6,16 @@ import { Hash } from 'crypto';
 import { isNull } from 'util';
 
 export class RoomOwnerPasswordIntraDTO {
-    
-    @ApiProperty({
+
+  @ApiProperty({
     description: swaggerConstants.dto.roomOwnerPasswordIntradto.data.description,
-    example: swaggerConstants.dto.roomOwnerPasswordIntradto.data.example})
+    example: swaggerConstants.dto.roomOwnerPasswordIntradto.data.example
+  })
 
-    @IsInt()
-    ownerIntra: number;
+  @IsInt()
+  ownerIntra: number;
 
-    @IsOptional()
-    @IsString() 
-    password: string | null;
-  }
-  
+  @IsOptional()
+  @IsString()
+  password: string | null;
+}

@@ -7,8 +7,8 @@ import { UserService } from '../user/user.service';
 import { UserModule } from '../user/user.module';
 
 @Module({
-  controllers : [ChatController],
-  imports: [UserModule], 
+  controllers: [ChatController],
+  imports: [UserModule],
   providers: [ChatGateway, ChatDMService, ChatChannelService, UserService],
 })
-export class ChatModule {}
+export class ChatModule { }
