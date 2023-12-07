@@ -372,23 +372,15 @@ export class ChatController {
       @Param('b_mute') b_mute: number,
       @Body() paydload: RoomOwnerPasswordIntraDTO,
     ) : Promise<void> {
-      console.log("updateChannelPassword patch");
-      try{
         const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
         if ( paydload.password != null)
         {
-          console.log("paydload.password");
-          console.log(paydload.password);
-          this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, paydload.password, ChannelType.PROTECTED);
+          return this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, paydload.password, ChannelType.PROTECTED);
         }
         else
         {
-          this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, paydload.password, ChannelType.PUBLIC);
+          return this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, paydload.password, ChannelType.PUBLIC);
         }
-      }
-      catch (error) {
-          console.error("Error:", error);
-      }
     }
 
     @Get(':password/:roomName/isPasswordCorrect') // Define la ruta para los parámetros userId1 y userId2
@@ -405,17 +397,10 @@ export class ChatController {
       @Param('roomName') roomName: string,
     ) : Promise<boolean> {  
       console.log("isPasswordCorrect get");
-      try{
         if (await this.chatChannelService.isPasswordCorrect(roomName,password))
-          return true;
+          return;
         else
-          return false;
-      }
-      catch (error) { 
-          console.error("Error:", error);
-          return false;
-      }
-      return true;
+          throw new BadRequestException('Invalid password');
     }
 
     @Patch(':userAddIntra/:roomName/:b_bool/setUserToPrivateChannel') // Define la ruta para los parámetros userId1 y userId2
