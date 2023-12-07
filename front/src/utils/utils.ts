@@ -130,9 +130,6 @@ export async function patchChannelPassword(
   password: string | null,
 ): Promise<number> {
   if (channelName && ownerIntraId) {
-    console.log('channelName:', channelName);
-    console.log('ownerIntraId:', ownerIntraId);
-    console.log('password:', password);
     const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/updatePassword`, {
       method: 'PATCH',
       headers: {

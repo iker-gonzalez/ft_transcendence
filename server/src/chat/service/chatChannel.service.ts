@@ -966,11 +966,13 @@ try{
  await this.prisma.chatRoom.update({
    where: { id: foundChatRoom.id },
    data: { password: hashedPassword,
-           type: type },
+           type: type, mutedUsers: {
+            set: [],
+           } },
  });
  }
 catch(error){
-   console.error("Error:", error);
+   throw error;
  }
 }
 
