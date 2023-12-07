@@ -63,7 +63,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           senderName: userData?.username || 'Anonymous',
           senderAvatar: userData?.avatar || 'Anonymous',
           content: message,
-          timestamp: new Date().toString(),
+          createdAt: new Date().toISOString(),
         };
         onMessageSubmit(newMessage);
         setMessage('');

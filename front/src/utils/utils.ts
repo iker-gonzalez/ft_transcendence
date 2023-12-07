@@ -120,7 +120,7 @@ export function createNewDirectMessage({
     senderName: userData.username || 'Anonymous',
     senderAvatar: userData.avatar || 'Anonymous',
     content: contentText,
-    timestamp: new Date().toString(),
+    createdAt: new Date().toString(),
   };
 }
 
