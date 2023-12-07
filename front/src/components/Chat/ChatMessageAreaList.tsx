@@ -1,16 +1,17 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import ChatMessageItem from './ChatMessageItem';
 import User from '../../interfaces/chat-user.interface';
 import Group from '../../interfaces/chat-group.interface';
 import moment from 'moment';
-import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
+import { useUserData } from '../../context/UserDataContext';
 
 type ChatMessageAreaListProps = {
   messages: DirectMessage[];
   selectedUser: User | null;
   selectedGroup: Group | null;
+  mutedUsers: { username: string }[];
 };
 
 const MessageList = styled.ul`
@@ -35,22 +36,9 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
   messages,
   selectedUser,
   selectedGroup,
+  mutedUsers,
 }): JSX.Element => {
-  const [mutedUsers, setMutedUsers] = React.useState<{ username: string }[]>(
-    [],
-  );
-
-  useEffect(() => {
-    if (selectedGroup) {
-      fetchAuthorized(`${getBaseUrl()}/chat/${selectedGroup.id}/mutedUsers`)
-        .then((res) => {
-          return res.json();
-        })
-        .then((data) => {
-          setMutedUsers(data.data);
-        });
-    }
-  }, [messages, selectedGroup]);
+  const { userData } = useUserData();
 
   if (selectedUser?.isBlocked) {
     return (
@@ -70,54 +58,80 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
           <p>There are no messages to show</p>
         </EmpyStateDiv>
       ) : (
-        messages
-          .filter((message) => {
-            if (selectedUser) {
-              return (
-                selectedUser.username === message.senderName ||
-                selectedUser.username === message.receiverName
-              );
-            } else if (selectedGroup) {
-              const isMutedUser = mutedUsers?.some(
-                (mutedUser) => message.senderName === mutedUser.username,
-              );
+        <>
+          {(() => {
+            console.log(mutedUsers);
+          })()}
+          {(() => {
+            if (mutedUsers.length === 0) return;
 
-              return selectedGroup.name === message.roomName && !isMutedUser;
-            }
-
-            return true;
-          })
-          .map((message, index) => {
-            return (
-              <div key={`${message.id}-${index}`}>
-                <ChatMessageItem
-                  message={message}
-                  isRepeatedMessage={(() => {
-                    const previousMessage = messages[index - 1];
-
-                    if (!previousMessage) return false;
-                    if (message.createdAt) {
-                      const isSameSender =
-                        previousMessage.senderName === message.senderName;
-
-                      const differenceInMinutes = moment(message.createdAt)
-                        .seconds(0)
-                        .diff(
-                          moment(previousMessage.createdAt).seconds(0),
-                          'minutes',
-                        );
-
-                      const wasSentAtSameTime = differenceInMinutes === 0;
-
-                      return isSameSender && wasSentAtSameTime;
-                    }
-
-                    return false;
-                  })()}
-                />
-              </div>
+            const isCurrentUserMuted = mutedUsers.some(
+              (mutedUser) => mutedUser.username === userData?.username,
             );
-          })
+            if (isCurrentUserMuted) {
+              return (
+                <p className="small mb-24">
+                  ℹ️ You were muted by an admin of this channel. You cannot
+                  write new messages.
+                </p>
+              );
+            } else {
+              return (
+                <p className="small mb-24">
+                  ℹ️ Some messages were hidden by the admin(s) of this channel.
+                </p>
+              );
+            }
+          })()}
+          {messages
+            .filter((message) => {
+              if (selectedUser) {
+                return (
+                  selectedUser.username === message.senderName ||
+                  selectedUser.username === message.receiverName
+                );
+              } else if (selectedGroup) {
+                const isMutedUser = mutedUsers?.some(
+                  (mutedUser) => message.senderName === mutedUser.username,
+                );
+
+                return selectedGroup.name === message.roomName && !isMutedUser;
+              }
+
+              return true;
+            })
+            .map((message, index) => {
+              return (
+                <div key={`${message.id}-${index}`}>
+                  <ChatMessageItem
+                    message={message}
+                    isRepeatedMessage={(() => {
+                      const previousMessage = messages[index - 1];
+
+                      if (!previousMessage) return false;
+                      if (message.createdAt) {
+                        const isSameSender =
+                          previousMessage.senderName === message.senderName;
+
+                        const differenceInMinutes = moment(message.createdAt)
+                          .seconds(0)
+                          .diff(
+                            moment(previousMessage.createdAt).seconds(0),
+                            'minutes',
+                          );
+
+                        const wasSentAtSameTime = differenceInMinutes === 0;
+
+                        return isSameSender && wasSentAtSameTime;
+                      }
+
+                      return false;
+                    })()}
+                  />
+                </div>
+              );
+            })}
+        </>
       )}
     </MessageList>
   );

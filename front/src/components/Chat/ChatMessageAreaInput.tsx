@@ -9,6 +9,13 @@ import User from '../../interfaces/chat-user.interface';
 import MainInput from '../UI/MainInput';
 import { createNewDirectMessage } from '../../utils/utils';
 
+interface MessageInputProps {
+  onMessageSubmit: (message: DirectMessage | GroupMessage) => void;
+  selectedUser: User | null;
+  selectedGroup: Group | null;
+  mutedUsers: { username: string }[];
+}
+
 const InputContainer = styled.div`
   margin-top: 20px;
 
@@ -24,20 +31,18 @@ const InputContainer = styled.div`
   }
 `;
 
-interface MessageInputProps {
-  onMessageSubmit: (message: DirectMessage | GroupMessage) => void;
-  selectedUser: User | null;
-  selectedGroup: Group | null;
-}
-
 const MessageInput: React.FC<MessageInputProps> = ({
   onMessageSubmit,
   selectedUser,
   selectedGroup,
+  mutedUsers,
 }) => {
   const [message, setMessage] = useState('');
-
   const { userData } = useUserData();
+
+  const isCurrentUserBlocked = mutedUsers?.some(
+    (mutedUser) => mutedUser.username === userData?.username,
+  );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
@@ -81,9 +86,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
           placeholder="Type your message..."
           value={message}
           onChange={handleChange}
-          disabled={selectedUser?.isBlocked}
+          disabled={selectedUser?.isBlocked || isCurrentUserBlocked}
         />
-        <MainButton type="submit" disabled={selectedUser?.isBlocked}>
+        <MainButton
+          type="submit"
+          disabled={selectedUser?.isBlocked || isCurrentUserBlocked}
+        >
           Send
         </MainButton>
       </form>
