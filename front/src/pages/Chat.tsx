@@ -104,32 +104,32 @@ const Chat: React.FC = () => {
   const handleUserClick = async (user: User) => {
     const users = await fetchDirectMessageUsers();
     setUsers(users);
-
+  
     const userExists = users.some((u: User) => u.intraId === user.intraId);
-
+  
     if (!userExists) {
       setUsers((prevUsers) => [...prevUsers, user]);
     }
-
-    const directMessages: DirectMessage[] = await fetchUserMessages(
-      user.intraId,
-    );
-    // setSelectedUser(user);
-    // setSelectedGroup(null);
-    setMessages(directMessages);
+  
+    const directMessages: DirectMessage[] = await fetchUserMessages(user.intraId);
+  
+    if (directMessages && directMessages.length > 0) {
+      setMessages(directMessages);
+    } else {
+      setMessages([]);
+    }
   };
 
   const handleGroupClick = async (group: Group) => {
     const groupInfo = await fetchGroupMessages(group);
-    const groupMessages: DirectMessage[] = groupInfo.channelMessage.map(
-      (message: DirectMessage) => ({
+    let groupMessages: DirectMessage[] = [];
+    
+    if (groupInfo.channelMessage && groupInfo.channelMessage.length > 0) {
+      groupMessages = groupInfo.channelMessage.map((message: DirectMessage) => ({
         ...message,
-      }),
-    );
-    // setSelectedGroup(group);
-    // setSelectedUser(null);
+      }));
+    }
     setMessages(groupMessages);
-
     const freshChannelData = await fetchChannelData(group.name);
     setChannelData(freshChannelData);
   };
