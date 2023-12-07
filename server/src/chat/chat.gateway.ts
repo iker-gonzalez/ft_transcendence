@@ -242,6 +242,8 @@ async handleUnmuteUserDM(client, payload) {
 
   @SubscribeMessage('banUser')
   async handleBanUser(client: Socket, payload) {
+    console.log('----banUser event-----');
+    console.log('payload:', payload);
     try {
       const userId = await this.chatDMservice.findUserIdByIntraId(
         payload.intraId,
