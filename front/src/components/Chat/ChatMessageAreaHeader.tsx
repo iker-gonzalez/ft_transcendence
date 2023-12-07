@@ -181,7 +181,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
         setShowFriendProfile={setShowFriendProfile}
       />
       {(() => {
-        if (channelData) {
+        if (channelData && group) {
           const { usersInfo } = channelData;
 
           const sortedUsersList = usersInfo
