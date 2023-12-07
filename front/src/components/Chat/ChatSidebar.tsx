@@ -83,8 +83,6 @@ const Title = styled.h2`
 `;
 
 const List = styled.ul`
-  list-style: none;
-
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -176,7 +174,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchUserData(token as string);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleJoinRoom = async (newGroup: Group, password: string, isNewGroup: boolean) => {
+  const handleJoinRoom = async (
+    newGroup: Group,
+    password: string,
+    isNewGroup: boolean,
+  ) => {
     if (newGroup.name && socket) {
       const payload = {
         roomName: newGroup.name,
@@ -195,7 +197,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             },
           },
         );
-          console.log('status', status);
         if (status !== 200) {
           launchFlashMessage(
             `The password you entered is wrong.`,
@@ -243,17 +244,19 @@ const Sidebar: React.FC<SidebarProps> = ({
               +
             </PlusSign>
           </TitleContainer>
-          <List>
-            <ChatSidebarConvoList
-              users={users}
-              handleUserClick={handleUserClick}
-              updateUserSidebar={updateUserSidebar}
-              wasSectionUpdated={wasSectionUpdated}
-              setWasSectionUpdated={setWasSectionUpdated}
-              setSelectedUser={setSelectedUser}
-              setSelectedGroup={setSelectedGroup}
-            />
-          </List>
+          <div style={{ overflow: 'hidden' }}>
+            <List className="animate__animated animate__fadeInDown">
+              <ChatSidebarConvoList
+                users={users}
+                handleUserClick={handleUserClick}
+                updateUserSidebar={updateUserSidebar}
+                wasSectionUpdated={wasSectionUpdated}
+                setWasSectionUpdated={setWasSectionUpdated}
+                setSelectedUser={setSelectedUser}
+                setSelectedGroup={setSelectedGroup}
+              />
+            </List>
+          </div>
         </UserList>
         {isPopupVisible && (
           <Modal
@@ -365,18 +368,20 @@ const Sidebar: React.FC<SidebarProps> = ({
               +
             </PlusSign>
           </TitleContainer>
-          <List>
-            {userGroups && (
-              <ChatSidebarChannelList
-                userGroups={userGroups}
-                handleGroupClick={handleGroupClick}
-                wasSectionUpdated={wasSectionUpdated}
-                setWasSectionUpdated={setWasSectionUpdated}
-                setSelectedUser={setSelectedUser}
-                setSelectedGroup={setSelectedGroup}
-              />
-            )}
-          </List>
+          <div style={{ overflow: 'hidden' }}>
+            <List className="animate__animated animate__fadeInDown">
+              {userGroups && (
+                <ChatSidebarChannelList
+                  userGroups={userGroups}
+                  handleGroupClick={handleGroupClick}
+                  wasSectionUpdated={wasSectionUpdated}
+                  setWasSectionUpdated={setWasSectionUpdated}
+                  setSelectedUser={setSelectedUser}
+                  setSelectedGroup={setSelectedGroup}
+                />
+              )}
+            </List>
+          </div>
         </UserList>
       </GradientBorder>
     </SidebarContainer>
