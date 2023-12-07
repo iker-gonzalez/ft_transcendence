@@ -103,15 +103,17 @@ const Chat: React.FC = () => {
   const handleUserClick = async (user: User) => {
     const users = await fetchDirectMessageUsers();
     setUsers(users);
-  
+
     const userExists = users.some((u: User) => u.intraId === user.intraId);
-  
+
     if (!userExists) {
       setUsers((prevUsers) => [...prevUsers, user]);
     }
-  
-    const directMessages: DirectMessage[] = await fetchUserMessages(user.intraId);
-  
+
+    const directMessages: DirectMessage[] = await fetchUserMessages(
+      user.intraId,
+    );
+
     if (directMessages && directMessages.length > 0) {
       setMessages(directMessages);
     } else {
@@ -122,7 +124,7 @@ const Chat: React.FC = () => {
   const handleGroupClick = async (group: Group) => {
     const groupInfo = await fetchGroupMessages(group);
     let groupMessages: DirectMessage[] = [];
-  
+
     if (groupInfo.channelMessage) {
       const channelMessage = await groupInfo.channelMessage;
       if (channelMessage.length > 0) {
@@ -131,7 +133,7 @@ const Chat: React.FC = () => {
         }));
       }
     }
-  
+
     setMessages(groupMessages);
     const freshChannelData = await fetchChannelData(group.name);
     setChannelData(freshChannelData);
@@ -173,35 +175,30 @@ const Chat: React.FC = () => {
       };
 
       const groupMessageListener = (messageData: string) => {
+        const {
+          content,
+          roomName,
+          createdAt,
+          senderIntraId,
+          senderAvatar,
+          senderName,
+        } = JSON.parse(messageData);
 
-        console.log('=====groupMessageListener=======', messageData);
-          const {
-            content,
-            roomName,
-            createdAt,
-            senderIntraId,
-            senderAvatar,
-            senderName,
-          } = JSON.parse(messageData);
-          
-          const isCurrentChannel = selectedGroup?.name === roomName;
-          console.log('selectedUser', selectedUser);
-          console.log('selectedGroup', selectedGroup);
-          if (isCurrentChannel && !selectedUser) {
-            setMessages((prevState: any[]) => {
-              const newMessage = {
-                content,
-                roomName,
-                createdAt,
-                senderIntraId,
-                senderAvatar,
-                senderName,
-              } as any;
-              console.log('timestam group', newMessage.createdAt);
-              return [...prevState, newMessage];
-            });
-          }
-          updateUserSidebar();
+        const isCurrentChannel = selectedGroup?.name === roomName;
+        if (isCurrentChannel && !selectedUser) {
+          setMessages((prevState: any[]) => {
+            const newMessage = {
+              content,
+              roomName,
+              createdAt,
+              senderIntraId,
+              senderAvatar,
+              senderName,
+            } as any;
+            return [...prevState, newMessage];
+          });
+        }
+        updateUserSidebar();
       };
 
       // Add the listeners to the socket
@@ -228,13 +225,11 @@ const Chat: React.FC = () => {
         }
       };
     }
-
   }, [newMessageSent, isSocketConnected, selectedUser, selectedGroup]);
 
   function updateUserSidebar() {
     setUpdateChatData((prevState) => !prevState);
   }
-
 
   if (!userData && isUserDataFetching) {
     return (
@@ -269,18 +264,11 @@ const Chat: React.FC = () => {
           messages={messages}
           updateUserSidebar={updateUserSidebar}
           onNewMessage={(newMessage: any) => {
-            console.log('newMessage???', newMessage);
             setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
-            if (selectedUser) {
+            if (selectedUser)
               setMessages((prevState) => [...prevState, newMessage]);
-              // console.log('new direct message?: ', newMessage);
-              // handleUserClick(selectedUser);
-            } else if (selectedGroup) {
-              console.log('new group message?: ', newMessage);
-              // console.log('new group message?: ', newMessage);
+            else if (selectedGroup)
               setMessages((prevState) => [...prevState, newMessage]);
-              // handleGroupClick(selectedGroup);
-            }
           }}
           socket={socket}
           setSelectedUser={setSelectedUser}

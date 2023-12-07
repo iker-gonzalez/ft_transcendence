@@ -67,10 +67,6 @@ export async function gameLoop({
   let matchFinish = false;
   const startedAt: Date = new Date();
 
-  console.log('theme is', theme);
-
-  console.log('powerUps are', powerUps[0], powerUps[1]);
-
   // Update initial data
   let ballData = {
     ...ballDataInit,
@@ -114,7 +110,6 @@ export async function gameLoop({
     },
   );
 
-  console.log('Is Ball Frozen? ', isBallFrozen);
   countDownToStart(countDown, canvas, sounds);
 
   // Abort game if the user closes the tab

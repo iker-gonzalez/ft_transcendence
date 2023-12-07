@@ -59,7 +59,6 @@ export class ChatController {
     @Param('userId1') userIntraId1: string,
     @Param('userId2') userIntraId2: string,
   ): Promise<ConversationMessageDTO[]> {
-    console.log('getDMBetweenUsers get');
     try {
       const userId1 = await this.chatDMService.findUserIdByIntraId(
         parseInt(userIntraId1, 10),
@@ -87,8 +86,6 @@ export class ChatController {
       parseInt(userIntraId, 10),
     );
 
-    console.log('getAllUserDMWith get');
-    console.log(userId);
     try {
       return await this.chatDMService.getAllUserDMWith(userId);
     } catch (error) {
@@ -108,7 +105,6 @@ export class ChatController {
     @Param('ToBlockIntra') ToBlockIntra: string,
     @Param('b_block') b_block: number,
   ): Promise<void> {
-    console.log('patchBlockUser patch');
     try {
       const userId = await this.chatDMService.findUserIdByIntraId(
         parseInt(userIntra, 10),
@@ -117,40 +113,12 @@ export class ChatController {
         parseInt(ToBlockIntra, 10),
       );
       if (b_block == 1) {
-        console.log('blocked patch');
-        console.log(b_block);
-
         return this.chatDMService.blockUserDM(userId, ToBlockId);
       } else return this.chatDMService.unblockUserDM(userId, ToBlockId);
     } catch (error) {
       console.error('Error:', error);
     }
   }
-
-  /*
-  @Post(':userIntra/:unblockUserIntra/unblockUser') 
-  @ApiParam({ name: 'userIntra' }) 
-  @ApiParam({ name: 'unblockUserIntra' }) 
-  @ApiOperation({
-    summary: swaggerConstants.chat.unblock.summary,
-  })
-  async getUnBlockUser(
-    @Param('userIntra') userIntra: string,
-    @Param('unblockUserIntra') unblockUserIntra: string,
-    ):Promise<void> {
-      
-      console.log("getUnBlockUser get");
-      console.log(userIntra);
-      try{
-        const userId = await this.chatDMService.findUserIdByIntraId(parseInt(userIntra, 10));
-        const ToBlockId = await this.chatDMService.findUserIdByIntraId(parseInt(unblockUserIntra, 10));
-        this.chatDMService.unblockUserDM(userId, ToBlockId);
-    } 
-      catch (error) {
-          console.error("Error:", error);
-      }
-  }
-*/
 
   /********************************************************** */
   //                    CHANNEL                               //
@@ -165,8 +133,6 @@ export class ChatController {
     type: AllExistingChannelsDTO,
   })
   async getAllExistingChannels(): Promise<any[]> {
-    console.log('getAllExistingChannels get');
-
     try {
       return this.chatChannelService.getAllExistingChannels();
     } catch (error) {
@@ -186,9 +152,6 @@ export class ChatController {
   async getAllUserChannelIn(
     @Param('userIntra') userIntraId: string,
   ): Promise<any[]> {
-    console.log('getAllUserChannelIn get');
-    console.log(userIntraId);
-
     try {
       const userId = await this.chatDMService.findUserIdByIntraId(
         parseInt(userIntraId, 10),
@@ -211,7 +174,6 @@ export class ChatController {
   async getMessageInRoom(
     @Param('roomName') roomName: string,
   ): Promise<AllChannelInfo[]> {
-    console.log('getMessageInRoom get');
     try {
       return this.chatChannelService.getMessageInRoom(roomName);
     } catch (error) {
@@ -222,34 +184,7 @@ export class ChatController {
   /********************************************************** */
   //                     ADMIN FUNCIONALITY                   //
   /********************************************************** */
-  /*
-  
-      @Post(':channelRoom/:ownerIntra/:deleteAdminIntra/deleteAdmin') 
-      @ApiParam({ name: 'channelRoom' }) 
-      @ApiParam({ name: 'ownerIntra' }) 
-      @ApiParam({ name: 'deleteAdminIntra' })
-      @ApiOperation({
-        summary: swaggerConstants.chat.deleteAdmin.summary,
-      })
-      async getdeleteAddminToChannel( 
-        @Param('channelRoom') channelRoom: string,
-        @Param('ownerIntra') ownerIntra: string,
-        @Param('deleteAdminIntra') deleteAdminIntra: string,
-      ) : Promise<void> { 
-        console.log("deleteAddminToChannel get");
-        console.log(channelRoom);
-        console.log(ownerIntra);
-        console.log(deleteAdminIntra);
-        try{
-          const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
-          const deleteAdminId = await this.chatDMService.findUserIdByIntraId(parseInt(deleteAdminIntra, 10));
-          this.chatChannelService.deleteAddminToChannel(channelRoom, ownerId, deleteAdminId);
-        }
-        catch (error) {
-            console.error("Error:", error);
-        }
-      }
-  */
+
   @Patch(':channelRoom/:setAdminIntra/:b_add/setAdmin')
   @ApiParam({ name: 'channelRoom' })
   @ApiParam({ name: 'setAdminIntra' })
@@ -267,9 +202,6 @@ export class ChatController {
     @Param('b_add') b_add: number,
     @Body() paydload: RoomOwnerIntraDTO,
   ): Promise<void> {
-    console.log('patchsetAddminToChannel patch');
-    console.log(channelRoom);
-    console.log(setAdminIntra);
     try {
       const ownerId = await this.chatDMService.findUserIdByIntraId(
         paydload.ownerIntra,
@@ -297,7 +229,6 @@ export class ChatController {
 
   @Get(':channelRoom/mutedUsers')
   async getMutedUsers(@Param('channelRoom') channelRoom: string) {
-    console.log('channelRoom getMutedUsers', channelRoom);
     return this.chatChannelService.getMutedUsers(channelRoom);
   }
 
@@ -318,11 +249,6 @@ export class ChatController {
     @Param('b_mute') b_mute: number,
     @Body() paydload: RoomOwnerIntraDTO,
   ): Promise<void> {
-    console.log('patchMuteUserToChannel patch');
-    console.log(channelRoom);
-    console.log(userToMuteIntra);
-    console.log(paydload);
-    console.log(paydload.ownerIntra);
     const ownerId = await this.chatDMService.findUserIdByIntraId(
       paydload.ownerIntra,
     );
@@ -347,33 +273,6 @@ export class ChatController {
         userToMuteId,
       );
   }
-  /*
-      @Post(':channelRoom/:ownerIntra/:userToUnMuteIntra/unmuteUser') 
-      @ApiParam({ name: 'channelRoom' }) 
-      @ApiParam({ name: 'ownerIntra' }) 
-      @ApiParam({ name: 'userToUnMuteIntra' })
-      @ApiOperation({
-        summary: swaggerConstants.chat.unmuteUser.summary,
-      })
-      async getUnMuteUserToChannel( 
-        @Param('channelRoom') channelRoom: string,
-        @Param('ownerIntra') ownerIntra: string,
-        @Param('userToUnMuteIntra') userToUnMuteIntra: string,
-      ) : Promise<void> { 
-        console.log("getMuteUserToChannel get");
-        console.log(channelRoom);
-        console.log(ownerIntra);
-        console.log(userToUnMuteIntra);
-        try{ 
-          const ownerId = await this.chatDMService.findUserIdByIntraId(parseInt(ownerIntra, 10));
-          const userToUnMuteId = await this.chatDMService.findUserIdByIntraId(parseInt(userToUnMuteIntra, 10));
-          this.chatChannelService.unmuteUserInChannel(channelRoom, ownerId, userToUnMuteId);
-        }
-        catch (error) {
-            console.error("Error:", error);
-        }
-      }
-  */
 
   @Patch(':channelRoom/updatePassword')
   @ApiParam({ name: 'channelRoom' })
@@ -425,7 +324,6 @@ export class ChatController {
     @Param('password') password: string,
     @Param('roomName') roomName: string,
   ): Promise<boolean> {
-    console.log('isPasswordCorrect get');
     try {
       if (await this.chatChannelService.isPasswordCorrect(roomName, password))
         return;
@@ -452,7 +350,6 @@ export class ChatController {
     @Param('b_bool') b_bool: number,
     @Body() paydload: RoomOwnerIntraDTO,
   ): Promise<void> {
-    console.log('addUserToPrivateChannel get');
     try {
       const userAddId = await this.chatDMService.findUserIdByIntraId(
         parseInt(userAddIntra, 10),

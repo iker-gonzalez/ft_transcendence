@@ -22,7 +22,6 @@ const ChatSidebarJoinProtectedModal: React.FC<
 }): JSX.Element => {
   const [password, setPassword] = useState('');
 
-
   const onJoiningProtectedChannel = async () => {
     if (selectedProtectedGroupToJoin) {
       const isErrorJoining = Boolean(
