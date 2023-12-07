@@ -16,6 +16,8 @@ import { useChatData, useMessageData } from '../context/ChatDataContext';
 import { ChannelData } from '../interfaces/chat-channel-data.interface';
 import { useChannelData } from '../context/ChatDataContext';
 import { useNavigate } from 'react-router-dom';
+import LoadingSpinner from '../components/UI/LoadingSpinner';
+import Cookies from 'js-cookie';
 
 const WrapperDiv = styled.div`
   width: 100%;
@@ -41,7 +43,7 @@ const Chat: React.FC = () => {
 
   const [messages, setMessages] = useState<DirectMessage[]>([]);
 
-  const { userData } = useUserData();
+  const { userData, fetchUserData, isUserDataFetching } = useUserData();
 
   const [allGroups, setAllGroups] = useState<Group[]>([]);
   const [channelData, setChannelData] = useState<ChannelData | null>(null);
@@ -60,7 +62,12 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     if (!userData) {
-      navigate('/');
+      const token = Cookies.get('token');
+      if (token) {
+        fetchUserData(token);
+      } else {
+        navigate('/');
+      }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -89,7 +96,7 @@ const Chat: React.FC = () => {
     };
 
     fetchData();
-  }, [updateChatData]);
+  }, [updateChatData, userData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { fetchUserMessages, fetchGroupMessages } = useMessageData();
   const { fetchChannelData } = useChannelData();
@@ -132,7 +139,6 @@ const Chat: React.FC = () => {
   useEffect(() => {
     if (isSocketConnected && socket) {
       const privateMessageListener = async (messageData: string) => {
-        console.log('========privateMessageListener=======', messageData);
         const {
           content,
           receiverIntraId,
@@ -167,6 +173,7 @@ const Chat: React.FC = () => {
       };
 
       const groupMessageListener = (messageData: string) => {
+
         console.log('=====groupMessageListener=======', messageData);
           const {
             content,
@@ -194,6 +201,7 @@ const Chat: React.FC = () => {
             });
           }
           updateUserSidebar();
+
       };
 
       // Add the listeners to the socket
@@ -220,15 +228,22 @@ const Chat: React.FC = () => {
         }
       };
     }
+
   }, [newMessageSent, isSocketConnected, selectedUser, selectedGroup]);
+
 
   function updateUserSidebar() {
     setUpdateChatData((prevState) => !prevState);
   }
 
-  // console.log('========chat page=======');
-  // console.log('selectedUser', selectedUser);
-  // console.log('selectedGroup', selectedGroup);
+
+  if (!userData && isUserDataFetching) {
+    return (
+      <CenteredLayout>
+        <LoadingSpinner />
+      </CenteredLayout>
+    );
+  }
 
   return (
     <CenteredLayout>

@@ -32,6 +32,8 @@ type ChatMessageAreaHeaderUsersModalProps = {
 };
 
 const UserManagementContainer = styled.div`
+  margin-top: 24px;
+
   > * {
     width: 100%;
   }
@@ -80,11 +82,19 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
       adminId: userData?.intraId,
       intraId: intraId,
     };
-    socket.emit('kickUser', payload);
-    launchFlashMessage(
-      `You have successfully kicked the user ${intraId}.`,
-      FlashMessageLevel.SUCCESS,
-    );
+    socket.emit('kickUser', payload, (res: any) => {
+      if (res.success) {
+        launchFlashMessage(
+          `You have kicked out the user ${intraId}.`,
+          FlashMessageLevel.SUCCESS,
+        );
+      } else {
+        launchFlashMessage(
+          'Something went wrong. Try again later.',
+          FlashMessageLevel.ERROR,
+        );
+      }
+    });
   };
 
   const ban = (intraId: number) => {
@@ -178,7 +188,6 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
         onChange={(e) => {
           setSelectedUser(parseInt(e.target.value));
         }}
-        className="mb-24"
       >
         <option>Choose a member</option>
         {channelData.usersInfo

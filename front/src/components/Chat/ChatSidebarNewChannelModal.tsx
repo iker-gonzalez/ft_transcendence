@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { CHANNEL_TYPES } from '../../constants/shared';
 import MainPasswordInput from '../UI/MainPasswordInput';
 import ContrastPanel from '../UI/ContrastPanel';
-import { darkBgColor } from '../../constants/color-tokens';
+import { darkBgColor, errorColor } from '../../constants/color-tokens';
 
 type ChatSidebarNewChannelModalProps = {
   roomName: string;
@@ -29,11 +29,25 @@ type ChatSidebarNewChannelModalProps = {
   userGroups: Group[] | null;
   setPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setPasswordPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedProtectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
+  setSelectedProtectedGroupToJoin: React.Dispatch<
+    React.SetStateAction<Group | null>
+  >;
   handleGroupClick: (group: Group) => void;
 };
 
 const WrapperDiv = styled.div`
+  .channel-name-container {
+    position: relative;
+
+    .error-message {
+      color: ${errorColor};
+
+      position: absolute;
+      left: 0;
+      bottom: -21px;
+    }
+  }
+
   .form-container {
     display: flex;
     justify-content: center;
@@ -79,7 +93,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
   userGroups,
   setPopupVisible,
   setPasswordPopupVisible,
-  setSelectedProtectedGroup,
+  setSelectedProtectedGroupToJoin,
   handleGroupClick,
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
@@ -123,7 +137,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       setPopupVisible(false);
       // Open password input popup
       setPasswordPopupVisible(true);
-      setSelectedProtectedGroup(group);
+      setSelectedProtectedGroupToJoin(group);
     } else {
       handleJoinRoom(group, ''); // no password
       updateUserSidebar();
@@ -143,20 +157,28 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
           </p>
         </div>
         <div className="form-container mb-24">
-          <MainInput
-            minLength={1}
-            maxLength={10}
-            type="text"
-            value={roomName}
-            onChange={(e) => {
-              setRoomName(e.target.value);
-              setIsRoomNameValid(
-                !allGroups?.some((group) => group.name === e.target.value),
-              );
-            }}
-            placeholder="Enter room name"
-            style={{ borderColor: isRoomNameValid ? '' : 'red' }}
-          />
+          <div className="channel-name-container">
+            <MainInput
+              minLength={1}
+              maxLength={10}
+              type="text"
+              value={roomName}
+              onChange={(e) => {
+                const channelName = e.target.value;
+                setRoomName(channelName);
+
+                const isNameAlreadyTaken = !allGroups?.some(
+                  (group) => group.name === channelName,
+                );
+                setIsRoomNameValid(isNameAlreadyTaken);
+              }}
+              placeholder="Enter room name"
+              style={{ borderColor: isRoomNameValid ? '' : errorColor }}
+            />
+            {!isRoomNameValid && (
+              <p className="error-message small">Channel name already taken</p>
+            )}
+          </div>
           <MainSelect
             value={groupNature}
             onChange={(e) => {
@@ -171,7 +193,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
           {groupNature !== CHANNEL_TYPES.PROTECTED && (
             <MainButton
               onClick={onJoiningNewChannel}
-              disabled={!isRoomNameValid}
+              disabled={!isRoomNameValid || roomName.length === 0}
             >
               Create
             </MainButton>
@@ -194,7 +216,11 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
               />
               <MainButton
                 onClick={onJoiningNewChannel}
-                disabled={!isRoomNameValid}
+                disabled={
+                  !isRoomNameValid ||
+                  password.length === 0 ||
+                  confirmationPassword.length === 0
+                }
               >
                 Create
               </MainButton>

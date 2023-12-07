@@ -5,30 +5,33 @@ import MainButton from '../UI/MainButton';
 import Group from '../../interfaces/chat-group.interface';
 
 type ChatSidebarJoinProtectedModalProps = {
-  selectedProtectedGroup: Group | null;
   handleJoinRoom: (
     newGroup: Group,
     password: string,
   ) => Promise<0 | 1 | undefined>;
   setPasswordPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedProtectedGroupToJoin: Group | null;
 };
 
 const ChatSidebarJoinProtectedModal: React.FC<
   ChatSidebarJoinProtectedModalProps
 > = ({
-  selectedProtectedGroup,
   handleJoinRoom,
   setPasswordPopupVisible,
+  selectedProtectedGroupToJoin,
 }): JSX.Element => {
-  
   const [password, setPassword] = useState('');
 
-  const onJoiningProtectedChannel = () => {
-    if (selectedProtectedGroup) {
-      handleJoinRoom(selectedProtectedGroup, password);
+
+  const onJoiningProtectedChannel = async () => {
+    if (selectedProtectedGroupToJoin) {
+      const isErrorJoining = Boolean(
+        await handleJoinRoom(selectedProtectedGroupToJoin, password),
+      );
+      setPassword('');
+
+      if (!isErrorJoining) setPasswordPopupVisible(false);
     }
-    setPassword('');
-    setPasswordPopupVisible(false);
   };
 
   return (
@@ -56,7 +59,9 @@ const ChatSidebarJoinProtectedModal: React.FC<
           onChange={(e: any) => setPassword(e.target.value)}
           placeholder="Enter password"
         />
-        <MainButton type="submit">Join</MainButton>
+        <MainButton type="submit" disabled={password.length === 0}>
+          Join
+        </MainButton>
       </form>
     </>
   );

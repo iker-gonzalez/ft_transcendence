@@ -121,6 +121,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   const handleNewMessage = (newMessage: DirectMessage | GroupMessage) => {
     if (socket) {
+
       if (selectedUser) {
         // console.log('message content: ', newMessage);
         socket.emit('privateMessage', newMessage);
