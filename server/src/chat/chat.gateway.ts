@@ -133,7 +133,13 @@ async handleUnmuteUserDM(client, payload) {
         if (payload.type == 'PRIVATE')
           throw new BadGatewayException('Cannot access to a private channel');
       }
-
+      
+      // Cuando se crear el grupo ya se crea un grupo ya se le añade al channel como usuario
+      if (channelExist)
+      {
+        await this.chatChannelservice.addUserToChannel(userId, payload.roomName);
+      }
+      
       client.join(payload.roomName);
       client.emit('joinedRoom', `Te has unido a la sala ${payload.roomName}`);
     } catch (error) {
