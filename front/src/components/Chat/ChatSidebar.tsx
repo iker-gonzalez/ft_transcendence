@@ -124,6 +124,8 @@ interface SidebarProps {
   handleGroupClick: (group: Group) => void;
   socket: Socket | null;
   channelData: ChannelData | null;
+  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -137,6 +139,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   selectedGroup,
   socket,
   channelData,
+  setSelectedUser,
+  setSelectedGroup
 }) => {
   const navigate = useNavigate();
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -246,6 +250,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               updateUserSidebar={updateUserSidebar}
               wasSectionUpdated={wasSectionUpdated}
               setWasSectionUpdated={setWasSectionUpdated}
+              setSelectedUser={setSelectedUser}
+              setSelectedGroup={setSelectedGroup}
             />
           </List>
         </UserList>
@@ -366,6 +372,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                 handleGroupClick={handleGroupClick}
                 wasSectionUpdated={wasSectionUpdated}
                 setWasSectionUpdated={setWasSectionUpdated}
+                setSelectedUser={setSelectedUser}
+                setSelectedGroup={setSelectedGroup}
               />
             )}
           </List>
