@@ -62,7 +62,7 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
           {(() => {
             if (mutedUsers?.length === 0) return;
 
-            const isCurrentUserMuted = mutedUsers.some(
+            const isCurrentUserMuted = mutedUsers?.some(
               (mutedUser) => mutedUser.username === userData?.username,
             );
             if (isCurrentUserMuted) {
