@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
@@ -14,6 +14,7 @@ import { ChannelData } from '../../interfaces/chat-channel-data.interface';
 import ChatMessageAreaList from './ChatMessageAreaList';
 import ChatAnimationData from '../../assets/lotties/chat.json';
 import Lottie from 'lottie-react';
+import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 
 interface ChatMessageAreaProps {
   selectedUser: User | null;
@@ -102,6 +103,22 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 }) => {
   const { userData } = useUserData();
 
+  const [mutedUsers, setMutedUsers] = React.useState<{ username: string }[]>(
+    [],
+  );
+
+  useEffect(() => {
+    if (selectedGroup) {
+      fetchAuthorized(`${getBaseUrl()}/chat/${selectedGroup.id}/mutedUsers`)
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          setMutedUsers(data.data);
+        });
+    }
+  }, [messages, selectedGroup]);
+
   const handleNewMessage = (newMessage: DirectMessage | GroupMessage) => {
     if (socket) {
       if (selectedUser) {
@@ -143,6 +160,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
             <div className="message-list-container">
               <ChatMessageAreaList
                 messages={messages}
+                mutedUsers={mutedUsers}
                 selectedUser={selectedUser}
                 selectedGroup={selectedGroup}
               />
@@ -151,6 +169,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               <MessageInput
                 selectedUser={selectedUser}
                 selectedGroup={selectedGroup}
+                mutedUsers={mutedUsers}
                 onMessageSubmit={handleNewMessage}
               />
             </div>
