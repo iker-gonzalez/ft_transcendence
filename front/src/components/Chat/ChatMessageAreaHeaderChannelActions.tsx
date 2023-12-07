@@ -206,7 +206,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     return isOwner() || isAdmin();
   };
 
-  console.log('channelData. type', channelData?.type);
+  // console.log('channelData. type', channelData?.type);
 
   return (
     <>

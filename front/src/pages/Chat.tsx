@@ -107,9 +107,8 @@ const Chat: React.FC = () => {
     const directMessages: DirectMessage[] = await fetchUserMessages(
       user.intraId,
     );
-    setSelectedUser(user);
-    setSelectedGroup(null);
-    console.log('directMessages', directMessages);
+    // setSelectedUser(user);
+    // setSelectedGroup(null);
     setMessages(directMessages);
   };
 
@@ -120,9 +119,8 @@ const Chat: React.FC = () => {
         ...message,
       }),
     );
-    setSelectedGroup(group);
-    setSelectedUser(null);
-    console.log('groupMessages', groupMessages);
+    // setSelectedGroup(group);
+    // setSelectedUser(null);
     setMessages(groupMessages);
 
     const freshChannelData = await fetchChannelData(group.name);
@@ -134,6 +132,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
     if (isSocketConnected && socket) {
       const privateMessageListener = async (messageData: string) => {
+        console.log('========privateMessageListener=======', messageData);
         const {
           content,
           receiverIntraId,
@@ -147,7 +146,10 @@ const Chat: React.FC = () => {
         const isCurrentUserSender = selectedUser?.intraId === senderIntraId;
         const isCurrentUserReceiver = selectedUser?.intraId === receiverIntraId;
 
-        if (isCurrentUserSender || isCurrentUserReceiver) {
+        console.log('selectedUser', selectedUser);
+        console.log('selectedGroup', selectedGroup);
+
+        if ((isCurrentUserSender || isCurrentUserReceiver) && !selectedGroup) {
           setMessages((prevState: any[]) => {
             const newMessage = {
               content,
@@ -165,10 +167,33 @@ const Chat: React.FC = () => {
       };
 
       const groupMessageListener = (messageData: string) => {
-        console.log('group message listener triggered');
-        console.log('messageData', messageData);
-        const parsedData = JSON.parse(messageData);
-        setMessages((prevMessages) => [...prevMessages, parsedData]);
+        console.log('=====groupMessageListener=======', messageData);
+          const {
+            content,
+            roomName,
+            timestamp,
+            senderIntraId,
+            senderAvatar,
+            senderName,
+          } = JSON.parse(messageData);
+          
+          const isCurrentChannel = selectedGroup?.name === roomName;
+          console.log('selectedUser', selectedUser);
+          console.log('selectedGroup', selectedGroup);
+          if (isCurrentChannel && !selectedUser) {
+            setMessages((prevState: any[]) => {
+              const newMessage = {
+                content,
+                roomName,
+                createdAt: new Date(timestamp).toISOString(),
+                senderIntraId,
+                senderAvatar,
+                senderName,
+              } as any;
+              return [...prevState, newMessage];
+            });
+          }
+          updateUserSidebar();
       };
 
       // Add the listeners to the socket
@@ -184,7 +209,6 @@ const Chat: React.FC = () => {
       //Clean up the listener when the component unmounts or when the receiverId changes
       return () => {
         if (socket) {
-          console.log('cleaning up listeners');
           socket.off(
             `privateMessageReceived/${userData?.intraId.toString()}`,
             privateMessageListener,
@@ -196,11 +220,15 @@ const Chat: React.FC = () => {
         }
       };
     }
-  }, [newMessageSent, isSocketConnected]);
+  }, [newMessageSent, isSocketConnected, selectedUser, selectedGroup]);
 
   function updateUserSidebar() {
     setUpdateChatData((prevState) => !prevState);
   }
+
+  // console.log('========chat page=======');
+  // console.log('selectedUser', selectedUser);
+  // console.log('selectedGroup', selectedGroup);
 
   return (
     <CenteredLayout>
@@ -216,6 +244,8 @@ const Chat: React.FC = () => {
           selectedGroup={selectedGroup}
           socket={socket}
           channelData={channelData}
+          setSelectedUser={setSelectedUser}
+          setSelectedGroup={setSelectedGroup}
         />
         <ChatMessageArea
           selectedUser={selectedUser}
@@ -224,14 +254,14 @@ const Chat: React.FC = () => {
           selectedGroup={selectedGroup}
           messages={messages}
           updateUserSidebar={updateUserSidebar}
-          onNewMessage={(newMessage: DirectMessage | GroupMessage) => {
+          onNewMessage={(newMessage: any) => {
             setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
             if (selectedUser) {
-              console.log('new direct message?: ', newMessage);
+              // console.log('new direct message?: ', newMessage);
               handleUserClick(selectedUser);
             } else if (selectedGroup) {
-              console.log('new group message?: ', newMessage);
-              handleGroupClick(selectedGroup);
+              // console.log('new group message?: ', newMessage);
+              setMessages((prevState) => [...prevState, newMessage]);
             }
           }}
           socket={socket}
