@@ -220,24 +220,29 @@ async handleUnmuteUserDM(client, payload) {
 
   @SubscribeMessage('kickUser')
   async handleKickUser(client: Socket, payload) {
-    console.log('----kickUser event-----');
-    console.log('payload:', payload);
-    try {
       const userId = await this.chatDMservice.findUserIdByIntraId(
         payload.intraId,
       );
       const addminId = await this.chatDMservice.findUserIdByIntraId(
         payload.adminId,
       );
+
+      if (!userId || !addminId) {
+        return {
+          success: false,
+        }
+      }
+
       await this.chatChannelservice.kickUserInChannel(
         payload.roomName,
         addminId,
         userId,
       );
       client.leave(payload.roomName);
-    } catch (error) {
-      console.error('Error:', error);
-    }
+
+      return {
+        success: true,
+      }
   }
 
   @SubscribeMessage('banUser')
