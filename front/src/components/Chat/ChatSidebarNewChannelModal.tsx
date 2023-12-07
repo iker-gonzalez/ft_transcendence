@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MainInput from '../UI/MainInput';
 import Group from '../../interfaces/chat-group.interface';
 import MainSelect from '../UI/MainSelect';
@@ -10,6 +10,9 @@ import { CHANNEL_TYPES } from '../../constants/shared';
 import MainPasswordInput from '../UI/MainPasswordInput';
 import ContrastPanel from '../UI/ContrastPanel';
 import { darkBgColor, errorColor } from '../../constants/color-tokens';
+import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
+import Cookies from 'js-cookie';
+import { useUserData } from '../../context/UserDataContext';
 
 type ChatSidebarNewChannelModalProps = {
   roomName: string;
@@ -100,6 +103,24 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
   const [selectedExistingGroup, setSelectedExistingGroup] =
     React.useState<Group | null>(null);
   const [confirmationPassword, setConfirmationPassword] = React.useState('');
+  const [bannedUsers, setBannedUsers] = React.useState<any[]>([]);
+  const { userData } = useUserData();
+
+  useEffect(() => {
+    fetchAuthorized(`${getBaseUrl()}/chat/bannedUsers`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        setBannedUsers(data.data);
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoiningNewChannel = async (): Promise<void> => {
     if (password !== confirmationPassword) {
@@ -229,7 +250,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
         )}
       </ContrastPanel>
 
-      {allGroups && (
+      {allGroups && bannedUsers && (
         <ContrastPanel
           $backgroundColor={darkBgColor}
           className="existing-channels-container"
@@ -250,7 +271,19 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
                   group.type === CHANNEL_TYPES.PUBLIC ||
                   group.type === CHANNEL_TYPES.PROTECTED;
 
-                return !wasAlreadyJoinedByUser && isPublicOrProtected;
+                const channelBannedUsers = bannedUsers.find(
+                  (channel) => channel.name === group.name,
+                )?.bannedUsers;
+
+                const isUserBannedFromChannel = channelBannedUsers?.some(
+                  (bannedUser: any) => bannedUser.intraId === userData?.intraId,
+                );
+
+                return (
+                  !wasAlreadyJoinedByUser &&
+                  isPublicOrProtected &&
+                  !isUserBannedFromChannel
+                );
               });
 
               return (
