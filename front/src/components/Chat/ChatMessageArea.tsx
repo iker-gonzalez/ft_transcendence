@@ -108,7 +108,7 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   );
 
   useEffect(() => {
-    if (selectedGroup) {
+    if (selectedGroup?.id) {
       fetchAuthorized(`${getBaseUrl()}/chat/${selectedGroup.id}/mutedUsers`)
         .then((res) => {
           return res.json();
