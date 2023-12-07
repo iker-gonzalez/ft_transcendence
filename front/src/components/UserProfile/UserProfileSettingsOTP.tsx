@@ -71,8 +71,8 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
           setIsGeneratingQR(false);
           setIsActivating(true);
         } else {
-          console.error('Failed to generate QR code.');
           if (response.status === 422) {
+            setIsGeneratingQR(false);
             setIsTestUser(true);
             launchFlashMessage(
               '2FA is not available for test users.',
@@ -81,7 +81,6 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
           }
         }
       } catch (error) {
-        console.log('ciao');
         console.error('Error:', error);
       }
     };
@@ -105,7 +104,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
       });
 
       if (response.ok) {
-        console.log('2FA activated');
+        console.info('2FA activated');
         setIsActivating(false);
         set2FAOn(true);
         setUserData({
@@ -144,7 +143,7 @@ const UserProfileSettingsOTP: React.FC<UserProfileSettingsOTPProps> = ({
       });
 
       if (response.ok) {
-        console.log('2FA deactivated');
+        console.info('2FA deactivated');
         setIsDeactivating(false);
         set2FAOn(false);
         launchFlashMessage(
