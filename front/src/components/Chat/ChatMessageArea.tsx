@@ -121,17 +121,14 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
 
   const handleNewMessage = (newMessage: DirectMessage | GroupMessage) => {
     if (socket) {
-      if (selectedUser) {
-        console.log('message content: ', newMessage);
-        socket.emit('privateMessage', newMessage);
-      } else if (selectedGroup) {
-        console.log('new group message sending to socket: ', newMessage);
+      if (selectedGroup) {
         socket.emit('sendMessageToRoom', {
           roomName: selectedGroup?.name,
           intraId: userData?.intraId,
           senderName: userData?.username || 'Anonymous',
           senderAvatar: userData?.avatar || 'Anonymous',
           content: newMessage.content,
+          createdAt: new Date().toISOString(),
         });
       }
       onNewMessage(newMessage);

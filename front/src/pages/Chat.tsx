@@ -141,6 +141,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
     if (isSocketConnected && socket) {
       const privateMessageListener = async (messageData: string) => {
+        console.log("ciaooo",messageData)
         const {
           content,
           receiverIntraId,
@@ -172,8 +173,6 @@ const Chat: React.FC = () => {
       };
 
       const groupMessageListener = (messageData: string) => {
-        console.log('group message listener triggered');
-        console.log('messageData', messageData);
         const parsedData = JSON.parse(messageData);
         setMessages((prevMessages) => [...prevMessages, parsedData]);
       };
@@ -191,7 +190,6 @@ const Chat: React.FC = () => {
       //Clean up the listener when the component unmounts or when the receiverId changes
       return () => {
         if (socket) {
-          console.log('cleaning up listeners');
           socket.off(
             `privateMessageReceived/${userData?.intraId.toString()}`,
             privateMessageListener,
@@ -203,7 +201,7 @@ const Chat: React.FC = () => {
         }
       };
     }
-  }, [newMessageSent, isSocketConnected]);
+  }, [newMessageSent, isSocketConnected]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function updateUserSidebar() {
     setUpdateChatData((prevState) => !prevState);
