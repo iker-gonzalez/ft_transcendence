@@ -77,10 +77,11 @@ model ChatRoom {
 }
 
 model ChatRoomUser {
-  id      String @id @default(uuid())
-  userId  String
-  roomId  String
-  intraId Int?
+  id       String  @id @default(uuid())
+  userId   String
+  roomId   String
+  intraId  Int?
+  username String?
 
   user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   room ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
