@@ -29,7 +29,9 @@ type ChatSidebarNewChannelModalProps = {
   userGroups: Group[] | null;
   setPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setPasswordPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedProtectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
+  setSelectedProtectedGroupToJoin: React.Dispatch<
+    React.SetStateAction<Group | null>
+  >;
   handleGroupClick: (group: Group) => void;
 };
 
@@ -79,7 +81,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
   userGroups,
   setPopupVisible,
   setPasswordPopupVisible,
-  setSelectedProtectedGroup,
+  setSelectedProtectedGroupToJoin,
   handleGroupClick,
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
@@ -123,7 +125,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       setPopupVisible(false);
       // Open password input popup
       setPasswordPopupVisible(true);
-      setSelectedProtectedGroup(group);
+      setSelectedProtectedGroupToJoin(group);
     } else {
       handleJoinRoom(group, ''); // no password
       updateUserSidebar();
@@ -194,7 +196,11 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
               />
               <MainButton
                 onClick={onJoiningNewChannel}
-                disabled={!isRoomNameValid}
+                disabled={
+                  !isRoomNameValid ||
+                  password.length === 0 ||
+                  confirmationPassword.length === 0
+                }
               >
                 Create
               </MainButton>
