@@ -156,11 +156,6 @@ async handleUnmuteUserDM(client, payload) {
 
   @SubscribeMessage('sendMessageToRoom')
   async handleSendMessageToRoom(client: Socket, payload) {
-    console.log('sendMessageToRoom event');
-    console.log('all payload:', payload);
-    console.log('roomName:', payload.roomName);
-    console.log('intraId:', payload.intraId);
-
     // id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
     // senderName: userData?.username || 'Anonymous',
     // senderAvatar: userData?.avatar || 'Anonymous',
@@ -172,9 +167,6 @@ async handleUnmuteUserDM(client, payload) {
       const userId = await this.chatDMservice.findUserIdByIntraId(
         payload.intraId,
       );
-      console.log("userId");
-      console.log(userId);
-      console.log(payload.roomName);
       await this.chatChannelservice.addChannelMessageToUser(
         payload.roomName,
         userId,
@@ -186,10 +178,8 @@ async handleUnmuteUserDM(client, payload) {
 
       
     const chatRoom= await this.chatChannelservice. getUsersFromChatRoom(payload.roomName);
-    console.log("jhkjhkjh");
 
     for (const usuario of chatRoom) {
-
       // Enviar mensage a todos los usuarios del grupo
       const userIntra = await this.chatDMservice.findUserIntraById(usuario.userId);
       this.server.emit(`groupMessage/${userIntra}`,
