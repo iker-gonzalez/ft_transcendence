@@ -80,10 +80,21 @@ const FriendInvitationModal = styled(Modal)`
 
 const PasswordModal = styled(Modal)`
   .edit-password-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+    margin: 0 auto;
+    width: fit-content;
+
+    .password-container {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .confirm-container {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 8px;
+    }
   }
 
   .delete-password-container {
@@ -103,7 +114,8 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   setSelectedGroup,
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
-  const [password, setPasswordInput] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
 
@@ -157,7 +169,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     }
   }, [group, channelData]);
 
-  const setPassword = async (password: string | null) => {
+  const patchPassword = async (password: string | null) => {
     const status_code = await patchChannelPassword(
       channelData!.roomName || '',
       channelOwnerIntraId || 0,
@@ -350,31 +362,51 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
             <>
               <h1 className="title-1 mb-16">Set a password</h1>
               <div className="mb-24">
-                <p className="mb-8">Set a password for this channel.</p>
                 <p>
-                  By doing so, the channel won't be public anymore. Users that
-                  don't have the password won't be able to join.
+                  By doing so, the channel won't be public anymore. The current
+                  member list will be kept, but new users will need the password
+                  if they want to join.
                 </p>
               </div>
             </>
           )}
 
           <div className="edit-password-container">
-            <MainPasswordInput
-              placeholder="Enter a new password"
-              value={password}
-              onChange={(e: any) => setPasswordInput(e.target.value)}
-            />
-            <MainButton
-              onClick={() => {
-                setPassword(password);
-                setPasswordInput('');
-                setPasswordPopupVisible(false);
-                onNewAction(group);
-              }}
-            >
-              Confirm
-            </MainButton>
+            <div className="password-container mb-8">
+              <MainPasswordInput
+                placeholder="Enter a new password"
+                value={password}
+                onChange={(e: any) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="confirm-container">
+              <MainPasswordInput
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e: any) => {
+                  setConfirmPassword(e.target.value);
+                }}
+              />
+              <MainButton
+                onClick={() => {
+                  if (password !== confirmPassword) {
+                    launchFlashMessage(
+                      `Passwords do not match.`,
+                      FlashMessageLevel.ERROR,
+                    );
+                    setConfirmPassword('');
+                    return;
+                  }
+
+                  patchPassword(password);
+                  setPassword('');
+                  setPasswordPopupVisible(false);
+                  onNewAction(group);
+                }}
+              >
+                Confirm
+              </MainButton>
+            </div>
           </div>
           {channelData?.password && (
             <div className="delete-password-container">
@@ -385,7 +417,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               </p>
               <DangerButton
                 onClick={() => {
-                  setPassword(null);
+                  patchPassword(null);
                   setPasswordPopupVisible(false);
                   onNewAction(group);
                 }}
