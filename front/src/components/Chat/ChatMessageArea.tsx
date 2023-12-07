@@ -159,7 +159,9 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
         ) : (
           <CenteredContainer>
             <p className="title-2 mb-16">
-              Chat with your friends or participate in our community channels!
+              Chat with your friends
+              <br />
+              or participate in our community channels!
             </p>
             <Lottie animationData={ChatAnimationData} className="chat-lottie" />
           </CenteredContainer>
