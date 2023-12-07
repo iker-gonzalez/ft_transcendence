@@ -25,6 +25,14 @@ export class ChatGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
+  async handleConnection(): Promise<void> {
+    // Do not delete, required by interface
+  }
+
+  async handleDisconnect(): Promise<void> {
+    // Do not delete, required by interface
+  }
+
   @SubscribeMessage('privateMessage')
   async handlePrivateMessage(client, payload) {
     try {
