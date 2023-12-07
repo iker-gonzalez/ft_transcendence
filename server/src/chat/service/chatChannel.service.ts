@@ -5,7 +5,7 @@ import { AllExistingChannelsDTO } from './../dto/all-existing-channel.dto';
 import { AllUserChannelInDTO } from './../dto/all-user-channel-in.dto';
 import { AddMessageToUserDto } from './../dto/add-message.dto';
 import { UserService } from '../../user/user.service';
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ConversationMessageDTO } from '../dto/conversation-message.dto';
 import passport from 'passport';
 import { AllChannelInfo } from '../dto/all-channel-info.dto';
@@ -666,11 +666,11 @@ try{
   // Check permision
   const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
   if (!isAdmin && ownerId != foundChatRoom.ownerId)
-    throw new BadRequestException ("It is not the owner or admin of the channel, not premissions to do this");
+    throw new UnprocessableEntityException("You do not have permission to mute this user.");
 
    // Check if the banUserId is not the owner of the channel
    if (muteUserId == foundChatRoom.ownerId)
-   throw new BadRequestException("Cannot MUTE to the owner of the channel");
+   throw new UnprocessableEntityException("You cannot mute the owner of the channel.");
 
   // Buscar el ChatRoomUser por userId
   const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
@@ -689,7 +689,7 @@ try{
         });
   }
 catch(error){
-    console.error("Error:", error);
+    throw error;
 }
 
 }

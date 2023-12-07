@@ -13,6 +13,7 @@ import { darkBgColor } from '../../constants/color-tokens';
 import SecondaryButton from '../UI/SecondaryButton';
 import styled from 'styled-components';
 import { Socket } from 'socket.io-client';
+import Modal from '../UI/Modal';
 
 type ChatMessageAreaHeaderUsersModalProps = {
   channelData: ChannelData;
@@ -43,6 +44,15 @@ const UserManagementContainer = styled.div`
   }
 `;
 
+const ConfirmationModal = styled(Modal)`
+  .actions-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+`;
+
 const ChatMessageAreaHeaderUsersModal: React.FC<
   ChatMessageAreaHeaderUsersModalProps
 > = ({
@@ -58,6 +68,11 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
   const { launchFlashMessage } = useFlashMessages();
 
   const [selectedUser, setSelectedUser] = React.useState<number | null>(null);
+  const [confirmationModalInfo, setConfirmationModalInfo] = React.useState<{
+    title: string;
+    subtitle: string;
+    action: () => void;
+  } | null>(null);
 
   const kick = (intraId: number) => {
     const payload = {
@@ -89,13 +104,22 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     setPopupVisible(false);
     onNewAction(group);
 
-    const status_code = await patchMuteUser(
+    const res = await patchMuteUser(
       channelData!.roomName || '',
       muteIntraId,
       channelOwnerIntraId || 0,
       isMuted,
     );
-    if (status_code === 200) {
+
+    if (!res) {
+      launchFlashMessage(
+        'Something went wrong. Try again later.',
+        FlashMessageLevel.ERROR,
+      );
+      return;
+    }
+
+    if (res.status === 200) {
       launchFlashMessage(
         `You have successfully ${
           isMuted ? 'muted' : 'unmuted'
@@ -103,10 +127,17 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
         FlashMessageLevel.SUCCESS,
       );
     } else {
-      launchFlashMessage(
-        `Something went wrong. Try again later.`,
-        FlashMessageLevel.ERROR,
-      );
+      // Only errors meaningful to the user
+      console.log('res.status', res.status)
+      if (res.status === 422) {
+        const data = await res.json();
+        launchFlashMessage(data.message, FlashMessageLevel.ERROR);
+      } else {
+        launchFlashMessage(
+          'Something went wrong. Try again later.',
+          FlashMessageLevel.ERROR,
+        );
+      }
     }
   };
 
@@ -231,25 +262,49 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                   <div className="actions-container">
                     <SecondaryButton
                       onClick={() => {
-                        mute(selectedUserData.intra, isUserMuted ? 0 : 1);
+                        if (!isUserMuted) {
+                          setConfirmationModalInfo({
+                            title: 'Do you confirm muting?',
+                            subtitle: `You are about to mute ${selectedUserData.username}. They will stay in the channel, but will not be able to send new messages.`,
+                            action: () => {
+                              mute(selectedUserData.intra, 1);
+                              setPopupVisible(false);
+                              onNewAction(group);
+                            },
+                          });
+                        } else {
+                          mute(selectedUserData.intra, 0);
+                        }
                       }}
                     >
                       {isUserMuted ? 'Unmute' : 'Mute'}
                     </SecondaryButton>
                     <MainButton
                       onClick={() => {
-                        kick(selectedUserData.intra);
-                        setPopupVisible(false);
-                        onNewAction(group);
+                        setConfirmationModalInfo({
+                          title: 'Do you confirm kicking out?',
+                          subtitle: `You are about to kick out ${selectedUserData.username}. They will leave the channel immediately.`,
+                          action: () => {
+                            kick(selectedUserData.intra);
+                            setPopupVisible(false);
+                            onNewAction(group);
+                          },
+                        });
                       }}
                     >
                       Kick
                     </MainButton>
                     <DangerButton
                       onClick={() => {
-                        ban(selectedUserData.intra);
-                        setPopupVisible(false);
-                        onNewAction(group);
+                        setConfirmationModalInfo({
+                          title: 'Do you confirm ban?',
+                          subtitle: `You are about to ban ${selectedUserData.username}. Once you confirm, they will not be able to join this channel again.`,
+                          action: () => {
+                            ban(selectedUserData.intra);
+                            setPopupVisible(false);
+                            onNewAction(group);
+                          },
+                        });
                       }}
                     >
                       Ban
@@ -257,6 +312,28 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                   </div>
                 </ContrastPanel>
               </UserManagementContainer>
+              {confirmationModalInfo && (
+                <ConfirmationModal
+                  dismissModalAction={() => setConfirmationModalInfo(null)}
+                >
+                  <h1 className="title-1 mb-8">
+                    {confirmationModalInfo.title}
+                  </h1>
+                  <p className="mb-24">{confirmationModalInfo.subtitle}</p>
+                  <div className="actions-container">
+                    <SecondaryButton
+                      onClick={() => setConfirmationModalInfo(null)}
+                    >
+                      Cancel
+                    </SecondaryButton>
+                    <DangerButton
+                      onClick={() => confirmationModalInfo.action()}
+                    >
+                      Confirm
+                    </DangerButton>
+                  </div>
+                </ConfirmationModal>
+              )}
             </>
           );
         }
