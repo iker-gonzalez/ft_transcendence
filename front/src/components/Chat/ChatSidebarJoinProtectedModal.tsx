@@ -8,6 +8,7 @@ type ChatSidebarJoinProtectedModalProps = {
   handleJoinRoom: (
     newGroup: Group,
     password: string,
+    isNewGroup: boolean,
   ) => Promise<0 | 1 | undefined>;
   setPasswordPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
   selectedProtectedGroupToJoin: Group | null;
@@ -25,7 +26,7 @@ const ChatSidebarJoinProtectedModal: React.FC<
   const onJoiningProtectedChannel = async () => {
     if (selectedProtectedGroupToJoin) {
       const isErrorJoining = Boolean(
-        await handleJoinRoom(selectedProtectedGroupToJoin, password),
+        await handleJoinRoom(selectedProtectedGroupToJoin, password, false),
       );
       setPassword('');
 
