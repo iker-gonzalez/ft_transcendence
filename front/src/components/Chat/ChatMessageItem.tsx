@@ -68,8 +68,8 @@ const ChatMessageItem: React.FC<{
             {!isRepeatedMessage && (
               <div className="message-header">
                 <p className="username">{message.senderName}</p>
-                <p className="timestamp">
-                  {new Date(
+                {(() => {
+                  const formattedDate = new Date(
                     Date.parse(message.createdAt as string),
                   ).toLocaleString('us-US', {
                     month: 'short',
@@ -77,8 +77,24 @@ const ChatMessageItem: React.FC<{
                     year: 'numeric',
                     hour: 'numeric',
                     minute: 'numeric',
-                  })}
-                </p>
+                  });
+
+                  if (formattedDate) {
+                    return (
+                      <p className="timestamp">
+                        {new Date(
+                          Date.parse(message.createdAt as string),
+                        ).toLocaleString('us-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                          hour: 'numeric',
+                          minute: 'numeric',
+                        })}
+                      </p>
+                    );
+                  }
+                })()}
               </div>
             )}
             <p
