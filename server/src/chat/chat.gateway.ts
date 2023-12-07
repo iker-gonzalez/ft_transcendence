@@ -25,14 +25,14 @@ export class ChatGateway implements OnGatewayConnection {
     private readonly chatDMservice: ChatDMService,
     private readonly chatChannelservice: ChatChannelService,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   @WebSocketServer()
   server: Server;
 
-  async handleConnection(client: Socket, data: string): Promise<void> { }
+  async handleConnection(client: Socket, data: string): Promise<void> {}
 
-  async handleDisconnect(client: any): Promise<void> { }
+  async handleDisconnect(client: any): Promise<void> {}
 
   @SubscribeMessage('privateMessage')
   async handlePrivateMessage(client, payload) {
@@ -116,14 +116,15 @@ async handleUnmuteUserDM(client, payload) {
           payload.type,
           payload.password,
         );
-      }
-      else {
+      } else {
         if (payload.type == 'PROTECTED') {
-          console.log("PROTECTE GROUP");
-          if (!await this.chatChannelservice.isPasswordCorrect(
-            payload.roomName,
-            payload.password,
-          )) {
+          console.log('PROTECTE GROUP');
+          if (
+            !(await this.chatChannelservice.isPasswordCorrect(
+              payload.roomName,
+              payload.password,
+            ))
+          ) {
             //! Mirar esto
             // client.emit('joinedRoom', `Incorrect password ${payload.roomName}`);
             // return;
@@ -133,13 +134,15 @@ async handleUnmuteUserDM(client, payload) {
         if (payload.type == 'PRIVATE')
           throw new BadGatewayException('Cannot access to a private channel');
       }
-      
+
       // Cuando se crear el grupo ya se crea un grupo ya se le añade al channel como usuario
-      if (channelExist)
-      {
-        await this.chatChannelservice.addUserToChannel(userId, payload.roomName);
+      if (channelExist) {
+        await this.chatChannelservice.addUserToChannel(
+          userId,
+          payload.roomName,
+        );
       }
-      
+
       client.join(payload.roomName);
       client.emit('joinedRoom', `Te has unido a la sala ${payload.roomName}`);
     } catch (error) {
@@ -178,18 +181,22 @@ async handleUnmuteUserDM(client, payload) {
       // Enviar el mensaje a todos los clientes en la sala
       //this.server.to(payload.roomName).emit('message', payload);
 
-
-      const chatRoom = await this.chatChannelservice.getUsersFromChatRoom(payload.roomName);
+      const chatRoom = await this.chatChannelservice.getUsersFromChatRoom(
+        payload.roomName,
+      );
 
       for (const usuario of chatRoom) {
         // Enviar mensage a todos los usuarios del grupo
-        const userIntra = await this.chatDMservice.findUserIntraById(usuario.userId);
+        const userIntra = await this.chatDMservice.findUserIntraById(
+          usuario.userId,
+        );
         if (userIntra != payload.senderIntraId) {
-          this.server.emit(`groupMessage/${userIntra}`, JSON.stringify(payload))
+          this.server.emit(
+            `groupMessage/${userIntra}`,
+            JSON.stringify(payload),
+          );
         }
-
       }
-
     } catch (error) {
       console.error('Error:', error);
     }
@@ -223,7 +230,7 @@ async handleUnmuteUserDM(client, payload) {
     if (!userId || !addminId) {
       return {
         success: false,
-      }
+      };
     }
 
     await this.chatChannelservice.kickUserInChannel(
@@ -235,7 +242,7 @@ async handleUnmuteUserDM(client, payload) {
 
     return {
       success: true,
-    }
+    };
   }
 
   @SubscribeMessage('banUser')
