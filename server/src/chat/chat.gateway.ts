@@ -3,10 +3,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
   OnGatewayConnection,
-  OnGatewayDisconnect,
   SubscribeMessage,
-  ConnectedSocket,
-  MessageBody,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { ChatDMService } from './service/chatDM.service';
@@ -14,8 +11,6 @@ import { ChatChannelService } from './service/chatChannel.service';
 import { UserService } from '../user/user.service';
 import { Socket } from 'socket.io';
 import { BadGatewayException } from '@nestjs/common';
-// Create a Map to store user sockets
-const userSockets = new Map();
 
 @WebSocketGateway({
   namespace: 'chat',
@@ -29,10 +24,6 @@ export class ChatGateway implements OnGatewayConnection {
 
   @WebSocketServer()
   server: Server;
-
-  async handleConnection(client: Socket, data: string): Promise<void> {}
-
-  async handleDisconnect(client: any): Promise<void> {}
 
   @SubscribeMessage('privateMessage')
   async handlePrivateMessage(client, payload) {
@@ -221,21 +212,33 @@ async handleUnmuteUserDM(client, payload) {
 
   @SubscribeMessage('banUser')
   async handleBanUser(client: Socket, payload) {
+    const userId = await this.chatDMservice.findUserIdByIntraId(
+      payload.intraId,
+    );
+    const addminId = await this.chatDMservice.findUserIdByIntraId(
+      payload.adminId,
+    );
+
+    if (!userId || !addminId) {
+      return {
+        success: false,
+      };
+    }
+
     try {
-      const userId = await this.chatDMservice.findUserIdByIntraId(
-        payload.intraId,
-      );
-      const addminId = await this.chatDMservice.findUserIdByIntraId(
-        payload.adminId,
-      );
       await this.chatChannelservice.banUserInChannel(
         payload.roomName,
         addminId,
         userId,
       );
       client.leave(payload.roomName);
-    } catch (error) {
-      console.error('Error:', error);
+      return {
+        success: true,
+      };
+    } catch (e) {
+      return {
+        success: false,
+      };
     }
   }
 

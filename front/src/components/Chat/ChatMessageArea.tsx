@@ -7,7 +7,6 @@ import GroupMessage from '../../interfaces/chat-group-message.interface';
 import MessageInput from './ChatMessageAreaInput';
 import ChatMessageAreaHeader from './ChatMessageAreaHeader';
 import { Socket } from 'socket.io-client';
-import { useUserData } from '../../context/UserDataContext';
 import GradientBorder from '../UI/GradientBorder';
 import { darkerBgColor } from '../../constants/color-tokens';
 import { ChannelData } from '../../interfaces/chat-channel-data.interface';
@@ -15,6 +14,7 @@ import ChatMessageAreaList from './ChatMessageAreaList';
 import ChatAnimationData from '../../assets/lotties/chat.json';
 import Lottie from 'lottie-react';
 import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
+import Cookies from 'js-cookie';
 
 interface ChatMessageAreaProps {
   selectedUser: User | null;
@@ -101,15 +101,18 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   setMessages,
   onNewAction,
 }) => {
-  const { userData } = useUserData();
-
   const [mutedUsers, setMutedUsers] = React.useState<{ username: string }[]>(
     [],
   );
 
   useEffect(() => {
     if (selectedGroup?.id) {
-      fetchAuthorized(`${getBaseUrl()}/chat/${selectedGroup.id}/mutedUsers`)
+      fetchAuthorized(`${getBaseUrl()}/chat/${selectedGroup.id}/mutedUsers`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+      })
         .then((res) => {
           return res.json();
         })
