@@ -802,6 +802,7 @@ export class ChatChannelService {
         where: { name: channelRoom },
         include: {
           users: true,
+          bannedUsers: true,
         },
       });
       if (!foundChatRoom)
@@ -825,11 +826,23 @@ export class ChatChannelService {
       if (!chatRoomUser)
         throw new BadRequestException('User is not in the chatRoom');
 
+      const banUserIntraId = await this.findUserIntraById(banUserId);
+      const isAlreadyBanned = foundChatRoom.bannedUsers.some(
+        (bannedUser) => bannedUser.userId === banUserId,
+      );
+      if (isAlreadyBanned)
+        throw new BadRequestException('User is already banned');
+
+      const banUserData = await this.prisma.user.findUnique({
+        where: { intraId: banUserIntraId },
+      });
+
       // Add intraId for FE consumption
       await this.prisma.chatRoomUser.update({
         where: { id: chatRoomUser.id },
         data: {
-          intraId: await this.findUserIntraById(banUserId),
+          intraId: banUserIntraId,
+          username: banUserData.username,
         },
       });
 
@@ -845,6 +858,7 @@ export class ChatChannelService {
 
       await this.leaveUserFromChannel(channelRoom, banUserId);
     } catch (error) {
+      console.log('error', error.message);
       throw error;
     }
   }
@@ -857,7 +871,7 @@ export class ChatChannelService {
     try {
       if (!channelRoom || !ownerId || !unbanUserId)
         throw new BadRequestException(
-          'channelRoom or ownerId or muteUserId  are null',
+          'channelRoom or ownerId or muteUserId are null',
         );
 
       // Get Channel
@@ -865,6 +879,7 @@ export class ChatChannelService {
         where: { name: channelRoom },
         include: {
           users: true,
+          bannedUsers: true,
         },
       });
       if (!foundChatRoom)
@@ -889,7 +904,9 @@ export class ChatChannelService {
         where: { id: foundChatRoom.id },
         data: {
           bannedUsers: {
-            disconnect: { id: chatRoomUser.id },
+            set: foundChatRoom.bannedUsers.filter(
+              (bannedUser) => bannedUser.userId !== chatRoomUser.userId,
+            ),
           },
           users: {
             connect: { id: chatRoomUser.id },
@@ -900,6 +917,7 @@ export class ChatChannelService {
       throw error;
     }
   }
+
   /********************************************************** */
   //                     PRIVACY FUNCIONALITY                 //
   /********************************************************** */

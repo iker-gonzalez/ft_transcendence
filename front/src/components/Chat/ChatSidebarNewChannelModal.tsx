@@ -109,7 +109,6 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
     React.useState<Group | null>(null);
   const [confirmationPassword, setConfirmationPassword] = React.useState('');
   const [bannedUsers, setBannedUsers] = React.useState<any[]>([]);
-  const [userWasBanned, setUserWasBanned] = React.useState<boolean>(false);
   const { userData } = useUserData();
 
   useEffect(() => {
@@ -257,90 +256,93 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       </ContrastPanel>
 
       {allGroups && bannedUsers && (
-        <ContrastPanel
-          $backgroundColor={darkBgColor}
-          className="existing-channels-container"
-        >
-          <p className="title-1 mb-16">Or join an existing one</p>
-          <p className="mb-16">
-            Some channels are public and can be joined freely. Some others are
-            private and you need a password to join them.
-          </p>
-          <div className="form-container">
-            {(() => {
-              const filteredGroups = allGroups.filter((group) => {
-                const wasAlreadyJoinedByUser = userGroups?.some(
-                  (userGroup) => userGroup.name === group.name,
-                );
+        <>
+          {(() => {
+            const filteredGroups = allGroups.filter((group) => {
+              const wasAlreadyJoinedByUser = userGroups?.some(
+                (userGroup) => userGroup.name === group.name,
+              );
 
-                const isPublicOrProtected =
-                  group.type === CHANNEL_TYPES.PUBLIC ||
-                  group.type === CHANNEL_TYPES.PROTECTED;
+              const isPublicOrProtected =
+                group.type === CHANNEL_TYPES.PUBLIC ||
+                group.type === CHANNEL_TYPES.PROTECTED;
 
-                const channelBannedUsers = bannedUsers.find(
-                  (channel) => channel.name === group.name,
-                )?.bannedUsers;
+              const channelBannedUsers = bannedUsers.find(
+                (channel) => channel.name === group.name,
+              )?.bannedUsers;
 
-                const isUserBannedFromChannel = channelBannedUsers?.some(
-                  (bannedUser: any) => bannedUser.intraId === userData?.intraId,
-                );
-
-                if (isUserBannedFromChannel) setUserWasBanned(true);
-
-                return (
-                  !wasAlreadyJoinedByUser &&
-                  isPublicOrProtected &&
-                  !isUserBannedFromChannel
-                );
-              });
+              const isUserBannedFromChannel = channelBannedUsers?.some(
+                (bannedUser: any) => bannedUser.intraId === userData?.intraId,
+              );
 
               return (
-                <MainSelect
-                  onChange={(e) => {
-                    const groupName = e.target.value;
-                    const targetedGroup = filteredGroups.find(
-                      (group) => group.name === groupName,
-                    );
-                    setSelectedExistingGroup(targetedGroup || null);
-                  }}
-                >
-                  <option key="default" value="default">
-                    Choose a channel
-                  </option>
-                  {filteredGroups
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map((group, index) => (
-                      <option key={`${group.id}-${index}`} value={group.name}>
-                        {(() => {
-                          switch (group.type) {
-                            case CHANNEL_TYPES.PROTECTED:
-                              return '🔐';
-                            case CHANNEL_TYPES.PRIVATE:
-                              return '🔒';
-                            default:
-                              return '🌐';
-                          }
-                        })()}{' '}
-                        {group.name}
-                      </option>
-                    ))}
-                </MainSelect>
+                !wasAlreadyJoinedByUser &&
+                isPublicOrProtected &&
+                !isUserBannedFromChannel
               );
-            })()}
-            <MainButton
-              onClick={() => {
-                if (selectedExistingGroup) {
-                  onJoiningExistingChannel(selectedExistingGroup);
-                }
-              }}
-            >
-              Join
-            </MainButton>
-          </div>
-          <p className="small ban-disclaimer">
-            ℹ️ The channels you were banned from joining will not here.
-          </p>
-        </ContrastPanel>
+            });
+
+            if (filteredGroups.length === 0) return null;
+
+            return (
+              <ContrastPanel
+                $backgroundColor={darkBgColor}
+                className="existing-channels-container"
+              >
+                <p className="title-1 mb-16">Or join an existing one</p>
+                <p className="mb-16">
+                  Some channels are public and can be joined freely. Some others
+                  are private and you need a password to join them.
+                </p>
+                <div className="form-container">
+                  <MainSelect
+                    onChange={(e) => {
+                      const groupName = e.target.value;
+                      const targetedGroup = filteredGroups.find(
+                        (group) => group.name === groupName,
+                      );
+                      setSelectedExistingGroup(targetedGroup || null);
+                    }}
+                  >
+                    <option key="default" value="default">
+                      Choose a channel
+                    </option>
+                    {filteredGroups
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((group, index) => (
+                        <option key={`${group.id}-${index}`} value={group.name}>
+                          {(() => {
+                            switch (group.type) {
+                              case CHANNEL_TYPES.PROTECTED:
+                                return '🔐';
+                              case CHANNEL_TYPES.PRIVATE:
+                                return '🔒';
+                              default:
+                                return '🌐';
+                            }
+                          })()}{' '}
+                          {group.name}
+                        </option>
+                      ))}
+                  </MainSelect>
+                  <MainButton
+                    onClick={() => {
+                      if (selectedExistingGroup) {
+                        onJoiningExistingChannel(selectedExistingGroup);
+                      }
+                    }}
+                  >
+                    Join
+                  </MainButton>
+                </div>
+                <p className="small ban-disclaimer">
+                  ℹ️ The channels you were banned from joining will not be shown
+                  here.
+                </p>
+              </ContrastPanel>
+            );
+          })()}
+        </>
       )}
     </WrapperDiv>
   );

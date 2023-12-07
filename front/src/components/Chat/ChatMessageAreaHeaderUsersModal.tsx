@@ -14,6 +14,8 @@ import SecondaryButton from '../UI/SecondaryButton';
 import styled from 'styled-components';
 import { Socket } from 'socket.io-client';
 import Modal from '../UI/Modal';
+import BannedUser from '../../interfaces/banned-user.interface';
+import ChatMessageAreaHeaderUsersModalUnban from './ChatMessageAreaHeaderUsersModalUnban';
 
 type ChatMessageAreaHeaderUsersModalProps = {
   channelData: ChannelData;
@@ -29,6 +31,8 @@ type ChatMessageAreaHeaderUsersModalProps = {
   onNewAction: (selectedGroup: Group) => void;
   group: Group;
   socket: Socket;
+  bannedUsers: BannedUser[];
+  setBannedUsers: React.Dispatch<React.SetStateAction<BannedUser[]>>;
 };
 
 const UserManagementContainer = styled.div`
@@ -66,6 +70,8 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
   onNewAction,
   group,
   socket,
+  bannedUsers,
+  setBannedUsers,
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
 
@@ -209,6 +215,13 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
               </option>
             );
           })}
+        {bannedUsers.map((bannedUser) => {
+          return (
+            <option key={bannedUser.id} value={bannedUser.intraId}>
+              {bannedUser.username} (banned 🚫)
+            </option>
+          );
+        })}
       </MainSelect>
       {(() => {
         const selectedUserData = channelData.usersInfo.find(
@@ -364,6 +377,25 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                 </ConfirmationModal>
               )}
             </>
+          );
+        }
+
+        return <></>;
+      })()}
+      {(() => {
+        const bannedUserInfo = bannedUsers.find(
+          (bannedUser) => bannedUser.intraId === selectedUser,
+        );
+
+        if (bannedUserInfo && channelOwnerIntraId) {
+          return (
+            <ChatMessageAreaHeaderUsersModalUnban
+              bannedUserInfo={bannedUserInfo}
+              setBannedUsers={setBannedUsers}
+              socket={socket}
+              adminId={channelOwnerIntraId}
+              roomName={group.name}
+            />
           );
         }
 
