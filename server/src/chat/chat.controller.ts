@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
     Controller,
     Get,
@@ -310,21 +311,17 @@ export class ChatController {
       console.log(userToMuteIntra);
       console.log(paydload);
       console.log(paydload.ownerIntra);
-      try{ 
-        const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
+      const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
       const userToMuteId = await this.chatDMService.findUserIdByIntraId(parseInt(userToMuteIntra, 10));
-        if (b_mute == 1)
-        {
-          this.chatChannelService.muteUserInChannel(channelRoom, ownerId, userToMuteId);
-        }
-        else
-        {
-          this.chatChannelService.unmuteUserInChannel(channelRoom, ownerId, userToMuteId);
-        }
+
+      if (!ownerId || !userToMuteId) {
+        throw new BadRequestException('Invalid user id');
       }
-      catch (error) {
-          console.error("Error:", error);
-      }
+
+      if (b_mute == 1)
+        return this.chatChannelService.muteUserInChannel(channelRoom, ownerId, userToMuteId);
+      else
+        return this.chatChannelService.unmuteUserInChannel(channelRoom, ownerId, userToMuteId);
     }
 /*
     @Post(':channelRoom/:ownerIntra/:userToUnMuteIntra/unmuteUser') 
