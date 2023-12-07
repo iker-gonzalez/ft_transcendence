@@ -1,17 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import DirectMessage from '../../interfaces/chat-message.interface';
 import ChatMessageItem from './ChatMessageItem';
 import User from '../../interfaces/chat-user.interface';
 import Group from '../../interfaces/chat-group.interface';
-import UserData from '../../interfaces/user-data.interface';
 import moment from 'moment';
+import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 
 type ChatMessageAreaListProps = {
   messages: DirectMessage[];
   selectedUser: User | null;
   selectedGroup: Group | null;
-  userData: UserData | null;
 };
 
 const MessageList = styled.ul`
@@ -36,9 +35,23 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
   messages,
   selectedUser,
   selectedGroup,
-  userData,
 }): JSX.Element => {
-  console.log('hola buenas');
+  const [mutedUsers, setMutedUsers] = React.useState<{ username: string }[]>(
+    [],
+  );
+
+  useEffect(() => {
+    if (selectedGroup) {
+      fetchAuthorized(`${getBaseUrl()}/chat/${selectedGroup.id}/mutedUsers`)
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          setMutedUsers(data.data);
+        });
+    }
+  }, [messages, selectedGroup]);
+
   if (selectedUser?.isBlocked) {
     return (
       <EmpyStateDiv>
@@ -65,7 +78,11 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
                 selectedUser.username === message.receiverName
               );
             } else if (selectedGroup) {
-              return selectedGroup.name === message.roomName;
+              const isMutedUser = mutedUsers?.some(
+                (mutedUser) => message.senderName === mutedUser.username,
+              );
+
+              return selectedGroup.name === message.roomName && !isMutedUser;
             }
 
             return true;
