@@ -975,7 +975,6 @@ export class ChatChannelService {
         password,
         foundChatRoom.password,
       );
-
       if (!passwordsMatch) return false;
     } catch (error) {
       throw new BadRequestException(error);
