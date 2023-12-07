@@ -97,17 +97,26 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     });
   };
 
-  const ban = (intraId: number) => {
+  const ban = (intraId: number, username: string) => {
     const payload = {
       roomName: group.name,
       adminId: userData?.intraId,
       intraId: intraId,
     };
-    socket.emit('banUser', payload);
-    launchFlashMessage(
-      `You have successfully banned the user ${intraId}.`,
-      FlashMessageLevel.SUCCESS,
-    );
+    socket.emit('banUser', payload, (res: any) => {
+      console.log("cacca", res);
+      if (res.success) {
+        launchFlashMessage(
+          `You have banned ${username} from the channel ${group.name}.`,
+          FlashMessageLevel.SUCCESS,
+        );
+      } else {
+        launchFlashMessage(
+          `It was not possible to ban ${username} from the channel ${group.name}. Try again`,
+          FlashMessageLevel.ERROR,
+        );
+      }
+    });
   };
 
   const mute = async (
@@ -318,7 +327,10 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                           title: 'Do you confirm ban?',
                           subtitle: `You are about to ban ${selectedUserData.username}. Once you confirm, they will not be able to join this channel again.`,
                           action: () => {
-                            ban(selectedUserData.intra);
+                            ban(
+                              selectedUserData.intra,
+                              selectedUserData.username,
+                            );
                             setPopupVisible(false);
                             onNewAction(group);
                           },
