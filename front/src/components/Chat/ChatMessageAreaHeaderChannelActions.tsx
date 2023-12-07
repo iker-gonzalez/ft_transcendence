@@ -281,14 +281,14 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                 </div>
               </FriendInvitationModal>
             )}
-            <SecondaryButton
+            <MainButton
               onClick={() => {
                 setPopupVisible(true);
               }}
               disabled={channelData?.usersInfo.length === 1}
             >
               Manage
-            </SecondaryButton>
+            </MainButton>
             {channelData && isPopupVisible && (
               <Modal
                 dismissModalAction={() => {
