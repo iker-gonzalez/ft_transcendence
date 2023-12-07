@@ -31,7 +31,6 @@ import { AllChannelInfo } from './dto/all-channel-info.dto';
 import { RoomOwnerIntraDTO } from './dto/roomOwnerIntra.dto';
 import { RoomOwnerPasswordIntraDTO } from './dto/room-owener-password.dto';
 
-
 interface Payload {
   ownerID: string;
 }
@@ -41,8 +40,8 @@ interface Payload {
 export class ChatController {
   constructor(
     private readonly chatDMService: ChatDMService,
-    private readonly chatChannelService: ChatChannelService
-  ) { }
+    private readonly chatChannelService: ChatChannelService,
+  ) {}
   /********************************************************** */
   //                         DM                               //
   /********************************************************** */
@@ -58,16 +57,19 @@ export class ChatController {
   })
   async getDMBetweenUsers(
     @Param('userId1') userIntraId1: string,
-    @Param('userId2') userIntraId2: string
+    @Param('userId2') userIntraId2: string,
   ): Promise<ConversationMessageDTO[]> {
-    console.log("getDMBetweenUsers get");
+    console.log('getDMBetweenUsers get');
     try {
-      const userId1 = await this.chatDMService.findUserIdByIntraId(parseInt(userIntraId1, 10));
-      const userId2 = await this.chatDMService.findUserIdByIntraId(parseInt(userIntraId2, 10));
+      const userId1 = await this.chatDMService.findUserIdByIntraId(
+        parseInt(userIntraId1, 10),
+      );
+      const userId2 = await this.chatDMService.findUserIdByIntraId(
+        parseInt(userIntraId2, 10),
+      );
       return await this.chatDMService.getDMBetweenUsers(userId1, userId2);
-    }
-    catch (error) {
-      console.error("Error:", error);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
 
@@ -80,18 +82,17 @@ export class ChatController {
     description: swaggerConstants.chat.all.ok.description,
     type: AllUsersDMWithDTO,
   })
-  async getAllUserDMWith(
-    @Param('userId') userIntraId: string
-  ): Promise<any[]> {
-    const userId = await this.chatDMService.findUserIdByIntraId(parseInt(userIntraId, 10));
+  async getAllUserDMWith(@Param('userId') userIntraId: string): Promise<any[]> {
+    const userId = await this.chatDMService.findUserIdByIntraId(
+      parseInt(userIntraId, 10),
+    );
 
-    console.log("getAllUserDMWith get");
+    console.log('getAllUserDMWith get');
     console.log(userId);
     try {
       return await this.chatDMService.getAllUserDMWith(userId);
-    }
-    catch (error) {
-      console.error("Error:", error);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
 
@@ -107,23 +108,22 @@ export class ChatController {
     @Param('ToBlockIntra') ToBlockIntra: string,
     @Param('b_block') b_block: number,
   ): Promise<void> {
-
-    console.log("patchBlockUser patch");
+    console.log('patchBlockUser patch');
     try {
-      const userId = await this.chatDMService.findUserIdByIntraId(parseInt(userIntra, 10));
-      const ToBlockId = await this.chatDMService.findUserIdByIntraId(parseInt(ToBlockIntra, 10));
+      const userId = await this.chatDMService.findUserIdByIntraId(
+        parseInt(userIntra, 10),
+      );
+      const ToBlockId = await this.chatDMService.findUserIdByIntraId(
+        parseInt(ToBlockIntra, 10),
+      );
       if (b_block == 1) {
-        console.log("blocked patch");
+        console.log('blocked patch');
         console.log(b_block);
 
         return this.chatDMService.blockUserDM(userId, ToBlockId);
-      }
-      else
-        return this.chatDMService.unblockUserDM(userId, ToBlockId);
-
-    }
-    catch (error) {
-      console.error("Error:", error);
+      } else return this.chatDMService.unblockUserDM(userId, ToBlockId);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
 
@@ -164,17 +164,13 @@ export class ChatController {
     description: swaggerConstants.chat.allExistingChannel.ok.description,
     type: AllExistingChannelsDTO,
   })
-  async getAllExistingChannels(
-
-  ): Promise<any[]> {
-
-    console.log("getAllExistingChannels get");
+  async getAllExistingChannels(): Promise<any[]> {
+    console.log('getAllExistingChannels get');
 
     try {
       return this.chatChannelService.getAllExistingChannels();
-    }
-    catch (error) {
-      console.error("Error:", error);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
 
@@ -188,21 +184,20 @@ export class ChatController {
     type: AllUserChannelInDTO,
   })
   async getAllUserChannelIn(
-    @Param('userIntra') userIntraId: string
+    @Param('userIntra') userIntraId: string,
   ): Promise<any[]> {
-
-    console.log("getAllUserChannelIn get");
+    console.log('getAllUserChannelIn get');
     console.log(userIntraId);
 
     try {
-      const userId = await this.chatDMService.findUserIdByIntraId(parseInt(userIntraId, 10));
+      const userId = await this.chatDMService.findUserIdByIntraId(
+        parseInt(userIntraId, 10),
+      );
       return this.chatChannelService.getAllUserChannelIn(userId);
-    }
-    catch (error) {
-      console.error("Error:", error);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
-
 
   @Get(':roomName/allChannel')
   @ApiParam({ name: 'roomName' })
@@ -216,12 +211,11 @@ export class ChatController {
   async getMessageInRoom(
     @Param('roomName') roomName: string,
   ): Promise<AllChannelInfo[]> {
-    console.log("getMessageInRoom get");
+    console.log('getMessageInRoom get');
     try {
       return this.chatChannelService.getMessageInRoom(roomName);
-    }
-    catch (error) {
-      console.error("Error:", error);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
 
@@ -260,7 +254,10 @@ export class ChatController {
   @ApiParam({ name: 'channelRoom' })
   @ApiParam({ name: 'setAdminIntra' })
   @ApiParam({ name: 'b_add' })
-  @ApiBody({ description: 'JSON body with the ownerIntra', type: RoomOwnerIntraDTO })
+  @ApiBody({
+    description: 'JSON body with the ownerIntra',
+    type: RoomOwnerIntraDTO,
+  })
   @ApiOperation({
     summary: swaggerConstants.chat.addAdmin.summary,
   })
@@ -270,28 +267,37 @@ export class ChatController {
     @Param('b_add') b_add: number,
     @Body() paydload: RoomOwnerIntraDTO,
   ): Promise<void> {
-    console.log("patchsetAddminToChannel patch");
+    console.log('patchsetAddminToChannel patch');
     console.log(channelRoom);
     console.log(setAdminIntra);
     try {
-      const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
-      const newAdminId = await this.chatDMService.findUserIdByIntraId(parseInt(setAdminIntra, 10));
+      const ownerId = await this.chatDMService.findUserIdByIntraId(
+        paydload.ownerIntra,
+      );
+      const newAdminId = await this.chatDMService.findUserIdByIntraId(
+        parseInt(setAdminIntra, 10),
+      );
       if (b_add == 1) {
-        this.chatChannelService.addAddminToChannel(channelRoom, ownerId, newAdminId);
+        this.chatChannelService.addAddminToChannel(
+          channelRoom,
+          ownerId,
+          newAdminId,
+        );
+      } else {
+        this.chatChannelService.deleteAddminToChannel(
+          channelRoom,
+          ownerId,
+          newAdminId,
+        );
       }
-      else {
-        this.chatChannelService.deleteAddminToChannel(channelRoom, ownerId, newAdminId);
-      }
-    }
-    catch (error) {
-      console.error("Error:", error);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
 
-
   @Get(':channelRoom/mutedUsers')
   async getMutedUsers(@Param('channelRoom') channelRoom: string) {
-    console.log("channelRoom getMutedUsers", channelRoom)
+    console.log('channelRoom getMutedUsers', channelRoom);
     return this.chatChannelService.getMutedUsers(channelRoom);
   }
 
@@ -299,7 +305,10 @@ export class ChatController {
   @ApiParam({ name: 'channelRoom' })
   @ApiParam({ name: 'userToMuteIntra' })
   @ApiParam({ name: 'b_mute' })
-  @ApiBody({ description: 'JSON body with the ownerIntra', type: RoomOwnerIntraDTO })
+  @ApiBody({
+    description: 'JSON body with the ownerIntra',
+    type: RoomOwnerIntraDTO,
+  })
   @ApiOperation({
     summary: swaggerConstants.chat.muteUser.summary,
   })
@@ -309,22 +318,34 @@ export class ChatController {
     @Param('b_mute') b_mute: number,
     @Body() paydload: RoomOwnerIntraDTO,
   ): Promise<void> {
-    console.log("patchMuteUserToChannel patch");
+    console.log('patchMuteUserToChannel patch');
     console.log(channelRoom);
     console.log(userToMuteIntra);
     console.log(paydload);
     console.log(paydload.ownerIntra);
-    const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
-    const userToMuteId = await this.chatDMService.findUserIdByIntraId(parseInt(userToMuteIntra, 10));
+    const ownerId = await this.chatDMService.findUserIdByIntraId(
+      paydload.ownerIntra,
+    );
+    const userToMuteId = await this.chatDMService.findUserIdByIntraId(
+      parseInt(userToMuteIntra, 10),
+    );
 
     if (!ownerId || !userToMuteId) {
       throw new BadRequestException('Invalid user id');
     }
 
     if (b_mute == 1)
-      return this.chatChannelService.muteUserInChannel(channelRoom, ownerId, userToMuteId);
+      return this.chatChannelService.muteUserInChannel(
+        channelRoom,
+        ownerId,
+        userToMuteId,
+      );
     else
-      return this.chatChannelService.unmuteUserInChannel(channelRoom, ownerId, userToMuteId);
+      return this.chatChannelService.unmuteUserInChannel(
+        channelRoom,
+        ownerId,
+        userToMuteId,
+      );
   }
   /*
       @Post(':channelRoom/:ownerIntra/:userToUnMuteIntra/unmuteUser') 
@@ -354,12 +375,14 @@ export class ChatController {
       }
   */
 
-
   @Patch(':channelRoom/updatePassword')
   @ApiParam({ name: 'channelRoom' })
   @ApiParam({ name: 'ownerIntra' })
   @ApiParam({ name: 'password' })
-  @ApiBody({ description: 'JSON body with the ownerIntra', type: RoomOwnerPasswordIntraDTO })
+  @ApiBody({
+    description: 'JSON body with the ownerIntra',
+    type: RoomOwnerPasswordIntraDTO,
+  })
   @ApiOperation({
     summary: swaggerConstants.chat.addOrModifyPassword.summary,
   })
@@ -369,12 +392,23 @@ export class ChatController {
     @Param('b_mute') b_mute: number,
     @Body() paydload: RoomOwnerPasswordIntraDTO,
   ): Promise<void> {
-    const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
+    const ownerId = await this.chatDMService.findUserIdByIntraId(
+      paydload.ownerIntra,
+    );
     if (paydload.password != null) {
-      return this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, paydload.password, ChannelType.PROTECTED);
-    }
-    else {
-      return this.chatChannelService.modifyPasswordAndTypeChannel(channelRoom, ownerId, paydload.password, ChannelType.PUBLIC);
+      return this.chatChannelService.modifyPasswordAndTypeChannel(
+        channelRoom,
+        ownerId,
+        paydload.password,
+        ChannelType.PROTECTED,
+      );
+    } else {
+      return this.chatChannelService.modifyPasswordAndTypeChannel(
+        channelRoom,
+        ownerId,
+        paydload.password,
+        ChannelType.PUBLIC,
+      );
     }
   }
 
@@ -391,18 +425,24 @@ export class ChatController {
     @Param('password') password: string,
     @Param('roomName') roomName: string,
   ): Promise<boolean> {
-    console.log("isPasswordCorrect get");
-    if (await this.chatChannelService.isPasswordCorrect(roomName, password))
-      return;
-    else
-      throw new BadRequestException('Invalid password');
+    console.log('isPasswordCorrect get');
+    try {
+      if (await this.chatChannelService.isPasswordCorrect(roomName, password))
+        return;
+      else throw new BadRequestException('Invalid password');
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
 
   @Patch(':userAddIntra/:roomName/:b_bool/setUserToPrivateChannel') // Define la ruta para los parámetros userId1 y userId2
   @ApiParam({ name: 'userAddIntra' })
   @ApiParam({ name: 'roomName' })
   @ApiParam({ name: 'b_bool' })
-  @ApiBody({ description: 'JSON body with the ownerIntra', type: RoomOwnerIntraDTO })
+  @ApiBody({
+    description: 'JSON body with the ownerIntra',
+    type: RoomOwnerIntraDTO,
+  })
   @ApiOperation({
     summary: swaggerConstants.chat.setUsertoPrivateChannel.summary,
   })
@@ -412,16 +452,22 @@ export class ChatController {
     @Param('b_bool') b_bool: number,
     @Body() paydload: RoomOwnerIntraDTO,
   ): Promise<void> {
-    console.log("addUserToPrivateChannel get");
+    console.log('addUserToPrivateChannel get');
     try {
-      const userAddId = await this.chatDMService.findUserIdByIntraId(parseInt(userAddIntra, 10));
-      const ownerId = await this.chatDMService.findUserIdByIntraId(paydload.ownerIntra);
-      await this.chatChannelService.addUserToPrivateChannel(userAddId, ownerId, roomName, b_bool);
-
-    }
-    catch (error) {
-      console.error("Error:", error);
+      const userAddId = await this.chatDMService.findUserIdByIntraId(
+        parseInt(userAddIntra, 10),
+      );
+      const ownerId = await this.chatDMService.findUserIdByIntraId(
+        paydload.ownerIntra,
+      );
+      await this.chatChannelService.addUserToPrivateChannel(
+        userAddId,
+        ownerId,
+        roomName,
+        b_bool,
+      );
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
-
 }
