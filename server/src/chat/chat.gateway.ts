@@ -252,22 +252,36 @@ async handleUnmuteUserDM(client, payload) {
 
   @SubscribeMessage('UnBanUser')
   async handleUnBanUser(client: Socket, payload) {
+    const userId = await this.chatDMservice.findUserIdByIntraId(
+      payload.intraId,
+    );
+    const addminId = await this.chatDMservice.findUserIdByIntraId(
+      payload.addAdminId,
+    );
+
+    if (!userId || !addminId) {
+      return {
+        success: false,
+      };
+    }
+
     try {
-      const userId = await this.chatDMservice.findUserIdByIntraId(
-        payload.intraId,
-      );
-      const addminId = await this.chatDMservice.findUserIdByIntraId(
-        payload.addAdminId,
-      );
       await this.chatChannelservice.unbanUserInChannel(
         payload.roomName,
         addminId,
         userId,
       );
-    } catch (error) {
-      console.error('Error:', error);
+
+      return {
+        success: true,
+      };
+    } catch (e) {
+      return {
+        success: false,
+      };
     }
   }
+
   @SubscribeMessage('joinProtectedGroup')
   async handleJoinProtectedGroup(client: Socket, payload) {
     try {

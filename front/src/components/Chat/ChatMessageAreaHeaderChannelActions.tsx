@@ -12,6 +12,8 @@ import {
   patchChannelPassword,
   setAdminIntra,
   inviteFriendToChannel,
+  fetchAuthorized,
+  getBaseUrl,
 } from '../../utils/utils';
 import styled from 'styled-components';
 import MainPasswordInput from '../UI/MainPasswordInput';
@@ -23,6 +25,8 @@ import User from '../../interfaces/chat-user.interface';
 import SecondaryButton from '../UI/SecondaryButton';
 import MainSelect from '../UI/MainSelect';
 import { primaryColor } from '../../constants/color-tokens';
+import Cookies from 'js-cookie';
+import BannedUser from '../../interfaces/banned-user.interface';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -118,11 +122,11 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
+  const [bannedUsers, setBannedUsers] = useState<BannedUser[]>([]);
 
   const [channelOwnerIntraId, setChannelOwnerIntraId] = useState<number | null>(
     null,
   );
-
   const { userFriends, fetchFriendsList } = useUserFriends();
   const triggerInvitePopUp = async () => {
     if (userFriends.length === 0) {
@@ -131,10 +135,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     setFriendsToInvite(userFriends);
     setInviteModalVisible(true);
   };
-
-  // channelName: string,
-  // friendIntraId: number,
-  // ownerIntraId: number,
 
   const handleInvite = async (userAddIntra: number) => {
     const status_code = await inviteFriendToChannel(
@@ -162,11 +162,35 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     number | null
   >(null);
 
+  const fetchBannedUsers = (roomName: string) => {
+    fetchAuthorized(`${getBaseUrl()}/chat/bannedUsers`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        const channelBannedUsers = data.data.find((bannedUsersInfo: any) => {
+          return bannedUsersInfo.name === roomName;
+        });
+
+        setBannedUsers(channelBannedUsers.bannedUsers);
+      });
+  };
+
   useEffect(() => {
     if (channelData) {
       setChannelOwnerIntraId(channelData.ownerIntra || null);
     }
   }, [group, channelData]);
+
+  useEffect(() => {
+    if (channelData) fetchBannedUsers(channelData.roomName);
+  }, [channelData]);
 
   const patchPassword = async (password: string | null) => {
     const status_code = await patchChannelPassword(
@@ -216,7 +240,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   const canSeeActions = (): boolean => {
     return isOwner() || isAdmin();
   };
-
 
   return (
     <>
@@ -295,7 +318,9 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               onClick={() => {
                 setPopupVisible(true);
               }}
-              disabled={channelData?.usersInfo.length === 1}
+              disabled={
+                channelData?.usersInfo.length === 1 && bannedUsers.length === 0
+              }
             >
               Manage
             </MainButton>
@@ -314,6 +339,8 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                   onNewAction={onNewAction}
                   group={group}
                   socket={socket}
+                  bannedUsers={bannedUsers}
+                  setBannedUsers={setBannedUsers}
                 />
               </Modal>
             )}

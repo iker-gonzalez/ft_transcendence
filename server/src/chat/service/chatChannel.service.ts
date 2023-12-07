@@ -871,7 +871,7 @@ export class ChatChannelService {
     try {
       if (!channelRoom || !ownerId || !unbanUserId)
         throw new BadRequestException(
-          'channelRoom or ownerId or muteUserId  are null',
+          'channelRoom or ownerId or muteUserId are null',
         );
 
       // Get Channel
@@ -879,6 +879,7 @@ export class ChatChannelService {
         where: { name: channelRoom },
         include: {
           users: true,
+          bannedUsers: true,
         },
       });
       if (!foundChatRoom)
@@ -903,7 +904,9 @@ export class ChatChannelService {
         where: { id: foundChatRoom.id },
         data: {
           bannedUsers: {
-            disconnect: { id: chatRoomUser.id },
+            set: foundChatRoom.bannedUsers.filter(
+              (bannedUser) => bannedUser.userId !== chatRoomUser.userId,
+            ),
           },
           users: {
             connect: { id: chatRoomUser.id },
@@ -914,6 +917,7 @@ export class ChatChannelService {
       throw error;
     }
   }
+
   /********************************************************** */
   //                     PRIVACY FUNCIONALITY                 //
   /********************************************************** */
