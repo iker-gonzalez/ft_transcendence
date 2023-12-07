@@ -160,8 +160,8 @@ const Chat: React.FC = () => {
             } as any;
             return [...prevState, newMessage];
           });
-          updateUserSidebar();
         }
+        updateUserSidebar();
       };
 
       const groupMessageListener = (messageData: string) => {
