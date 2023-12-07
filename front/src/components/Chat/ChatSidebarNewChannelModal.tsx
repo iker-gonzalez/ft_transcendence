@@ -79,6 +79,10 @@ const WrapperDiv = styled.div`
 
   .existing-channels-container {
     margin-top: 32px;
+
+    .ban-disclaimer {
+      margin-top: 16px;
+    }
   }
 `;
 
@@ -105,6 +109,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
     React.useState<Group | null>(null);
   const [confirmationPassword, setConfirmationPassword] = React.useState('');
   const [bannedUsers, setBannedUsers] = React.useState<any[]>([]);
+  const [userWasBanned, setUserWasBanned] = React.useState<boolean>(false);
   const { userData } = useUserData();
 
   useEffect(() => {
@@ -280,6 +285,8 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
                   (bannedUser: any) => bannedUser.intraId === userData?.intraId,
                 );
 
+                if (isUserBannedFromChannel) setUserWasBanned(true);
+
                 return (
                   !wasAlreadyJoinedByUser &&
                   isPublicOrProtected &&
@@ -330,6 +337,9 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
               Join
             </MainButton>
           </div>
+          <p className="small ban-disclaimer">
+            ℹ️ The channels you were banned from joining will not here.
+          </p>
         </ContrastPanel>
       )}
     </WrapperDiv>
