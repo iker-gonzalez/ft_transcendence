@@ -4,25 +4,24 @@ import { swaggerConstants } from '../../../config/swagger.constants';
 
 
 export class AllUsersDMWithDTO {
-    @ApiProperty({
-        description: swaggerConstants.dto.allUserDMWithDTO.data.description,
-        example: swaggerConstants.dto.allUserDMWithDTO.data.example,
-      })
+  @ApiProperty({
+    description: swaggerConstants.dto.allUserDMWithDTO.data.description,
+    example: swaggerConstants.dto.allUserDMWithDTO.data.example,
+  })
 
-    @IsUUID()
-    id: string;
+  @IsUUID()
+  id: string;
 
-    @IsString()
-    avatar: string;
+  @IsString()
+  avatar: string;
 
-    @IsString()
-    username: string;
+  @IsString()
+  username: string;
 
-    @IsNumber()
-    intraId: number;
+  @IsNumber()
+  intraId: number;
 
-    @IsBoolean()
-    isBlocked: boolean;
+  @IsBoolean()
+  isBlocked: boolean;
 
 }
-  

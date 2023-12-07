@@ -5,13 +5,12 @@ import { swaggerConstants } from '../../../config/swagger.constants';
 
 
 export class AllUserChannelInDTO {
-    @ApiProperty({
-        description: swaggerConstants.dto.allUserChannelInDTO.data.description,
-        example: swaggerConstants.dto.allUserChannelInDTO.data.example,
-      })
+  @ApiProperty({
+    description: swaggerConstants.dto.allUserChannelInDTO.data.description,
+    example: swaggerConstants.dto.allUserChannelInDTO.data.example,
+  })
 
-    @IsString()
-    name: string;
+  @IsString()
+  name: string;
 
 }
-  

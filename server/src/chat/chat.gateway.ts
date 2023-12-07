@@ -25,14 +25,14 @@ export class ChatGateway implements OnGatewayConnection {
     private readonly chatDMservice: ChatDMService,
     private readonly chatChannelservice: ChatChannelService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   @WebSocketServer()
   server: Server;
 
-  async handleConnection(client: Socket, data: string): Promise<void> {}
+  async handleConnection(client: Socket, data: string): Promise<void> { }
 
-  async handleDisconnect(client: any): Promise<void> {}
+  async handleDisconnect(client: any): Promise<void> { }
 
   @SubscribeMessage('privateMessage')
   async handlePrivateMessage(client, payload) {
@@ -109,30 +109,27 @@ async handleUnmuteUserDM(client, payload) {
       const channelExist = await this.chatChannelservice.channelExist(
         payload.roomName,
       );
-      if (!channelExist) 
-      {
+      if (!channelExist) {
         await this.chatChannelservice.createChannel(
           userId,
           payload.roomName,
           payload.type,
-          payload.password, 
+          payload.password,
         );
       }
       else {
-        if (payload.type == 'PROTECTED')
-        {
+        if (payload.type == 'PROTECTED') {
           console.log("PROTECTE GROUP");
           if (!await this.chatChannelservice.isPasswordCorrect(
             payload.roomName,
             payload.password,
-            ))
-            {
-              //! Mirar esto
-              // client.emit('joinedRoom', `Incorrect password ${payload.roomName}`);
-              // return;
-             throw new BadGatewayException('Cannot access to a private channel');
-            }
+          )) {
+            //! Mirar esto
+            // client.emit('joinedRoom', `Incorrect password ${payload.roomName}`);
+            // return;
+            throw new BadGatewayException('Cannot access to a private channel');
           }
+        }
         if (payload.type == 'PRIVATE')
           throw new BadGatewayException('Cannot access to a private channel');
       }
@@ -175,18 +172,18 @@ async handleUnmuteUserDM(client, payload) {
       // Enviar el mensaje a todos los clientes en la sala
       //this.server.to(payload.roomName).emit('message', payload);
 
-      
-    const chatRoom= await this.chatChannelservice. getUsersFromChatRoom(payload.roomName);
 
-    for (const usuario of chatRoom) {
-      // Enviar mensage a todos los usuarios del grupo
-      const userIntra = await this.chatDMservice.findUserIntraById(usuario.userId);
-      if (userIntra != payload.senderIntraId) {
-        this.server.emit(`groupMessage/${userIntra}`, JSON.stringify(payload))
+      const chatRoom = await this.chatChannelservice.getUsersFromChatRoom(payload.roomName);
+
+      for (const usuario of chatRoom) {
+        // Enviar mensage a todos los usuarios del grupo
+        const userIntra = await this.chatDMservice.findUserIntraById(usuario.userId);
+        if (userIntra != payload.senderIntraId) {
+          this.server.emit(`groupMessage/${userIntra}`, JSON.stringify(payload))
+        }
+
       }
 
-    }
-    
     } catch (error) {
       console.error('Error:', error);
     }
@@ -210,29 +207,29 @@ async handleUnmuteUserDM(client, payload) {
 
   @SubscribeMessage('kickUser')
   async handleKickUser(client: Socket, payload) {
-      const userId = await this.chatDMservice.findUserIdByIntraId(
-        payload.intraId,
-      );
-      const addminId = await this.chatDMservice.findUserIdByIntraId(
-        payload.adminId,
-      );
+    const userId = await this.chatDMservice.findUserIdByIntraId(
+      payload.intraId,
+    );
+    const addminId = await this.chatDMservice.findUserIdByIntraId(
+      payload.adminId,
+    );
 
-      if (!userId || !addminId) {
-        return {
-          success: false,
-        }
-      }
-
-      await this.chatChannelservice.kickUserInChannel(
-        payload.roomName,
-        addminId,
-        userId,
-      );
-      client.leave(payload.roomName);
-
+    if (!userId || !addminId) {
       return {
-        success: true,
+        success: false,
       }
+    }
+
+    await this.chatChannelservice.kickUserInChannel(
+      payload.roomName,
+      addminId,
+      userId,
+    );
+    client.leave(payload.roomName);
+
+    return {
+      success: true,
+    }
   }
 
   @SubscribeMessage('banUser')
