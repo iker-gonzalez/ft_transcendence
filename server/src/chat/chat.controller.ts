@@ -319,7 +319,7 @@ export class ChatController {
     }
   }
 
-  @Get(':password/:roomName/isPasswordCorrect') // Define la ruta para los parámetros userId1 y userId2
+  @Get(':password/:roomName/isPasswordCorrect') // Define the route for the parameters userId1 and userId2
   @ApiParam({ name: 'password' })
   @ApiParam({ name: 'roomName' })
   @ApiOperation({
@@ -330,15 +330,12 @@ export class ChatController {
   })
   async getisPasswordCorrect(
     @Param('password') password: string,
-    @Param('roomName') roomName: string,
+    @Param('roomName') roomName: string
   ): Promise<boolean> {
-    try {
-      if (await this.chatChannelService.isPasswordCorrect(roomName, password))
-        return;
-      else throw new BadRequestException('Invalid password');
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    if (await this.chatChannelService.isPasswordCorrect(roomName,password))
+    return;
+  else
+    throw new BadRequestException('Invalid password');
   }
 
   @Patch(':userAddIntra/:roomName/:b_bool/setUserToPrivateChannel') // Define la ruta para los parámetros userId1 y userId2

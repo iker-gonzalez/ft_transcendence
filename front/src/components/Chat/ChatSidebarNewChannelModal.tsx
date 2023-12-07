@@ -27,6 +27,7 @@ type ChatSidebarNewChannelModalProps = {
   handleJoinRoom: (
     group: Group,
     password: string,
+    isNewGroup: boolean,
   ) => Promise<number | undefined>;
   updateUserSidebar: () => void;
   userGroups: Group[] | null;
@@ -143,7 +144,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       name: roomName,
       type: groupNature,
     };
-    if ((await handleJoinRoom(newGroup, password)) === 0) {
+    if ((await handleJoinRoom(newGroup, password, true)) === 0) {
       updateUserSidebar();
     }
     // Reset inputs
@@ -160,7 +161,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       setPasswordPopupVisible(true);
       setSelectedProtectedGroupToJoin(group);
     } else {
-      handleJoinRoom(group, ''); // no password
+      handleJoinRoom(group, '', false); // no password
       updateUserSidebar();
       handleGroupClick(group);
       setPopupVisible(false);
