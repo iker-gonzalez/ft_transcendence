@@ -51,28 +51,21 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (message.trim() !== '') {
-      if (selectedUser && userData) {
-        const newDirectMessage: DirectMessage = createNewDirectMessage({
-          selectedUser,
-          userData,
-          contentText: message,
-        });
-        onMessageSubmit(newDirectMessage);
-        setMessage('');
-      } else if (selectedGroup) {
-        // console.log('new group message: ', message);
-        const newGroupMessage: GroupMessage = {
+      if ((selectedUser || selectedGroup) && userData) {
+        const newMessage = {
           id:
             Math.random().toString(36).substring(2, 15) +
             Math.random().toString(36).substring(2, 15),
-          roomName: selectedGroup?.name || 'Anonymous',
+          roomName: selectedGroup?.name || '',
+          receiverIntraId: selectedUser?.intraId || 0,
+          receiverName: selectedUser?.username || 'Anonymous',
           senderIntraId: userData?.intraId || 0,
           senderName: userData?.username || 'Anonymous',
           senderAvatar: userData?.avatar || 'Anonymous',
           content: message,
           timestamp: new Date().toString(),
         };
-        onMessageSubmit(newGroupMessage);
+        onMessageSubmit(newMessage);
         setMessage('');
       }
     }

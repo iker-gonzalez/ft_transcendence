@@ -159,7 +159,7 @@ async handleUnmuteUserDM(client, payload) {
     console.log('sendMessageToRoom event');
     console.log('all payload:', payload);
     console.log('roomName:', payload.roomName);
-    console.log('intraId:', payload.intraId);
+    console.log('intraId:', payload.senderIntraId);
 
     // id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
     // senderName: userData?.username || 'Anonymous',
@@ -170,7 +170,7 @@ async handleUnmuteUserDM(client, payload) {
     try {
       // Actualizar la DB
       const userId = await this.chatDMservice.findUserIdByIntraId(
-        payload.intraId,
+        payload.senderIntraId,
       );
       console.log("userId");
       console.log(userId);
@@ -192,8 +192,9 @@ async handleUnmuteUserDM(client, payload) {
 
       // Enviar mensage a todos los usuarios del grupo
       const userIntra = await this.chatDMservice.findUserIntraById(usuario.userId);
-      this.server.emit(`groupMessage/${userIntra}`,
-      JSON.stringify(payload))
+      if (userIntra != payload.senderIntraId) {
+        this.server.emit(`groupMessage/${userIntra}`, JSON.stringify(payload))
+      }
 
     }
     

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import User from '../../interfaces/chat-user.interface';
+import Group from '../../interfaces/chat-group.interface';
 import styled from 'styled-components';
 import { primaryColor } from '../../constants/color-tokens';
 import ChatSidebarUpdate, {
@@ -12,6 +13,9 @@ type ChatSidebarConvoListProps = {
   updateUserSidebar: () => void;
   wasSectionUpdated: ChatSidebarUpdate;
   setWasSectionUpdated: React.Dispatch<React.SetStateAction<ChatSidebarUpdate>>;
+  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
+
 };
 
 const UserItemButton = styled.button`
@@ -69,6 +73,8 @@ const ChatSidebarConvoList: React.FC<ChatSidebarConvoListProps> = ({
   updateUserSidebar,
   wasSectionUpdated,
   setWasSectionUpdated,
+  setSelectedUser,
+  setSelectedGroup
 }): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<number>(-1);
   return (
@@ -77,6 +83,8 @@ const ChatSidebarConvoList: React.FC<ChatSidebarConvoListProps> = ({
         <UserItemButton
           key={user.intraId}
           onClick={() => {
+            setSelectedUser(user);
+            setSelectedGroup(null);
             handleUserClick(user);
             updateUserSidebar();
             setSelectedItem(index);
