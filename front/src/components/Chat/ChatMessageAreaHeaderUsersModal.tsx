@@ -104,7 +104,6 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
       intraId: intraId,
     };
     socket.emit('banUser', payload, (res: any) => {
-      console.log("cacca", res);
       if (res.success) {
         launchFlashMessage(
           `You have banned ${username} from the channel ${group.name}.`,

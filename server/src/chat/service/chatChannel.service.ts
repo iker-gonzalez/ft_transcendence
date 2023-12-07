@@ -1,11 +1,22 @@
-import { ChannelType, ChatRoom, ChatRoomUser, User, UserStatus } from '@prisma/client';
+import {
+  ChannelType,
+  ChatRoom,
+  ChatRoomUser,
+  User,
+  UserStatus,
+} from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { GetDirectMessageDto } from './../dto/get-direct-message.dto';
 import { AllExistingChannelsDTO } from './../dto/all-existing-channel.dto';
 import { AllUserChannelInDTO } from './../dto/all-user-channel-in.dto';
 import { AddMessageToUserDto } from './../dto/add-message.dto';
 import { UserService } from '../../user/user.service';
-import { BadRequestException, ConflictException, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ConversationMessageDTO } from '../dto/conversation-message.dto';
 import passport from 'passport';
 import { AllChannelInfo } from '../dto/all-channel-info.dto';
@@ -14,14 +25,12 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChatChannelService {
-  constructor(private readonly prisma: PrismaService) {
-  }
+  constructor(private readonly prisma: PrismaService) {}
   /********************************************************** */
   //                     END POINT GETTER                     //
   /********************************************************** */
   // Get all the DM conversation the user had had with other users
-  async getAllUserChannelIn(userId: string):
-    Promise<AllUserChannelInDTO[]> {
+  async getAllUserChannelIn(userId: string): Promise<AllUserChannelInDTO[]> {
     if (userId == null)
       throw new BadRequestException('User Id not found in DB');
 
@@ -49,8 +58,7 @@ export class ChatChannelService {
     return [];
   }
 
-  async getMessageInRoom(roomName: string):
-    Promise<any> {
+  async getMessageInRoom(roomName: string): Promise<any> {
     if (roomName == null)
       throw new BadRequestException('User Id not found in DB');
 
@@ -93,18 +101,31 @@ export class ChatChannelService {
     // El objeto `conversations` contendrá todas las conversaciones relacionadas con el canal, incluyendo el contenido de los mensajes
     const conversationDTO = [];
     for (const message of conversationsChannel) {
-      conversationDTO.push(new ConversationMessageDTO(message, message.sender, null, roomName));
+      conversationDTO.push(
+        new ConversationMessageDTO(message, message.sender, null, roomName),
+      );
     }
 
     const ownerIntra = await this.findUserIntraById(chatRoom.ownerId);
 
     const allinfo = new AllChannelInfo(conversationDTO, chatRoom, ownerIntra);
 
-    console.log(chatRoom.users);
-    allinfo.setIntrasOfMemeber((await this.findUserIntraAndUsernmameById(chatRoom.users)), "users");
-    allinfo.setIntrasOfMemeber((await this.findUserIntraAndUsernmameById(chatRoom.adminUsers)), "admin");
-    allinfo.setIntrasOfMemeber((await this.findUserIntraAndUsernmameById(chatRoom.mutedUsers)), "muted");
-    allinfo.setIntrasOfMemeber((await this.findUserIntraAndUsernmameById(chatRoom.bannedUsers)), "banned");
+    allinfo.setIntrasOfMemeber(
+      await this.findUserIntraAndUsernmameById(chatRoom.users),
+      'users',
+    );
+    allinfo.setIntrasOfMemeber(
+      await this.findUserIntraAndUsernmameById(chatRoom.adminUsers),
+      'admin',
+    );
+    allinfo.setIntrasOfMemeber(
+      await this.findUserIntraAndUsernmameById(chatRoom.mutedUsers),
+      'muted',
+    );
+    allinfo.setIntrasOfMemeber(
+      await this.findUserIntraAndUsernmameById(chatRoom.bannedUsers),
+      'banned',
+    );
 
     return allinfo;
   }
@@ -114,12 +135,13 @@ export class ChatChannelService {
     for (const chatUser of chatUsers) {
       intraIds.push(await this.findUserIntraById(chatUser.userId));
     }
-    console.log(intraIds);
 
     return intraIds;
   }
 
-  async findUserIntraAndUsernmameById(chatUsers: ChatRoomUser[]): Promise<IntraUsernameDTO[]> {
+  async findUserIntraAndUsernmameById(
+    chatUsers: ChatRoomUser[],
+  ): Promise<IntraUsernameDTO[]> {
     const userInfo = [];
 
     for (const chatUser of chatUsers) {
@@ -143,8 +165,7 @@ export class ChatChannelService {
 
     return user ? user.intraId : 0;
   }
-  async getAllExistingChannels(
-  ): Promise<AllExistingChannelsDTO[]> {
+  async getAllExistingChannels(): Promise<AllExistingChannelsDTO[]> {
     const allExistingChannels = await this.prisma.chatRoom.findMany({
       select: {
         name: true,
@@ -158,24 +179,19 @@ export class ChatChannelService {
       existingChannelsDTO.name = channel.name;
       existingChannelsDTO.type = channel.type;
       allExistingChannelsDTO.push(existingChannelsDTO);
-
     }
 
     const sortedAllExistingChannelsDTO = allExistingChannelsDTO.sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
 
-    console.log("sortedAllExistingChannelsDTO");
     return sortedAllExistingChannelsDTO;
   }
-
 
   /********************************************************** */
   //                     CHANEL FUNCIONALITY                  //
   /********************************************************** */
-  async channelExist(
-    channelName: string,
-  ): Promise<boolean> {
+  async channelExist(channelName: string): Promise<boolean> {
     try {
       if (!channelName)
         throw new BadRequestException('channelName cannot be null');
@@ -185,16 +201,12 @@ export class ChatChannelService {
           name: channelName,
         },
       });
-      if (!foundChatRoom)
-        return false;
-      else
-        return true;
-    }
-    catch (e) {
+      if (!foundChatRoom) return false;
+      else return true;
+    } catch (e) {
       throw new BadRequestException(e);
     }
   }
-
 
   async createChannel(
     ownerID: string,
@@ -206,20 +218,19 @@ export class ChatChannelService {
       if (!ownerID)
         throw new BadRequestException('adminId does not exist in DB');
 
-      if (access == "PUBLIC") {
-
+      if (access == 'PUBLIC') {
         // Crear el Channel
-        console.log("Crear El Channel Publico");
         await this.prisma.chatRoom.create({
           data: {
             name: channelName,
             ownerId: ownerID,
             type: ChannelType.PUBLIC,
-          }
-        })
-      }
-      else if (access == "PROTECTED") {
-        const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+          },
+        });
+      } else if (access == 'PROTECTED') {
+        const hashedPassword = password
+          ? await bcrypt.hash(password, 10)
+          : null;
 
         await this.prisma.chatRoom.create({
           data: {
@@ -227,27 +238,24 @@ export class ChatChannelService {
             ownerId: ownerID,
             type: ChannelType.PROTECTED,
             password: hashedPassword,
-          }
-        })
-      }
-      else {
+          },
+        });
+      } else {
         await this.prisma.chatRoom.create({
           data: {
             name: channelName,
             ownerId: ownerID,
             type: ChannelType.PRIVATE,
-          }
-        })
-      };
+          },
+        });
+      }
 
       await this.addUserToChannel(ownerID, channelName);
 
       await this.addAddminToChannel(channelName, ownerID, ownerID);
-    }
-    catch (e) {
+    } catch (e) {
       throw new BadRequestException(e);
     }
-
   }
 
   async addUserToChannel(
@@ -269,12 +277,14 @@ export class ChatChannelService {
         },
       });
       if (!foundChatRoom)
-        throw new BadRequestException("This ChatRoom does not exist");
+        throw new BadRequestException('This ChatRoom does not exist');
 
       // Buscar si esta banneado
-      const isUserBanned = foundChatRoom.bannedUsers.some((bannedUser) => bannedUser.userId === userIdToAdd);
+      const isUserBanned = foundChatRoom.bannedUsers.some(
+        (bannedUser) => bannedUser.userId === userIdToAdd,
+      );
       if (isUserBanned)
-        throw new BadRequestException("This user is banned in this ChatRoom");
+        throw new BadRequestException('This user is banned in this ChatRoom');
 
       // Buscar si ya esta en la Sala
       //   const isUserAlreadyIn = foundChatRoom.users.some((user) => user.userId === userIdToAdd);
@@ -288,12 +298,7 @@ export class ChatChannelService {
       });
 
       //Si ya esta en el ChatRoom no hay que añadirlo
-      if (existingChatRoomUser)
-        return;
-
-      console.log("foundCharRoom");
-      console.log(foundChatRoom.users);
-      console.log(foundChatRoom.id);
+      if (existingChatRoomUser) return;
 
       // Añadir el usuario a la sala de chat
       const myharRoomUser = await this.prisma.chatRoomUser.create({
@@ -301,23 +306,21 @@ export class ChatChannelService {
           roomId: foundChatRoom.id,
           userId: userIdToAdd,
         },
-      })
-
-    }
-    catch (e) {
+      });
+    } catch (e) {
       throw new BadRequestException(e);
     }
-
-  };
-
+  }
 
   async addChannelMessageToUser(
     channelRoom: string,
     senderId: string,
-    content: string
+    content: string,
   ): Promise<void> {
     if (!channelRoom || !senderId || !content)
-      throw new BadRequestException("channelRoom or senderId or content are null");
+      throw new BadRequestException(
+        'channelRoom or senderId or content are null',
+      );
 
     // Get el Channel
     const foundChatRoom = await this.prisma.chatRoom.findFirst({
@@ -330,13 +333,13 @@ export class ChatChannelService {
       },
     });
 
-    if (!foundChatRoom)
-      throw new BadRequestException("channelRoom not exist");
+    if (!foundChatRoom) throw new BadRequestException('channelRoom not exist');
 
-    const isMuted = foundChatRoom.mutedUsers.some((muteUser) => muteUser.userId === senderId);
+    const isMuted = foundChatRoom.mutedUsers.some(
+      (muteUser) => muteUser.userId === senderId,
+    );
     if (isMuted)
-      throw new BadRequestException("User is muted, cannot send messages");
-
+      throw new BadRequestException('User is muted, cannot send messages');
 
     // Buscar si ya esta en la Sala
     const existingChatRoomUser = await this.prisma.chatRoomUser.findFirst({
@@ -347,17 +350,15 @@ export class ChatChannelService {
     });
 
     if (!existingChatRoomUser)
-      throw new BadRequestException("user is not in the channel");
+      throw new BadRequestException('user is not in the channel');
 
     const existingMessage = await this.prisma.chatMessage.create({
-      data:
-      {
+      data: {
         content: content,
         roomId: foundChatRoom.id,
         senderId: senderId,
       },
     });
-
   }
 
   async changeChannelOwner(
@@ -374,7 +375,6 @@ export class ChatChannelService {
       },
     });
 
-    console.log("DSDSDSD");
     if (!foundChatRoom || foundChatRoom.adminUsers.length == 0) {
       const foundChatRoom2 = await this.prisma.chatRoom.findFirst({
         where: {
@@ -392,10 +392,13 @@ export class ChatChannelService {
           ownerId: newOwnerId,
         },
       });
-    }
-    else {
+    } else {
       const newOwnerId = foundChatRoom.adminUsers[0].userId;
-      this.deleteAddminToChannel(channelRoom, owenerId, foundChatRoom.adminUsers[0].userId);
+      this.deleteAddminToChannel(
+        channelRoom,
+        owenerId,
+        foundChatRoom.adminUsers[0].userId,
+      );
 
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
@@ -404,7 +407,6 @@ export class ChatChannelService {
         },
       });
     }
-
   }
 
   async leaveUserFromChannel(
@@ -412,7 +414,9 @@ export class ChatChannelService {
     userToLeaveId: string,
   ): Promise<void> {
     if (!channelRoom || !userToLeaveId)
-      throw new BadRequestException("channelRoom or userToLeaveId or content are null");
+      throw new BadRequestException(
+        'channelRoom or userToLeaveId or content are null',
+      );
 
     // Get el Channel
     const foundChatRoom = await this.prisma.chatRoom.findFirst({
@@ -424,8 +428,7 @@ export class ChatChannelService {
       },
     });
 
-    if (!foundChatRoom)
-      throw new BadRequestException("channelRoom not exist");
+    if (!foundChatRoom) throw new BadRequestException('channelRoom not exist');
 
     // Buscar si ya esta en la Sala
     const existingChatRoomUser = await this.prisma.chatRoomUser.findFirst({
@@ -436,9 +439,7 @@ export class ChatChannelService {
     });
 
     if (!existingChatRoomUser)
-      throw new BadRequestException("user in not in the channel");
-
-
+      throw new BadRequestException('user in not in the channel');
 
     // Verificar si la sala de chat no tiene más usuarios
     const remainingUsers = await this.prisma.chatRoomUser.count({
@@ -446,11 +447,6 @@ export class ChatChannelService {
         roomId: foundChatRoom.id,
       },
     });
-
-    console.log("foundChatRoom.ownerId");
-    console.log(foundChatRoom.ownerId);
-    console.log("userToLeaveId");
-    console.log(userToLeaveId);
 
     // Si no hay más usuarios o el que se va es el owner(!!esto hay que debatir), eliminar la sala de chat
     if (remainingUsers === 1) {
@@ -465,7 +461,6 @@ export class ChatChannelService {
     if (foundChatRoom.ownerId == userToLeaveId) {
       // Change owener id and set a admin or a user.
       this.changeChannelOwner(channelRoom, userToLeaveId);
-
     }
 
     // Delete user
@@ -482,12 +477,13 @@ export class ChatChannelService {
   async addAddminToChannel(
     channelRoom: string,
     ownerId: string,
-    newAdminId: string
+    newAdminId: string,
   ): Promise<void> {
-
     try {
       if (!channelRoom || !ownerId || !newAdminId)
-        throw new BadRequestException("channelRoom or ownerId or newAdminId  are null");
+        throw new BadRequestException(
+          'channelRoom or ownerId or newAdminId  are null',
+        );
 
       // Get el Channel
       const foundChatRoom = await this.prisma.chatRoom.findFirst({
@@ -500,33 +496,27 @@ export class ChatChannelService {
       });
 
       if (!foundChatRoom)
-        throw new BadRequestException("channelRoom not exist");
+        throw new BadRequestException('channelRoom not exist');
 
       if (ownerId != foundChatRoom.ownerId)
-        throw new ConflictException("It is not the owner of the channel, not premissions to do this");
+        throw new ConflictException(
+          'It is not the owner of the channel, not premissions to do this',
+        );
 
       // Verificar si el usuario ya pertenece a la sala de chat
       const existingUser = await this.prisma.chatRoomUser.findFirst({
         where: { roomId: foundChatRoom.id, userId: newAdminId },
       });
 
-      console.log("123");
       // Si el usuario al que se quiere hacer administrador no es un usuario del chatRomm.
       if (!existingUser && newAdminId != foundChatRoom.ownerId) {
-        console.log("1234");
-
-        throw new BadRequestException("user is not from this channel");
-        // await this.addUserToChannel(newAdminId, channelRoom);
-
+        throw new BadRequestException('user is not from this channel');
       }
 
       // Buscar el ChatRoomUser por userId
       const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
         where: { userId: newAdminId },
       });
-
-      console.log("chatRoomUser");
-      console.log(chatRoomUser);
 
       // Actualizar el ChatRoom para agregar el nuevo usuario a la lista de adminUsers
       const updatedChatRoom2 = await this.prisma.chatRoom.update({
@@ -537,23 +527,21 @@ export class ChatChannelService {
           },
         },
       });
-    }
-    catch (error) {
-      console.error("Error:", error);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
-
 
   async deleteAddminToChannel(
     channelRoom: string,
     ownerId: string,
-    deleteAdminId: string
+    deleteAdminId: string,
   ): Promise<void> {
-
     try {
-
       if (!channelRoom || !ownerId || !deleteAdminId)
-        throw new BadRequestException("channelRoom or ownerId or deleteAdminId  are null");
+        throw new BadRequestException(
+          'channelRoom or ownerId or deleteAdminId  are null',
+        );
 
       // Get el Channel
       const foundChatRoom = await this.prisma.chatRoom.findFirst({
@@ -566,18 +554,19 @@ export class ChatChannelService {
       });
 
       if (!foundChatRoom)
-        throw new BadRequestException("channelRoom not exist");
+        throw new BadRequestException('channelRoom not exist');
 
       if (ownerId != foundChatRoom.ownerId)
-        throw new BadRequestException("It is not the owner of the channel, not premissions to do this");
-
+        throw new BadRequestException(
+          'It is not the owner of the channel, not premissions to do this',
+        );
 
       const isAdmin = await this.isUserAdmin(foundChatRoom.id, deleteAdminId);
-      console.log("3");
 
       if (!isAdmin)
-        throw new BadRequestException("deleteAdminId is not the admin of the channel yet");
-      console.log("4");
+        throw new BadRequestException(
+          'deleteAdminId is not the admin of the channel yet',
+        );
 
       // Buscar el ChatRoomUser por userId
       const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
@@ -593,22 +582,21 @@ export class ChatChannelService {
           },
         },
       });
+    } catch (error) {
+      console.error('Error:', error);
     }
-    catch (error) {
-      console.error("Error:", error);
-    }
-
   }
 
-  private async isUserAdmin(chatRoomId: string, userId: string): Promise<boolean> {
-
+  private async isUserAdmin(
+    chatRoomId: string,
+    userId: string,
+  ): Promise<boolean> {
     if (!chatRoomId || !userId)
-      throw new BadRequestException("channelRoom or userId are null");
+      throw new BadRequestException('channelRoom or userId are null');
 
     const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
       where: { userId: userId },
     });
-
 
     // Get el Channel
     const chatRoom = await this.prisma.chatRoom.findUnique({
@@ -616,17 +604,9 @@ export class ChatChannelService {
       include: { adminUsers: true },
     });
 
-    // Verificar si el usuario está en la lista de adminUsers
-    //  for (const userAdmin of chatRoom.adminUsers)
-    //  {
-    //   console.log("For:");
-    //   console.log(userAdmin.userId);
-    //   if (userAdmin.userId == userId)
-    //   return true;
-    //  }
-    //  return false;
-    const isUserAdmin = chatRoom.adminUsers.some((adminUser) => adminUser.userId === userId);
-    console.log(isUserAdmin);
+    const isUserAdmin = chatRoom.adminUsers.some(
+      (adminUser) => adminUser.userId === userId,
+    );
     return isUserAdmin;
   }
 
@@ -634,39 +614,43 @@ export class ChatChannelService {
   async muteUserInChannel(
     channelRoom: string,
     ownerId: string,
-    muteUserId: string
+    muteUserId: string,
   ): Promise<void> {
-
     try {
-
       if (!channelRoom || !ownerId || !muteUserId)
-        throw new BadRequestException("channelRoom or ownerId or muteUserId  are null");
+        throw new BadRequestException(
+          'channelRoom or ownerId or muteUserId  are null',
+        );
 
       // Get el Channel
       const foundChatRoom = await this.prisma.chatRoom.findFirst({
-        where: { name: channelRoom, },
+        where: { name: channelRoom },
         include: {
-          users: true
+          users: true,
         },
       });
       if (!foundChatRoom)
-        throw new BadRequestException("channelRoom not exist");
+        throw new BadRequestException('channelRoom not exist');
 
       // Check permision
       const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
       if (!isAdmin && ownerId != foundChatRoom.ownerId)
-        throw new UnprocessableEntityException("You do not have permission to mute this user.");
+        throw new UnprocessableEntityException(
+          'You do not have permission to mute this user.',
+        );
 
       // Check if the banUserId is not the owner of the channel
       if (muteUserId == foundChatRoom.ownerId)
-        throw new UnprocessableEntityException("You cannot mute the owner of the channel.");
+        throw new UnprocessableEntityException(
+          'You cannot mute the owner of the channel.',
+        );
 
       // Buscar el ChatRoomUser por userId
       const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
         where: { userId: muteUserId },
       });
       if (!chatRoomUser)
-        throw new BadRequestException("User is not in the chatRoom");
+        throw new BadRequestException('User is not in the chatRoom');
 
       // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
       const updatedChatRoom = await this.prisma.chatRoom.update({
@@ -677,47 +661,46 @@ export class ChatChannelService {
           },
         },
       });
-    }
-    catch (error) {
+    } catch (error) {
       throw error;
     }
-
   }
 
   // UnMute User
   async unmuteUserInChannel(
     channelRoom: string,
     ownerId: string,
-    unmuteUserId: string
+    unmuteUserId: string,
   ): Promise<void> {
-
     try {
-
       if (!channelRoom || !ownerId || !unmuteUserId)
-        throw new BadRequestException("channelRoom or ownerId or unmuteUserId  are null");
+        throw new BadRequestException(
+          'channelRoom or ownerId or unmuteUserId  are null',
+        );
 
       // Get el Channel
       const foundChatRoom = await this.prisma.chatRoom.findFirst({
-        where: { name: channelRoom, },
+        where: { name: channelRoom },
         include: {
-          users: true
+          users: true,
         },
       });
       if (!foundChatRoom)
-        throw new BadRequestException("channelRoom not exist");
+        throw new BadRequestException('channelRoom not exist');
 
       // Check permision
       const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
       if (!isAdmin && ownerId != foundChatRoom.ownerId)
-        throw new BadRequestException("It is not the owner or admin of the channel, not premissions to do this");
+        throw new BadRequestException(
+          'It is not the owner or admin of the channel, not premissions to do this',
+        );
 
       // Buscar el ChatRoomUser por userId
       const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
         where: { userId: unmuteUserId },
       });
       if (!chatRoomUser)
-        throw new BadRequestException("User is not in the chatRoom");
-
+        throw new BadRequestException('User is not in the chatRoom');
 
       // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
       const updatedChatRoom = await this.prisma.chatRoom.update({
@@ -728,9 +711,8 @@ export class ChatChannelService {
           },
         },
       });
-    }
-    catch (error) {
-      console.error("Error:", error);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
 
@@ -741,7 +723,7 @@ export class ChatChannelService {
     });
 
     if (!roomData) {
-      throw new BadRequestException("Channel not found");
+      throw new BadRequestException('Channel not found');
     }
 
     const mutedUsers = roomData.mutedUsers.map((user) => user.userId);
@@ -759,45 +741,47 @@ export class ChatChannelService {
     return {
       found: 1,
       data: mutedUsersIntraIds,
-    }
+    };
   }
-
 
   // Kick user
   async kickUserInChannel(
     channelRoom: string,
     ownerId: string,
-    kickUserId: string
+    kickUserId: string,
   ): Promise<void> {
-
     try {
-
       if (!channelRoom || !ownerId || !kickUserId)
-        throw new BadRequestException("channelRoom or ownerId or kickUserId  are null");
+        throw new BadRequestException(
+          'channelRoom or ownerId or kickUserId  are null',
+        );
 
       // Get el Channel
       const foundChatRoom = await this.prisma.chatRoom.findFirst({
-        where: { name: channelRoom, },
+        where: { name: channelRoom },
         include: {
-          users: true
+          users: true,
         },
       });
       if (!foundChatRoom)
-        throw new BadRequestException("channelRoom not exist");
+        throw new BadRequestException('channelRoom not exist');
 
       // Check permision
       const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
       if (!isAdmin && ownerId != foundChatRoom.ownerId)
-        throw new BadRequestException("It is not the owner or admin of the channel, not premissions to do this");
+        throw new BadRequestException(
+          'It is not the owner or admin of the channel, not premissions to do this',
+        );
 
       // Check if the banUserId is not the owner of the channel
       if (kickUserId == foundChatRoom.ownerId)
-        throw new BadRequestException("Cannot KICK to the owner of the channel");
+        throw new BadRequestException(
+          'Cannot KICK to the owner of the channel',
+        );
 
       await this.leaveUserFromChannel(channelRoom, kickUserId);
-    }
-    catch (error) {
-      console.error("Error:", error);
+    } catch (error) {
+      console.error('Error:', error);
     }
   }
   // Delete admin from channel
@@ -806,39 +790,41 @@ export class ChatChannelService {
   async banUserInChannel(
     channelRoom: string,
     ownerId: string,
-    banUserId: string
+    banUserId: string,
   ): Promise<void> {
-
     try {
-
       if (!channelRoom || !ownerId || !banUserId)
-        throw new BadRequestException("channelRoom or ownerId or muteUserId  are null");
+        throw new BadRequestException(
+          'channelRoom or ownerId or muteUserId  are null',
+        );
 
       // Get el Channel
       const foundChatRoom = await this.prisma.chatRoom.findFirst({
-        where: { name: channelRoom, },
+        where: { name: channelRoom },
         include: {
-          users: true
+          users: true,
         },
       });
       if (!foundChatRoom)
-        throw new BadRequestException("channelRoom not exist");
+        throw new BadRequestException('channelRoom not exist');
 
       // Check permision
       const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
       if (!isAdmin && ownerId != foundChatRoom.ownerId)
-        throw new BadRequestException("It is not the owner or admin of the channel, not premissions to do this");
+        throw new BadRequestException(
+          'It is not the owner or admin of the channel, not premissions to do this',
+        );
 
       // Check if the banUserId is not the owner of the channel
       if (banUserId == foundChatRoom.ownerId)
-        throw new BadRequestException("Cannot BAN to the owner of the channel");
+        throw new BadRequestException('Cannot BAN to the owner of the channel');
 
       // Buscar el ChatRoomUser por userId
       const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
         where: { userId: banUserId },
       });
       if (!chatRoomUser)
-        throw new BadRequestException("User is not in the chatRoom");
+        throw new BadRequestException('User is not in the chatRoom');
 
       // Actualizar la relación baneUsers del ChatRoom para añadir al usuario muteado
       const updatedChatRoom = await this.prisma.chatRoom.update({
@@ -858,46 +844,45 @@ export class ChatChannelService {
       // Echar usuario
 
       //z  await this.leaveUserFromChannel(channelRoom, banUser Id);
+    } catch (error) {
+      console.error('Error:', error);
     }
-    catch (error) {
-      console.error("Error:", error);
-    }
-
   }
   // Unbanned user
   async unbanUserInChannel(
     channelRoom: string,
     ownerId: string,
-    unbanUserId: string
+    unbanUserId: string,
   ): Promise<void> {
-
     try {
-
       if (!channelRoom || !ownerId || !unbanUserId)
-        throw new BadRequestException("channelRoom or ownerId or muteUserId  are null");
+        throw new BadRequestException(
+          'channelRoom or ownerId or muteUserId  are null',
+        );
 
       // Get el Channel
       const foundChatRoom = await this.prisma.chatRoom.findFirst({
-        where: { name: channelRoom, },
+        where: { name: channelRoom },
         include: {
-          users: true
+          users: true,
         },
       });
       if (!foundChatRoom)
-        throw new BadRequestException("channelRoom not exist");
+        throw new BadRequestException('channelRoom not exist');
 
       // Check permision
       const isAdmin = await this.isUserAdmin(foundChatRoom.id, ownerId);
       if (!isAdmin && ownerId != foundChatRoom.ownerId)
-        throw new BadRequestException("It is not the owner or admin of the channel, not premissions to do this");
+        throw new BadRequestException(
+          'It is not the owner or admin of the channel, not premissions to do this',
+        );
 
       // Buscar el ChatRoomUser por userId
       const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
         where: { userId: unbanUserId },
       });
       if (!chatRoomUser)
-        throw new BadRequestException("User is not in the chatRoom");
-
+        throw new BadRequestException('User is not in the chatRoom');
 
       // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
       const updatedChatRoom = await this.prisma.chatRoom.update({
@@ -907,16 +892,13 @@ export class ChatChannelService {
             disconnect: { id: chatRoomUser.id },
           },
           users: {
-            connect: { id: chatRoomUser.id }
-          }
+            connect: { id: chatRoomUser.id },
+          },
         },
       });
-
+    } catch (error) {
+      console.error('Error:', error);
     }
-    catch (error) {
-      console.error("Error:", error);
-    }
-
   }
   /********************************************************** */
   //                     PRIVACY FUNCIONALITY                 //
@@ -929,49 +911,43 @@ export class ChatChannelService {
     channelRoom: string,
     ownerId: string,
     password: string,
-    type: ChannelType
+    type: ChannelType,
   ): Promise<void> {
-
     try {
-
       if (!channelRoom || !ownerId)
-        throw new BadRequestException("channelRoom or ownerIntra are null");
+        throw new BadRequestException('channelRoom or ownerIntra are null');
 
       // Get el Channel
       const foundChatRoom = await this.prisma.chatRoom.findFirst({
-        where: { name: channelRoom, },
+        where: { name: channelRoom },
         include: {
-          users: true
+          users: true,
         },
       });
       if (!foundChatRoom)
-        throw new BadRequestException("channelRoom not exist");
+        throw new BadRequestException('channelRoom not exist');
 
       // Check permision
       if (ownerId != foundChatRoom.ownerId)
-        throw new BadRequestException("It is not the owner or admin of the channel, not premissions to do this");
+        throw new BadRequestException(
+          'It is not the owner or admin of the channel, not premissions to do this',
+        );
 
       // Buscar el ChatRoomUser por userId
       const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
-      console.log("hashedPassword");
-      console.log(hashedPassword);
-      console.log("foundChatRoom.password");
-      console.log(foundChatRoom.password);
-      console.log("password");
-      console.log(password);
 
       // Update the chat room
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
         data: {
           password: hashedPassword,
-          type: type, mutedUsers: {
+          type: type,
+          mutedUsers: {
             set: [],
-          }
+          },
         },
       });
-    }
-    catch (error) {
+    } catch (error) {
       throw error;
     }
   }
@@ -981,84 +957,83 @@ export class ChatChannelService {
     channelRoom: string,
     password: string,
   ): Promise<boolean> {
-
     try {
-
-      if (!channelRoom)
-        throw new BadRequestException("channelRoom are null");
+      if (!channelRoom) throw new BadRequestException('channelRoom are null');
 
       // Get el Channel
       const foundChatRoom = await this.prisma.chatRoom.findFirst({
-        where: { name: channelRoom, },
+        where: { name: channelRoom },
         include: {
           users: true,
         },
       });
       if (!foundChatRoom)
-        throw new BadRequestException("channelRoom not exist");
+        throw new BadRequestException('channelRoom not exist');
 
-      console.log(password);
-      console.log(foundChatRoom.password);
       // Compara los hashes
-      const passwordsMatch = await bcrypt.compare(password, foundChatRoom.password);
-      console.log("passwordsMatch");
-      console.log(passwordsMatch);
-      if (!passwordsMatch)
-        return false;
-    }
-    catch (error) {
+      const passwordsMatch = await bcrypt.compare(
+        password,
+        foundChatRoom.password,
+      );
+
+      if (!passwordsMatch) return false;
+    } catch (error) {
       throw new BadRequestException(error);
 
-      console.error("Error:", error);
+      console.error('Error:', error);
     }
     return true;
   }
   // make private
-  async addUserToPrivateChannel(userIdAdd: string, ownerId: string, channelName: string,
-    add: number) {
+  async addUserToPrivateChannel(
+    userIdAdd: string,
+    ownerId: string,
+    channelName: string,
+    add: number,
+  ) {
     try {
-
       if (!userIdAdd || !ownerId || !channelName)
-        throw new BadRequestException("channelRoom or ownerId or userIdAdd  are null");
+        throw new BadRequestException(
+          'channelRoom or ownerId or userIdAdd  are null',
+        );
 
       // Get el Channel
       const foundChatRoom = await this.prisma.chatRoom.findFirst({
-        where: { name: channelName, },
+        where: { name: channelName },
         include: {
-          users: true
+          users: true,
         },
       });
       if (!foundChatRoom)
-        throw new BadRequestException("channelRoom not exist");
+        throw new BadRequestException('channelRoom not exist');
 
-      console.log(ownerId);
       if (foundChatRoom.ownerId != ownerId)
-        throw new BadRequestException("This is not the owner of the channel");
+        throw new BadRequestException('This is not the owner of the channel');
 
       // Add user
       if (foundChatRoom.type !== ChannelType.PRIVATE)
-        throw new BadRequestException("Chat must be private");
+        throw new BadRequestException('Chat must be private');
 
       // Buscar si esta banneado
-      const isUserAlreadyIn = foundChatRoom.users.some((userss) => userss.userId === userIdAdd);
+      const isUserAlreadyIn = foundChatRoom.users.some(
+        (userss) => userss.userId === userIdAdd,
+      );
       if (add == 1) {
         if (isUserAlreadyIn)
-          throw new BadRequestException("This user already in this ChatRoom");
+          throw new BadRequestException('This user already in this ChatRoom');
 
         // Add user
         await this.addUserToChannel(userIdAdd, channelName);
-      }
-      else if (add == 0) {
+      } else if (add == 0) {
         if (!isUserAlreadyIn)
-          throw new BadRequestException("This user is not in this ChatRoom");
+          throw new BadRequestException('This user is not in this ChatRoom');
 
         // Delete User
         await this.leaveUserFromChannel(channelName, userIdAdd);
       }
-    }
-    catch (error) {
+    } catch (error) {
       throw new BadRequestException(error);
-      console.error("Error:", error);
+      console.error('Error:', error);
     }
   }
 
@@ -1075,8 +1050,4 @@ export class ChatChannelService {
 
     return chatRoom.users;
   }
-
-
-
 }
-

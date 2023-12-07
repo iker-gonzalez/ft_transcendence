@@ -175,9 +175,6 @@ export async function setAdminIntra(
   isAdmin: number
 ): Promise<number> {
   if (channelName && adminIntraId && ownerIntraId) {
-    console.log('channelName:', channelName);
-    console.log('adminIntraId:', adminIntraId);
-    console.log('ownerIntraId:', ownerIntraId);
     const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${adminIntraId}/${isAdmin}/setAdmin`, {
       method: 'PATCH',
       headers: {
@@ -199,9 +196,6 @@ export async function patchBlockUser(
   isBlocked: number
 ): Promise<number> {
   if (userIntraId && blockIntraId) {
-    console.log('userIntraId:', userIntraId);
-    console.log('blockIntraId:', blockIntraId);
-    console.log('isBlocked:', isBlocked);
     const response = await fetchAuthorized(`${getBaseUrl()}/chat/${userIntraId}/${blockIntraId}/${isBlocked}/blockUser`, {
       method: 'PATCH',
       headers: {
@@ -264,8 +258,6 @@ export async function inviteFriendToChannel(
   ownerIntraId: number,
 ): Promise<number> {
   if (channelName && friendIntraId && ownerIntraId) {
-    console.log('channelName:', channelName);
-    console.log('friendIntraId:', friendIntraId);
     const response = await fetchAuthorized(`${getBaseUrl()}/chat/${friendIntraId}/${channelName}/1/setUserToPrivateChannel`, {
       method: 'PATCH',
       headers: {

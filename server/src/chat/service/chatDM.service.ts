@@ -9,7 +9,7 @@ import { AllUsersDMWithDTO } from './../dto/all-users-DM-with.dto';
 
 @Injectable()
 export class ChatDMService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   /********************************************************** */
   //                     END POINT GETTER                     //
@@ -51,9 +51,13 @@ export class ChatDMService {
     const conversationDTO = [];
     for (const message of conversationMessages) {
       if (message.senderId == userId1) {
-        conversationDTO.push(new ConversationMessageDTO(message, user1, user2, null));
+        conversationDTO.push(
+          new ConversationMessageDTO(message, user1, user2, null),
+        );
       } else
-        conversationDTO.push(new ConversationMessageDTO(message, user2, user1, null));
+        conversationDTO.push(
+          new ConversationMessageDTO(message, user2, user1, null),
+        );
     }
     return conversationDTO;
   }
@@ -136,7 +140,6 @@ export class ChatDMService {
   }
 
   async findUserIdByIntraId(intraId: number): Promise<string> {
-    console.log('findUserIdByIntraId', intraId);
     const user = await this.prisma.user.findUnique({
       where: {
         intraId: intraId,
@@ -178,7 +181,6 @@ export class ChatDMService {
         throw new BadRequestException('Cannot sent message, user is muted');
 
       if (!existingMessage || existingMessage) {
-        console.log('exisingMessage');
         // El registro no se encontró, así que créalo
         const newMessage = await this.prisma.directMessage.create({
           data: {
@@ -250,10 +252,8 @@ export class ChatDMService {
         },
       });
 
-      console.log('unmuteUserDM');
       const isMuted = await this.isUserMuted(userId, userToUnMuteId);
-      console.log('isMuted');
-      console.log(isMuted);
+
       await this.prisma.user.update({
         where: { id: userId },
         data: {

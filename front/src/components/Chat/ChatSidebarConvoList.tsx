@@ -15,7 +15,6 @@ type ChatSidebarConvoListProps = {
   setWasSectionUpdated: React.Dispatch<React.SetStateAction<ChatSidebarUpdate>>;
   setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
   setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
-
 };
 
 const UserItemButton = styled.button`
@@ -74,7 +73,7 @@ const ChatSidebarConvoList: React.FC<ChatSidebarConvoListProps> = ({
   wasSectionUpdated,
   setWasSectionUpdated,
   setSelectedUser,
-  setSelectedGroup
+  setSelectedGroup,
 }): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<number>(-1);
   return (

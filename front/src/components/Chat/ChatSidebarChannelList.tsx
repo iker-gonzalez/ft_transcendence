@@ -70,7 +70,7 @@ const ChatSidebarChannelList: React.FC<ChatSidebarConvoListProps> = ({
   wasSectionUpdated,
   setWasSectionUpdated,
   setSelectedUser,
-  setSelectedGroup
+  setSelectedGroup,
 }): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<number>(-1);
 

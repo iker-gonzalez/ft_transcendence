@@ -137,7 +137,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   // ownerIntraId: number,
 
   const handleInvite = async (userAddIntra: number) => {
-    console.log('friend to invite intraId', userAddIntra);
     const status_code = await inviteFriendToChannel(
       channelData!.roomName || '',
       userAddIntra,
@@ -218,7 +217,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     return isOwner() || isAdmin();
   };
 
-  // console.log('channelData. type', channelData?.type);
 
   return (
     <>
