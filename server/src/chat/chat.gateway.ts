@@ -115,14 +115,14 @@ async handleUnmuteUserDM(client, payload) {
           userId,
           payload.roomName,
           payload.type,
-          payload.password,
+          payload.password, 
         );
       }
       else {
         if (payload.type == 'PROTECTED')
         {
-
-          if (!this.chatChannelservice.isPasswordCorrect(
+          console.log("PROTECTE GROUP");
+          if (!await this.chatChannelservice.isPasswordCorrect(
             payload.roomName,
             payload.password,
             ))
@@ -136,7 +136,6 @@ async handleUnmuteUserDM(client, payload) {
         if (payload.type == 'PRIVATE')
           throw new BadGatewayException('Cannot access to a private channel');
       }
-      await this.chatChannelservice.addUserToChannel(userId, payload.roomName);
 
       client.join(payload.roomName);
       client.emit('joinedRoom', `Te has unido a la sala ${payload.roomName}`);
