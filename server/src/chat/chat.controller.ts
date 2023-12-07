@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 
 import {
@@ -26,17 +27,16 @@ import { AllUsersDMWithDTO } from './dto/all-users-DM-with.dto';
 import { ConversationMessageDTO } from './dto/conversation-message.dto';
 import { AllExistingChannelsDTO } from './dto/all-existing-channel.dto';
 import { AllUserChannelInDTO } from './dto/all-user-channel-in.dto';
-import { ChannelType } from '@prisma/client';
+import { ChannelType, ChatRoomUser, User } from '@prisma/client';
 import { AllChannelInfo } from './dto/all-channel-info.dto';
 import { RoomOwnerIntraDTO } from './dto/roomOwnerIntra.dto';
 import { RoomOwnerPasswordIntraDTO } from './dto/room-owener-password.dto';
-
-interface Payload {
-  ownerID: string;
-}
+import { GetUser } from 'src/auth/decorator/get-user.decorator';
+import { JwtGuard } from 'src/auth/guard/jwt.guard';
 
 @ApiTags('Chat')
 @Controller('chat')
+@UseGuards(JwtGuard)
 export class ChatController {
   constructor(
     private readonly chatDMService: ChatDMService,
@@ -138,6 +138,14 @@ export class ChatController {
     } catch (error) {
       console.error('Error:', error);
     }
+  }
+
+  @Get('bannedUsers')
+  async getBannedUsersPerChannel(): Promise<{
+    found: number;
+    data: { name: string; bannedUsers: ChatRoomUser[] }[];
+  }> {
+    return this.chatChannelService.getBannedUser();
   }
 
   @Get(':userIntra/CM')
