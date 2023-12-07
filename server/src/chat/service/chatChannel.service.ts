@@ -176,6 +176,7 @@ export class ChatChannelService {
       return a.name.localeCompare(b.name);
     });
 
+    console.log("sortedAllExistingChannelsDTO");
     return sortedAllExistingChannelsDTO;
   }
 
@@ -223,6 +224,7 @@ export class ChatChannelService {
     {
 
       // Crear el Channel
+      console.log("Crear El Channel Publico");
       await this.prisma.chatRoom.create({
         data:{
           name: channelName,
@@ -254,6 +256,8 @@ export class ChatChannelService {
       }
     })
   };
+
+  await this.addUserToChannel(ownerID, channelName);
 
   await this.addAddminToChannel(channelName, ownerID, ownerID);
   }
@@ -526,18 +530,24 @@ try{
     where: { roomId: foundChatRoom.id, userId: newAdminId },
      });
 
+     console.log("123");
     // Si el usuario al que se quiere hacer administrador no es un usuario del chatRomm.
     if (!existingUser && newAdminId != foundChatRoom.ownerId )
     {
+      console.log("1234");
+
         throw new BadRequestException ("user is not from this channel");
      // await this.addUserToChannel(newAdminId, channelRoom);
     
     }  
-      // Buscar el ChatRoomUser por userId
-      const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
-        where: { userId: newAdminId },
-      });
-      
+    
+    // Buscar el ChatRoomUser por userId
+    const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
+      where: { userId: newAdminId },
+    });
+    
+    console.log("chatRoomUser");
+    console.log(chatRoomUser);
 
     // Actualizar el ChatRoom para agregar el nuevo usuario a la lista de adminUsers
     const updatedChatRoom2 = await this.prisma.chatRoom.update({
