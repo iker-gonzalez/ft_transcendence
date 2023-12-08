@@ -35,25 +35,21 @@ export class ChatGateway implements OnGatewayConnection {
 
   @SubscribeMessage('privateMessage')
   async handlePrivateMessage(client, payload) {
-    try {
-      // Prueba para el get de lo DM
-      const senderId = await this.chatDMservice.findUserIdByIntraId(
-        payload.senderIntraId,
-      );
-      const receiverId = await this.chatDMservice.findUserIdByIntraId(
-        payload.receiverIntraId,
-      );
+    // Prueba para el get de lo DM
+    const senderId = await this.chatDMservice.findUserIdByIntraId(
+      payload.senderIntraId,
+    );
+    const receiverId = await this.chatDMservice.findUserIdByIntraId(
+      payload.receiverIntraId,
+    );
 
-      await this.chatDMservice.addMessageToUser(
-        senderId,
-        receiverId,
-        payload.content,
-      );
+    await this.chatDMservice.addMessageToUser(
+      senderId,
+      receiverId,
+      payload.content,
+    );
 
-      // Emit signal to update the receiver chat frontend
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    this.server.emit('newData');
     // Emit signal to update the receiver chat frontend
     this.server.emit(
       `privateMessageReceived/${payload.receiverIntraId}`,
