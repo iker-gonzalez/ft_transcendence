@@ -76,6 +76,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
         <MainInput
           type="text"
           placeholder="Type your message..."
+          minLength={1}
+          maxLength={124}
           value={message}
           onChange={handleChange}
           disabled={selectedUser?.isBlocked || isCurrentUserBlocked}
