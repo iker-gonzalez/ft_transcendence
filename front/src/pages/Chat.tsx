@@ -204,23 +204,6 @@ const Chat: React.FC = () => {
       const refreshDataListener = () => {
         // Update the sidebar
         fetchData();
-
-        // Update channel header
-        if (selectedGroup) {
-          fetchChannelData(selectedGroup.name).then((freshChannelData) => {
-            setChannelData(freshChannelData);
-          });
-        }
-
-        // Update conversations header
-        if (selectedUser) {
-          fetchDirectMessageUsers().then((users) => {
-            setUsers(users);
-            setSelectedUser(
-              users.find((u: any) => u.intraId === selectedUser.intraId),
-            );
-          });
-        }
       };
 
       if (userData) {
@@ -234,10 +217,7 @@ const Chat: React.FC = () => {
           groupMessageListener,
         );
 
-        socket.on(
-          `newData/${userData.intraId.toString()}`,
-          refreshDataListener,
-        );
+        socket.on('newData', refreshDataListener);
       }
 
       //Clean up the listener when the component unmounts or when the receiverId changes

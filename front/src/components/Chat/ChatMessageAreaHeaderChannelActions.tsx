@@ -205,7 +205,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
           return bannedUsersInfo.name === roomName;
         });
 
-        setBannedUsers(channelBannedUsers.bannedUsers);
+        setBannedUsers(channelBannedUsers?.bannedUsers);
       });
   };
 
@@ -363,7 +363,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               disabled={(() => {
                 const isNoUserToManage =
                   channelData?.usersInfo.length === 1 &&
-                  bannedUsers.length === 0;
+                  bannedUsers?.length === 0;
 
                 const IsOnlyUserToManageOwner =
                   channelData?.usersInfo.length === 2 &&

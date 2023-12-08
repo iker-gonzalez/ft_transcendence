@@ -336,6 +336,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   setSelectedProtectedGroupToJoin
                 }
                 handleGroupClick={handleGroupClick}
+                socket={socket}
               />
             )}
           </Modal>
