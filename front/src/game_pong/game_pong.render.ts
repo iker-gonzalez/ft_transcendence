@@ -2,7 +2,7 @@ import { Socket } from 'socket.io-client';
 import GameSessionUser from '../interfaces/game-session-user.interface';
 import UserData from '../interfaces/user-data.interface';
 import { matchPoints } from './game_pong';
-import { userSpeedInput, slit, thickness, speed } from './game_pong.constants';
+import { userSpeedInput, slit, thickness, speed, USER_SIZE_RATIO } from './game_pong.constants';
 import {
   InitializeCanvasImages,
   ballTrailClean,
@@ -399,8 +399,9 @@ export function resetBall(
   const newUserData2: IUserData = user2;
   newBallData.reset = true;
   newBallData.speed = speed;
-  newUserData1.height = 100;
-  newUserData2.height = 100;
+  newUserData1.height = (+CANVAS_WIDTH / USER_SIZE_RATIO) * 10;
+  newUserData2.height = (+CANVAS_WIDTH / USER_SIZE_RATIO) * 10;
+ 
 
   // TODO Check setTimeout (async / await)
   setTimeout(() => {
