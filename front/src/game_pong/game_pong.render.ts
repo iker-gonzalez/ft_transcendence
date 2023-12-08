@@ -29,6 +29,11 @@ import {
 } from './game_pong.interfaces';
 import GameTheme from '../interfaces/game-theme.interface';
 
+import { CANVAS_WIDTH } from '../constants/canvas';
+export let fontSizeBase: number = +CANVAS_WIDTH / 10;
+console.log('canvas width value is -> ', +CANVAS_WIDTH);
+console.log('fontSizeBase value is -> ', fontSizeBase);
+
 export function render(
   canvas: HTMLCanvasElement,
   ballData: IBallData,
