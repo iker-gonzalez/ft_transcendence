@@ -44,7 +44,7 @@ export class ChatGateway implements OnGatewayConnection {
         payload.receiverIntraId,
       );
 
-      const addMessageStatus = await this.chatDMservice.addMessageToUser(
+      await this.chatDMservice.addMessageToUser(
         senderId,
         receiverId,
         payload.content,
@@ -60,36 +60,6 @@ export class ChatGateway implements OnGatewayConnection {
       JSON.stringify(payload),
     );
   }
-
-  /*
-@SubscribeMessage('muteUserDM')
-async handleMuteUserDM(client, payload) {
-  try { 
-    // Prueba para el get de lo DM
-    const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
-    const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
-
-    const addMessageStatus =  await this.chatDMservice.unblockUserDM(senderId, receiverId);
-    this.server.emit(`muteUserDMDone/${payload.receiverId}`,
-    JSON.stringify(payload))
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
-
-@SubscribeMessage('unmuteUserDM') 
-async handleUnmuteUserDM(client, payload) {
-  try { 
-    // Prueba para el get de lo DM
-    const senderId = await this.chatDMservice.findUserIdByIntraId(payload.senderId);
-    const receiverId = await this.chatDMservice.findUserIdByIntraId(payload.receiverId);
-    const addMessageStatus =  await this.chatDMservice.unblockUserDM(senderId, receiverId);
-    this.server.emit(`unmuteUserDMDone/${payload.receiverId}`,
-    JSON.stringify(payload))
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}*/
 
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(client: Socket, payload) {
@@ -296,6 +266,18 @@ async handleUnmuteUserDM(client, payload) {
       client.emit('joinedRoom', `Te has unido a la sala ${payload.roomName}`);
     } catch (error) {
       console.error('Error:', error);
+    }
+  }
+
+  @SubscribeMessage('update')
+  async handleUpdate(client: Socket, payload) {
+    const updatedIntraId = payload.updatedIntraId;
+
+    if (updatedIntraId) {
+      this.server.emit(`newData/${updatedIntraId}`);
+      return 'OK';
+    } else {
+      return 'KO';
     }
   }
 }
