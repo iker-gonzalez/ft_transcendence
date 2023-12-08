@@ -30,7 +30,7 @@ import {
 import GameTheme from '../interfaces/game-theme.interface';
 
 import { CANVAS_WIDTH } from '../constants/canvas';
-export let fontSizeBase: number = +CANVAS_WIDTH / 10;
+export let fontSizeBase: number = +CANVAS_WIDTH / 100;
 console.log('canvas width value is -> ', +CANVAS_WIDTH);
 console.log('fontSizeBase value is -> ', fontSizeBase);
 
@@ -58,7 +58,7 @@ export function render(
 
   // Above wall
   drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
-
+  
   // Below wall
   drawRect(
     canvas,
@@ -115,7 +115,7 @@ export function render(
       ' 🔇 ',
       canvas.width / 2,
       canvas.height / 8,
-      '40px Verdana',
+      `${fontSizeBase * 4}px Verdana`,
       'center',
       RenderColor.White,
     );
@@ -125,7 +125,7 @@ export function render(
       ' 🔈 ',
       canvas.width / 2,
       canvas.height / 8,
-      '40px Verdana',
+      `${fontSizeBase * 4}px Verdana`,
       'center',
       RenderColor.White,
     );
@@ -135,7 +135,7 @@ export function render(
       ' 🔉 ',
       canvas.width / 2,
       canvas.height / 8,
-      '50px Verdana',
+      `${fontSizeBase * 5}px Verdana`,
       'center',
       RenderColor.White,
     );
@@ -145,7 +145,7 @@ export function render(
       ' 🔉 ',
       canvas.width / 2,
       canvas.height / 8,
-      '60px Verdana',
+      `${fontSizeBase * 6}px Verdana`,
       'center',
       RenderColor.White,
     );
@@ -155,7 +155,7 @@ export function render(
       ' 🔊 ',
       canvas.width / 2,
       canvas.height / 8,
-      '70px Verdana',
+      `${fontSizeBase * 7}px Verdana`,
       'center',
       RenderColor.White,
     );
@@ -165,18 +165,17 @@ export function render(
       ' 🔊 ',
       canvas.width / 2,
       canvas.height / 8,
-      '80px Verdana',
+      `${fontSizeBase * 8}px Verdana`,
       'center',
       RenderColor.White,
     );
   }
-
   drawText(
     canvas,
     usersData.user1.username,
     (canvas.width / 10) * 4,
     canvas.height / 10,
-    '20px Verdana',
+    `${fontSizeBase * 2}px Verdana`,
     'right',
     RenderColor.Yellow,
   );
@@ -186,7 +185,7 @@ export function render(
     String(user1.score),
     (canvas.width / 10) * 4,
     canvas.height / 6,
-    '40px Verdana',
+    `${fontSizeBase * 4}px Verdana`,
     'right',
     RenderColor.Red,
   );
@@ -197,7 +196,7 @@ export function render(
       '    GAME      PAUSED ',
       canvas.width / 2,
       canvas.height / 2,
-      '50px Verdana',
+      `${fontSizeBase * 5}px Verdana`,
       'center',
       RenderColor.Red,
     );
@@ -209,7 +208,7 @@ export function render(
       'BOT',
       (canvas.width / 10) * 6,
       canvas.height / 10,
-      '20px Verdana',
+      `${fontSizeBase * 2}px Verdana`,
       'left',
       RenderColor.Yellow,
     );
@@ -219,7 +218,7 @@ export function render(
       usersData.user2!.username,
       (canvas.width / 10) * 6,
       canvas.height / 10,
-      '20px Verdana',
+      `${fontSizeBase * 2}px Verdana`,
       'left',
       RenderColor.Yellow,
     );
@@ -230,7 +229,7 @@ export function render(
     String(user2.score),
     (canvas.width / 10) * 6,
     canvas.height / 6,
-    '40px Verdana',
+    `${fontSizeBase * 4}px Verdana`,
     'left',
     RenderColor.Red,
   );
@@ -241,7 +240,7 @@ export function render(
       '🏆',
       (canvas.width / 10) * 4,
       canvas.height / 4.5,
-      '30px Verdana',
+      `${fontSizeBase * 3}px Verdana`,
       'right',
       RenderColor.Green,
     );
@@ -253,7 +252,7 @@ export function render(
       'GAME OVER',
       450,
       300,
-      '60px Verdana',
+      `${fontSizeBase * 6}px Verdana`,
       'center',
       RenderColor.Red,
     );
@@ -265,7 +264,7 @@ export function render(
       usersData.user1.username + ' wins',
       450,
       410,
-      '40px Verdana',
+      `${fontSizeBase * 4}px Verdana`,
       'center',
       RenderColor.Green,
     );
@@ -277,7 +276,7 @@ export function render(
       '🏆',
       (canvas.width / 10) * 6,
       canvas.height / 4.5,
-      '30px Verdana',
+      `${fontSizeBase * 3}px Verdana`,
       'left',
       RenderColor.Green,
     );
@@ -291,7 +290,7 @@ export function render(
         'GAME OVER',
         450,
         300,
-        '60px Verdana',
+        `${fontSizeBase * 6}px Verdana`,
         'center',
         RenderColor.Red,
       );
@@ -304,7 +303,7 @@ export function render(
           usersData.user1.username + ' wins',
           450,
           410,
-          '40px Verdana',
+          `${fontSizeBase * 4}px Verdana`,
           'center',
           RenderColor.Green,
         );
@@ -315,7 +314,7 @@ export function render(
             'BOT wins',
             450,
             410,
-            '40px Verdana',
+            `${fontSizeBase * 4}px Verdana`,
             'center',
             RenderColor.Green,
           );
@@ -325,7 +324,7 @@ export function render(
             usersData.user2!.username + ' wins',
             450,
             410,
-            '40px Verdana',
+            `${fontSizeBase * 4}px Verdana`,
             'center',
             RenderColor.Green,
           );
@@ -341,7 +340,7 @@ export function render(
     'Ball Speed: ' + speedRender.toFixed(0) + '%',
     (canvas.width / 10) * 4.5,
     (canvas.height / 20) * 19,
-    '15px Arial',
+    `${fontSizeBase * 1.5}px Verdana`,
     'right',
     RenderColor.Grey,
   );
@@ -351,7 +350,7 @@ export function render(
     'Paddle Height: ' + user1.height + '%',
     (canvas.width / 10) * 5.5,
     (canvas.height / 20) * 19,
-    '15px Arial',
+    `${fontSizeBase * 1.5}px Verdana`,
     'left',
     RenderColor.Grey,
   );
