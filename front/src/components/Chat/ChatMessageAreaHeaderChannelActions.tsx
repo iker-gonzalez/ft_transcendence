@@ -65,6 +65,10 @@ const WrapperDiv = styled.div`
   }
 `;
 
+const PasswordDeleteContrastPanel = styled(ContrastPanel)`
+  margin-top: 24px;
+`;
+
 const FriendInvitationModal = styled(Modal)`
   .friend-invitation-form {
     display: flex;
@@ -152,7 +156,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You have successfully invited the user ${userAddIntra}.`,
+        `You have invited ${userAddIntra}.`,
         FlashMessageLevel.SUCCESS,
       );
     } else {
@@ -208,13 +212,14 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You have successfully ${
+        `You have ${
           password ? 'set' : 'removed'
         } the password for the channel ${channelData!.roomName || ''}.`,
         FlashMessageLevel.SUCCESS,
       );
       setPasswordPopupVisible(false);
       onNewAction(group);
+      updateUserSidebar();
     } else {
       launchFlashMessage(
         `Password is not strong enough.`,
@@ -396,88 +401,84 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         <PasswordModal
           dismissModalAction={() => setPasswordPopupVisible(false)}
         >
-          <ContrastPanel $backgroundColor={darkBgColor} className="mb-16">
-            {channelData?.password ? (
-              <>
-                <h1 className="title-1 mb-16">Edit your password</h1>
-                <p className="mb-24">Choose a new password for this channel.</p>
-              </>
-            ) : (
-              <>
-                <h1 className="title-1 mb-16">Set a password</h1>
-                <div className="mb-24">
-                  <p>
-                    If you do so, the channel will not be public anymore. The
-                    current membes list will be kept, but new users will need
-                    the password to join.
-                  </p>
-                </div>
-              </>
-            )}
-
-            <div className="edit-password-container">
-              <div className="password-container mb-8">
-                <MainPasswordInput
-                  placeholder="Enter a new password"
-                  value={password}
-                  onChange={(e: any) => setPassword(e.target.value)}
-                />
-              </div>
-              <div className="confirm-container mb-24">
-                <MainPasswordInput
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e: any) => {
-                    setConfirmPassword(e.target.value);
-                  }}
-                />
-                <MainButton
-                  onClick={() => {
-                    if (password !== confirmPassword) {
-                      launchFlashMessage(
-                        `Passwords do not match.`,
-                        FlashMessageLevel.ERROR,
-                      );
-                      setConfirmPassword('');
-                      return;
-                    }
-
-                    patchPassword(password);
-                    setPassword('');
-                    setConfirmPassword('');
-                  }}
-                  disabled={
-                    password.length === 0 || confirmPassword.length === 0
-                  }
-                >
-                  Confirm
-                </MainButton>
-              </div>
-              <p className="small">
-                ℹ️ The password must have at least 6 characters, 1 uppercase
-                character, 1 lowercase character, 1 symbol, and 1 number.
+          {channelData?.password ? (
+            <>
+              <h1 className="title-1 mb-16">Edit your password</h1>
+              <p className="mb-24">
+                Change the current password of the channel.
               </p>
-            </div>
-          </ContrastPanel>
-
-          <ContrastPanel $backgroundColor={darkBgColor}>
-            {channelData?.password && (
-              <div>
-                <h1 className="title-1 mb-16">Delete your password</h1>
-                <p className="mb-24">
-                  If you choose to do so, the channel will become public and,
-                  thus, its content will be visible to anyone.
+            </>
+          ) : (
+            <>
+              <h1 className="title-1 mb-16">Set a password</h1>
+              <div className="mb-24">
+                <p>
+                  If you do so, the channel will not be public anymore. The
+                  current membes list will be kept, but new users will need the
+                  password to join.
                 </p>
-                <DangerButton
-                  onClick={() => {
-                    setConfirmatioModalVisible(true);
-                  }}
-                >
-                  Delete password
-                </DangerButton>
               </div>
-            )}
-          </ContrastPanel>
+            </>
+          )}
+
+          <div className="edit-password-container">
+            <div className="password-container mb-8">
+              <MainPasswordInput
+                placeholder="Enter a new password"
+                value={password}
+                onChange={(e: any) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="confirm-container mb-24">
+              <MainPasswordInput
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e: any) => {
+                  setConfirmPassword(e.target.value);
+                }}
+              />
+              <MainButton
+                onClick={() => {
+                  if (password !== confirmPassword) {
+                    launchFlashMessage(
+                      `Passwords do not match.`,
+                      FlashMessageLevel.ERROR,
+                    );
+                    setConfirmPassword('');
+                    return;
+                  }
+
+                  patchPassword(password);
+                  setPassword('');
+                  setConfirmPassword('');
+                }}
+                disabled={password.length === 0 || confirmPassword.length === 0}
+              >
+                Confirm
+              </MainButton>
+            </div>
+          </div>
+          <p className="small">
+            ℹ️ The password must have at least 6 characters, 1 uppercase
+            character, 1 lowercase character, 1 symbol, and 1 number.
+          </p>
+
+          {channelData?.password && (
+            <PasswordDeleteContrastPanel $backgroundColor={darkBgColor}>
+              <h1 className="title-1 mb-16">Delete your password?</h1>
+              <p className="mb-24">
+                If you choose to do so, the channel will become public and,
+                thus, its content will be visible to anyone.
+              </p>
+              <DangerButton
+                onClick={() => {
+                  setConfirmatioModalVisible(true);
+                }}
+              >
+                Delete password
+              </DangerButton>
+            </PasswordDeleteContrastPanel>
+          )}
           {isConfirmatioModalVisible && (
             <PasswordRemovalConfirmModal
               dismissModalAction={() => {
