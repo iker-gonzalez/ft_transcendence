@@ -235,7 +235,10 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
           </MainSelect>
           {groupNature !== CHANNEL_TYPES.PROTECTED && (
             <MainButton
-              onClick={onJoiningNewChannel}
+              onClick={() => {
+                onJoiningNewChannel();
+                updateUserSidebar();
+              }}
               disabled={!isRoomNameValid || roomName.length === 0}
             >
               Create
@@ -258,11 +261,14 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
                 placeholder="Enter password"
               />
               <MainButton
-                onClick={onJoiningNewChannel}
+                onClick={() => {
+                  onJoiningNewChannel();
+                  setTimeout(updateUserSidebar, 250);
+                }}
                 disabled={
                   !isRoomNameValid ||
-                  password.length === 0 ||
-                  confirmationPassword.length === 0
+                  password.length < 8 ||
+                  confirmationPassword.length < 8
                 }
               >
                 Create
