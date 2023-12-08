@@ -205,9 +205,11 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         } the password for the channel ${channelData!.roomName || ''}.`,
         FlashMessageLevel.SUCCESS,
       );
+      setPasswordPopupVisible(false);
+      onNewAction(group);
     } else {
       launchFlashMessage(
-        `Something went wrong. Try again later.`,
+        `Password is not strong enough.`,
         FlashMessageLevel.ERROR,
       );
     }
@@ -396,9 +398,9 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               <h1 className="title-1 mb-16">Set a password</h1>
               <div className="mb-24">
                 <p>
-                  By doing so, the channel won't be public anymore. The current
-                  member list will be kept, but new users will need the password
-                  if they want to join.
+                  If you do so, the channel will not be public anymore. The
+                  current membes list will be kept, but new users will need the
+                  password to join.
                 </p>
               </div>
             </>
@@ -412,7 +414,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                 onChange={(e: any) => setPassword(e.target.value)}
               />
             </div>
-            <div className="confirm-container">
+            <div className="confirm-container mb-24">
               <MainPasswordInput
                 placeholder="Confirm your password"
                 value={confirmPassword}
@@ -433,14 +435,17 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
 
                   patchPassword(password);
                   setPassword('');
-                  setPasswordPopupVisible(false);
-                  onNewAction(group);
+                  setConfirmPassword('');
                 }}
                 disabled={password.length === 0 || confirmPassword.length === 0}
               >
                 Confirm
               </MainButton>
             </div>
+            <p className="small">
+              *The password must have at least 6 characters, 1 uppercase
+              character, 1 lowercase character, 1 symbol, and 1 number.
+            </p>
           </div>
           {channelData?.password && (
             <div className="delete-password-container">
