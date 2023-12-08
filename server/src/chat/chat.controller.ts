@@ -22,11 +22,12 @@ import { AllUsersDMWithDTO } from './dto/all-users-DM-with.dto';
 import { ConversationMessageDTO } from './dto/conversation-message.dto';
 import { AllExistingChannelsDTO } from './dto/all-existing-channel.dto';
 import { AllUserChannelInDTO } from './dto/all-user-channel-in.dto';
-import { ChannelType, ChatRoomUser } from '@prisma/client';
+import { ChannelType, ChatRoomUser, User } from '@prisma/client';
 import { AllChannelInfo } from './dto/all-channel-info.dto';
 import { RoomOwnerIntraDTO } from './dto/roomOwnerIntra.dto';
 import { RoomOwnerPasswordIntraDTO } from './dto/room-owener-password.dto';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
+import { UserRommDTO } from './dto/user-room.dto';
 
 @ApiTags('Chat')
 @Controller('chat')
@@ -137,7 +138,7 @@ export class ChatController {
   @Get('bannedUsers')
   async getBannedUsersPerChannel(): Promise<{
     found: number;
-    data: { name: string; bannedUsers: ChatRoomUser[] }[];
+    data: { name: string; bannedUsers: UserRommDTO[] }[];
   }> {
     return this.chatChannelService.getBannedUser();
   }

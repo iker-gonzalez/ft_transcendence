@@ -16,7 +16,6 @@ import { Socket } from 'socket.io-client';
 import Modal from '../UI/Modal';
 import BannedUser from '../../interfaces/banned-user.interface';
 import ChatMessageAreaHeaderUsersModalUnban from './ChatMessageAreaHeaderUsersModalUnban';
-import FormattedList from '../UI/FormattedList';
 
 type ChatMessageAreaHeaderUsersModalProps = {
   channelData: ChannelData;
@@ -97,7 +96,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     action: () => void;
   } | null>(null);
 
-  const kick = (intraId: number, username: string) => {
+  const kick = (intraId: number) => {
     const payload = {
       roomName: group.name,
       adminId: userData?.intraId,
@@ -106,8 +105,8 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     socket.emit('kickUser', payload, (res: any) => {
       if (res.success) {
         launchFlashMessage(
-          `You kicked out ${username}.`,
-          FlashMessageLevel.INFO,
+          `You have kicked out the user ${intraId}.`,
+          FlashMessageLevel.SUCCESS,
         );
       } else {
         launchFlashMessage(
@@ -127,7 +126,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     socket.emit('banUser', payload, (res: any) => {
       if (res.success) {
         launchFlashMessage(
-          `You banned ${username} from the channel ${group.name}.`,
+          `You have banned ${username} from the channel ${group.name}.`,
           FlashMessageLevel.SUCCESS,
         );
       } else {
@@ -164,7 +163,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
 
     if (res.status === 200) {
       launchFlashMessage(
-        `You ${isMuted ? 'muted' : 'unmuted'} ${mutedUserUsername}.`,
+        `You have ${isMuted ? 'muted' : 'unmuted'} ${mutedUserUsername}.`,
         isMuted ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
       );
     } else {
@@ -194,7 +193,9 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You ${isAdmin ? 'revoked' : 'granted'} admin role for ${username}.`,
+        `You have ${
+          isAdmin ? 'revoked' : 'granted'
+        } admin role for ${username}.`,
         isAdmin ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
       );
     } else {
@@ -205,11 +206,13 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     }
   };
 
+  console.log('bannedUsers', bannedUsers);
+
   return (
     <>
       <h1 className="title-1 mb-16">Manage channel members</h1>
       <p className="mb-24">
-        Here you can change the permissions or act on a rogue member.
+        Choose a member to manage their permissions in the channel.
       </p>
       <MainSelect
         onChange={(e) => {
@@ -217,15 +220,12 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
         }}
       >
         <option>Choose a member</option>
-        {channelData.usersInfo
-          .filter(
-            (channelUserInfo) => channelUserInfo.intra !== userData?.intraId && channelUserInfo.intra !== channelOwnerIntraId,
+        {channelData?.usersInfo
+          ?.filter(
+            (channelUserInfo) =>
+              channelUserInfo.intra !== userData?.intraId &&
+              channelUserInfo.intra !== channelOwnerIntraId,
           )
-          .filter((channelUserInfo) => {
-            if (channelData.ownerIntra === channelUserInfo.intra) return false;
-
-            return true;
-          })
           .map((channelUserInfo) => {
             return (
               <option value={channelUserInfo.intra} key={channelUserInfo.intra}>
@@ -233,13 +233,18 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
               </option>
             );
           })}
-        {bannedUsers.map((bannedUser) => {
-          return (
-            <option key={bannedUser.id} value={bannedUser.intraId}>
-              {bannedUser.username} (banned 🚫)
-            </option>
-          );
-        })}
+        {bannedUsers
+          ?.filter((bannedUser) => group.name === bannedUser.roomName)
+          .map((bannedUser) => {
+            console.log(
+              `Group name: ${group.name}, Banned user's room ID: ${bannedUser.roomName}`,
+            );
+            return (
+              <option key={bannedUser.id} value={bannedUser.intraId}>
+                {bannedUser.username} (banned 🚫)
+              </option>
+            );
+          })}
       </MainSelect>
       {(() => {
         const selectedUserData = channelData.usersInfo.find(
@@ -264,7 +269,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                   <p className="mb-16">
                     If you decide to make {selectedUserData.username} an admin,
                     they will be able to manage the other members of this
-                    channel.
+                    channel
                   </p>
                   <div>
                     {isAdmin ? (
@@ -308,7 +313,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                       We're sorry you're experiencing trouble. If you need, you
                       have the option of:
                     </p>
-                    <FormattedList>
+                    <ul className="actions-legend">
                       <li>
                         <span>silencing</span>: to hide{' '}
                         {selectedUserData.username}
@@ -323,7 +328,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                         {selectedUserData.username} from joining the channel
                         again.
                       </li>
-                    </FormattedList>
+                    </ul>
                   </div>
                   <div className="actions-container">
                     <SecondaryButton
@@ -359,10 +364,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                           title: 'Do you confirm kicking out?',
                           subtitle: `You are about to kick out ${selectedUserData.username}. They will leave the channel immediately.`,
                           action: () => {
-                            kick(
-                              selectedUserData.intra,
-                              selectedUserData.username,
-                            );
+                            kick(selectedUserData.intra);
                             setPopupVisible(false);
                             onNewAction(group);
                           },
@@ -421,7 +423,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
         return <></>;
       })()}
       {(() => {
-        const bannedUserInfo = bannedUsers.find(
+        const bannedUserInfo = bannedUsers?.find(
           (bannedUser) => bannedUser.intraId === selectedUser,
         );
 

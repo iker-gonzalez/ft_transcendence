@@ -22,6 +22,7 @@ import passport from 'passport';
 import { AllChannelInfo } from '../dto/all-channel-info.dto';
 import { IntraUsernameDTO } from '../dto/intra-username.dto';
 import * as bcrypt from 'bcrypt';
+import { UserRommDTO } from '../dto/user-room.dto';
 
 @Injectable()
 export class ChatChannelService {
@@ -69,7 +70,6 @@ export class ChatChannelService {
         adminUsers: true,
         users: true,
         mutedUsers: true,
-        bannedUsers: true,
       },
     });
     if (!chatRoom) {
@@ -122,12 +122,30 @@ export class ChatChannelService {
       await this.findUserIntraAndUsernmameById(chatRoom.mutedUsers),
       'muted',
     );
+    //bannedList
     allinfo.setIntrasOfMemeber(
-      await this.findUserIntraAndUsernmameById(chatRoom.bannedUsers),
+      await this.findUserIntraAndUsernmameByString(chatRoom.bannedkList),
       'banned',
     );
 
     return allinfo;
+  }
+
+  async findUserIntraAndUsernmameByString(
+    idUsers: string[],
+  ): Promise<IntraUsernameDTO[]> {
+    const userInfo = [];
+
+    for (const idUser of idUsers) {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: idUser,
+        },
+      });
+      userInfo.push(new IntraUsernameDTO(user.intraId, user.username));
+    }
+
+    return userInfo;
   }
 
   async findUserIntraByIArrayd(chatUsers: ChatRoomUser[]): Promise<number[]> {
@@ -273,15 +291,14 @@ export class ChatChannelService {
         },
         include: {
           users: true,
-          bannedUsers: true,
         },
       });
       if (!foundChatRoom)
         throw new BadRequestException('This ChatRoom does not exist');
 
-      // Buscar si esta banneado
-      const isUserBanned = foundChatRoom.bannedUsers.some(
-        (bannedUser) => bannedUser.userId === userIdToAdd,
+      //Buscar si esta banneado
+      const isUserBanned = foundChatRoom.bannedkList.some(
+        (bannedUser) => bannedUser === userIdToAdd,
       );
       if (isUserBanned)
         throw new BadRequestException('This user is banned in this ChatRoom');
@@ -376,11 +393,12 @@ export class ChatChannelService {
         name: channelRoom,
       },
       include: {
+        users: true,
         adminUsers: true,
       },
     });
 
-    if (!foundChatRoom || foundChatRoom.adminUsers.length == 0) {
+    if (!foundChatRoom || foundChatRoom.adminUsers.length < 2) {
       const foundChatRoom2 = await this.prisma.chatRoom.findFirst({
         where: {
           name: channelRoom,
@@ -389,8 +407,14 @@ export class ChatChannelService {
           users: true,
         },
       });
-      const newOwnerId = foundChatRoom2.users[0].userId;
 
+      let newOwnerId = null;
+      for (const user of foundChatRoom2.users) {
+        if (user.userId != owenerId) {
+          newOwnerId = user.userId;
+          break;
+        }
+      }
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom2.id },
         data: {
@@ -398,13 +422,13 @@ export class ChatChannelService {
         },
       });
     } else {
-      const newOwnerId = foundChatRoom.adminUsers[0].userId;
-      this.deleteAddminToChannel(
-        channelRoom,
-        owenerId,
-        foundChatRoom.adminUsers[0].userId,
-      );
-
+      let newOwnerId = null;
+      for (const userAdmin of foundChatRoom.adminUsers) {
+        if (userAdmin.userId != owenerId) {
+          newOwnerId = userAdmin.userId;
+          break;
+        }
+      }
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
         data: {
@@ -807,7 +831,6 @@ export class ChatChannelService {
         where: { name: channelRoom },
         include: {
           users: true,
-          bannedUsers: true,
         },
       });
       if (!foundChatRoom)
@@ -832,8 +855,8 @@ export class ChatChannelService {
         throw new BadRequestException('User is not in the chatRoom');
 
       const banUserIntraId = await this.findUserIntraById(banUserId);
-      const isAlreadyBanned = foundChatRoom.bannedUsers.some(
-        (bannedUser) => bannedUser.userId === banUserId,
+      const isAlreadyBanned = foundChatRoom.bannedkList.some(
+        (bannedUser) => bannedUser === banUserId,
       );
       if (isAlreadyBanned)
         throw new BadRequestException('User is already banned');
@@ -855,8 +878,8 @@ export class ChatChannelService {
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
         data: {
-          bannedUsers: {
-            connect: { id: chatRoomUser.id },
+          bannedkList: {
+            push: chatRoomUser.userId,
           },
         },
       });
@@ -883,7 +906,6 @@ export class ChatChannelService {
         where: { name: channelRoom },
         include: {
           users: true,
-          bannedUsers: true,
         },
       });
       if (!foundChatRoom)
@@ -897,23 +919,21 @@ export class ChatChannelService {
         );
 
       // Buscar el ChatRoomUser por userId
-      const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
-        where: { userId: unbanUserId },
-      });
-      if (!chatRoomUser)
-        throw new BadRequestException('User is not in the chatRoom');
+      //  await this.addUserToChannel(unbanUserId, channelRoom);
+      // const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
+      //   where: { userId: unbanUserId },
+      // });
+      // if (!chatRoomUser)
+      //   throw new BadRequestException('User is not in the chatRoom');
 
       // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
         data: {
-          bannedUsers: {
-            set: foundChatRoom.bannedUsers.filter(
-              (bannedUser) => bannedUser.userId !== chatRoomUser.userId,
+          bannedkList: {
+            set: foundChatRoom.bannedkList.filter(
+              (bannedUser) => bannedUser !== unbanUserId,
             ),
-          },
-          users: {
-            connect: { id: chatRoomUser.id },
           },
         },
       });
@@ -1071,24 +1091,55 @@ export class ChatChannelService {
 
   async getBannedUser(): Promise<{
     found: number;
-    data: { name: string; bannedUsers: ChatRoomUser[] }[];
+    data: { name: string; bannedUsers: UserRommDTO[] }[];
   }> {
     const chatRooms = await this.prisma.chatRoom.findMany({
-      include: { bannedUsers: true },
+      select: {
+        name: true,
+        id: true,
+        bannedkList: true,
+      },
     });
+    const bannedUsersMap: { [roomName: string]: User[] } = {};
+    const data = [];
 
-    if (!chatRooms) {
-      throw new BadRequestException('ChatRoom no encontrado');
+    let length2 = 0;
+    let userBanned = [];
+
+    for (const room of chatRooms) {
+      userBanned = [];
+      if (room.bannedkList.length == 0) {
+        continue;
+      }
+      length2++;
+      let bannedUsers;
+
+      for (const bannedUserId of room.bannedkList) {
+        bannedUsers = await this.prisma.user.findFirst({
+          where: {
+            id: bannedUserId,
+          },
+        });
+        userBanned.push(new UserRommDTO(bannedUsers, room.name));
+      }
+      data.push({
+        name: room.name,
+        bannedUsers: userBanned, // Ajusta según la estructura real de tu usuario
+      });
+    }
+    //data.push(new UserRommDTO(bannedUsers, room.name));
+    if (data.length == 0) {
+      data.push(userBanned);
+    }
+    if (length2 == 0) {
+      return null;
     }
 
+    console.log('data');
+    console.log(data);
     return {
-      found: chatRooms.length,
-      data: chatRooms.map((chatRoom) => {
-        return {
-          name: chatRoom.name,
-          bannedUsers: chatRoom.bannedUsers,
-        };
-      }),
+      found: length2,
+      data: data,
     };
   }
 }
