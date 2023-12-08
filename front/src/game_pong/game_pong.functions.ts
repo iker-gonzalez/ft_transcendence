@@ -20,7 +20,6 @@ import { matchUser1, matchUser2, onGameEnd } from './game_pong.render';
 import { Socket } from 'socket.io-client';
 import { render } from './game_pong.render';
 import GameTheme from '../interfaces/game-theme.interface';
-import GamePowerUp from '../interfaces/game-power-up.interface';
 
 const ARROW_UP_KEY = 'ArrowUp';
 const ARROW_DOWN_KEY = 'ArrowDown';
