@@ -213,7 +213,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
           return bannedUsersInfo.name === roomName;
         });
 
-        setBannedUsers(channelBannedUsers.bannedUsers);
+        setBannedUsers(channelBannedUsers?.bannedUsers);
       })
       .catch((error) => {
         console.error('Error:', error);
