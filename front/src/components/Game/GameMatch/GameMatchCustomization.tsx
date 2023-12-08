@@ -181,7 +181,7 @@ const GameMatchCustomization: React.FC<GameMatchCustomizationProps> = ({
                         title="Only the session leader can customize the game."
                       />
                     ) : (
-                      <Toggle>
+                      <Toggle className={`${powerUp.value ? 'selected' : ''}`}>
                         <label htmlFor={powerUp.id}>
                           <span className="sr-only">{powerUp.description}</span>
                           <input
