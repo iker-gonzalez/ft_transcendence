@@ -70,6 +70,12 @@ const Chat: React.FC = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (!isUserDataFetching && userData) {
+      fetchData();
+    }
+  }, [isUserDataFetching]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     // Update state variables
     setSocket(chatMessageSocketRef.current);
     setIsSocketConnected(connected);
