@@ -69,7 +69,6 @@ export class ChatChannelService {
         adminUsers: true,
         users: true,
         mutedUsers: true,
-        bannedUsers: true,
       },
     });
     if (!chatRoom) {
@@ -122,12 +121,30 @@ export class ChatChannelService {
       await this.findUserIntraAndUsernmameById(chatRoom.mutedUsers),
       'muted',
     );
+    //bannedList
     allinfo.setIntrasOfMemeber(
-      await this.findUserIntraAndUsernmameById(chatRoom.bannedUsers),
+      await this.findUserIntraAndUsernmameByString(chatRoom.bannedkList),
       'banned',
     );
 
     return allinfo;
+  }
+
+  async findUserIntraAndUsernmameByString(
+    idUsers: string[],
+  ): Promise<IntraUsernameDTO[]> {
+    const userInfo = [];
+
+    for (const idUser of idUsers) {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: idUser,
+        },
+      });
+      userInfo.push(new IntraUsernameDTO(user.intraId, user.username));
+    }
+
+    return userInfo;
   }
 
   async findUserIntraByIArrayd(chatUsers: ChatRoomUser[]): Promise<number[]> {
@@ -273,18 +290,17 @@ export class ChatChannelService {
         },
         include: {
           users: true,
-          bannedUsers: true,
         },
       });
       if (!foundChatRoom)
         throw new BadRequestException('This ChatRoom does not exist');
 
       // Buscar si esta banneado
-      const isUserBanned = foundChatRoom.bannedUsers.some(
-        (bannedUser) => bannedUser.userId === userIdToAdd,
-      );
-      if (isUserBanned)
-        throw new BadRequestException('This user is banned in this ChatRoom');
+      // const isUserBanned = foundChatRoom.bannedkList.some(
+      //   (bannedUser) => bannedUser === userIdToAdd,
+      // );
+      //if (isUserBanned)
+      //  throw new BadRequestException('This user is banned in this ChatRoom');
 
       // Buscar si ya esta en la Sala
       //   const isUserAlreadyIn = foundChatRoom.users.some((user) => user.userId === userIdToAdd);
@@ -802,7 +818,6 @@ export class ChatChannelService {
         where: { name: channelRoom },
         include: {
           users: true,
-          bannedUsers: true,
         },
       });
       if (!foundChatRoom)
@@ -827,8 +842,8 @@ export class ChatChannelService {
         throw new BadRequestException('User is not in the chatRoom');
 
       const banUserIntraId = await this.findUserIntraById(banUserId);
-      const isAlreadyBanned = foundChatRoom.bannedUsers.some(
-        (bannedUser) => bannedUser.userId === banUserId,
+      const isAlreadyBanned = foundChatRoom.bannedkList.some(
+        (bannedUser) => bannedUser === banUserId,
       );
       if (isAlreadyBanned)
         throw new BadRequestException('User is already banned');
@@ -850,8 +865,8 @@ export class ChatChannelService {
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
         data: {
-          bannedUsers: {
-            connect: { id: chatRoomUser.id },
+          bannedkList: {
+            push: chatRoomUser.userId,
           },
         },
       });
@@ -878,7 +893,6 @@ export class ChatChannelService {
         where: { name: channelRoom },
         include: {
           users: true,
-          bannedUsers: true,
         },
       });
       if (!foundChatRoom)
@@ -892,27 +906,27 @@ export class ChatChannelService {
         );
 
       // Buscar el ChatRoomUser por userId
-      const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
-        where: { userId: unbanUserId },
-      });
-      if (!chatRoomUser)
-        throw new BadRequestException('User is not in the chatRoom');
+      //  await this.addUserToChannel(unbanUserId, channelRoom);
+      // const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
+      //   where: { userId: unbanUserId },
+      // });
+      // if (!chatRoomUser)
+      //   throw new BadRequestException('User is not in the chatRoom');
 
       // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
+      console.log('BEFORE UPDATE');
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
         data: {
-          bannedUsers: {
-            set: foundChatRoom.bannedUsers.filter(
-              (bannedUser) => bannedUser.userId !== chatRoomUser.userId,
+          bannedkList: {
+            set: foundChatRoom.bannedkList.filter(
+              (bannedUser) => bannedUser !== unbanUserId,
             ),
-          },
-          users: {
-            connect: { id: chatRoomUser.id },
           },
         },
       });
     } catch (error) {
+      console.log(error);
       throw error;
     }
   }
@@ -1066,24 +1080,55 @@ export class ChatChannelService {
 
   async getBannedUser(): Promise<{
     found: number;
-    data: { name: string; bannedUsers: ChatRoomUser[] }[];
+    data: { name: string; bannedUsers: User[] }[];
   }> {
     const chatRooms = await this.prisma.chatRoom.findMany({
-      include: { bannedUsers: true },
+      select: {
+        name: true,
+        id: true,
+        bannedkList: true,
+      },
     });
 
-    if (!chatRooms) {
-      throw new BadRequestException('ChatRoom no encontrado');
-    }
+    const bannedUsersMap: { [roomName: string]: User[] } = {};
+    const data = [];
 
-    return {
-      found: chatRooms.length,
-      data: chatRooms.map((chatRoom) => {
-        return {
-          name: chatRoom.name,
-          bannedUsers: chatRoom.bannedUsers,
-        };
-      }),
-    };
+    console.log('chatRooms');
+    console.log(chatRooms);
+    for (const room of chatRooms) {
+      if (room.bannedkList.length == 0) {
+        console.log('EMPTY');
+        console.log(room);
+        continue;
+      }
+      console.log('NOT EMOTY');
+      console.log(room);
+      let bannedUsers;
+      const userBanned = [];
+      for (const bannedUserId of room.bannedkList) {
+        console.log('room.id');
+        console.log(room.id);
+        console.log('bannedUserId');
+        console.log(bannedUserId);
+        bannedUsers = await this.prisma.user.findFirst({
+          where: {
+            id: bannedUserId,
+          },
+        });
+        console.log('bannedUsers');
+        console.log(bannedUsers);
+        userBanned.push(bannedUsers);
+      }
+      data.push({
+        name: room.name,
+        bannedUsers: userBanned, // Ajusta según la estructura real de tu usuario
+      });
+      console.log('FIN');
+      console.log(data);
+      return {
+        found: chatRooms.length,
+        data: data,
+      };
+    }
   }
 }

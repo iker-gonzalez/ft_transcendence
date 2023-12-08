@@ -71,9 +71,10 @@ model ChatRoom {
   password String?
 
   // Relación con usuarios silenciados en esta sala
-  adminUsers  ChatRoomUser[] @relation("adminRooms")
-  mutedUsers  ChatRoomUser[] @relation("mutedRooms")
-  bannedUsers ChatRoomUser[] @relation("bannedRooms")
+  adminUsers ChatRoomUser[] @relation("adminRooms")
+  mutedUsers ChatRoomUser[] @relation("mutedRooms")
+
+  bannedkList String[] @db.Uuid
 }
 
 model ChatRoomUser {
@@ -88,9 +89,8 @@ model ChatRoomUser {
 
   // Agregar cualquier otro dato relacionado con la sala de chat y los usuarios
   // Relación con salas de chat silenciadas por este usuario
-  mutedRooms  ChatRoom[] @relation("mutedRooms")
-  adminRooms  ChatRoom[] @relation("adminRooms")
-  bannedRooms ChatRoom[] @relation("bannedRooms")
+  mutedRooms ChatRoom[] @relation("mutedRooms")
+  adminRooms ChatRoom[] @relation("adminRooms")
 }
 
 model ChatMessage {
