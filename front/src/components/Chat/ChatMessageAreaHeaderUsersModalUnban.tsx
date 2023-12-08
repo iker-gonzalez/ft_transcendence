@@ -14,6 +14,7 @@ type ChatMessageAreaHeaderUsersModalUnbanProps = {
   socket: Socket;
   adminId: number;
   roomName: string;
+  setPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const BannedUserContainer = styled.div`
@@ -28,6 +29,7 @@ const ChatMessageAreaHeaderUsersModalUnban: React.FC<
   socket,
   adminId,
   roomName,
+  setPopupVisible,
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
 
@@ -50,6 +52,7 @@ const ChatMessageAreaHeaderUsersModalUnban: React.FC<
             (bannedUser) => bannedUser.intraId !== bannedUserInfo.intraId,
           ),
         );
+        setPopupVisible(false);
       } else {
         launchFlashMessage(
           'Something went wrong. Try again later.',

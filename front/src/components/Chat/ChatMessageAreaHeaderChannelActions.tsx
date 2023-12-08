@@ -185,7 +185,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   };
 
   const [isInviteModalVisible, setInviteModalVisible] = useState(false);
-  const [friendsToInvite, setFriendsToInvite] = useState<User[]>([]); // replace User with your user type
+  const [friendsToInvite, setFriendsToInvite] = useState<User[]>([]);
   const [selectedFriendToInvite, setSelectedFriendToInvite] = useState<
     number | null
   >(null);
@@ -199,21 +199,13 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
       },
     })
       .then((res) => {
-        if (
-          res.ok &&
-          res.headers.get('Content-Type')?.includes('application/json')
-        ) {
-          return res.json();
-        } else {
-          throw new Error('Server response was not ok or not JSON.');
-        }
+        if (res.ok) return res.json();
       })
       .then((data) => {
         console.log('data:', data);
         const channelBannedUsers = data.data.find((bannedUsersInfo: any) => {
           return bannedUsersInfo.name === roomName;
         });
-        console.log('channelBannedUsers:', channelBannedUsers);
         setBannedUsers(channelBannedUsers?.bannedUsers);
       })
       .catch((error) => {
@@ -336,7 +328,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                   >
                     <option>Select a friend</option>
                     {friendsToInvite
-                      .filter(
+                      ?.filter(
                         (friend) =>
                           !channelData?.usersInfo.some(
                             (user) => user.username === friend.username,
