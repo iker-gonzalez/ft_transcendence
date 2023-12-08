@@ -1089,22 +1089,24 @@ export class ChatChannelService {
         bannedkList: true,
       },
     });
-
     const bannedUsersMap: { [roomName: string]: User[] } = {};
     const data = [];
 
     console.log('chatRooms');
     console.log(chatRooms);
+    let length2 = 0;
+    const userBanned = [];
     for (const room of chatRooms) {
       if (room.bannedkList.length == 0) {
         console.log('EMPTY');
         console.log(room);
+
         continue;
       }
+      length2++;
       console.log('NOT EMOTY');
       console.log(room);
       let bannedUsers;
-      const userBanned = [];
       for (const bannedUserId of room.bannedkList) {
         console.log('room.id');
         console.log(room.id);
@@ -1123,10 +1125,21 @@ export class ChatChannelService {
         name: room.name,
         bannedUsers: userBanned, // Ajusta según la estructura real de tu usuario
       });
+      if (data.length == 0) {
+        data.push(userBanned);
+      }
       console.log('FIN');
       console.log(data);
+      console.log('chatRooms.length');
+      console.log(chatRooms.length);
+      console.log('length2');
+      console.log(length2);
+      if (length2 == 0) {
+        return null;
+      }
+
       return {
-        found: chatRooms.length,
+        found: length2,
         data: data,
       };
     }
