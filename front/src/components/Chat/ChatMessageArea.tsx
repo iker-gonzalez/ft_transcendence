@@ -78,14 +78,6 @@ const CenteredContainer = styled.div`
   }
 `;
 
-/**
- * ChatMessageArea component that displays the messages of the selected chat.
- * @param selectedUser The selected user to chat with.
- * @param selectedGroup The selected group to chat in.
- * @param messages The messages of the selected chat.
- * @returns React functional component.
- */
-
 const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
   selectedUser,
   setSelectedUser,
