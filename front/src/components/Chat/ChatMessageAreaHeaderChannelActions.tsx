@@ -267,10 +267,10 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
           <Badge className="admin-label">
             <p>
               {(() => {
-                if (isAdmin()) {
-                  return 'Admin';
-                } else if (isOwner()) {
+                if (isOwner()) {
                   return 'Owner';
+                } else if (isAdmin()) {
+                  return 'Admin';
                 } else {
                   return 'Admin + Owner';
                 }
