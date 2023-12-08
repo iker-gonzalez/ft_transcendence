@@ -163,7 +163,7 @@ const GameMatchQueueSession: React.FC<GameMatchQueueSessionProps> = ({
 
       <p className="disclaimer">
         ℹ️ With great power comes great responsibility. Only the{' '}
-        <span>session leader</span> can configure the match and pause the game.
+        <span>session leader</span> can configure and pause the game.
       </p>
     </WrapperDiv>
   );

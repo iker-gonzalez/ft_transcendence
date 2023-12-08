@@ -97,7 +97,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   const { userData } = useUserData();
   const { fetchUserMessages } = useMessageData();
   const { userFriends, fetchFriendsList } = useUserFriends();
-  const [shouldAnimateHeader, setShouldAnimateHeader] = useState<boolean>(true);
 
   const friend = userFriends.find(
     (userFriend) => userFriend.username === user?.username,
@@ -112,11 +111,6 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
   useEffect(() => {
     fetchFriendsList();
-    setShouldAnimateHeader(true);
-
-    setTimeout(() => {
-      setShouldAnimateHeader(false);
-    }, 900);
   }, [group]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const block = async (
@@ -180,11 +174,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
   };
 
   return (
-    <HeaderWrapper
-      className={`animate__animated ${
-        shouldAnimateHeader && 'animate__fadeInDown'
-      }`}
-    >
+    <HeaderWrapper>
       <ChatMessageAreaHeaderName
         user={user}
         channelData={channelData}
