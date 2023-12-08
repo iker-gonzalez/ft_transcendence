@@ -24,4 +24,5 @@ up: stop
 	docker compose logs --follow
 
 up-build: stop
-	docker-compose up --build
+	docker-compose up --build 
+	docker compose logs --follow
