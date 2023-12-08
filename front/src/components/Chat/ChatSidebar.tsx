@@ -26,6 +26,21 @@ import ChatSidebarJoinProtectedModal from './ChatSidebarJoinProtectedModal';
 import { useNavigate } from 'react-router-dom';
 import ChatSidebarUpdate from '../../interfaces/chat-sidebar-update.interface';
 
+interface SidebarProps {
+  selectedUser: User | null;
+  selectedGroup: Group | null;
+  users: User[];
+  userGroups: Group[] | null;
+  updateUserSidebar: () => void;
+  allGroups: Group[] | null;
+  handleUserClick: (user: User) => void;
+  handleGroupClick: (group: Group) => void;
+  socket: Socket | null;
+  channelData: ChannelData | null;
+  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
+}
+
 const SidebarContainer = styled.div`
   flex-basis: 30%;
   display: flex;
@@ -110,21 +125,6 @@ const UserInfo = styled.div`
 const Username = styled.h3`
   font-size: 1.5em;
 `;
-
-interface SidebarProps {
-  selectedUser: User | null;
-  selectedGroup: Group | null;
-  users: User[];
-  userGroups: Group[] | null;
-  updateUserSidebar: () => void;
-  allGroups: Group[] | null;
-  handleUserClick: (user: User) => void;
-  handleGroupClick: (group: Group) => void;
-  socket: Socket | null;
-  channelData: ChannelData | null;
-  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
-  setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
-}
 
 const Sidebar: React.FC<SidebarProps> = ({
   users,
