@@ -20,7 +20,7 @@ import { CANVAS_WIDTH } from '../constants/canvas';
 export const thickness: number = +CANVAS_WIDTH / 100;
 export const slit: number = 3;
 export const speed: number = 20;
-export const userSpeedInput: number = speed;
+export const userSpeedInput: number = speed * 1;
 export const stepPaddle: number = 5;
 const BALL_SIZE_RATIO: number = 60;
 export const USER_SIZE_RATIO: number = 90;
@@ -33,7 +33,7 @@ export const ballDataInit: IBallData = {
   radius: +CANVAS_WIDTH / BALL_SIZE_RATIO,
   moveX: BALL_VELOCITY,
   moveY: BALL_VELOCITY,
-  speed: speed,
+  speed: userSpeedInput,
   color: RenderColor.White,
   reset: false,
   isBallPaused: false,
