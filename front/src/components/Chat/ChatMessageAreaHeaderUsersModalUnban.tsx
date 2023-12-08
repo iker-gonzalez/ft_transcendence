@@ -40,7 +40,7 @@ const ChatMessageAreaHeaderUsersModalUnban: React.FC<
     socket.emit('UnBanUser', payload, (res: any) => {
       if (res.success) {
         launchFlashMessage(
-          `You have unbanned ${bannedUserInfo.username}.`,
+          `You unbanned ${bannedUserInfo.username}.`,
           FlashMessageLevel.SUCCESS,
         );
 

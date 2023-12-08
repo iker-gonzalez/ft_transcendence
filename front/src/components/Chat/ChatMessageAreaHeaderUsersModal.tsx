@@ -127,7 +127,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     socket.emit('banUser', payload, (res: any) => {
       if (res.success) {
         launchFlashMessage(
-          `You have banned ${username} from the channel ${group.name}.`,
+          `You banned ${username} from the channel ${group.name}.`,
           FlashMessageLevel.SUCCESS,
         );
       } else {
@@ -164,7 +164,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
 
     if (res.status === 200) {
       launchFlashMessage(
-        `You have ${isMuted ? 'muted' : 'unmuted'} ${mutedUserUsername}.`,
+        `You ${isMuted ? 'muted' : 'unmuted'} ${mutedUserUsername}.`,
         isMuted ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
       );
     } else {
@@ -194,7 +194,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You have ${
+        `You ${
           isAdmin ? 'revoked' : 'granted'
         } admin role for ${username}.`,
         isAdmin ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
@@ -261,7 +261,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                   <p className="mb-16">
                     If you decide to make {selectedUserData.username} an admin,
                     they will be able to manage the other members of this
-                    channel
+                    channel.
                   </p>
                   <div>
                     {isAdmin ? (

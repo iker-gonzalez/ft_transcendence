@@ -216,7 +216,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You have ${
+        `You ${
           password ? 'set' : 'removed'
         } the password for the channel ${channelData!.roomName || ''}.`,
         FlashMessageLevel.SUCCESS,
@@ -289,6 +289,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               <FriendInvitationModal
                 dismissModalAction={() => {
                   setInviteModalVisible(false);
+                  setSelectedFriendToInvite(null);
                 }}
               >
                 <h1 className="title-1 mb-8">Invite friends to channel</h1>
