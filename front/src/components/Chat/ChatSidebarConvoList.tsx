@@ -54,18 +54,6 @@ const UserItemButton = styled.button`
   }
 `;
 
-// const UnreadMessagesCount = styled.span`
-//   display: inline-block;
-//   color: black;
-//   background-color: yellow;
-//   border-radius: 50%;
-//   width: 20px;
-//   height: 20px;
-//   text-align: center;
-//   line-height: 20px;
-//   margin-left: 10px;
-// `;
-
 const ChatSidebarConvoList: React.FC<ChatSidebarConvoListProps> = ({
   users,
   handleUserClick,
@@ -99,13 +87,6 @@ const ChatSidebarConvoList: React.FC<ChatSidebarConvoListProps> = ({
           <img src={user.avatar} alt="" className="avatar" />
           {user.username}{' '}
           {user.isBlocked && <span className="blocked-icon">🚫</span>}
-          {/* TODO check what this is for */}
-          {/* {selectedUser?.intraId !== user.intraId &&
-            unreadMessages[user.intraId] > 0 && (
-              <UnreadMessagesCount>
-                {unreadMessages[user.intraId]}
-              </UnreadMessagesCount>
-            )} */}
         </UserItemButton>
       ))}
     </>
