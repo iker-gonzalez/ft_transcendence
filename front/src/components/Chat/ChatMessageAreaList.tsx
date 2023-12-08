@@ -136,11 +136,6 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
 
                       return false;
                     })()}
-                    className={
-                      index === filteredMessages.length - 1
-                        ? 'animate__animated animate__fadeInLeft animate__fast'
-                        : ''
-                    }
                   />
                 </div>
               );
