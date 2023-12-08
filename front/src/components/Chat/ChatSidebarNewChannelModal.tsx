@@ -73,6 +73,10 @@ const WrapperDiv = styled.div`
     align-items: center;
   }
 
+  .password-disclaimer {
+    margin-top: 16px;
+  }
+
   .confirm-container {
     display: flex;
     justify-content: flex-start;
@@ -134,11 +138,11 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       .catch((error) => {
         console.error('Error:', error);
       });
-  
+
     return () => {
       setIsRoomNameValid(true);
     };
-  }, []);// eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoiningNewChannel = async (): Promise<void> => {
     if (password !== confirmationPassword) {
@@ -254,35 +258,44 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
           )}
         </div>
         {groupNature === CHANNEL_TYPES.PROTECTED && (
-          <div className="password-containers-wrapper">
-            <div className="password-container mb-8">
-              <MainPasswordInput
-                value={password}
-                onChange={(e: any) => setPassword(e.target.value)}
-                placeholder="Enter password"
-              />
+          <>
+            <div className="password-containers-wrapper">
+              <div className="password-container mb-8">
+                <MainPasswordInput
+                  value={password}
+                  onChange={(e: any) => setPassword(e.target.value)}
+                  placeholder="Enter password"
+                />
+              </div>
+              <div className="confirm-container">
+                <MainPasswordInput
+                  value={confirmationPassword}
+                  onChange={(e: any) => setConfirmationPassword(e.target.value)}
+                  placeholder="Enter password"
+                />
+                <MainButton
+                  onClick={() => {
+                    if (password !== confirmationPassword) {
+                      launchFlashMessage(
+                        'Passwords do not match.',
+                        FlashMessageLevel.ERROR,
+                      );
+                      return;
+                    }
+
+                    onJoiningNewChannel();
+                  }}
+                  disabled={!isRoomNameValid || roomName.length === 0}
+                >
+                  Create
+                </MainButton>
+              </div>
             </div>
-            <div className="confirm-container">
-              <MainPasswordInput
-                value={confirmationPassword}
-                onChange={(e: any) => setConfirmationPassword(e.target.value)}
-                placeholder="Enter password"
-              />
-              <MainButton
-                onClick={() => {
-                  onJoiningNewChannel();
-                  setTimeout(updateUserSidebar, 250);
-                }}
-                disabled={
-                  !isRoomNameValid ||
-                  password.length < 8 ||
-                  confirmationPassword.length < 8
-                }
-              >
-                Create
-              </MainButton>
-            </div>
-          </div>
+            <p className="small password-disclaimer">
+              ℹ️ Password must have at least 6 characters, 1 uppercase
+              character, 1 lowercase character, 1 symbol, and 1 number.
+            </p>
+          </>
         )}
       </div>
 

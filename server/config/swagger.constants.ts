@@ -11,7 +11,7 @@ export const swaggerConstants = {
         description: 'State value does not match or provided code is invalid.',
       },
       unauthorized: {
-        description: 'OTP code is invalid.', 
+        description: 'OTP code is invalid.',
       },
       body: {
         description: 'OTP must be provided only if 2FA is enabled.',
@@ -229,19 +229,20 @@ export const swaggerConstants = {
         description: 'Return all channel users is in',
       },
     },
-    isPasswordCorrect:{
+    isPasswordCorrect: {
       summary: 'Return true is password of the room is correct',
-      ok:{
-        description: 'true if the password is correct, false is not',
-      }
-    },
-    allExistingChannel:{
-      summary: 'Return all existing channel un DB. The name and its privacy',
       ok: {
-        description: 'Return all exisitng channel ins the DB. Private, protected and public',
+        description: 'true if the password is correct, false is not',
       },
     },
-    allUserChannelIn:{
+    allExistingChannel: {
+      summary: 'Return all existing channel un DB. The name and its privacy',
+      ok: {
+        description:
+          'Return all exisitng channel ins the DB. Private, protected and public',
+      },
+    },
+    allUserChannelIn: {
       summary: 'Return todos los canales al que pertenece un usuario',
       ok: {
         description: '',
@@ -254,21 +255,23 @@ export const swaggerConstants = {
       },
     },
     addAdmin: {
-      summary: 'Add or delete administrator to a channel, if it was not in the channel as user add it',
+      summary:
+        'Add or delete administrator to a channel, if it was not in the channel as user add it',
       ok: {
         description: '',
       },
     },
-    muteUser : {
+    muteUser: {
       summary: 'Mute or unmute user on a chanel',
     },
-    addOrModifyPassword:{
-      summary: 'Add or modify password. Automatically this chat is set as PROTECTED',
+    addOrModifyPassword: {
+      summary:
+        'Add or modify password. Automatically this chat is set as PROTECTED',
       ok: {
         description: '',
       },
     },
-    deletePassword:{
+    deletePassword: {
       summary: 'Delete password. Automatically this chat is set as PUBLIC',
       ok: {
         description: '',
@@ -280,15 +283,15 @@ export const swaggerConstants = {
         description: '',
       },
     },
-    block:{
+    block: {
       summary: 'Block a user of a Direct Message',
     },
-    unblock:{
+    unblock: {
       summary: 'Unblock a user of a Direct Message',
     },
-    setUsertoPrivateChannel:{
-      summary: 'Add or delete a user to a private Channel'
-    }
+    setUsertoPrivateChannel: {
+      summary: 'Add or delete a user to a private Channel',
+    },
   },
   dto: {
     intraSignin: {
@@ -673,7 +676,7 @@ export const swaggerConstants = {
             user: {
               username: 'test2-',
               intraId: 667,
-              avatar: 'https://i.pravatar.cc/600?img=10', 
+              avatar: 'https://i.pravatar.cc/600?img=10',
             },
             stats: {
               rank: 1,
@@ -715,14 +718,14 @@ export const swaggerConstants = {
         },
       },
     },
-      allExistingChannelsDTO: {
-        data: {
-          description: 'Room name and privacy type',
-          example: {
-            name: 'roomZal6',
-            type: 'PUBLIC',
-          },
+    allExistingChannelsDTO: {
+      data: {
+        description: 'Room name and privacy type',
+        example: {
+          name: 'roomZal6',
+          type: 'PUBLIC',
         },
+      },
     },
     conversationMessageDTO: {
       data: {
@@ -745,14 +748,13 @@ export const swaggerConstants = {
         description:
           'conversation between two users. Who sent and who recevied the message',
         example: {
-          roomName: "GRUPOPRUEBA",
-          createDate: "2023-11-26T19:10:42.496Z",
+          roomName: 'GRUPOPRUEBA',
+          createDate: '2023-11-26T19:10:42.496Z',
           ownerIntra: 667,
           password: null,
-          type: "PUBLIC",
+          type: 'PUBLIC',
           channelMessage: [
             {
-
               senderId: '623274f5-5fa1-4ad8-b7a1-c1edcb239af2',
               receiverId: '1cc83703-a2ed-4ec2-b021-c5db82bb3d94',
               content: 'Soy el otro usuario 333',
@@ -761,74 +763,70 @@ export const swaggerConstants = {
               receiverName: 'test-',
               senderAvatar: 'https://i.pravatar.cc/600?img=35',
               receiverAvatar: 'https://i.pravatar.cc/600?img=8',
-            }
+            },
           ],
           usersIntra: [
             {
               intra: 667,
-              username: "test2-"
+              username: 'test2-',
             },
             {
               intra: 668,
-              username: "test3-"
-            }
-        ],
-        adminIntra: [
-          {
-            intra: 667,
-            username: "test2-"
-          }
-        ],
-        mutedIntra: [
-          {
-            intra: 668,
-            username: "test3-"
-          }
-        ],
-        bannedIntra: []
-          }
+              username: 'test3-',
+            },
+          ],
+          adminIntra: [
+            {
+              intra: 667,
+              username: 'test2-',
+            },
+          ],
+          mutedIntra: [
+            {
+              intra: 668,
+              username: 'test3-',
+            },
+          ],
+          bannedIntra: [],
         },
       },
+    },
     allUserChannelInDTO: {
       data: {
-        description:
-          'The name of all channel a user is in',
+        description: 'The name of all channel a user is in',
         example: {
           name: 'roomZal6',
         },
       },
     },
-    allUserDMWithDTO:{
+    allUserDMWithDTO: {
       data: {
-        description:
-          'The name of all users with had had direct messages',
+        description: 'The name of all users with had had direct messages',
         example: {
-          id: "28bee14d-495f-4684-872c-b02782ba070a",
-          avatar: "https://i.pravatar.cc/600?img=32",
-          username: "test2-",
+          id: '28bee14d-495f-4684-872c-b02782ba070a',
+          avatar: 'https://i.pravatar.cc/600?img=32',
+          username: 'test2-',
           intraId: 667,
-          isBlocked: true
+          isBlocked: true,
         },
       },
     },
-    roomOwnerIntraDTO:{
-      data:{
-        description:
-          'Owner intra',
-          example:{
-            ownerIntra : "GRUPO_PRUEBA"
-          }
-      }
+    roomOwnerIntraDTO: {
+      data: {
+        description: 'Owner intra',
+        example: {
+          ownerIntra: 'GRUPO_PRUEBA',
+        },
+      },
     },
-    roomOwnerPasswordIntradto : {
-      data:{
-        description:
-          'Owner intra and password',
-          example:{
-            ownerIntra : "GRUPO_PRUEBA",
-            password : "xxxxxxxx"
-          }
-      }
+    roomOwnerPasswordIntradto: {
+      data: {
+        description: 'Owner intra and password',
+        example: {
+          ownerIntra: 'GRUPO_PRUEBA',
+          password: 'xxxxxxxx',
+        },
+      },
     },
   },
 };

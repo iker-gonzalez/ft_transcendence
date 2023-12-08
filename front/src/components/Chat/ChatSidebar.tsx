@@ -199,13 +199,22 @@ const Sidebar: React.FC<SidebarProps> = ({
         }
       }
 
-      socket.emit('joinRoom', payload);
-      setPopupVisible(false);
-      launchFlashMessage(
-        `You joined channel ${newGroup.name}!`,
-        FlashMessageLevel.SUCCESS,
-      );
-      return 0;
+      socket.emit('joinRoom', payload, (res: any) => {
+        if (res === 'OK') {
+          setPopupVisible(false);
+          launchFlashMessage(
+            `You joined channel ${newGroup.name}!`,
+            FlashMessageLevel.SUCCESS,
+          );
+          return 0;
+        } else {
+          launchFlashMessage(
+            `Password is not strong enough`,
+            FlashMessageLevel.ERROR,
+          );
+          return 1;
+        }
+      });
     } else {
       launchFlashMessage(
         `An error occured while joining the room ${newGroup.name}. Please try again.`,
