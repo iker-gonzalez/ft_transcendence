@@ -320,7 +320,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                       )
                       .map((friend) => (
                         <option key={friend.intraId} value={friend.intraId}>
-                          <p>{friend.username}</p>
+                          {friend.username}
                         </option>
                       ))}
                   </MainSelect>
