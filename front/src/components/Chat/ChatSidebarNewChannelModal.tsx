@@ -121,16 +121,23 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       },
     })
       .then((res) => {
-        return res.json();
+        if (res.ok && res.headers.get('Content-Type')?.includes('application/json')) {
+          return res.json();
+        } else {
+          throw new Error('Server response was not ok or not JSON.');
+        }
       })
       .then((data) => {
         setBannedUsers(data.data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
       });
-
+  
     return () => {
       setIsRoomNameValid(true);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoiningNewChannel = async (): Promise<void> => {
     if (password !== confirmationPassword) {
