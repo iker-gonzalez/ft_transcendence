@@ -97,7 +97,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     action: () => void;
   } | null>(null);
 
-  const kick = (intraId: number) => {
+  const kick = (intraId: number, username: string) => {
     const payload = {
       roomName: group.name,
       adminId: userData?.intraId,
@@ -106,8 +106,8 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     socket.emit('kickUser', payload, (res: any) => {
       if (res.success) {
         launchFlashMessage(
-          `You have kicked out the user ${intraId}.`,
-          FlashMessageLevel.SUCCESS,
+          `You kicked out ${username}.`,
+          FlashMessageLevel.INFO,
         );
       } else {
         launchFlashMessage(
@@ -356,7 +356,10 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                           title: 'Do you confirm kicking out?',
                           subtitle: `You are about to kick out ${selectedUserData.username}. They will leave the channel immediately.`,
                           action: () => {
-                            kick(selectedUserData.intra);
+                            kick(
+                              selectedUserData.intra,
+                              selectedUserData.username,
+                            );
                             setPopupVisible(false);
                             onNewAction(group);
                           },
