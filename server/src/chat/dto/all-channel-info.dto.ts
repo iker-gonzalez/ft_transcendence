@@ -1,10 +1,4 @@
-import {
-  ChannelType,
-  ChatMessage,
-  ChatRoom,
-  ChatRoomUser,
-  User,
-} from '@prisma/client';
+import { ChannelType, ChatRoom } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { swaggerConstants } from '../../../config/swagger.constants';
 import { ConversationMessageDTO } from './conversation-message.dto';
