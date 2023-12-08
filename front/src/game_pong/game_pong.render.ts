@@ -31,8 +31,6 @@ import GameTheme from '../interfaces/game-theme.interface';
 
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../constants/canvas';
 export let fontSizeBase: number = +CANVAS_WIDTH / 100;
-console.log('canvas width value is -> ', +CANVAS_WIDTH);
-console.log('fontSizeBase value is -> ', fontSizeBase);
 
 export function render(
   canvas: HTMLCanvasElement,
