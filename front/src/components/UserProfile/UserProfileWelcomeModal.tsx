@@ -17,11 +17,10 @@ const UserProfileWelcomeModal: React.FC<WelcomeModalProps> = ({
         setShowNewUserModal(false);
       }}
     >
-      <h2 className="title-1 mb-24">Hello, {username ?? 'stranger'}!</h2>
-      <p className="mb-16">We're happy to see you here 😍</p>
+      <h2 className="title-1 mb-8">Hello, {username ?? 'stranger'}!</h2>
       <p className="mb-24">
         This is your profile page. We grabbed your profile picture and username
-        from the 42 Intra API, but feel free to change them if you prefer.
+        from the 42 Intra, but you can change them if you prefer.
       </p>
       <MainButton
         onClick={() => {
