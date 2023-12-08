@@ -1,6 +1,5 @@
-import { ChatMessage, DirectMessage, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { IsNumber, IsString, IsUUID } from 'class-validator';
-import { Hash } from 'crypto';
 
 export class UserRommDTO {
   @IsUUID()
