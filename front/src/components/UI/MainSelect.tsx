@@ -10,7 +10,7 @@ const MainSelect = styled.select`
   outline: none;
   border: 1px ${primaryColor} solid;
   border-radius: 5px;
-  padding: 10px 25px;
+  padding: 10px;
   color: ${primaryLightColor};
   font-size: 16px;
 `;
