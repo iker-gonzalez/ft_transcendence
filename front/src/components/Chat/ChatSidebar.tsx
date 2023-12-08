@@ -200,7 +200,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       socket.emit('joinRoom', payload);
       setPopupVisible(false);
       launchFlashMessage(
-        `You have joined channel ${newGroup.name}!`,
+        `You joined channel ${newGroup.name}!`,
         FlashMessageLevel.SUCCESS,
       );
       return 0;

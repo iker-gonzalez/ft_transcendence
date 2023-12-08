@@ -237,7 +237,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
       socket.emit('leaveRoom', payload);
 
       launchFlashMessage(
-        `You left the room ${roomName}!`,
+        `You left channel ${roomName}.`,
         FlashMessageLevel.SUCCESS,
       );
       setSelectedGroup(null);
