@@ -101,6 +101,8 @@ const List = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  margin-left: 10px;
 `;
 
 const ListItem = styled.li`
