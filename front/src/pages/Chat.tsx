@@ -225,7 +225,7 @@ const Chat: React.FC = () => {
         }
       };
     }
-  }, [newMessageSent, isSocketConnected, selectedUser, selectedGroup]);
+  }, [newMessageSent, isSocketConnected, selectedUser, selectedGroup]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function updateUserSidebar() {
     setUpdateChatData((prevState) => !prevState);

@@ -995,8 +995,6 @@ export class ChatChannelService {
       if (!passwordsMatch) return false;
     } catch (error) {
       throw new BadRequestException(error);
-
-      console.error('Error:', error);
     }
     return true;
   }
@@ -1049,7 +1047,6 @@ export class ChatChannelService {
       }
     } catch (error) {
       throw new BadRequestException(error);
-      console.error('Error:', error);
     }
   }
 

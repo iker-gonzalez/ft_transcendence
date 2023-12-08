@@ -193,7 +193,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You have successfully ${
+        `You have ${
           isAdmin ? 'revoked' : 'granted'
         } admin role for ${username}.`,
         isAdmin ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
