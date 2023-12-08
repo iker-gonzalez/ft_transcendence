@@ -23,7 +23,7 @@ export const speed: number = 20;
 export const userSpeedInput: number = speed;
 export const stepPaddle: number = 5;
 const BALL_SIZE_RATIO: number = 60;
-const USER_SIZE_RATIO: number = 90;
+export const USER_SIZE_RATIO: number = 90;
 export const NET_SIZE_RATIO: number = 90;
 export const BALL_VELOCITY: number = userSpeedInput / 2;
 
