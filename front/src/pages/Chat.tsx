@@ -50,7 +50,6 @@ const Chat: React.FC = () => {
   // Initialize state variables
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const [isConnectionError, setIsConnectionError] = useState(false);
 
   // Call useChatMessageSocket at the top level of your component
   const {
@@ -74,7 +73,6 @@ const Chat: React.FC = () => {
     // Update state variables
     setSocket(chatMessageSocketRef.current);
     setIsSocketConnected(connected);
-    setIsConnectionError(error);
   }, [chatMessageSocketRef, connected, error]);
 
   const { fetchDirectMessageUsers, fetchUserGroups, fetchAllGroups } =
@@ -95,19 +93,17 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, [updateChatData, userData]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { fetchUserMessages, fetchGroupMessages } = useMessageData();
   const { fetchChannelData } = useChannelData();
 
   const handleUserClick = async (user: User) => {
-    const users = await fetchDirectMessageUsers();
-    setUsers(users);
-
-    const userExists = users.some((u: User) => u.intraId === user.intraId);
-
-    if (!userExists) {
-      setUsers((prevUsers) => [...prevUsers, user]);
+    const userAlreadyExists = users.find(
+      (u: User) => u.intraId === user.intraId,
+    );
+    if (!userAlreadyExists) {
+      setUsers((prevState) => [...prevState, user]);
     }
 
     const directMessages: DirectMessage[] = await fetchUserMessages(
