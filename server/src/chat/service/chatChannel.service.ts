@@ -22,6 +22,7 @@ import passport from 'passport';
 import { AllChannelInfo } from '../dto/all-channel-info.dto';
 import { IntraUsernameDTO } from '../dto/intra-username.dto';
 import * as bcrypt from 'bcrypt';
+import { UserRommDTO } from '../dto/user-room.dto';
 
 @Injectable()
 export class ChatChannelService {
@@ -295,12 +296,12 @@ export class ChatChannelService {
       if (!foundChatRoom)
         throw new BadRequestException('This ChatRoom does not exist');
 
-      // Buscar si esta banneado
-      // const isUserBanned = foundChatRoom.bannedkList.some(
-      //   (bannedUser) => bannedUser === userIdToAdd,
-      // );
-      //if (isUserBanned)
-      //  throw new BadRequestException('This user is banned in this ChatRoom');
+      //Buscar si esta banneado
+      const isUserBanned = foundChatRoom.bannedkList.some(
+        (bannedUser) => bannedUser === userIdToAdd,
+      );
+      if (isUserBanned)
+       throw new BadRequestException('This user is banned in this ChatRoom');
 
       // Buscar si ya esta en la Sala
       //   const isUserAlreadyIn = foundChatRoom.users.some((user) => user.userId === userIdToAdd);
@@ -1090,7 +1091,7 @@ export class ChatChannelService {
 
   async getBannedUser(): Promise<{
     found: number;
-    data: { name: string; bannedUsers: User[] }[];
+    data: { name: string; bannedUsers: UserRommDTO[] }[];
   }> {
     const chatRooms = await this.prisma.chatRoom.findMany({
       select: {
@@ -1110,21 +1111,34 @@ export class ChatChannelService {
       }
       length2++;
       let bannedUsers;
+
       for (const bannedUserId of room.bannedkList) {
         bannedUsers = await this.prisma.user.findFirst({
           where: {
             id: bannedUserId,
           },
         });
+<<<<<<< Updated upstream
         userBanned.push(bannedUsers);
+=======
+        console.log('bannedUsers');
+        console.log(bannedUsers);
+        userBanned.push(new UserRommDTO(bannedUsers, room.name));
+>>>>>>> Stashed changes
       }
       data.push({
         name: room.name,
         bannedUsers: userBanned, // Ajusta según la estructura real de tu usuario
       });
+
+      //data.push(new UserRommDTO(bannedUsers, room.name));
       if (data.length == 0) {
         data.push(userBanned);
       }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
       if (length2 == 0) {
         return null;
       }

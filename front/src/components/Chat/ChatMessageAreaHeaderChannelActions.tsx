@@ -372,15 +372,21 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                 setPopupVisible(true);
               }}
               disabled={(() => {
+                console.log(bannedUsers);
                 const isNoUserToManage =
                   channelData?.usersInfo.length === 1 &&
                   bannedUsers?.length === 0;
 
+                console.log(channelData?.usersInfo);
                 const IsOnlyUserToManageOwner =
                   channelData?.usersInfo.length === 2 &&
-                  userData?.intraId === channelData?.ownerIntra;
+                  channelData?.usersInfo.some(
+                    (user) =>
+                      user.intra === channelData?.ownerIntra &&
+                      user.intra !== userData?.intraId,
+                  );
 
-                return !isNoUserToManage && !IsOnlyUserToManageOwner;
+                return isNoUserToManage || IsOnlyUserToManageOwner;
               })()}
             >
               Manage

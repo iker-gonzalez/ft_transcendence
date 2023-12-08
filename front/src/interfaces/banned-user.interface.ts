@@ -1,7 +1,7 @@
 type BannedUser = {
   id: string;
   userId: string;
-  roomId: string;
+  roomName: string;
   intraId: number;
   username: string;
 };

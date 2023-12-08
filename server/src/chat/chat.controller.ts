@@ -27,6 +27,7 @@ import { AllChannelInfo } from './dto/all-channel-info.dto';
 import { RoomOwnerIntraDTO } from './dto/roomOwnerIntra.dto';
 import { RoomOwnerPasswordIntraDTO } from './dto/room-owener-password.dto';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
+import { UserRommDTO } from './dto/user-room.dto';
 
 @ApiTags('Chat')
 @Controller('chat')
@@ -137,7 +138,7 @@ export class ChatController {
   @Get('bannedUsers')
   async getBannedUsersPerChannel(): Promise<{
     found: number;
-    data: { name: string; bannedUsers: User[] }[];
+    data: { name: string; bannedUsers: UserRommDTO[] }[];
   }> {
     return this.chatChannelService.getBannedUser();
   }
