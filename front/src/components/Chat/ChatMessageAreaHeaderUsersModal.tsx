@@ -194,9 +194,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You ${
-          isAdmin ? 'revoked' : 'granted'
-        } admin role for ${username}.`,
+        `You ${isAdmin ? 'revoked' : 'granted'} admin role for ${username}.`,
         isAdmin ? FlashMessageLevel.INFO : FlashMessageLevel.SUCCESS,
       );
     } else {
@@ -223,6 +221,11 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
           .filter(
             (channelUserInfo) => channelUserInfo.intra !== userData?.intraId && channelUserInfo.intra !== channelOwnerIntraId,
           )
+          .filter((channelUserInfo) => {
+            if (channelData.ownerIntra === channelUserInfo.intra) return false;
+
+            return true;
+          })
           .map((channelUserInfo) => {
             return (
               <option value={channelUserInfo.intra} key={channelUserInfo.intra}>

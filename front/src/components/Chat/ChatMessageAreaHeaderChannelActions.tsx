@@ -65,6 +65,15 @@ const WrapperDiv = styled.div`
   }
 `;
 
+const ConfirmOwnerLeavingModal = styled(Modal)`
+  .actions-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+`;
+
 const PasswordDeleteContrastPanel = styled(ContrastPanel)`
   margin-top: 24px;
 `;
@@ -131,6 +140,8 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const [isLeaveConfirmationModalVisible, setLeaveConfirmationModalVisible] =
+    useState(false);
   const [isConfirmatioModalVisible, setConfirmatioModalVisible] =
     useState(false);
   const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
@@ -216,9 +227,9 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You ${
-          password ? 'set' : 'removed'
-        } the password for the channel ${channelData!.roomName || ''}.`,
+        `You ${password ? 'set' : 'removed'} the password for the channel ${
+          channelData!.roomName || ''
+        }.`,
         FlashMessageLevel.SUCCESS,
       );
       setPasswordPopupVisible(false);
@@ -336,6 +347,8 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                           friendToInvite.intraId,
                           friendToInvite.username,
                         );
+
+                      setSelectedFriendToInvite(null);
                     }}
                   >
                     Invite
@@ -347,9 +360,17 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               onClick={() => {
                 setPopupVisible(true);
               }}
-              disabled={
-                channelData?.usersInfo.length === 1 && bannedUsers.length === 0
-              }
+              disabled={(() => {
+                const isNoUserToManage =
+                  channelData?.usersInfo.length === 1 &&
+                  bannedUsers.length === 0;
+
+                const IsOnlyUserToManageOwner =
+                  channelData?.usersInfo.length === 2 &&
+                  userData?.intraId === channelData?.ownerIntra;
+
+                return !isNoUserToManage && !IsOnlyUserToManageOwner;
+              })()}
             >
               Manage
             </MainButton>
@@ -396,14 +417,13 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         )}
         <DangerButton
           onClick={() => {
-            if (isAdmin() && channelData?.usersInfo.length !== 1) {
-              launchFlashMessage(
-                `Admins cannot leave the channel. Have your admin status revoked first.`,
-                FlashMessageLevel.ERROR,
-              );
+            const adminsCount = channelData?.adminsInfo.length || 0;
 
+            if ((isOwner() || isAdmin()) && adminsCount <= 1) {
+              setLeaveConfirmationModalVisible(true);
               return;
             }
+
             handleLeaveChannel(group.name);
             updateUserSidebar();
           }}
@@ -411,6 +431,36 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
           Leave
         </DangerButton>
       </WrapperDiv>
+      {isLeaveConfirmationModalVisible && (
+        <ConfirmOwnerLeavingModal
+          dismissModalAction={() => {
+            setLeaveConfirmationModalVisible(false);
+          }}
+        >
+          <h1 className="title-1 mb-8">Do you confirm leaving?</h1>
+          <p className="mb-24">
+            You are the owner and only member of this channel. If you leave it,
+            the channel will be automatically deleted.
+          </p>
+          <div className="actions-container">
+            <SecondaryButton
+              onClick={() => {
+                setLeaveConfirmationModalVisible(false);
+              }}
+            >
+              Cancel
+            </SecondaryButton>
+            <DangerButton
+              onClick={() => {
+                handleLeaveChannel(group.name);
+                updateUserSidebar();
+              }}
+            >
+              Confirm
+            </DangerButton>
+          </div>
+        </ConfirmOwnerLeavingModal>
+      )}
       {isPasswordPopupVisible && (
         <PasswordModal
           dismissModalAction={() => setPasswordPopupVisible(false)}
