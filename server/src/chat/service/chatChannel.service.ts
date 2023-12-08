@@ -1117,8 +1117,6 @@ export class ChatChannelService {
       return null;
     }
 
-    console.log('data');
-    console.log(data);
     return {
       found: length2,
       data: data,
