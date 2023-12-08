@@ -134,11 +134,11 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       .catch((error) => {
         console.error('Error:', error);
       });
-  
+
     return () => {
       setIsRoomNameValid(true);
     };
-  }, []);// eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoiningNewChannel = async (): Promise<void> => {
     if (password !== confirmationPassword) {
@@ -262,7 +262,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
                 placeholder="Enter password"
               />
             </div>
-            <div className="confirm-container">
+            <div className="confirm-container mb-8">
               <MainPasswordInput
                 value={confirmationPassword}
                 onChange={(e: any) => setConfirmationPassword(e.target.value)}
@@ -270,18 +270,33 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
               />
               <MainButton
                 onClick={() => {
+                  if (password !== confirmationPassword) {
+                    launchFlashMessage(
+                      'Passwords do not match.',
+                      FlashMessageLevel.ERROR,
+                    );
+                    return;
+                  }
+
+                  if (password.length < 6) {
+                    launchFlashMessage(
+                      'Password should be at least 6 characters.',
+                      FlashMessageLevel.ERROR,
+                    );
+                    return;
+                  }
+
                   onJoiningNewChannel();
                   setTimeout(updateUserSidebar, 250);
                 }}
-                disabled={
-                  !isRoomNameValid ||
-                  password.length < 8 ||
-                  confirmationPassword.length < 8
-                }
+                disabled={!isRoomNameValid || roomName.length === 0}
               >
                 Create
               </MainButton>
             </div>
+            <p className="small">
+              ℹ️ Password should have a minimum length of 6 characters
+            </p>
           </div>
         )}
       </div>
