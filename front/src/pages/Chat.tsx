@@ -82,18 +82,18 @@ const Chat: React.FC = () => {
 
   const [updateChatData, setUpdateChatData] = useState(false);
 
+  const fetchData = async () => {
+    const users = await fetchDirectMessageUsers();
+    setUsers(users);
+
+    const userGroups = await fetchUserGroups();
+    setUserGroups(userGroups);
+
+    const allGroups = await fetchAllGroups();
+    setAllGroups(allGroups);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      const users = await fetchDirectMessageUsers();
-      setUsers(users);
-
-      const userGroups = await fetchUserGroups();
-      setUserGroups(userGroups);
-
-      const allGroups = await fetchAllGroups();
-      setAllGroups(allGroups);
-    };
-
     fetchData();
   }, [updateChatData, userData]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -201,15 +201,44 @@ const Chat: React.FC = () => {
         updateUserSidebar();
       };
 
-      // Add the listeners to the socket
-      socket.on(
-        `privateMessageReceived/${userData?.intraId.toString()}`,
-        privateMessageListener,
-      );
-      socket.on(
-        `groupMessage/${userData?.intraId.toString()}`,
-        groupMessageListener,
-      );
+      const refreshDataListener = () => {
+        // Update the sidebar
+        fetchData();
+
+        // Update channel header
+        if (selectedGroup) {
+          fetchChannelData(selectedGroup.name).then((freshChannelData) => {
+            setChannelData(freshChannelData);
+          });
+        }
+
+        // Update conversations header
+        if (selectedUser) {
+          fetchDirectMessageUsers().then((users) => {
+            setUsers(users);
+            setSelectedUser(
+              users.find((u: any) => u.intraId === selectedUser.intraId),
+            );
+          });
+        }
+      };
+
+      if (userData) {
+        // Add the listeners to the socket
+        socket.on(
+          `privateMessageReceived/${userData.intraId.toString()}`,
+          privateMessageListener,
+        );
+        socket.on(
+          `groupMessage/${userData.intraId.toString()}`,
+          groupMessageListener,
+        );
+
+        socket.on(
+          `newData/${userData.intraId.toString()}`,
+          refreshDataListener,
+        );
+      }
 
       //Clean up the listener when the component unmounts or when the receiverId changes
       return () => {
