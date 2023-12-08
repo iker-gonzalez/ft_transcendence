@@ -50,6 +50,28 @@ const Toggle = styled.div`
         transform: translateX(30px);
       }
     }
+
+    /* Fix for outdated Firefox versions */
+    @-moz-document url-prefix() {
+      &::before {
+        background-color: ${darkBgColor};
+        filter: brightness(1.6);
+        transition: all 0.2s ease-in-out;
+      }
+    }
+  }
+
+  /* Fix for outdated Firefox versions */
+  @-moz-document url-prefix() {
+    &.selected {
+      > label {
+        &::before {
+          background-color: ${primaryAccentColor};
+          filter: unset;
+          transform: translateX(30px);
+        }
+      }
+    }
   }
 `;
 
