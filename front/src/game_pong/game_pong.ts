@@ -34,9 +34,9 @@ import { matchUser1, matchUser2, onGameEnd, render } from './game_pong.render';
 import GameTheme from '../interfaces/game-theme.interface';
 import GamePowerUp from '../interfaces/game-power-up.interface';
 
-const fps: number = 30;
+const fps: number = 40;
 let computedFps: number = (1000 / fps) * 2;
-let computedFpsSoloMode: number = computedFps * 0.55;
+let computedFpsSoloMode: number = computedFps * 0.5;
 let computedFpsMultiMode: number = computedFps * 1;
 export const matchPoints: number = 5;
 
