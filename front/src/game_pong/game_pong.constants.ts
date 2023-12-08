@@ -1,4 +1,3 @@
-import { CANVAS_WIDTH } from '../constants/canvas';
 import UserData from '../interfaces/user-data.interface';
 import {
   IBallData,
@@ -8,24 +7,23 @@ import {
 } from './game_pong.interfaces';
 import BotAvatar from './images/c3po_avatar.webp';
 import GameTheme from '../interfaces/game-theme.interface';
-
 import PongBg from './images/themes/pong-bg.jpeg';
 import PongHitSound from './sounds/themes/hit-classic.wav';
-
 import StarWarsBg from './images/themes/star-wars-bg.jpg';
 import StarWarsHitSound from './sounds/themes/hit-star_wars.mp3';
-
 import FootballBg from './images/themes/football-bg.jpg';
 import FootballHitSound from './sounds/themes/hit-football.wav';
 import GamePowerUp from '../interfaces/game-power-up.interface';
 
-export const thickness: number = 10;
+import { CANVAS_WIDTH } from '../constants/canvas';
+
+export const thickness: number = +CANVAS_WIDTH / 100;
 export const slit: number = 3;
 export const speed: number = 20;
 export const userSpeedInput: number = speed;
 export const stepPaddle: number = 5;
 const BALL_SIZE_RATIO: number = 60;
-const USER_SIZE_RATIO: number = 90;
+export const USER_SIZE_RATIO: number = 90;
 export const NET_SIZE_RATIO: number = 90;
 export const BALL_VELOCITY: number = userSpeedInput / 2;
 
