@@ -392,11 +392,12 @@ export class ChatChannelService {
         name: channelRoom,
       },
       include: {
+        users: true,
         adminUsers: true,
       },
     });
 
-    if (!foundChatRoom || foundChatRoom.adminUsers.length == 0) {
+    if (!foundChatRoom || foundChatRoom.adminUsers.length < 2) {
       const foundChatRoom2 = await this.prisma.chatRoom.findFirst({
         where: {
           name: channelRoom,
@@ -405,8 +406,14 @@ export class ChatChannelService {
           users: true,
         },
       });
-      const newOwnerId = foundChatRoom2.users[0].userId;
 
+      let newOwnerId = null;
+      for (const user of foundChatRoom2.users) {
+        if (user.userId != owenerId) {
+          newOwnerId = user.userId;
+          break;
+        }
+      }
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom2.id },
         data: {
@@ -414,13 +421,13 @@ export class ChatChannelService {
         },
       });
     } else {
-      const newOwnerId = foundChatRoom.adminUsers[0].userId;
-      this.deleteAddminToChannel(
-        channelRoom,
-        owenerId,
-        foundChatRoom.adminUsers[0].userId,
-      );
-
+      let newOwnerId = null;
+      for (const userAdmin of foundChatRoom.adminUsers) {
+        if (userAdmin.userId != owenerId) {
+          newOwnerId = userAdmin.userId;
+          break;
+        }
+      }
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
         data: {
@@ -919,7 +926,6 @@ export class ChatChannelService {
       //   throw new BadRequestException('User is not in the chatRoom');
 
       // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
-      console.log('BEFORE UPDATE');
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
         data: {
@@ -931,7 +937,6 @@ export class ChatChannelService {
         },
       });
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
@@ -1097,33 +1102,20 @@ export class ChatChannelService {
     const bannedUsersMap: { [roomName: string]: User[] } = {};
     const data = [];
 
-    console.log('chatRooms');
-    console.log(chatRooms);
     let length2 = 0;
     const userBanned = [];
     for (const room of chatRooms) {
       if (room.bannedkList.length == 0) {
-        console.log('EMPTY');
-        console.log(room);
-
         continue;
       }
       length2++;
-      console.log('NOT EMOTY');
-      console.log(room);
       let bannedUsers;
       for (const bannedUserId of room.bannedkList) {
-        console.log('room.id');
-        console.log(room.id);
-        console.log('bannedUserId');
-        console.log(bannedUserId);
         bannedUsers = await this.prisma.user.findFirst({
           where: {
             id: bannedUserId,
           },
         });
-        console.log('bannedUsers');
-        console.log(bannedUsers);
         userBanned.push(bannedUsers);
       }
       data.push({
@@ -1133,12 +1125,6 @@ export class ChatChannelService {
       if (data.length == 0) {
         data.push(userBanned);
       }
-      console.log('FIN');
-      console.log(data);
-      console.log('chatRooms.length');
-      console.log(chatRooms.length);
-      console.log('length2');
-      console.log(length2);
       if (length2 == 0) {
         return null;
       }
