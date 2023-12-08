@@ -126,6 +126,10 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       .then((data) => {
         setBannedUsers(data.data);
       });
+
+    return () => {
+      setIsRoomNameValid(true);
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onJoiningNewChannel = async (): Promise<void> => {
