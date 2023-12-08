@@ -1,13 +1,8 @@
 import {
   primaryColor,
-  primaryLightColor,
-  darkerBgColor,
-  darkestBgColor,
   darkBgColor,
   primaryAccentColor,
-  errorColor,
   successColor,
-  blackColor,
 } from '../constants/color-tokens';
 
 interface ICommonData {
@@ -37,13 +32,13 @@ export interface ISounds {
 export enum RenderColor {
   White = 'white',
   Black = 'black',
-  Red = 'red',
+  Red = '#ee3b2b',
   Green = 'green',
   Yellow = 'yellow',
   Grey = 'grey',
   PrimaryColor = primaryColor,
   AccentColor = primaryAccentColor,
-  DarkestColor = darkestBgColor,
+  DarkColor = darkBgColor,
   SuccessColor = successColor,
 }
 
