@@ -16,6 +16,7 @@ import { Socket } from 'socket.io-client';
 import Modal from '../UI/Modal';
 import BannedUser from '../../interfaces/banned-user.interface';
 import ChatMessageAreaHeaderUsersModalUnban from './ChatMessageAreaHeaderUsersModalUnban';
+import FormattedList from '../UI/FormattedList';
 
 type ChatMessageAreaHeaderUsersModalProps = {
   channelData: ChannelData;
@@ -210,7 +211,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     <>
       <h1 className="title-1 mb-16">Manage channel members</h1>
       <p className="mb-24">
-        Choose a member to manage their permissions in the channel.
+        Here you can change the permissions or act on a rogue member.
       </p>
       <MainSelect
         onChange={(e) => {
@@ -304,7 +305,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                       We're sorry you're experiencing trouble. If you need, you
                       have the option of:
                     </p>
-                    <ul className="actions-legend">
+                    <FormattedList>
                       <li>
                         <span>silencing</span>: to hide{' '}
                         {selectedUserData.username}
@@ -319,7 +320,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                         {selectedUserData.username} from joining the channel
                         again.
                       </li>
-                    </ul>
+                    </FormattedList>
                   </div>
                   <div className="actions-container">
                     <SecondaryButton
