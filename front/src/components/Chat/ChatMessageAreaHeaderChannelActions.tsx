@@ -199,14 +199,25 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
       },
     })
       .then((res) => {
-        return res.json();
+        if (
+          res.ok &&
+          res.headers.get('Content-Type')?.includes('application/json')
+        ) {
+          return res.json();
+        } else {
+          throw new Error('Server response was not ok or not JSON.');
+        }
       })
       .then((data) => {
+        console.log('data:', data);
         const channelBannedUsers = data.data.find((bannedUsersInfo: any) => {
           return bannedUsersInfo.name === roomName;
         });
-
+        console.log('channelBannedUsers:', channelBannedUsers);
         setBannedUsers(channelBannedUsers?.bannedUsers);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
       });
   };
 
@@ -362,15 +373,21 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                 setPopupVisible(true);
               }}
               disabled={(() => {
+                console.log(bannedUsers);
                 const isNoUserToManage =
                   channelData?.usersInfo.length === 1 &&
                   bannedUsers?.length === 0;
 
+                console.log(channelData?.usersInfo);
                 const IsOnlyUserToManageOwner =
                   channelData?.usersInfo.length === 2 &&
-                  userData?.intraId === channelData?.ownerIntra;
+                  channelData?.usersInfo.some(
+                    (user) =>
+                      user.intra === channelData?.ownerIntra &&
+                      user.intra !== userData?.intraId,
+                  );
 
-                return !isNoUserToManage && !IsOnlyUserToManageOwner;
+                return isNoUserToManage || IsOnlyUserToManageOwner;
               })()}
             >
               Manage
