@@ -148,7 +148,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
 
       if (isBlocked === 1) {
         launchFlashMessage(
-          `You have blocked ${user ? user.username : 'this user'}.`,
+          `You blocked ${user ? user.username : 'this user'}.`,
           FlashMessageLevel.SUCCESS,
         );
       } else {
@@ -160,7 +160,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           );
           setMessages(directMessages);
           launchFlashMessage(
-            `You have unblocked ${user.username}.`,
+            `You unblocked ${user.username}.`,
             FlashMessageLevel.SUCCESS,
           );
         }
