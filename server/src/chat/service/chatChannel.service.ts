@@ -1,16 +1,7 @@
-import {
-  ChannelType,
-  ChatRoom,
-  ChatRoomUser,
-  User,
-  UserStatus,
-} from '@prisma/client';
+import { ChannelType, ChatRoomUser, User } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { GetDirectMessageDto } from './../dto/get-direct-message.dto';
 import { AllExistingChannelsDTO } from './../dto/all-existing-channel.dto';
 import { AllUserChannelInDTO } from './../dto/all-user-channel-in.dto';
-import { AddMessageToUserDto } from './../dto/add-message.dto';
-import { UserService } from '../../user/user.service';
 import {
   BadRequestException,
   ConflictException,
@@ -18,7 +9,6 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConversationMessageDTO } from '../dto/conversation-message.dto';
-import passport from 'passport';
 import { AllChannelInfo } from '../dto/all-channel-info.dto';
 import { IntraUsernameDTO } from '../dto/intra-username.dto';
 import * as bcrypt from 'bcrypt';
@@ -548,7 +538,7 @@ export class ChatChannelService {
       });
 
       // Actualizar el ChatRoom para agregar el nuevo usuario a la lista de adminUsers
-      const updatedChatRoom2 = await this.prisma.chatRoom.update({
+      await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
         data: {
           adminUsers: {
@@ -918,14 +908,6 @@ export class ChatChannelService {
           'It is not the owner or admin of the channel, not premissions to do this',
         );
 
-      // Buscar el ChatRoomUser por userId
-      //  await this.addUserToChannel(unbanUserId, channelRoom);
-      // const chatRoomUser = await this.prisma.chatRoomUser.findFirst({
-      //   where: { userId: unbanUserId },
-      // });
-      // if (!chatRoomUser)
-      //   throw new BadRequestException('User is not in the chatRoom');
-
       // Actualizar la relación mutedUsers del ChatRoom para añadir al usuario muteado
       await this.prisma.chatRoom.update({
         where: { id: foundChatRoom.id },
@@ -1100,7 +1082,6 @@ export class ChatChannelService {
         bannedkList: true,
       },
     });
-    const bannedUsersMap: { [roomName: string]: User[] } = {};
     const data = [];
 
     let length2 = 0;
@@ -1127,10 +1108,11 @@ export class ChatChannelService {
         bannedUsers: userBanned, // Ajusta según la estructura real de tu usuario
       });
     }
-    //data.push(new UserRommDTO(bannedUsers, room.name));
+
     if (data.length == 0) {
       data.push(userBanned);
     }
+
     if (length2 == 0) {
       return null;
     }

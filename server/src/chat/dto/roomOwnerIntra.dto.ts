@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { swaggerConstants } from '../../../config/swagger.constants';
-import { IsArray, IsHash, IsInt, IsString, IsUUID, isArray, isInt, isUUID } from 'class-validator';
-import { Hash } from 'crypto';
+import { IsInt } from 'class-validator';
 
 export class RoomOwnerIntraDTO {
   @ApiProperty({
