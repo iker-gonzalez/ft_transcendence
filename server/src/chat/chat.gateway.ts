@@ -270,14 +270,7 @@ export class ChatGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('update')
-  async handleUpdate(client: Socket, payload) {
-    const updatedIntraId = payload.updatedIntraId;
-
-    if (updatedIntraId) {
-      this.server.emit(`newData/${updatedIntraId}`);
-      return 'OK';
-    } else {
-      return 'KO';
-    }
+  async handleUpdate(client: Socket) {
+    this.server.emit('newData');
   }
 }
