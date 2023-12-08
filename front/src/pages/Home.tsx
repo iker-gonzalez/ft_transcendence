@@ -168,7 +168,7 @@ const SignIn: React.FC = (): JSX.Element => {
 
               <div className="mb-24 text-container">
                 <h1 className="title-1 mb-24">
-                  Welcome to our ft_transcendence project
+                  Welcome to our ft_transcendence
                 </h1>
                 <img src={teamImage} alt="" className="team-image" />
                 <p className="mb-8">
@@ -208,10 +208,18 @@ const SignIn: React.FC = (): JSX.Element => {
                   >
                     zcanales
                   </a>
-                  ,<br />
-                  students of the 42Urduliz campus in Bilbao, Spain
+                  :<br />
+                  students of the{' '}
+                  <a
+                    href="https://www.42urduliz.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="body-link"
+                  >
+                    42Urduliz programing school
+                  </a>{' '}
+                  in Bilbao, Spain
                 </p>
-                <p className="mb-8">Go ahead and explore our project 🤠</p>
               </div>
               {userData ? (
                 <div>
@@ -233,7 +241,7 @@ const SignIn: React.FC = (): JSX.Element => {
                   </MainButton>
                   <div>
                     <p className="mb-8">
-                      Or sign in with one of our ready-made test users
+                      Or sign in with one of our test users
                     </p>
                     <div className="links-container">
                       {TEST_USERS_DATA.map((testUser, index) => {
