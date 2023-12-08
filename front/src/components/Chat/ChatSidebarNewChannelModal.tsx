@@ -158,7 +158,6 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
     };
     if ((await handleJoinRoom(newGroup, password, true)) === 0) {
       updateUserSidebar();
-      socket?.emit('update');
     }
     // Reset inputs
     setRoomName('');
