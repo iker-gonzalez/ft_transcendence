@@ -24,9 +24,10 @@ import { useUserFriends } from '../../context/UserDataContext';
 import User from '../../interfaces/chat-user.interface';
 import SecondaryButton from '../UI/SecondaryButton';
 import MainSelect from '../UI/MainSelect';
-import { primaryColor } from '../../constants/color-tokens';
+import { darkBgColor, primaryColor } from '../../constants/color-tokens';
 import Cookies from 'js-cookie';
 import BannedUser from '../../interfaces/banned-user.interface';
+import ContrastPanel from '../UI/ContrastPanel';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -100,9 +101,14 @@ const PasswordModal = styled(Modal)`
       gap: 8px;
     }
   }
+`;
 
-  .delete-password-container {
-    margin-top: 32px;
+const PasswordRemovalConfirmModal = styled(Modal)`
+  .actions-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
   }
 `;
 
@@ -121,6 +127,8 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const [isConfirmatioModalVisible, setConfirmatioModalVisible] =
+    useState(false);
   const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
   const [bannedUsers, setBannedUsers] = useState<BannedUser[]>([]);
 
@@ -388,82 +396,119 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         <PasswordModal
           dismissModalAction={() => setPasswordPopupVisible(false)}
         >
-          {channelData?.password ? (
-            <>
-              <h1 className="title-1 mb-16">Edit your password</h1>
-              <p className="mb-24">Choose a new password for this channel.</p>
-            </>
-          ) : (
-            <>
-              <h1 className="title-1 mb-16">Set a password</h1>
-              <div className="mb-24">
-                <p>
-                  If you do so, the channel will not be public anymore. The
-                  current membes list will be kept, but new users will need the
-                  password to join.
-                </p>
+          <ContrastPanel $backgroundColor={darkBgColor} className="mb-16">
+            {channelData?.password ? (
+              <>
+                <h1 className="title-1 mb-16">Edit your password</h1>
+                <p className="mb-24">Choose a new password for this channel.</p>
+              </>
+            ) : (
+              <>
+                <h1 className="title-1 mb-16">Set a password</h1>
+                <div className="mb-24">
+                  <p>
+                    If you do so, the channel will not be public anymore. The
+                    current membes list will be kept, but new users will need
+                    the password to join.
+                  </p>
+                </div>
+              </>
+            )}
+
+            <div className="edit-password-container">
+              <div className="password-container mb-8">
+                <MainPasswordInput
+                  placeholder="Enter a new password"
+                  value={password}
+                  onChange={(e: any) => setPassword(e.target.value)}
+                />
               </div>
-            </>
-          )}
+              <div className="confirm-container mb-24">
+                <MainPasswordInput
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
+                  onChange={(e: any) => {
+                    setConfirmPassword(e.target.value);
+                  }}
+                />
+                <MainButton
+                  onClick={() => {
+                    if (password !== confirmPassword) {
+                      launchFlashMessage(
+                        `Passwords do not match.`,
+                        FlashMessageLevel.ERROR,
+                      );
+                      setConfirmPassword('');
+                      return;
+                    }
 
-          <div className="edit-password-container">
-            <div className="password-container mb-8">
-              <MainPasswordInput
-                placeholder="Enter a new password"
-                value={password}
-                onChange={(e: any) => setPassword(e.target.value)}
-              />
-            </div>
-            <div className="confirm-container mb-24">
-              <MainPasswordInput
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e: any) => {
-                  setConfirmPassword(e.target.value);
-                }}
-              />
-              <MainButton
-                onClick={() => {
-                  if (password !== confirmPassword) {
-                    launchFlashMessage(
-                      `Passwords do not match.`,
-                      FlashMessageLevel.ERROR,
-                    );
+                    patchPassword(password);
+                    setPassword('');
                     setConfirmPassword('');
-                    return;
+                  }}
+                  disabled={
+                    password.length === 0 || confirmPassword.length === 0
                   }
-
-                  patchPassword(password);
-                  setPassword('');
-                  setConfirmPassword('');
-                }}
-                disabled={password.length === 0 || confirmPassword.length === 0}
-              >
-                Confirm
-              </MainButton>
-            </div>
-            <p className="small">
-              *The password must have at least 6 characters, 1 uppercase
-              character, 1 lowercase character, 1 symbol, and 1 number.
-            </p>
-          </div>
-          {channelData?.password && (
-            <div className="delete-password-container">
-              <h1 className="title-1 mb-16">Delete your password</h1>
-              <p className="mb-24">
-                If you choose to do so, the channel will become public and,
-                thus, its content will be visible to anyone.
+                >
+                  Confirm
+                </MainButton>
+              </div>
+              <p className="small">
+                ℹ️ The password must have at least 6 characters, 1 uppercase
+                character, 1 lowercase character, 1 symbol, and 1 number.
               </p>
-              <DangerButton
-                onClick={() => {
-                  patchPassword(null);
-                  setPasswordPopupVisible(false);
-                  onNewAction(group);
-                }}
-              >
-                Remove password
-              </DangerButton>
             </div>
+          </ContrastPanel>
+
+          <ContrastPanel $backgroundColor={darkBgColor}>
+            {channelData?.password && (
+              <div>
+                <h1 className="title-1 mb-16">Delete your password</h1>
+                <p className="mb-24">
+                  If you choose to do so, the channel will become public and,
+                  thus, its content will be visible to anyone.
+                </p>
+                <DangerButton
+                  onClick={() => {
+                    setConfirmatioModalVisible(true);
+                  }}
+                >
+                  Delete password
+                </DangerButton>
+              </div>
+            )}
+          </ContrastPanel>
+          {isConfirmatioModalVisible && (
+            <PasswordRemovalConfirmModal
+              dismissModalAction={() => {
+                setConfirmatioModalVisible(false);
+              }}
+            >
+              <h1 className="title-1 mb-8">Do you confirm password removal?</h1>
+              <p className="mb-24">
+                If you do so, the channel will become public. Anyone will be
+                able to join and read its contents.
+              </p>
+              <div className="actions-container">
+                <SecondaryButton
+                  onClick={() => {
+                    setConfirmatioModalVisible(false);
+                  }}
+                >
+                  Cancel
+                </SecondaryButton>
+                <DangerButton
+                  onClick={() => {
+                    patchPassword(null);
+                    setPasswordPopupVisible(false);
+                    onNewAction(group);
+                    setConfirmatioModalVisible(false);
+                  }}
+                >
+                  Confirm
+                </DangerButton>
+              </div>
+            </PasswordRemovalConfirmModal>
           )}
         </PasswordModal>
       )}
