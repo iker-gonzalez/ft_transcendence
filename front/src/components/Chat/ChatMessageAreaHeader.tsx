@@ -124,6 +124,10 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
       isBlocked,
     );
     if (status_code === 200) {
+      socket?.emit('update', {
+        updatedIntraId: blockIntraId,
+      });
+
       setUsers((prevUsers) => {
         return prevUsers.map((user) => {
           if (user.intraId === blockIntraId) {
