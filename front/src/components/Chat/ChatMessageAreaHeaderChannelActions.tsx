@@ -169,6 +169,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
       channelOwnerIntraId || 0,
     );
     if (status_code === 200) {
+      socket.emit('update');
       launchFlashMessage(
         `You invited ${userAddUsername}.`,
         FlashMessageLevel.SUCCESS,
