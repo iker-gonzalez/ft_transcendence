@@ -1,3 +1,15 @@
+import {
+  primaryColor,
+  primaryLightColor,
+  darkerBgColor,
+  darkestBgColor,
+  darkBgColor,
+  primaryAccentColor,
+  errorColor,
+  successColor,
+  blackColor,
+} from '../constants/color-tokens';
+
 interface ICommonData {
   x: number;
   y: number;
@@ -29,6 +41,10 @@ export enum RenderColor {
   Green = 'green',
   Yellow = 'yellow',
   Grey = 'grey',
+  PrimaryColor = primaryColor,
+  AccentColor = primaryAccentColor,
+  DarkestColor = darkestBgColor,
+  SuccessColor = successColor,
 }
 
 export interface IBallData extends ICommonData, IPositionData {
