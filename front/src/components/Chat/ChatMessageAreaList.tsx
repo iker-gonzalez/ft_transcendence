@@ -80,8 +80,8 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
               );
             }
           })()}
-          {messages
-            .filter((message) => {
+          {(() => {
+            const filteredMessages = messages.filter((message) => {
               if (selectedUser) {
                 return (
                   selectedUser.username === message.senderName ||
@@ -96,8 +96,9 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
               }
 
               return true;
-            })
-            .map((message, index) => {
+            });
+
+            return filteredMessages.map((message, index) => {
               return (
                 <div key={`${message.id}-${index}`}>
                   <ChatMessageItem
@@ -125,14 +126,15 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
                       return false;
                     })()}
                     className={
-                      index === messages.length - 1
+                      index === filteredMessages.length - 1
                         ? 'animate__animated animate__fadeInLeft animate__fast'
                         : ''
                     }
                   />
                 </div>
               );
-            })}
+            });
+          })()}
         </>
       )}
     </MessageList>
