@@ -236,9 +236,6 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
         {bannedUsers
           ?.filter((bannedUser) => group.name === bannedUser.roomName)
           .map((bannedUser) => {
-            console.log(
-              `Group name: ${group.name}, Banned user's room ID: ${bannedUser.roomName}`,
-            );
             return (
               <option key={bannedUser.id} value={bannedUser.intraId}>
                 {bannedUser.username} (banned 🚫)
@@ -435,6 +432,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
               socket={socket}
               adminId={channelOwnerIntraId}
               roomName={group.name}
+              setPopupVisible={setPopupVisible}
             />
           );
         }

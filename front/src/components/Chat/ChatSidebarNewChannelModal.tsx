@@ -124,10 +124,8 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       },
     })
       .then((res) => {
-        if (res.ok && res.headers.get('Content-Type')?.includes('application/json')) {
+        if (res.ok) {
           return res.json();
-        } else {
-          throw new Error('Server response was not ok or not JSON.');
         }
       })
       .then((data) => {
