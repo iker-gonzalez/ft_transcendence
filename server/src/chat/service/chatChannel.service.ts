@@ -858,7 +858,6 @@ export class ChatChannelService {
 
       await this.leaveUserFromChannel(channelRoom, banUserId);
     } catch (error) {
-      console.log('error', error.message);
       throw error;
     }
   }
