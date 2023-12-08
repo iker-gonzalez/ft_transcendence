@@ -148,7 +148,10 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     setInviteModalVisible(true);
   };
 
-  const handleInvite = async (userAddIntra: number) => {
+  const handleInvite = async (
+    userAddIntra: number,
+    userAddUsername: string,
+  ) => {
     const status_code = await inviteFriendToChannel(
       channelData!.roomName || '',
       userAddIntra,
@@ -156,9 +159,10 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You have invited ${userAddIntra}.`,
+        `You invited ${userAddUsername}.`,
         FlashMessageLevel.SUCCESS,
       );
+      onNewAction(group);
     } else {
       launchFlashMessage(
         `Something went wrong. Try again later.`,
@@ -277,7 +281,9 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         {canSeeActions() && (
           <div className="main-actions-container">
             {channelData?.type === 'PRIVATE' && (
-              <MainButton onClick={triggerInvitePopUp}>Invite</MainButton>
+              <SecondaryButton onClick={triggerInvitePopUp}>
+                Invite
+              </SecondaryButton>
             )}
             {isInviteModalVisible && channelData?.type === 'PRIVATE' && (
               <FriendInvitationModal
@@ -287,7 +293,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               >
                 <h1 className="title-1 mb-8">Invite friends to channel</h1>
                 <p className="mb-24">
-                  Select a friend to invite them to this channel.
+                  Select a friend that you want to invite to the channel.
                 </p>
                 <div className="friend-invitation-form">
                   {(() => {
@@ -320,8 +326,15 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                   </MainSelect>
                   <MainButton
                     onClick={() => {
-                      if (selectedFriendToInvite)
-                        handleInvite(selectedFriendToInvite);
+                      const friendToInvite = friendsToInvite.find(
+                        (friend) => friend.intraId === selectedFriendToInvite,
+                      );
+
+                      if (friendToInvite)
+                        handleInvite(
+                          friendToInvite.intraId,
+                          friendToInvite.username,
+                        );
                     }}
                   >
                     Invite
