@@ -24,9 +24,10 @@ import { useUserFriends } from '../../context/UserDataContext';
 import User from '../../interfaces/chat-user.interface';
 import SecondaryButton from '../UI/SecondaryButton';
 import MainSelect from '../UI/MainSelect';
-import { primaryColor } from '../../constants/color-tokens';
+import { darkBgColor, primaryColor } from '../../constants/color-tokens';
 import Cookies from 'js-cookie';
 import BannedUser from '../../interfaces/banned-user.interface';
+import ContrastPanel from '../UI/ContrastPanel';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -62,6 +63,10 @@ const WrapperDiv = styled.div`
       white-space: nowrap;
     }
   }
+`;
+
+const PasswordDeleteContrastPanel = styled(ContrastPanel)`
+  margin-top: 24px;
 `;
 
 const FriendInvitationModal = styled(Modal)`
@@ -100,9 +105,14 @@ const PasswordModal = styled(Modal)`
       gap: 8px;
     }
   }
+`;
 
-  .delete-password-container {
-    margin-top: 32px;
+const PasswordRemovalConfirmModal = styled(Modal)`
+  .actions-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
   }
 `;
 
@@ -121,6 +131,8 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const [isConfirmatioModalVisible, setConfirmatioModalVisible] =
+    useState(false);
   const [isPasswordPopupVisible, setPasswordPopupVisible] = useState(false);
   const [bannedUsers, setBannedUsers] = useState<BannedUser[]>([]);
 
@@ -144,7 +156,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You have successfully invited the user ${userAddIntra}.`,
+        `You have invited ${userAddIntra}.`,
         FlashMessageLevel.SUCCESS,
       );
     } else {
@@ -200,13 +212,14 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
     );
     if (status_code === 200) {
       launchFlashMessage(
-        `You have successfully ${
+        `You have ${
           password ? 'set' : 'removed'
         } the password for the channel ${channelData!.roomName || ''}.`,
         FlashMessageLevel.SUCCESS,
       );
       setPasswordPopupVisible(false);
       onNewAction(group);
+      updateUserSidebar();
     } else {
       launchFlashMessage(
         `Password is not strong enough.`,
@@ -391,7 +404,9 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
           {channelData?.password ? (
             <>
               <h1 className="title-1 mb-16">Edit your password</h1>
-              <p className="mb-24">Choose a new password for this channel.</p>
+              <p className="mb-24">
+                Change the current password of the channel.
+              </p>
             </>
           ) : (
             <>
@@ -442,28 +457,59 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                 Confirm
               </MainButton>
             </div>
-            <p className="small">
-              *The password must have at least 6 characters, 1 uppercase
-              character, 1 lowercase character, 1 symbol, and 1 number.
-            </p>
           </div>
+          <p className="small">
+            ℹ️ The password must have at least 6 characters, 1 uppercase
+            character, 1 lowercase character, 1 symbol, and 1 number.
+          </p>
+
           {channelData?.password && (
-            <div className="delete-password-container">
-              <h1 className="title-1 mb-16">Delete your password</h1>
+            <PasswordDeleteContrastPanel $backgroundColor={darkBgColor}>
+              <h1 className="title-1 mb-16">Delete your password?</h1>
               <p className="mb-24">
                 If you choose to do so, the channel will become public and,
                 thus, its content will be visible to anyone.
               </p>
               <DangerButton
                 onClick={() => {
-                  patchPassword(null);
-                  setPasswordPopupVisible(false);
-                  onNewAction(group);
+                  setConfirmatioModalVisible(true);
                 }}
               >
-                Remove password
+                Delete password
               </DangerButton>
-            </div>
+            </PasswordDeleteContrastPanel>
+          )}
+          {isConfirmatioModalVisible && (
+            <PasswordRemovalConfirmModal
+              dismissModalAction={() => {
+                setConfirmatioModalVisible(false);
+              }}
+            >
+              <h1 className="title-1 mb-8">Do you confirm password removal?</h1>
+              <p className="mb-24">
+                If you do so, the channel will become public. Anyone will be
+                able to join and read its contents.
+              </p>
+              <div className="actions-container">
+                <SecondaryButton
+                  onClick={() => {
+                    setConfirmatioModalVisible(false);
+                  }}
+                >
+                  Cancel
+                </SecondaryButton>
+                <DangerButton
+                  onClick={() => {
+                    patchPassword(null);
+                    setPasswordPopupVisible(false);
+                    onNewAction(group);
+                    setConfirmatioModalVisible(false);
+                  }}
+                >
+                  Confirm
+                </DangerButton>
+              </div>
+            </PasswordRemovalConfirmModal>
           )}
         </PasswordModal>
       )}
