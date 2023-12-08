@@ -199,19 +199,22 @@ export function drawImg(
   ctx.globalCompositeOperation = 'source-over';
 }
 
-export function checkCollision(b: IBallData, p: IUserData): boolean {
-  b.top = b.y - b.radius;
-  b.bottom = b.y + b.radius;
-  b.left = b.x - b.radius;
-  b.right = b.x + b.radius;
+export function checkCollision(ball: IBallData, paddle: IUserData): boolean {
+  ball.top = ball.y - ball.radius;
+  ball.bottom = ball.y + ball.radius;
+  ball.left = ball.x - ball.radius;
+  ball.right = ball.x + ball.radius;
 
-  p.top = p.y;
-  p.bottom = p.y + p.height;
-  p.left = p.x;
-  p.right = p.x + p.width;
+  paddle.top = paddle.y;
+  paddle.bottom = paddle.y + paddle.height;
+  paddle.left = paddle.x;
+  paddle.right = paddle.x + paddle.width;
 
   return (
-    p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top
+    paddle.left < ball.right &&
+    paddle.top < ball.bottom &&
+    paddle.right > ball.left &&
+    paddle.bottom > ball.top
   );
 }
 
