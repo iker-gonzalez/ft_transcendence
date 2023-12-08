@@ -35,25 +35,21 @@ export class ChatGateway implements OnGatewayConnection {
 
   @SubscribeMessage('privateMessage')
   async handlePrivateMessage(client, payload) {
-    try {
-      // Prueba para el get de lo DM
-      const senderId = await this.chatDMservice.findUserIdByIntraId(
-        payload.senderIntraId,
-      );
-      const receiverId = await this.chatDMservice.findUserIdByIntraId(
-        payload.receiverIntraId,
-      );
+    // Prueba para el get de lo DM
+    const senderId = await this.chatDMservice.findUserIdByIntraId(
+      payload.senderIntraId,
+    );
+    const receiverId = await this.chatDMservice.findUserIdByIntraId(
+      payload.receiverIntraId,
+    );
 
-      await this.chatDMservice.addMessageToUser(
-        senderId,
-        receiverId,
-        payload.content,
-      );
+    await this.chatDMservice.addMessageToUser(
+      senderId,
+      receiverId,
+      payload.content,
+    );
 
-      // Emit signal to update the receiver chat frontend
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    this.server.emit('newData');
     // Emit signal to update the receiver chat frontend
     this.server.emit(
       `privateMessageReceived/${payload.receiverIntraId}`,
@@ -106,8 +102,9 @@ export class ChatGateway implements OnGatewayConnection {
 
       client.join(payload.roomName);
       client.emit('joinedRoom', `Te has unido a la sala ${payload.roomName}`);
+      this.server.emit('newData');
     } catch (error) {
-      console.error('Error:', error);
+      return 'KO';
     }
   }
 
@@ -155,9 +152,10 @@ export class ChatGateway implements OnGatewayConnection {
         payload.roomName,
         userId,
       );
+      this.server.emit('newData');
       client.leave(payload.roomName);
     } catch (error) {
-      console.error('Error:', error);
+      return 'KO';
     }
   }
 
@@ -182,6 +180,8 @@ export class ChatGateway implements OnGatewayConnection {
       userId,
     );
     client.leave(payload.roomName);
+
+    this.server.emit('newData');
 
     return {
       success: true,
@@ -270,14 +270,7 @@ export class ChatGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('update')
-  async handleUpdate(client: Socket, payload) {
-    const updatedIntraId = payload.updatedIntraId;
-
-    if (updatedIntraId) {
-      this.server.emit(`newData/${updatedIntraId}`);
-      return 'OK';
-    } else {
-      return 'KO';
-    }
+  async handleUpdate(client: Socket) {
+    this.server.emit('newData');
   }
 }

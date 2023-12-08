@@ -172,6 +172,11 @@ export class ChatDMService {
           'userSender or userReceiver does not exist in DB',
         );
 
+      if (content.length > 124 || content.length < 1)
+        throw new BadRequestException(
+          'Message length must be between 1 and 124 characters',
+        );
+
       const existingMessage = await this.prisma.directMessage.findUnique({
         where: { id: userSenderId },
       });
@@ -222,18 +227,18 @@ export class ChatDMService {
         },
       });
 
-      const userToMute = await this.prisma.user.findUnique({
-        where: {
-          id: userToMuteId,
-        },
-      });
+      // const userToMute = await this.prisma.user.findUnique({
+      //   where: {
+      //     id: userToMuteId,
+      //   },
+      // });
 
-      await this.prisma.user.update({
-        where: { id: userToMuteId },
-        data: {
-          blockList: [...userToMute.blockList, userId],
-        },
-      });
+      // await this.prisma.user.update({
+      //   where: { id: userToMuteId },
+      //   data: {
+      //     blockList: [...userToMute.blockList, userId],
+      //   },
+      // });
     } catch (e) {
       throw new BadRequestException(e);
     }
@@ -261,18 +266,18 @@ export class ChatDMService {
         },
       });
 
-      const userToUnmute = await this.prisma.user.findUnique({
-        where: {
-          id: userToUnMuteId,
-        },
-      });
+      // const userToUnmute = await this.prisma.user.findUnique({
+      //   where: {
+      //     id: userToUnMuteId,
+      //   },
+      // });
 
-      await this.prisma.user.update({
-        where: { id: userToUnMuteId },
-        data: {
-          blockList: userToUnmute.blockList.filter((id) => id !== userId),
-        },
-      });
+      // await this.prisma.user.update({
+      //   where: { id: userToUnMuteId },
+      //   data: {
+      //     blockList: userToUnmute.blockList.filter((id) => id !== userId),
+      //   },
+      // });
     } catch (e) {
       throw new BadRequestException(e);
     }

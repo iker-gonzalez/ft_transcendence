@@ -1,6 +1,6 @@
 SRCS= ./docker-compose.yaml
 
-all: up
+all: up-build
 
 clean:
 	docker rm backend  -f -v
@@ -19,9 +19,6 @@ stop:
 	docker stop prisma-studio || true
 	docker stop backend-e2e || true
 
-up: stop
-	docker compose -f $(SRCS) up -d --build
-	docker compose logs --follow
-
 up-build: stop
-	docker-compose up --build
+	docker-compose up --build 
+	docker compose logs --follow

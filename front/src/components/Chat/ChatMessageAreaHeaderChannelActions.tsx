@@ -169,6 +169,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
       channelOwnerIntraId || 0,
     );
     if (status_code === 200) {
+      socket.emit('update');
       launchFlashMessage(
         `You invited ${userAddUsername}.`,
         FlashMessageLevel.SUCCESS,
@@ -373,7 +374,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
               disabled={(() => {
                 const isNoUserToManage =
                   channelData?.usersInfo.length === 1 &&
-                  bannedUsers.length === 0;
+                  bannedUsers?.length === 0;
 
                 const IsOnlyUserToManageOwner =
                   channelData?.usersInfo.length === 2 &&
