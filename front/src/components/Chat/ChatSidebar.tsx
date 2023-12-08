@@ -153,20 +153,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [groupNature, setGroupNature] = useState('PUBLIC');
   const [password, setPassword] = useState('');
   const [isRoomNameValid, setIsRoomNameValid] = useState(true);
-  const [channelOwnerIntraId, setChannelOwnerIntraId] = useState<number | null>(
-    null,
-  );
   const [wasSectionUpdated, setWasSectionUpdated] =
     useState<ChatSidebarUpdate>(null);
 
   const [selectedProtectedGroupToJoin, setSelectedProtectedGroupToJoin] =
     useState<Group | null>(null);
-
-  useEffect(() => {
-    if (channelData) {
-      setChannelOwnerIntraId(channelData.ownerIntra || null);
-    }
-  }, [selectedGroup, channelData]);
 
   useEffect(() => {
     fetchFriendsList();

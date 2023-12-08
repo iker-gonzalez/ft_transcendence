@@ -7,7 +7,6 @@ import { useUserData } from '../../context/UserDataContext';
 import Group from '../../interfaces/chat-group.interface';
 import User from '../../interfaces/chat-user.interface';
 import MainInput from '../UI/MainInput';
-import { createNewDirectMessage } from '../../utils/utils';
 
 interface MessageInputProps {
   onMessageSubmit: (message: DirectMessage | GroupMessage) => void;

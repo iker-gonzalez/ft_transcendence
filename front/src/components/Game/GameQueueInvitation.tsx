@@ -34,14 +34,6 @@ const GameQueueInvitation: React.FC = (): JSX.Element => {
 
   useEffect(() => {
     if (userData && !wasEventEmitted) {
-      console.log(
-        'cacca',
-        JSON.stringify({
-          inviter: searchParams.get('inviter'),
-          invited: searchParams.get('invited'),
-          id: searchParams.get('id'),
-        }),
-      );
       matchmakingSocketRef.current.emit(
         'invite',
         JSON.stringify({
