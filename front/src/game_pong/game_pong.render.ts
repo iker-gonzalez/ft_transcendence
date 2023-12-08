@@ -250,7 +250,7 @@ export function render(
       (+CANVAS_HEIGHT / 6) * 2,
       (+CANVAS_WIDTH / 9) * 5,
       (+CANVAS_HEIGHT / 6) * 1.5,
-      RenderColor.DarkestColor,
+      RenderColor.DarkColor,
     );
 
     drawText(
@@ -302,7 +302,7 @@ export function render(
         (+CANVAS_HEIGHT / 6) * 2,
         (+CANVAS_WIDTH / 9) * 5,
         (+CANVAS_HEIGHT / 6) * 1.5,
-        RenderColor.DarkestColor,
+        RenderColor.DarkColor,
       );
 
       drawText(
