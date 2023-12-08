@@ -209,10 +209,11 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         }
       })
       .then((data) => {
+        console.log('data:', data);
         const channelBannedUsers = data.data.find((bannedUsersInfo: any) => {
           return bannedUsersInfo.name === roomName;
         });
-
+        console.log('channelBannedUsers:', channelBannedUsers);
         setBannedUsers(channelBannedUsers?.bannedUsers);
       })
       .catch((error) => {

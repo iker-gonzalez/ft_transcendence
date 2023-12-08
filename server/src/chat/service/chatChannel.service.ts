@@ -301,7 +301,7 @@ export class ChatChannelService {
         (bannedUser) => bannedUser === userIdToAdd,
       );
       if (isUserBanned)
-       throw new BadRequestException('This user is banned in this ChatRoom');
+        throw new BadRequestException('This user is banned in this ChatRoom');
 
       // Buscar si ya esta en la Sala
       //   const isUserAlreadyIn = foundChatRoom.users.some((user) => user.userId === userIdToAdd);
@@ -1104,8 +1104,10 @@ export class ChatChannelService {
     const data = [];
 
     let length2 = 0;
-    const userBanned = [];
+    let userBanned = [];
+
     for (const room of chatRooms) {
+      userBanned = [];
       if (room.bannedkList.length == 0) {
         continue;
       }
@@ -1118,35 +1120,26 @@ export class ChatChannelService {
             id: bannedUserId,
           },
         });
-<<<<<<< Updated upstream
-        userBanned.push(bannedUsers);
-=======
-        console.log('bannedUsers');
-        console.log(bannedUsers);
         userBanned.push(new UserRommDTO(bannedUsers, room.name));
->>>>>>> Stashed changes
       }
       data.push({
         name: room.name,
         bannedUsers: userBanned, // Ajusta según la estructura real de tu usuario
       });
-
-      //data.push(new UserRommDTO(bannedUsers, room.name));
-      if (data.length == 0) {
-        data.push(userBanned);
-      }
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
-      if (length2 == 0) {
-        return null;
-      }
-
-      return {
-        found: length2,
-        data: data,
-      };
     }
+    //data.push(new UserRommDTO(bannedUsers, room.name));
+    if (data.length == 0) {
+      data.push(userBanned);
+    }
+    if (length2 == 0) {
+      return null;
+    }
+
+    console.log('data');
+    console.log(data);
+    return {
+      found: length2,
+      data: data,
+    };
   }
 }
