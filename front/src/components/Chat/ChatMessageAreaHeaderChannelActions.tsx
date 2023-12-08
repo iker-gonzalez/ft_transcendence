@@ -533,8 +533,8 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
             </div>
           </div>
           <p className="small">
-            ℹ️ The password must have at least 6 characters, 1 uppercase
-            character, 1 lowercase character, 1 symbol, and 1 number.
+            ℹ️ Password must have at least 6 characters, 1 uppercase character,
+            1 lowercase character, 1 symbol, and 1 number.
           </p>
 
           {channelData?.password && (

@@ -73,6 +73,10 @@ const WrapperDiv = styled.div`
     align-items: center;
   }
 
+  .password-disclaimer {
+    margin-top: 16px;
+  }
+
   .confirm-container {
     display: flex;
     justify-content: flex-start;
@@ -254,50 +258,44 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
           )}
         </div>
         {groupNature === CHANNEL_TYPES.PROTECTED && (
-          <div className="password-containers-wrapper">
-            <div className="password-container mb-8">
-              <MainPasswordInput
-                value={password}
-                onChange={(e: any) => setPassword(e.target.value)}
-                placeholder="Enter password"
-              />
-            </div>
-            <div className="confirm-container mb-8">
-              <MainPasswordInput
-                value={confirmationPassword}
-                onChange={(e: any) => setConfirmationPassword(e.target.value)}
-                placeholder="Enter password"
-              />
-              <MainButton
-                onClick={() => {
-                  if (password !== confirmationPassword) {
-                    launchFlashMessage(
-                      'Passwords do not match.',
-                      FlashMessageLevel.ERROR,
-                    );
-                    return;
-                  }
+          <>
+            <div className="password-containers-wrapper">
+              <div className="password-container mb-8">
+                <MainPasswordInput
+                  value={password}
+                  onChange={(e: any) => setPassword(e.target.value)}
+                  placeholder="Enter password"
+                />
+              </div>
+              <div className="confirm-container">
+                <MainPasswordInput
+                  value={confirmationPassword}
+                  onChange={(e: any) => setConfirmationPassword(e.target.value)}
+                  placeholder="Enter password"
+                />
+                <MainButton
+                  onClick={() => {
+                    if (password !== confirmationPassword) {
+                      launchFlashMessage(
+                        'Passwords do not match.',
+                        FlashMessageLevel.ERROR,
+                      );
+                      return;
+                    }
 
-                  if (password.length < 6) {
-                    launchFlashMessage(
-                      'Password should be at least 6 characters.',
-                      FlashMessageLevel.ERROR,
-                    );
-                    return;
-                  }
-
-                  onJoiningNewChannel();
-                  setTimeout(updateUserSidebar, 250);
-                }}
-                disabled={!isRoomNameValid || roomName.length === 0}
-              >
-                Create
-              </MainButton>
+                    onJoiningNewChannel();
+                  }}
+                  disabled={!isRoomNameValid || roomName.length === 0}
+                >
+                  Create
+                </MainButton>
+              </div>
             </div>
-            <p className="small">
-              ℹ️ Password should have a minimum length of 6 characters
+            <p className="small password-disclaimer">
+              ℹ️ Password must have at least 6 characters, 1 uppercase
+              character, 1 lowercase character, 1 symbol, and 1 number.
             </p>
-          </div>
+          </>
         )}
       </div>
 
