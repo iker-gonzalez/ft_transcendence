@@ -12,6 +12,7 @@ type ChatSidebarJoinProtectedModalProps = {
   ) => Promise<0 | 1 | undefined>;
   setPasswordPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
   selectedProtectedGroupToJoin: Group | null;
+  updateUserSidebar: () => void;
 };
 
 const ChatSidebarJoinProtectedModal: React.FC<
@@ -20,6 +21,7 @@ const ChatSidebarJoinProtectedModal: React.FC<
   handleJoinRoom,
   setPasswordPopupVisible,
   selectedProtectedGroupToJoin,
+  updateUserSidebar,
 }): JSX.Element => {
   const [password, setPassword] = useState('');
 
@@ -45,6 +47,7 @@ const ChatSidebarJoinProtectedModal: React.FC<
         onSubmit={(e) => {
           e.preventDefault();
           onJoiningProtectedChannel();
+          setTimeout(updateUserSidebar, 250);
         }}
         style={{
           width: '100%',

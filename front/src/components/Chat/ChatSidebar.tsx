@@ -346,6 +346,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               handleJoinRoom={handleJoinRoom}
               setPasswordPopupVisible={setPasswordPopupVisible}
               selectedProtectedGroupToJoin={selectedProtectedGroupToJoin}
+              updateUserSidebar={updateUserSidebar}
             />
           </Modal>
         )}
