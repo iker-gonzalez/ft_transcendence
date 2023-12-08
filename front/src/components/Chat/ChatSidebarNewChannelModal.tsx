@@ -14,6 +14,7 @@ import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import { useUserData } from '../../context/UserDataContext';
 import FormattedList from '../UI/FormattedList';
+import { Socket } from 'socket.io-client';
 
 type ChatSidebarNewChannelModalProps = {
   roomName: string;
@@ -38,6 +39,7 @@ type ChatSidebarNewChannelModalProps = {
     React.SetStateAction<Group | null>
   >;
   handleGroupClick: (group: Group) => void;
+  socket: Socket | null;
 };
 
 const WrapperDiv = styled.div`
@@ -104,6 +106,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
   setPasswordPopupVisible,
   setSelectedProtectedGroupToJoin,
   handleGroupClick,
+  socket,
 }): JSX.Element => {
   const { launchFlashMessage } = useFlashMessages();
   const [selectedExistingGroup, setSelectedExistingGroup] =
@@ -155,6 +158,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
     };
     if ((await handleJoinRoom(newGroup, password, true)) === 0) {
       updateUserSidebar();
+      socket?.emit('update');
     }
     // Reset inputs
     setRoomName('');
