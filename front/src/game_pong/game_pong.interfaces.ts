@@ -23,10 +23,10 @@ export interface ISounds {
   wall: HTMLAudioElement;
   userScore: HTMLAudioElement;
   botScore: HTMLAudioElement;
-  music: any;
-  countdown: any;
-  beepShort: any;
-  beepLong: any;
+  music: HTMLAudioElement;
+  countdown: HTMLAudioElement;
+  beepShort: HTMLAudioElement;
+  beepLong: HTMLAudioElement;
 }
 
 export enum RenderColor {
