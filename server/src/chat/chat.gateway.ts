@@ -185,6 +185,8 @@ export class ChatGateway implements OnGatewayConnection {
     );
     client.leave(payload.roomName);
 
+    this.server.emit('newData');
+
     return {
       success: true,
     };
