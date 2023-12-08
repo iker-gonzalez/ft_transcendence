@@ -45,6 +45,40 @@ export class UserService {
         },
       });
 
+      const userFriends = await this.prisma.user.findMany({
+        where: {
+          friends: {
+            some: {
+              intraId: user.intraId,
+            },
+          },
+        },
+        select: {
+          friends: true,
+          intraId: true,
+        },
+      });
+
+      for (const friend of userFriends) {
+        await this.prisma.user.update({
+          where: {
+            intraId: friend.intraId,
+          },
+          data: {
+            friends: {
+              updateMany: {
+                where: {
+                  intraId: user.intraId,
+                },
+                data: {
+                  username,
+                },
+              },
+            },
+          },
+        });
+      }
+
       return {
         updated: 1,
         data: {
