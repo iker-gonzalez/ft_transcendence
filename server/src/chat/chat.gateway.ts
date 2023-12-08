@@ -106,8 +106,9 @@ export class ChatGateway implements OnGatewayConnection {
 
       client.join(payload.roomName);
       client.emit('joinedRoom', `Te has unido a la sala ${payload.roomName}`);
+      this.server.emit('newData');
     } catch (error) {
-      console.error('Error:', error);
+      return 'KO';
     }
   }
 
@@ -155,9 +156,10 @@ export class ChatGateway implements OnGatewayConnection {
         payload.roomName,
         userId,
       );
+      this.server.emit('newData');
       client.leave(payload.roomName);
     } catch (error) {
-      console.error('Error:', error);
+      return 'KO';
     }
   }
 
