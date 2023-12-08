@@ -113,11 +113,7 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
     fetchFriendsList();
   }, [group]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const block = async (
-    blockUsername: string,
-    blockIntraId: number,
-    isBlocked: number,
-  ) => {
+  const block = async (blockIntraId: number, isBlocked: number) => {
     const status_code = await patchBlockUser(
       userData?.intraId || 0,
       blockIntraId,
@@ -162,7 +158,8 @@ const ChatMessageAreaHeader: React.FC<ChatMessageAreaHeaderProps> = ({
           const directMessages: DirectMessage[] = await fetchUserMessages(
             user.intraId,
           );
-          setMessages(directMessages);
+          if (directMessages) setMessages(directMessages);
+
           launchFlashMessage(
             `You unblocked ${user.username}.`,
             FlashMessageLevel.SUCCESS,

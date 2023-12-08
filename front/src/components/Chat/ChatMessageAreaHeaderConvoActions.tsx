@@ -17,7 +17,7 @@ type ChatMessageAreaHeaderConvoActionsProps = {
   user: User;
   userData: UserData;
   onNewMessage: (message: DirectMessage | GroupMessage) => void;
-  block: (username: string, intraId: number, block: number) => void;
+  block: (intraId: number, block: number) => void;
 };
 
 const ActionsContainerDiv = styled.div`
@@ -71,9 +71,7 @@ const ChatMessageAreaHeaderConvoActions: React.FC<
           </MainButton>
           {user.isBlocked ? (
             <SecondaryButton
-              onClick={() =>
-                block(user.username, user.intraId, user.isBlocked ? 0 : 1)
-              }
+              onClick={() => block(user.intraId, user.isBlocked ? 0 : 1)}
             >
               Unblock
             </SecondaryButton>
@@ -106,7 +104,7 @@ const ChatMessageAreaHeaderConvoActions: React.FC<
             <DangerButton
               onClick={() => {
                 setShowConfirmationModal(false);
-                block(user.username, user.intraId, user.isBlocked ? 0 : 1);
+                block(user.intraId, user.isBlocked ? 0 : 1);
               }}
             >
               Confirm
