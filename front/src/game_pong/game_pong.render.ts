@@ -372,9 +372,17 @@ export function render(
     RenderColor.Grey,
   );
 
+  let paddleSizeRender: number = 0;
+  
+  if (+CANVAS_WIDTH === 900) {
+    paddleSizeRender = user1.height 
+  } else {
+    paddleSizeRender = user1.height * 3 / 2;
+  }
+
   drawText(
     canvas,
-    'Paddle Height: ' + user1.height + '%',
+    'Paddle Height: ' + paddleSizeRender.toFixed(0) + '%',
     (+CANVAS_WIDTH / 10) * 5.5,
     (+CANVAS_HEIGHT / 20) * 19,
     `${fontSizeBase * 1.5}px Verdana`,
