@@ -322,6 +322,11 @@ export class ChatChannelService {
         'channelRoom or senderId or content are null',
       );
 
+    if (content.length > 124 || content.length < 1)
+      throw new BadRequestException(
+        'Message length must be between 1 and 124 characters',
+      );
+
     // Get el Channel
     const foundChatRoom = await this.prisma.chatRoom.findFirst({
       where: {
