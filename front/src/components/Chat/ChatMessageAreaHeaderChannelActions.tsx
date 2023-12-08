@@ -367,7 +367,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         )}
         <DangerButton
           onClick={() => {
-            if (isAdmin()) {
+            if (isAdmin() && channelData?.usersInfo.length !== 1) {
               launchFlashMessage(
                 `Admins cannot leave the channel. Have your admin status revoked first.`,
                 FlashMessageLevel.ERROR,
