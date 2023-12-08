@@ -130,17 +130,20 @@ export async function patchChannelPassword(
   password: string | null,
 ): Promise<number> {
   if (channelName && ownerIntraId) {
-    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/updatePassword`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${Cookies.get('token')}`,
-      },
-      body: JSON.stringify({
+    const response = await fetchAuthorized(
+      `${getBaseUrl()}/chat/${channelName}/updatePassword`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify({
           ownerIntra: ownerIntraId,
-          password: password
-      }),
-    });
+          password: password,
+        }),
+      },
+    );
     return response.status;
   }
   return 0;
@@ -150,19 +153,22 @@ export async function patchMuteUser(
   channelName: string,
   mutedIntraId: number,
   ownerIntraId: number,
-  isMuted: number
+  isMuted: number,
 ): Promise<Response | null> {
   if (channelName && mutedIntraId && ownerIntraId) {
-    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${mutedIntraId}/${isMuted}/setMute`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${Cookies.get('token')}`,
+    const response = await fetchAuthorized(
+      `${getBaseUrl()}/chat/${channelName}/${mutedIntraId}/${isMuted}/setMute`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify({
+          ownerIntra: ownerIntraId,
+        }),
       },
-      body: JSON.stringify({
-          ownerIntra: ownerIntraId
-      }),
-    });
+    );
     return response;
   }
   return null;
@@ -172,19 +178,22 @@ export async function setAdminIntra(
   channelName: string,
   adminIntraId: number,
   ownerIntraId: number,
-  isAdmin: number
+  isAdmin: number,
 ): Promise<number> {
   if (channelName && adminIntraId && ownerIntraId) {
-    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${channelName}/${adminIntraId}/${isAdmin}/setAdmin`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${Cookies.get('token')}`,
+    const response = await fetchAuthorized(
+      `${getBaseUrl()}/chat/${channelName}/${adminIntraId}/${isAdmin}/setAdmin`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify({
+          ownerIntra: ownerIntraId,
+        }),
       },
-      body: JSON.stringify({
-          ownerIntra: ownerIntraId
-      }),
-    });
+    );
     return response.status;
   }
   return 0;
@@ -193,63 +202,40 @@ export async function setAdminIntra(
 export async function patchBlockUser(
   userIntraId: number,
   blockIntraId: number,
-  isBlocked: number
+  isBlocked: number,
 ): Promise<number> {
   if (userIntraId && blockIntraId) {
-    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${userIntraId}/${blockIntraId}/${isBlocked}/blockUser`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${Cookies.get('token')}`,
-      }
-    });
+    const response = await fetchAuthorized(
+      `${getBaseUrl()}/chat/${userIntraId}/${blockIntraId}/${isBlocked}/blockUser`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+      },
+    );
     return response.status;
   }
   return 0;
 }
 
-export async function checkIfPasswordIsValid(
-  groupName: string,
-  password: string,
-): Promise<number> {
-
-  const response = await fetchAuthorized(`${getBaseUrl()}/chat/${password}/${groupName}/isPasswordCorrect`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${Cookies.get('token')}`,
-    },
-  });
-  return response.status;
-}
-
-
 // Temporary function to get the intra ID of a user from their username until endpoint is implemented
 export function getIntraIdFromUsername(username: string): number {
-  if (username === 'ikgonzal')
-    return 88036;
-  else if (username === 'test-')
-    return 666;
-  else if (username === 'test2-')
-    return 667;
-  else if (username === 'test3-')
-    return 668;
-  else
-    return -1;
+  if (username === 'ikgonzal') return 88036;
+  else if (username === 'test-') return 666;
+  else if (username === 'test2-') return 667;
+  else if (username === 'test3-') return 668;
+  else return -1;
 }
 
 // Temporary function to get the intra ID of a user from their username until endpoint is implemented
 export function getUsernameFromIntraId(intraId: number): string {
-  if (intraId === 88036)
-    return 'ikgonzal';
-  else if (intraId === 666)
-    return 'test-';
-  else if (intraId === 667)
-    return 'test2-';
-  else if (intraId === 668)
-    return 'test3-';
-  else
-    return 'Unknown';
+  if (intraId === 88036) return 'ikgonzal';
+  else if (intraId === 666) return 'test-';
+  else if (intraId === 667) return 'test2-';
+  else if (intraId === 668) return 'test3-';
+  else return 'Unknown';
 }
 
 export async function inviteFriendToChannel(
@@ -258,16 +244,19 @@ export async function inviteFriendToChannel(
   ownerIntraId: number,
 ): Promise<number> {
   if (channelName && friendIntraId && ownerIntraId) {
-    const response = await fetchAuthorized(`${getBaseUrl()}/chat/${friendIntraId}/${channelName}/1/setUserToPrivateChannel`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${Cookies.get('token')}`,
+    const response = await fetchAuthorized(
+      `${getBaseUrl()}/chat/${friendIntraId}/${channelName}/1/setUserToPrivateChannel`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify({
+          ownerIntra: ownerIntraId,
+        }),
       },
-      body: JSON.stringify({
-          ownerIntra: ownerIntraId
-      }),
-    });
+    );
     return response.status;
   }
   return 0;
