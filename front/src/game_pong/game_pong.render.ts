@@ -100,7 +100,7 @@ export function render(
 
   //Sparks effect
   if (theme.id === 'star-wars') {
-    drawSparks(canvas, 0, 0, 0, RenderColor.Green);
+    drawSparks(canvas, 0, 0, 0, RenderColor.SuccessColor);
   } else {
     drawSparks(canvas, 0, 0, 0, RenderColor.Yellow);
   }
@@ -176,7 +176,7 @@ export function render(
     +CANVAS_HEIGHT / 10,
     `${fontSizeBase * 2}px Verdana`,
     'right',
-    RenderColor.Yellow,
+    RenderColor.PrimaryColor,
   );
 
   drawText(
@@ -186,7 +186,7 @@ export function render(
     +CANVAS_HEIGHT / 6,
     `${fontSizeBase * 4}px Verdana`,
     'right',
-    RenderColor.Red,
+    RenderColor.AccentColor,
   );
 
   if (ballData.isBallPaused) {
@@ -209,7 +209,7 @@ export function render(
       +CANVAS_HEIGHT / 10,
       `${fontSizeBase * 2}px Verdana`,
       'left',
-      RenderColor.Yellow,
+      RenderColor.PrimaryColor,
     );
   } else {
     drawText(
@@ -219,7 +219,7 @@ export function render(
       +CANVAS_HEIGHT / 10,
       `${fontSizeBase * 2}px Verdana`,
       'left',
-      RenderColor.Yellow,
+      RenderColor.PrimaryColor,
     );
   }
 
@@ -230,7 +230,7 @@ export function render(
     +CANVAS_HEIGHT / 6,
     `${fontSizeBase * 4}px Verdana`,
     'left',
-    RenderColor.Red,
+    RenderColor.AccentColor,
   );
 
   if (user1.score >= matchPoints) {
@@ -241,7 +241,7 @@ export function render(
       +CANVAS_HEIGHT / 4.5,
       `${fontSizeBase * 3}px Verdana`,
       'right',
-      RenderColor.Green,
+      RenderColor.SuccessColor,
     );
 
     drawRect(
@@ -250,7 +250,7 @@ export function render(
       (+CANVAS_HEIGHT / 6) * 2,
       (+CANVAS_WIDTH / 9) * 5,
       (+CANVAS_HEIGHT / 6) * 1.5,
-      RenderColor.Grey,
+      RenderColor.DarkestColor,
     );
 
     drawText(
@@ -279,7 +279,7 @@ export function render(
       +CANVAS_HEIGHT / 6 * 4.1,
       `${fontSizeBase * 4}px Verdana`,
       'center',
-      RenderColor.Green,
+      RenderColor.SuccessColor,
     );
   }
 
@@ -291,7 +291,7 @@ export function render(
       +CANVAS_HEIGHT / 4.5,
       `${fontSizeBase * 3}px Verdana`,
       'left',
-      RenderColor.Green,
+      RenderColor.SuccessColor,
     );
 
     if (user1.score >= matchPoints || user2.score >= matchPoints) {
@@ -302,7 +302,7 @@ export function render(
         (+CANVAS_HEIGHT / 6) * 2,
         (+CANVAS_WIDTH / 9) * 5,
         (+CANVAS_HEIGHT / 6) * 1.5,
-        RenderColor.Grey,
+        RenderColor.DarkestColor,
       );
 
       drawText(
@@ -332,7 +332,7 @@ export function render(
           (+CANVAS_HEIGHT / 6) * 4.1,
           `${fontSizeBase * 4}px Verdana`,
           'center',
-          RenderColor.Green,
+          RenderColor.SuccessColor,
         );
       } else {
         if (isSoloMode(usersData)) {
@@ -343,7 +343,7 @@ export function render(
             (+CANVAS_HEIGHT / 6) * 4.1,
             `${fontSizeBase * 4}px Verdana`,
             'center',
-            RenderColor.Green,
+            RenderColor.SuccessColor,
           );
         } else {
           drawText(
@@ -353,7 +353,7 @@ export function render(
             (+CANVAS_HEIGHT / 6) * 4.1,
             `${fontSizeBase * 4}px Verdana`,
             'center',
-            RenderColor.Green,
+            RenderColor.SuccessColor,
           );
         }
       }
@@ -526,7 +526,7 @@ export function matchUser1(
         ballData.x,
         ballData.y,
         ballData.radius,
-        RenderColor.Green,
+        RenderColor.SuccessColor,
         50,
       );
     } else {
@@ -579,7 +579,7 @@ export function matchUser2(
         ballData.x,
         ballData.y,
         ballData.radius,
-        RenderColor.Green,
+        RenderColor.SuccessColor,
         50,
       );
     } else {
