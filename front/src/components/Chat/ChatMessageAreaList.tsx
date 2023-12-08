@@ -36,6 +36,10 @@ const EmpyStateDiv = styled.div`
     width: 250px;
     height: 250px;
   }
+
+  p {
+    max-width: 500px;
+  }
 `;
 
 const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
@@ -50,8 +54,8 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
     return (
       <EmpyStateDiv>
         <p>
-          This conversation is blocked. To read this conversation, unblock your
-          friend or wait for them to unblock you.
+          This conversation is blocked. To resume it, unblock your friend or
+          wait for them to unblock you.
         </p>
       </EmpyStateDiv>
     );

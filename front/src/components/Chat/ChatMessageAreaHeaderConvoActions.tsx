@@ -90,14 +90,10 @@ const ChatMessageAreaHeaderConvoActions: React.FC<
             setShowConfirmationModal(false);
           }}
         >
-          <h1 className="title-1 mb-8">
-            Do you confirm blocking {user.username}?
-          </h1>
+          <h1 className="title-1 mb-8">Do you confirm blocking?</h1>
           <p className="mb-24">
-            Once you block {user.username}, you will not be able to message each
-            other.
-            <br />
-            You will be able to unblock them later.
+            Once you block {user.username}, you won't be able to message each
+            other. You will be able to unblock them later, if you want.
           </p>
           <ActionsContainerDiv>
             <SecondaryButton
