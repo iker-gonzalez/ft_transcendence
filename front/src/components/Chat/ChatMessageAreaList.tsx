@@ -6,6 +6,8 @@ import User from '../../interfaces/chat-user.interface';
 import Group from '../../interfaces/chat-group.interface';
 import moment from 'moment';
 import { useUserData } from '../../context/UserDataContext';
+import EmptyChatAnimationData from '../../assets/lotties/empty-chat.json';
+import Lottie from 'lottie-react';
 
 type ChatMessageAreaListProps = {
   messages: DirectMessage[];
@@ -17,19 +19,23 @@ type ChatMessageAreaListProps = {
 const MessageList = styled.ul`
   list-style: none;
   padding: 0;
+  height: 100%;
 `;
 
 const EmpyStateDiv = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  > * {
-    max-width: 4in;
-    text-align: center;
-  }
+  text-align: center;
 
   height: 100%;
+
+  .lottie {
+    width: 250px;
+    height: 250px;
+  }
 `;
 
 const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
@@ -55,7 +61,8 @@ const ChatMessageAreaList: React.FC<ChatMessageAreaListProps> = ({
     <MessageList>
       {messages.length === 0 ? (
         <EmpyStateDiv>
-          <p>There are no messages to show</p>
+          <p className="mb-24">There are no messages to show.</p>
+          <Lottie animationData={EmptyChatAnimationData} className="lottie" />
         </EmpyStateDiv>
       ) : (
         <>
