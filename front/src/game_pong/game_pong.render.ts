@@ -29,7 +29,7 @@ import {
 } from './game_pong.interfaces';
 import GameTheme from '../interfaces/game-theme.interface';
 
-import { CANVAS_WIDTH } from '../constants/canvas';
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../constants/canvas';
 export let fontSizeBase: number = +CANVAS_WIDTH / 100;
 console.log('canvas width value is -> ', +CANVAS_WIDTH);
 console.log('fontSizeBase value is -> ', fontSizeBase);
@@ -54,17 +54,17 @@ export function render(
 ) {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   // To clear the canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, +CANVAS_WIDTH, +CANVAS_HEIGHT);
 
   // Above wall
-  drawRect(canvas, 0, 0, canvas.width, thickness, RenderColor.White);
+  drawRect(canvas, 0, 0, +CANVAS_WIDTH, thickness, RenderColor.White);
   
   // Below wall
   drawRect(
     canvas,
     0,
-    canvas.height - thickness,
-    canvas.width,
+    +CANVAS_HEIGHT - thickness,
+    +CANVAS_WIDTH,
     thickness,
     RenderColor.White,
   );
@@ -113,8 +113,8 @@ export function render(
     drawText(
       canvas,
       ' 🔇 ',
-      canvas.width / 2,
-      canvas.height / 8,
+      +CANVAS_WIDTH / 2,
+      +CANVAS_HEIGHT / 8,
       `${fontSizeBase * 4}px Verdana`,
       'center',
       RenderColor.White,
@@ -123,8 +123,8 @@ export function render(
     drawText(
       canvas,
       ' 🔈 ',
-      canvas.width / 2,
-      canvas.height / 8,
+      +CANVAS_WIDTH / 2,
+      +CANVAS_HEIGHT / 8,
       `${fontSizeBase * 4}px Verdana`,
       'center',
       RenderColor.White,
@@ -133,8 +133,8 @@ export function render(
     drawText(
       canvas,
       ' 🔉 ',
-      canvas.width / 2,
-      canvas.height / 8,
+      +CANVAS_WIDTH / 2,
+      +CANVAS_HEIGHT / 8,
       `${fontSizeBase * 5}px Verdana`,
       'center',
       RenderColor.White,
@@ -143,8 +143,8 @@ export function render(
     drawText(
       canvas,
       ' 🔉 ',
-      canvas.width / 2,
-      canvas.height / 8,
+      +CANVAS_WIDTH / 2,
+      +CANVAS_HEIGHT / 8,
       `${fontSizeBase * 6}px Verdana`,
       'center',
       RenderColor.White,
@@ -153,8 +153,8 @@ export function render(
     drawText(
       canvas,
       ' 🔊 ',
-      canvas.width / 2,
-      canvas.height / 8,
+      +CANVAS_WIDTH / 2,
+      +CANVAS_HEIGHT / 8,
       `${fontSizeBase * 7}px Verdana`,
       'center',
       RenderColor.White,
@@ -163,18 +163,19 @@ export function render(
     drawText(
       canvas,
       ' 🔊 ',
-      canvas.width / 2,
-      canvas.height / 8,
+      +CANVAS_WIDTH / 2,
+      +CANVAS_HEIGHT / 8,
       `${fontSizeBase * 8}px Verdana`,
       'center',
       RenderColor.White,
     );
   }
+
   drawText(
     canvas,
     usersData.user1.username,
-    (canvas.width / 10) * 4,
-    canvas.height / 10,
+    (+CANVAS_WIDTH / 10) * 4,
+    +CANVAS_HEIGHT / 10,
     `${fontSizeBase * 2}px Verdana`,
     'right',
     RenderColor.Yellow,
@@ -183,8 +184,8 @@ export function render(
   drawText(
     canvas,
     String(user1.score),
-    (canvas.width / 10) * 4,
-    canvas.height / 6,
+    (+CANVAS_WIDTH / 10) * 4,
+    +CANVAS_HEIGHT / 6,
     `${fontSizeBase * 4}px Verdana`,
     'right',
     RenderColor.Red,
@@ -194,8 +195,8 @@ export function render(
     drawText(
       canvas,
       '    GAME      PAUSED ',
-      canvas.width / 2,
-      canvas.height / 2,
+      +CANVAS_WIDTH / 2,
+      +CANVAS_HEIGHT / 2,
       `${fontSizeBase * 5}px Verdana`,
       'center',
       RenderColor.Red,
@@ -206,8 +207,8 @@ export function render(
     drawText(
       canvas,
       'BOT',
-      (canvas.width / 10) * 6,
-      canvas.height / 10,
+      (+CANVAS_WIDTH / 10) * 6,
+      +CANVAS_HEIGHT / 10,
       `${fontSizeBase * 2}px Verdana`,
       'left',
       RenderColor.Yellow,
@@ -216,8 +217,8 @@ export function render(
     drawText(
       canvas,
       usersData.user2!.username,
-      (canvas.width / 10) * 6,
-      canvas.height / 10,
+      (+CANVAS_WIDTH / 10) * 6,
+      +CANVAS_HEIGHT / 10,
       `${fontSizeBase * 2}px Verdana`,
       'left',
       RenderColor.Yellow,
@@ -227,8 +228,8 @@ export function render(
   drawText(
     canvas,
     String(user2.score),
-    (canvas.width / 10) * 6,
-    canvas.height / 6,
+    (+CANVAS_WIDTH / 10) * 6,
+    +CANVAS_HEIGHT / 6,
     `${fontSizeBase * 4}px Verdana`,
     'left',
     RenderColor.Red,
@@ -238,32 +239,46 @@ export function render(
     drawText(
       canvas,
       '🏆',
-      (canvas.width / 10) * 4,
-      canvas.height / 4.5,
+      (+CANVAS_WIDTH / 10) * 4,
+      +CANVAS_HEIGHT / 4.5,
       `${fontSizeBase * 3}px Verdana`,
       'right',
       RenderColor.Green,
     );
 
-    drawRect(canvas, 200, 200, 500, 150, RenderColor.Grey);
+    drawRect(
+      canvas,
+      (+CANVAS_WIDTH / 9) * 2,
+      (+CANVAS_HEIGHT / 6) * 2,
+      (+CANVAS_WIDTH / 9) * 5,
+      (+CANVAS_HEIGHT / 6) * 1.5,
+      RenderColor.Grey,
+    );
 
     drawText(
       canvas,
       'GAME OVER',
-      450,
-      300,
+      +CANVAS_WIDTH / 2,
+      +CANVAS_HEIGHT / 2,
       `${fontSizeBase * 6}px Verdana`,
       'center',
       RenderColor.Red,
     );
 
-    drawRect(canvas, 200, 360, 500, 80, RenderColor.White);
+    drawRect(
+      canvas,
+      (+CANVAS_WIDTH / 9) * 2,
+      (+CANVAS_HEIGHT / 6) * 3.6,
+      (+CANVAS_WIDTH / 9) * 5,
+      (+CANVAS_HEIGHT / 6) * 0.8,
+      RenderColor.White,
+    );
 
     drawText(
       canvas,
       usersData.user1.username + ' wins',
-      450,
-      410,
+      +CANVAS_WIDTH / 2,
+      +CANVAS_HEIGHT / 6 * 4.1,
       `${fontSizeBase * 4}px Verdana`,
       'center',
       RenderColor.Green,
@@ -274,8 +289,8 @@ export function render(
     drawText(
       canvas,
       '🏆',
-      (canvas.width / 10) * 6,
-      canvas.height / 4.5,
+      (+CANVAS_WIDTH / 10) * 6,
+      +CANVAS_HEIGHT / 4.5,
       `${fontSizeBase * 3}px Verdana`,
       'left',
       RenderColor.Green,
@@ -283,26 +298,40 @@ export function render(
 
     if (user1.score >= matchPoints || user2.score >= matchPoints) {
       //isBallFrozen = true;
-      drawRect(canvas, 200, 200, 500, 150, RenderColor.Grey);
+      drawRect(
+        canvas,
+        (+CANVAS_WIDTH / 9) * 2,
+        (+CANVAS_HEIGHT / 6) * 2,
+        (+CANVAS_WIDTH / 9) * 5,
+        (+CANVAS_HEIGHT / 6) * 1.5,
+        RenderColor.Grey,
+      );
 
       drawText(
         canvas,
         'GAME OVER',
-        450,
-        300,
+        +CANVAS_WIDTH / 2,
+        +CANVAS_HEIGHT / 2,
         `${fontSizeBase * 6}px Verdana`,
         'center',
         RenderColor.Red,
       );
 
-      drawRect(canvas, 200, 360, 500, 80, RenderColor.White);
+      drawRect(
+        canvas,
+        (+CANVAS_WIDTH / 9) * 2,
+        (+CANVAS_HEIGHT / 6) * 3.6,
+        (+CANVAS_WIDTH / 9) * 5,
+        (+CANVAS_HEIGHT / 6) * 0.8,
+        RenderColor.White,
+      );
 
       if (user1.score >= matchPoints) {
         drawText(
           canvas,
           usersData.user1.username + ' wins',
-          450,
-          410,
+          +CANVAS_WIDTH / 2,
+          (+CANVAS_HEIGHT / 6) * 4.1,
           `${fontSizeBase * 4}px Verdana`,
           'center',
           RenderColor.Green,
@@ -312,8 +341,8 @@ export function render(
           drawText(
             canvas,
             'BOT wins',
-            450,
-            410,
+            +CANVAS_WIDTH / 2,
+            (+CANVAS_HEIGHT / 6) * 4.1,
             `${fontSizeBase * 4}px Verdana`,
             'center',
             RenderColor.Green,
@@ -322,8 +351,8 @@ export function render(
           drawText(
             canvas,
             usersData.user2!.username + ' wins',
-            450,
-            410,
+            +CANVAS_WIDTH / 2,
+            (+CANVAS_HEIGHT / 6) * 4.1,
             `${fontSizeBase * 4}px Verdana`,
             'center',
             RenderColor.Green,
@@ -338,8 +367,8 @@ export function render(
   drawText(
     canvas,
     'Ball Speed: ' + speedRender.toFixed(0) + '%',
-    (canvas.width / 10) * 4.5,
-    (canvas.height / 20) * 19,
+    (+CANVAS_WIDTH / 10) * 4.5,
+    (+CANVAS_HEIGHT / 20) * 19,
     `${fontSizeBase * 1.5}px Verdana`,
     'right',
     RenderColor.Grey,
@@ -348,8 +377,8 @@ export function render(
   drawText(
     canvas,
     'Paddle Height: ' + user1.height + '%',
-    (canvas.width / 10) * 5.5,
-    (canvas.height / 20) * 19,
+    (+CANVAS_WIDTH / 10) * 5.5,
+    (+CANVAS_HEIGHT / 20) * 19,
     `${fontSizeBase * 1.5}px Verdana`,
     'left',
     RenderColor.Grey,
@@ -381,8 +410,8 @@ export function resetBall(
   }, 1500);
 
   setTimeout(() => {
-    newBallData.x = canvas.width / 2;
-    newBallData.y = canvas.height / 2;
+    newBallData.x = +CANVAS_WIDTH / 2;
+    newBallData.y = +CANVAS_HEIGHT / 2;
     newBallData.moveX = newBallData.moveX * 1;
     newBallData.moveY = -newBallData.moveY * Math.random();
     newBallData.reset = false;
@@ -411,15 +440,15 @@ export function matchUser1(
     user1.y = thickness + ballData.radius * slit;
   } else if (
     user1.y >
-    canvas.height - thickness - user1.height - ballData.radius * slit
+    +CANVAS_HEIGHT - thickness - user1.height - ballData.radius * slit
   ) {
-    user1.y = canvas.height - thickness - user1.height - ballData.radius * slit;
+    user1.y = +CANVAS_HEIGHT - thickness - user1.height - ballData.radius * slit;
   }
 
   // Change direction of ball motion when it hits walls
   if (
     ballData.y - ballData.radius - thickness <= 0 ||
-    ballData.y + ballData.radius + thickness >= canvas.height
+    ballData.y + ballData.radius + thickness >= +CANVAS_HEIGHT
   ) {
     ballData.moveY = -ballData.moveY;
   }
@@ -442,7 +471,7 @@ export function matchUser1(
     user2 = newUserData2;
   }
 
-  if (ballData.x - ballData.radius > canvas.width - 15 && !ballData.reset) {
+  if (ballData.x - ballData.radius > +CANVAS_WIDTH - 15 && !ballData.reset) {
     user1.score++;
     sounds.botScore.play().catch(function (error: any) {});
     let { newBallData, newUserData1, newUserData2 } = resetBall(
@@ -460,7 +489,7 @@ export function matchUser1(
 
   // Detect if the ball is in the court of user1 or user2
   let player: IUserData =
-    ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
+    ballData.x + ballData.radius < +CANVAS_WIDTH / 2 ? user1 : user2;
 
   // Detect if the ball hits the paddle & bounce the ball
   if (checkCollision(ballData, player)) {
@@ -471,7 +500,7 @@ export function matchUser1(
     let angleRad = (Math.PI / 4) * collidePoint;
 
     // Get direction to bounce the ball
-    let direction = ballData.x + ballData.radius < canvas.width / 2 ? 1 : -1;
+    let direction = ballData.x + ballData.radius < +CANVAS_WIDTH / 2 ? 1 : -1;
     ballData.moveX = direction * ballData.speed * Math.cos(angleRad);
     ballData.moveY = ballData.speed * Math.sin(angleRad);
 
@@ -525,14 +554,14 @@ export function matchUser2(
     user2.y = thickness + ballData.radius * slit;
   } else if (
     user2.y >
-    canvas.height - thickness - user2.height - ballData.radius * slit
+    +CANVAS_HEIGHT - thickness - user2.height - ballData.radius * slit
   ) {
-    user2.y = canvas.height - thickness - user2.height - ballData.radius * slit;
+    user2.y = +CANVAS_HEIGHT - thickness - user2.height - ballData.radius * slit;
   }
 
   // Detect if the ball is in the court of user1 or user2
   let player: IUserData =
-    ballData.x + ballData.radius < canvas.width / 2 ? user1 : user2;
+    ballData.x + ballData.radius < +CANVAS_WIDTH / 2 ? user1 : user2;
 
   // Detect if the ball hits the paddle & bounce the ball
   if (checkCollision(ballData, player)) {
