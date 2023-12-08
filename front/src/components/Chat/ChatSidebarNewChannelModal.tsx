@@ -13,6 +13,7 @@ import { darkBgColor, errorColor } from '../../constants/color-tokens';
 import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import { useUserData } from '../../context/UserDataContext';
+import FormattedList from '../UI/FormattedList';
 
 type ChatSidebarNewChannelModalProps = {
   roomName: string;
@@ -174,13 +175,25 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
 
   return (
     <WrapperDiv>
-      <ContrastPanel $backgroundColor={darkBgColor}>
+      <div>
         <h1 className="title-1 mb-24">Create a new channel</h1>
-        <div className="mb-16">
-          <p className="mb-8">
-            You can create a public channel for maximum outreach or make it
-            private for increased privacy.
+        <div className="mb-24">
+          <p className="mb-16">
+            Create a new channel to chat with your friends.
+            <br />
+            You can choose to make it:
           </p>
+          <FormattedList>
+            <li>
+              <span>public 🌐</span>: anyone can join it
+            </li>
+            <li>
+              <span>private 🔒</span>: only invited users can join
+            </li>
+            <li>
+              <span>protected 🔐</span>: anyone with a password can join it
+            </li>
+          </FormattedList>
         </div>
         <div className="form-container mb-24">
           <div className="channel-name-container">
@@ -253,7 +266,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
             </div>
           </div>
         )}
-      </ContrastPanel>
+      </div>
 
       {allGroups && bannedUsers && (
         <>
