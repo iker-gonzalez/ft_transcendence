@@ -220,7 +220,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
         <option>Choose a member</option>
         {channelData.usersInfo
           .filter(
-            (channelUserInfo) => channelUserInfo.intra !== userData?.intraId,
+            (channelUserInfo) => channelUserInfo.intra !== userData?.intraId && channelUserInfo.intra !== channelOwnerIntraId,
           )
           .map((channelUserInfo) => {
             return (
