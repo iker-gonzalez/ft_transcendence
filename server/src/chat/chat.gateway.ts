@@ -210,6 +210,7 @@ export class ChatGateway implements OnGatewayConnection {
         userId,
       );
       client.leave(payload.roomName);
+      this.server.emit('newData');
       return {
         success: true,
       };
@@ -242,6 +243,7 @@ export class ChatGateway implements OnGatewayConnection {
         userId,
       );
 
+      this.server.emit('newData');
       return {
         success: true,
       };
