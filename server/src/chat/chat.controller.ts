@@ -5,20 +5,15 @@ import {
   Get,
   Param,
   Patch,
-  Post,
   UseGuards,
 } from '@nestjs/common';
 
 import {
-  ApiBadRequestResponse,
   ApiBody,
-  ApiConflictResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ChatDMService } from './service/chatDM.service';
 import { swaggerConstants } from '../../config/swagger.constants';
@@ -27,11 +22,10 @@ import { AllUsersDMWithDTO } from './dto/all-users-DM-with.dto';
 import { ConversationMessageDTO } from './dto/conversation-message.dto';
 import { AllExistingChannelsDTO } from './dto/all-existing-channel.dto';
 import { AllUserChannelInDTO } from './dto/all-user-channel-in.dto';
-import { ChannelType, ChatRoomUser, User } from '@prisma/client';
+import { ChannelType, ChatRoomUser } from '@prisma/client';
 import { AllChannelInfo } from './dto/all-channel-info.dto';
 import { RoomOwnerIntraDTO } from './dto/roomOwnerIntra.dto';
 import { RoomOwnerPasswordIntraDTO } from './dto/room-owener-password.dto';
-import { GetUser } from 'src/auth/decorator/get-user.decorator';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
 
 @ApiTags('Chat')
@@ -295,13 +289,12 @@ export class ChatController {
   })
   async updateChannelPassword(
     @Param('channelRoom') channelRoom: string,
-    @Param('userToMuteIntra') userToMuteIntra: string,
-    @Param('b_mute') b_mute: number,
     @Body() paydload: RoomOwnerPasswordIntraDTO,
   ): Promise<void> {
     const ownerId = await this.chatDMService.findUserIdByIntraId(
       paydload.ownerIntra,
     );
+
     if (paydload.password != null) {
       return this.chatChannelService.modifyPasswordAndTypeChannel(
         channelRoom,
@@ -330,12 +323,11 @@ export class ChatController {
   })
   async getisPasswordCorrect(
     @Param('password') password: string,
-    @Param('roomName') roomName: string
+    @Param('roomName') roomName: string,
   ): Promise<boolean> {
-    if (await this.chatChannelService.isPasswordCorrect(roomName,password))
-    return;
-  else
-    throw new BadRequestException('Invalid password');
+    if (await this.chatChannelService.isPasswordCorrect(roomName, password))
+      return;
+    else throw new BadRequestException('Invalid password');
   }
 
   @Patch(':userAddIntra/:roomName/:b_bool/setUserToPrivateChannel') // Define la ruta para los parámetros userId1 y userId2
