@@ -10,14 +10,9 @@ import { ChatDMService } from './service/chatDM.service';
 import { ChatChannelService } from './service/chatChannel.service';
 import { UserService } from '../user/user.service';
 import { Socket } from 'socket.io';
-import {
-  BadGatewayException,
-  Body,
-  Catch,
-  HttpException,
-} from '@nestjs/common';
+import { BadGatewayException } from '@nestjs/common';
 import { JoinRoomPayloadDto } from './dto/join-room-payload.dto';
-import { validate, validateOrReject } from 'class-validator';
+import { validateOrReject } from 'class-validator';
 
 @WebSocketGateway({
   namespace: 'chat',
@@ -66,12 +61,6 @@ export class ChatGateway implements OnGatewayConnection {
 
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(client: Socket, payload: JoinRoomPayloadDto) {
-    try {
-      await validateOrReject(new JoinRoomPayloadDto(payload));
-    } catch (e) {
-      return 'KO';
-    }
-
     // Unir al cliente a la sala
     try {
       const userId = await this.chatDMservice.findUserIdByIntraId(
@@ -81,6 +70,14 @@ export class ChatGateway implements OnGatewayConnection {
         payload.roomName,
       );
       if (!channelExist) {
+        if (payload.type == 'PROTECTED') {
+          try {
+            await validateOrReject(new JoinRoomPayloadDto(payload));
+          } catch (e) {
+            return 'PASSWORD KO';
+          }
+        }
+
         await this.chatChannelservice.createChannel(
           userId,
           payload.roomName,
@@ -98,6 +95,7 @@ export class ChatGateway implements OnGatewayConnection {
             throw new BadGatewayException('Cannot access to a private channel');
           }
         }
+
         if (payload.type == 'PRIVATE')
           throw new BadGatewayException('Cannot access to a private channel');
       }
