@@ -8,11 +8,11 @@ import {
 import { Server } from 'socket.io';
 import { ChatDMService } from './service/chatDM.service';
 import { ChatChannelService } from './service/chatChannel.service';
-import { UserService } from '../user/user.service';
 import { Socket } from 'socket.io';
 import { BadGatewayException } from '@nestjs/common';
 import { JoinRoomPayloadDto } from './dto/join-room-payload.dto';
 import { validateOrReject } from 'class-validator';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @WebSocketGateway({
   namespace: 'chat',
@@ -21,7 +21,7 @@ export class ChatGateway implements OnGatewayConnection {
   constructor(
     private readonly chatDMservice: ChatDMService,
     private readonly chatChannelservice: ChatChannelService,
-    private readonly userService: UserService,
+    private readonly prisma: PrismaService,
   ) {}
 
   @WebSocketServer()
@@ -136,6 +136,17 @@ export class ChatGateway implements OnGatewayConnection {
       );
 
       for (const usuario of chatRoom) {
+        const userInfo = await this.prisma.user.findUnique({
+          where: {
+            id: usuario.userId,
+          },
+        });
+        const userBlockedList = userInfo.blockList;
+
+        if (userBlockedList.includes(userId)) {
+          continue;
+        }
+
         // Enviar mensage a todos los usuarios del grupo
         const userIntra = await this.chatDMservice.findUserIntraById(
           usuario.userId,
