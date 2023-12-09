@@ -1114,7 +1114,10 @@ export class ChatChannelService {
     }
 
     if (length2 == 0) {
-      return null;
+      return {
+        found: 0,
+        data: [],
+      };
     }
 
     return {
