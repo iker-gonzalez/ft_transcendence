@@ -204,7 +204,15 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
       },
     })
       .then((res) => {
-        if (res.ok) return res.json();
+        // Necessary because of some server issue that is not fixed yet
+        if (
+          res.ok &&
+          res.headers.get('Content-Type')?.includes('application/json')
+        ) {
+          return res.json();
+        } else {
+          throw new Error('Server response was not ok or not JSON.');
+        }
       })
       .then((data) => {
         const channelBannedUsers = data.data.find((bannedUsersInfo: any) => {
