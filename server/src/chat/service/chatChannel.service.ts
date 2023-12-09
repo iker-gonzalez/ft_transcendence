@@ -49,7 +49,7 @@ export class ChatChannelService {
     return [];
   }
 
-  async getMessageInRoom(roomName: string): Promise<any> {
+  async getMessageInRoom(roomName: string, userIntra: number): Promise<any> {
     if (roomName == null)
       throw new BadRequestException('User Id not found in DB');
 
@@ -88,9 +88,20 @@ export class ChatChannelService {
       },
     });
 
+    const userInfo = await this.prisma.user.findUnique({
+      where: {
+        intraId: userIntra,
+      },
+    });
+    const userBlockedList = userInfo.blockList;
+
     // El objeto `conversations` contendrá todas las conversaciones relacionadas con el canal, incluyendo el contenido de los mensajes
     const conversationDTO = [];
     for (const message of conversationsChannel) {
+      if (userBlockedList.includes(message.sender.id)) {
+        continue;
+      }
+
       conversationDTO.push(
         new ConversationMessageDTO(message, message.sender, null, roomName),
       );

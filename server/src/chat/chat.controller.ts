@@ -166,7 +166,7 @@ export class ChatController {
     }
   }
 
-  @Get(':roomName/allChannel')
+  @Get('/:userIntra/:roomName/allChannel')
   @ApiParam({ name: 'roomName' })
   @ApiOperation({
     summary: swaggerConstants.chat.channelMess.summary,
@@ -177,9 +177,10 @@ export class ChatController {
   })
   async getMessageInRoom(
     @Param('roomName') roomName: string,
+    @Param('userIntra') userIntraId: number,
   ): Promise<AllChannelInfo[]> {
     try {
-      return this.chatChannelService.getMessageInRoom(roomName);
+      return this.chatChannelService.getMessageInRoom(roomName, +userIntraId);
     } catch (error) {
       console.error('Error:', error);
     }

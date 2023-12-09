@@ -34,7 +34,7 @@ interface SidebarProps {
   updateUserSidebar: () => void;
   allGroups: Group[] | null;
   handleUserClick: (user: User) => void;
-  handleGroupClick: (group: Group) => void;
+  handleGroupClick: (intraId: number | undefined, group: Group) => void;
   socket: Socket | null;
   channelData: ChannelData | null;
   setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;

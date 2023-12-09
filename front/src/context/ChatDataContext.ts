@@ -94,9 +94,9 @@ export const useMessageData = () => {
     return data;
   };
 
-  const fetchGroupMessages = async (group: Group) => {
+  const fetchGroupMessages = async (userIntra: number, group: Group) => {
     const response = await fetchAuthorized(
-      `${getBaseUrl()}/chat/${group.name}/allChannel`,
+      `${getBaseUrl()}/chat/${userIntra}/${group.name}/allChannel`,
       {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
@@ -111,9 +111,9 @@ export const useMessageData = () => {
 };
 
 export const useChannelData = () => {
-  const fetchChannelData = async (group: string) => {
+  const fetchChannelData = async (intraId: number, group: string) => {
     const response = await fetchAuthorized(
-      `${getBaseUrl()}/chat/${group}/allChannel`,
+      `${getBaseUrl()}/chat/${intraId}/${group}/allChannel`,
       {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`, //only returns messages from the user to see if group message rendering improves

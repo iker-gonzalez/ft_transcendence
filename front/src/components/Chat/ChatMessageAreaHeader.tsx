@@ -31,7 +31,7 @@ interface ChatMessageAreaHeaderProps {
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setMessages: React.Dispatch<React.SetStateAction<DirectMessage[]>>;
-  onNewAction: (selectedGroup: Group) => void;
+  onNewAction: (intraId: number | undefined, selectedGroup: Group) => void;
 }
 
 const HeaderWrapper = styled.div`

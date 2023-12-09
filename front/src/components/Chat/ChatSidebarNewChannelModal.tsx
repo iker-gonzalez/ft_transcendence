@@ -38,7 +38,7 @@ type ChatSidebarNewChannelModalProps = {
   setSelectedProtectedGroupToJoin: React.Dispatch<
     React.SetStateAction<Group | null>
   >;
-  handleGroupClick: (group: Group) => void;
+  handleGroupClick: (intraId: number | undefined, group: Group) => void;
   socket: Socket | null;
 };
 
@@ -182,7 +182,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
     } else {
       handleJoinRoom(group, '', false); // no password
       updateUserSidebar();
-      handleGroupClick(group);
+      handleGroupClick(userData?.intraId, group);
       setPopupVisible(false);
     }
   };

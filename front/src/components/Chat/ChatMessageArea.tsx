@@ -16,6 +16,7 @@ import Lottie from 'lottie-react';
 import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
 import { sm } from '../../constants/styles';
+import { useUserData } from '../../context/UserDataContext';
 
 interface ChatMessageAreaProps {
   selectedUser: User | null;
@@ -30,7 +31,7 @@ interface ChatMessageAreaProps {
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   setMessages: React.Dispatch<React.SetStateAction<DirectMessage[]>>;
-  onNewAction: (selectedGroup: Group) => void;
+  onNewAction: (intraId: number | undefined, selectedGroup: Group) => void;
 }
 
 const MessageAreaContainer = styled.div`
@@ -101,6 +102,8 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
     [],
   );
 
+  const { userData } = useUserData();
+
   useEffect(() => {
     if (selectedGroup?.id) {
       fetchAuthorized(`${getBaseUrl()}/chat/${selectedGroup.id}/mutedUsers`, {
@@ -144,7 +147,9 @@ const ChatMessageArea: React.FC<ChatMessageAreaProps> = ({
               users={users}
               setUsers={setUsers}
               setMessages={setMessages}
-              onNewAction={() => onNewAction(selectedGroup as Group)}
+              onNewAction={() =>
+                onNewAction(userData?.intraId, selectedGroup as Group)
+              }
             />
             <div className="message-list-container">
               <ChatMessageAreaList

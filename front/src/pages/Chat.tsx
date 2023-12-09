@@ -188,8 +188,13 @@ const Chat: React.FC = () => {
     }
   };
 
-  const handleGroupClick = async (group: Group) => {
-    const groupInfo = await fetchGroupMessages(group);
+  const handleGroupClick = async (
+    userIntra: number | undefined,
+    group: Group,
+  ) => {
+    if (!userIntra) return;
+
+    const groupInfo = await fetchGroupMessages(userIntra, group);
     let groupMessages: DirectMessage[] = [];
 
     if (groupInfo.channelMessage) {
@@ -202,7 +207,7 @@ const Chat: React.FC = () => {
     }
 
     setMessages(groupMessages);
-    const freshChannelData = await fetchChannelData(group.name);
+    const freshChannelData = await fetchChannelData(userIntra, group.name);
     setChannelData(freshChannelData);
   };
 
