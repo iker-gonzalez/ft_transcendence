@@ -460,7 +460,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
           <h1 className="title-1 mb-8">Do you confirm leaving?</h1>
           <p className="mb-24">
             You are the owner and only admin of this channel. If you leave it,
-            the channel will be automatically deleted for all users.
+            another user will appointed as the new owner.
           </p>
           <div className="actions-container">
             <SecondaryButton
