@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 
@@ -313,9 +314,7 @@ export class ChatController {
     }
   }
 
-  @Get(':password/:roomName/isPasswordCorrect') // Define the route for the parameters userId1 and userId2
-  @ApiParam({ name: 'password' })
-  @ApiParam({ name: 'roomName' })
+  @Post('isPasswordCorrect')
   @ApiOperation({
     summary: swaggerConstants.chat.isPasswordCorrect.summary,
   })
@@ -323,12 +322,15 @@ export class ChatController {
     description: swaggerConstants.chat.isPasswordCorrect.ok.description,
   })
   async getisPasswordCorrect(
-    @Param('password') password: string,
-    @Param('roomName') roomName: string,
+    @Body() payload: { roomName: string; password: string },
   ): Promise<boolean> {
-    if (await this.chatChannelService.isPasswordCorrect(roomName, password))
+    const { roomName, password } = payload;
+    if (!roomName || !password)
+      throw new BadRequestException('Invalid room name or password');
+
+    if (await this.chatChannelService.isPasswordCorrect(roomName, password)) {
       return;
-    else throw new BadRequestException('Invalid password');
+    } else throw new BadRequestException('Invalid password');
   }
 
   @Patch(':userAddIntra/:roomName/:b_bool/setUserToPrivateChannel') // Define la ruta para los parámetros userId1 y userId2
