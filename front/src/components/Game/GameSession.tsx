@@ -12,8 +12,8 @@ const GameSession: React.FC = (): JSX.Element => {
       <h1 className="title-1 mb-24">This is your new session</h1>
       <ContrastPanel className="session-box mb-16">
         <GameMatchQueueSession
-          sessionId={sessionDataState[0].id}
-          players={sessionDataState[0].players}
+          sessionId={sessionDataState[0]?.id}
+          players={sessionDataState[0]?.players}
         />
       </ContrastPanel>
     </CenteredLayout>
