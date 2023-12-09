@@ -45,6 +45,7 @@ const WrapperDiv = styled.div`
 
     .avatar {
       width: 125px;
+      height: 125px;
     }
   }
 
