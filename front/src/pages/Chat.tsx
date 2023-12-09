@@ -17,14 +17,9 @@ import { useChannelData } from '../context/ChatDataContext';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
 import Cookies from 'js-cookie';
-import MainButton from '../components/UI/MainButton';
 import { sm } from '../constants/styles';
 import ArrowLeftIcon from '../assets/svg/arrow-left.svg';
-import {
-  darkBgColor,
-  darkerBgColor,
-  darkestBgColor,
-} from '../constants/color-tokens';
+import { darkBgColor, darkestBgColor } from '../constants/color-tokens';
 
 const WrapperDiv = styled.div`
   width: 100%;
