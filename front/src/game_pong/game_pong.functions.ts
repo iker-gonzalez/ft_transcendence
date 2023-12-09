@@ -334,10 +334,12 @@ export function initializeEventListeners({
 
     // Pause & unpause the game
     try {
-      if (event.key === PAUSE_KEY && ballData.isBallPaused === false) {
-        ballData.isBallPaused = true;
-      } else if (event.key === PAUSE_KEY && ballData.isBallPaused === true) {
-        ballData.isBallPaused = false;
+      if (isPlayer1) {
+        if (event.key === PAUSE_KEY && ballData.isBallPaused === false) {
+          ballData.isBallPaused = true;
+        } else if (event.key === PAUSE_KEY && ballData.isBallPaused === true) {
+          ballData.isBallPaused = false;
+        }
       }
     } catch (err) {}
   }
