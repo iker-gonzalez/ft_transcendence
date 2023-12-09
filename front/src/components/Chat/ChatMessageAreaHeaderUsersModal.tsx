@@ -28,7 +28,7 @@ type ChatMessageAreaHeaderUsersModalProps = {
   ) => Promise<number>;
   channelOwnerIntraId: number | null;
   setPopupVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  onNewAction: (selectedGroup: Group) => void;
+  onNewAction: (intraId: number | undefined, selectedGroup: Group) => void;
   group: Group;
   socket: Socket;
   bannedUsers: BannedUser[];
@@ -144,7 +144,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     isMuted: number,
   ) => {
     setPopupVisible(false);
-    onNewAction(group);
+    onNewAction(userData?.intraId, group);
 
     const res = await patchMuteUser(
       channelData!.roomName || '',
@@ -276,7 +276,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                             selectedUserData.username,
                           );
                           setPopupVisible(false);
-                          onNewAction(group);
+                          onNewAction(userData?.intraId, group);
                         }}
                       >
                         Revoke admin role
@@ -290,7 +290,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                             selectedUserData.username,
                           );
                           setPopupVisible(false);
-                          onNewAction(group);
+                          onNewAction(userData?.intraId, group);
                         }}
                       >
                         Make admin
@@ -339,7 +339,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                                 1,
                               );
                               setPopupVisible(false);
-                              onNewAction(group);
+                              onNewAction(userData?.intraId, group);
                             },
                           });
                         } else {
@@ -361,7 +361,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                           action: () => {
                             kick(selectedUserData.intra);
                             setPopupVisible(false);
-                            onNewAction(group);
+                            onNewAction(userData?.intraId, group);
                           },
                         });
                       }}
@@ -379,7 +379,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
                               selectedUserData.username,
                             );
                             setPopupVisible(false);
-                            onNewAction(group);
+                            onNewAction(userData?.intraId, group);
                           },
                         });
                       }}
