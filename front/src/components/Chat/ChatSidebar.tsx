@@ -179,17 +179,21 @@ const Sidebar: React.FC<SidebarProps> = ({
         password: password,
       };
       if (newGroup.type === 'PROTECTED' && !isNewGroup) {
-        const { status } = await fetchAuthorized(
-          `${getBaseUrl()}/chat/${password}/${newGroup.name}/isPasswordCorrect`,
+        const res = await fetchAuthorized(
+          `${getBaseUrl()}/chat/isPasswordCorrect`,
           {
-            method: 'GET',
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${Cookies.get('token')}`,
             },
+            body: JSON.stringify({
+              password,
+              roomName: newGroup.name,
+            }),
           },
         );
-        if (status !== 200) {
+        if (!res.ok) {
           launchFlashMessage(
             `The password you entered is wrong.`,
             FlashMessageLevel.ERROR,
