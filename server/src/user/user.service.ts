@@ -32,7 +32,9 @@ export class UserService {
     }
 
     if (userData.username === username) {
-      throw new BadRequestException(['Provide a new username']);
+      throw new BadRequestException([
+        'New username must be different than old one',
+      ]);
     }
 
     try {
