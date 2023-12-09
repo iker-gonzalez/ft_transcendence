@@ -19,10 +19,7 @@ export class ChatDMService {
     userId1: string,
     userId2: string,
   ): Promise<ConversationMessageDTO[]> {
-    if (
-      (await this.isUserMuted(userId1, userId2)) ||
-      (await this.isUserMuted(userId2, userId1))
-    ) {
+    if (await this.isUserMuted(userId1, userId2)) {
       return [];
     }
 
