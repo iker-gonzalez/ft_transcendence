@@ -17,20 +17,80 @@ import { useChannelData } from '../context/ChatDataContext';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
 import Cookies from 'js-cookie';
+import MainButton from '../components/UI/MainButton';
+import { sm } from '../constants/styles';
+import ArrowLeftIcon from '../assets/svg/arrow-left.svg';
+import {
+  darkBgColor,
+  darkerBgColor,
+  darkestBgColor,
+} from '../constants/color-tokens';
 
 const WrapperDiv = styled.div`
   width: 100%;
-  height: 80vh; /* TODO adjust this */
+  height: 100%;
+  min-height: 80vh;
+
   display: flex;
   justify-content: center;
   align-items: stretch;
-  gap: 40px;
+  gap: 24px;
+
+  position: relative;
+
+  @media (width < ${sm}) {
+    padding-top: 32px;
+    flex: 1;
+  }
+
+  .sidebar-button {
+    background: ${darkBgColor};
+    padding: 2px 16px;
+    border-radius: 8px;
+    outline: 1px ${darkestBgColor} solid;
+
+    white-space: nowrap;
+    position: absolute;
+    top: -16px;
+    left: 4px;
+
+    > img {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (width > ${sm}) {
+      display: none;
+    }
+  }
+
+  .sidebar-container {
+    flex-basis: 30%;
+
+    @media (width < ${sm}) {
+      display: none;
+      flex-basis: 100%;
+
+      &.show {
+        display: block;
+      }
+    }
+  }
+
+  .message-area-container {
+    width: 100%;
+    height: auto;
+
+    @media (width < ${sm}) {
+      display: none;
+      &.show {
+        display: block;
+        width: 100%;
+      }
+    }
+  }
 `;
 
-/**
- * ChatPage component that displays the chat sidebar and message area.
- * @returns React functional component.
- */
 const Chat: React.FC = () => {
   const navigate = useNavigate();
 
@@ -57,6 +117,16 @@ const Chat: React.FC = () => {
     isSocketConnected: connected,
     isConnectionError: error,
   }: UseChatMessageSocket = useChatMessageSocket();
+
+  const [showMobileSidebar, setShowMobileSidebar] = useState(true);
+
+  useEffect(() => {
+    if (selectedUser || selectedGroup) {
+      setShowMobileSidebar(false);
+    } else {
+      setShowMobileSidebar(true);
+    }
+  }, [selectedUser, selectedGroup]);
 
   useEffect(() => {
     if (!userData) {
@@ -253,41 +323,59 @@ const Chat: React.FC = () => {
   return (
     <CenteredLayout>
       <WrapperDiv>
-        <ChatSidebar
-          users={users}
-          userGroups={userGroups}
-          updateUserSidebar={updateUserSidebar}
-          allGroups={allGroups}
-          handleUserClick={handleUserClick}
-          handleGroupClick={handleGroupClick}
-          selectedUser={selectedUser}
-          selectedGroup={selectedGroup}
-          socket={socket}
-          channelData={channelData}
-          setSelectedUser={setSelectedUser}
-          setSelectedGroup={setSelectedGroup}
-        />
-        <ChatMessageArea
-          selectedUser={selectedUser}
-          users={users}
-          setUsers={setUsers}
-          selectedGroup={selectedGroup}
-          messages={messages}
-          updateUserSidebar={updateUserSidebar}
-          onNewMessage={(newMessage: any) => {
-            setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
-            if (selectedUser)
-              setMessages((prevState) => [...prevState, newMessage]);
-            else if (selectedGroup)
-              setMessages((prevState) => [...prevState, newMessage]);
-          }}
-          socket={socket}
-          setSelectedUser={setSelectedUser}
-          setSelectedGroup={setSelectedGroup}
-          channelData={channelData}
-          setMessages={setMessages}
-          onNewAction={handleGroupClick}
-        />
+        {!showMobileSidebar && (
+          <button
+            onClick={() => {
+              setShowMobileSidebar(true);
+            }}
+            className="sidebar-button"
+          >
+            <img src={ArrowLeftIcon} alt="Back to sidebar" />
+          </button>
+        )}
+        <div className={`sidebar-container ${showMobileSidebar ? 'show' : ''}`}>
+          <ChatSidebar
+            users={users}
+            userGroups={userGroups}
+            updateUserSidebar={updateUserSidebar}
+            allGroups={allGroups}
+            handleUserClick={handleUserClick}
+            handleGroupClick={handleGroupClick}
+            selectedUser={selectedUser}
+            selectedGroup={selectedGroup}
+            socket={socket}
+            channelData={channelData}
+            setSelectedUser={setSelectedUser}
+            setSelectedGroup={setSelectedGroup}
+          />
+        </div>
+        <div
+          className={`message-area-container ${
+            showMobileSidebar ? '' : 'show'
+          } `}
+        >
+          <ChatMessageArea
+            selectedUser={selectedUser}
+            users={users}
+            setUsers={setUsers}
+            selectedGroup={selectedGroup}
+            messages={messages}
+            updateUserSidebar={updateUserSidebar}
+            onNewMessage={(newMessage: any) => {
+              setNewMessageSent((prevNewMessageSent) => !prevNewMessageSent);
+              if (selectedUser)
+                setMessages((prevState) => [...prevState, newMessage]);
+              else if (selectedGroup)
+                setMessages((prevState) => [...prevState, newMessage]);
+            }}
+            socket={socket}
+            setSelectedUser={setSelectedUser}
+            setSelectedGroup={setSelectedGroup}
+            channelData={channelData}
+            setMessages={setMessages}
+            onNewAction={handleGroupClick}
+          />
+        </div>
       </WrapperDiv>
     </CenteredLayout>
   );
