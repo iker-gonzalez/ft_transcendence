@@ -10,6 +10,7 @@ import { sm } from '../constants/styles';
 const MainContent = styled.main`
   .avatar {
     width: 75px;
+    height: 75px;
   }
 
   .table-container {
