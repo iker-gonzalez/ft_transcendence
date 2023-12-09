@@ -128,15 +128,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
       },
     })
       .then((res) => {
-        // Necessary because of some server issue that is not fixed yet
-        if (
-          res.ok &&
-          res.headers.get('Content-Type')?.includes('application/json')
-        ) {
-          return res.json();
-        } else {
-          throw new Error('Server response was not ok or not JSON.');
-        }
+        return res.json();
       })
       .then((data) => {
         setBannedUsers(data.data);
