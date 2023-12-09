@@ -11,10 +11,11 @@ import { CHANNEL_TYPES } from '../../constants/shared';
 import ChatSidebarUpdate, {
   CHAT_SIDEBAR_UPDATE,
 } from '../../interfaces/chat-sidebar-update.interface';
+import { useUserData } from '../../context/UserDataContext';
 
 type ChatSidebarConvoListProps = {
   userGroups: Group[];
-  handleGroupClick: (group: Group) => void;
+  handleGroupClick: (intraId: number | undefined, group: Group) => void;
   wasSectionUpdated: ChatSidebarUpdate;
   setWasSectionUpdated: React.Dispatch<React.SetStateAction<ChatSidebarUpdate>>;
   setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
@@ -73,6 +74,7 @@ const ChatSidebarChannelList: React.FC<ChatSidebarConvoListProps> = ({
   setSelectedGroup,
 }): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<number>(-1);
+  const { userData } = useUserData();
 
   return (
     <>
@@ -84,7 +86,7 @@ const ChatSidebarChannelList: React.FC<ChatSidebarConvoListProps> = ({
             onClick={() => {
               setSelectedGroup(group);
               setSelectedUser(null);
-              handleGroupClick(group);
+              handleGroupClick(userData?.intraId, group);
               setSelectedItem(index);
               setWasSectionUpdated(
                 CHAT_SIDEBAR_UPDATE.CHANNELS as ChatSidebarUpdate,

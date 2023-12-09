@@ -34,7 +34,7 @@ type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
   channelData: ChannelData | null;
   group: Group;
-  onNewAction: (group: Group) => void;
+  onNewAction: (intraId: number | undefined, group: Group) => void;
   updateUserSidebar: () => void;
   socket: Socket;
   setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>>;
@@ -179,7 +179,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         `You invited ${userAddUsername}.`,
         FlashMessageLevel.SUCCESS,
       );
-      onNewAction(group);
+      onNewAction(userData?.intraId, group);
     } else {
       launchFlashMessage(
         `Something went wrong. Try again later.`,
@@ -241,7 +241,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         FlashMessageLevel.SUCCESS,
       );
       setPasswordPopupVisible(false);
-      onNewAction(group);
+      onNewAction(userData?.intraId, group);
       updateUserSidebar();
     } else {
       launchFlashMessage(
@@ -578,7 +578,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                   onClick={() => {
                     patchPassword(null);
                     setPasswordPopupVisible(false);
-                    onNewAction(group);
+                    onNewAction(userData?.intraId, group);
                     setConfirmatioModalVisible(false);
                   }}
                 >
