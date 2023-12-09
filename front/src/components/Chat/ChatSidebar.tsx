@@ -42,9 +42,8 @@ interface SidebarProps {
 }
 
 const SidebarContainer = styled.div`
-  flex-basis: 30%;
   display: flex;
-  height: 81vh;
+  height: 100%;
 
   .gradient-border {
     flex-grow: 1;
@@ -200,19 +199,19 @@ const Sidebar: React.FC<SidebarProps> = ({
       }
 
       socket.emit('joinRoom', payload, (res: any) => {
-        if (res === 'OK') {
+        if (res === 'PASSWORD KO') {
+          launchFlashMessage(
+            'Password is not strong enough',
+            FlashMessageLevel.ERROR,
+          );
+          return 1;
+        } else {
           setPopupVisible(false);
           launchFlashMessage(
             `You joined channel ${newGroup.name}!`,
             FlashMessageLevel.SUCCESS,
           );
           return 0;
-        } else {
-          launchFlashMessage(
-            `Password is not strong enough`,
-            FlashMessageLevel.ERROR,
-          );
-          return 1;
         }
       });
     } else {
