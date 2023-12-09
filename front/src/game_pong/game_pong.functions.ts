@@ -333,15 +333,13 @@ export function initializeEventListeners({
     } catch (err) {}
 
     // Pause & unpause the game
-    if (isPlayer1) {
-      try {
-        if (event.key === PAUSE_KEY && ballData.isBallPaused === false) {
-          ballData.isBallPaused = true;
-        } else if (event.key === PAUSE_KEY && ballData.isBallPaused === true) {
-          ballData.isBallPaused = false;
-        }
-      } catch (err) {}
-    }
+    try {
+      if (event.key === PAUSE_KEY && ballData.isBallPaused === false) {
+        ballData.isBallPaused = true;
+      } else if (event.key === PAUSE_KEY && ballData.isBallPaused === true) {
+        ballData.isBallPaused = false;
+      }
+    } catch (err) {}
   }
 
   function onMouseMove(event: MouseEvent) {
