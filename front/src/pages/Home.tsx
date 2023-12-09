@@ -82,6 +82,7 @@ const PageWrapperDiv = styled.div`
 
       > img {
         width: 75px;
+        height: 75px;
         object-fit: contain;
       }
 
