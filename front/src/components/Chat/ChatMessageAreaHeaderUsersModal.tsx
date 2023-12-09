@@ -206,8 +206,6 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
     }
   };
 
-  console.log('bannedUsers', bannedUsers);
-
   return (
     <>
       <h1 className="title-1 mb-16">Manage channel members</h1>

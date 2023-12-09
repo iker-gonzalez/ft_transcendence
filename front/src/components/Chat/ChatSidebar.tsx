@@ -199,7 +199,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       }
 
       socket.emit('joinRoom', payload, (res: any) => {
-        console.log('res', res);
         if (res === 'PASSWORD KO') {
           launchFlashMessage(
             'Password is not strong enough',
