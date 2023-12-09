@@ -22,10 +22,15 @@ const WrapperDiv = styled.div`
 
   .game-modes-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
     gap: 35px;
+
+    @media (width > ${sm}) {
+      flex-direction: row;
+    }
 
     .game-mode-gradient {
       background-color: ${darkestBgColor};

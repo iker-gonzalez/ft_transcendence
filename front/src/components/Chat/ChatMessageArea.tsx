@@ -15,6 +15,7 @@ import ChatAnimationData from '../../assets/lotties/chat.json';
 import Lottie from 'lottie-react';
 import { fetchAuthorized, getBaseUrl } from '../../utils/utils';
 import Cookies from 'js-cookie';
+import { sm } from '../../constants/styles';
 
 interface ChatMessageAreaProps {
   selectedUser: User | null;
@@ -34,13 +35,16 @@ interface ChatMessageAreaProps {
 
 const MessageAreaContainer = styled.div`
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
+
+  @media (max-width: ${sm}) {
+    min-height: 80vh;
+  }
 
   .gradient-border {
-    height: 80vh;
     background-color: ${darkerBgColor};
     padding: 20px;
     flex: 1;

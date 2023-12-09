@@ -28,6 +28,7 @@ import { darkBgColor, primaryColor } from '../../constants/color-tokens';
 import Cookies from 'js-cookie';
 import BannedUser from '../../interfaces/banned-user.interface';
 import ContrastPanel from '../UI/ContrastPanel';
+import { sm } from '../../constants/styles';
 
 type ChatMessageAreaHeaderChannelActionsProps = {
   userData: UserData | null;
@@ -56,6 +57,10 @@ const WrapperDiv = styled.div`
     justify-content: center;
     align-items: center;
     gap: 8px;
+
+    @media (width <= ${sm}) {
+      flex-wrap: wrap;
+    }
 
     margin-left: 24px;
 
@@ -202,7 +207,6 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
         if (res.ok) return res.json();
       })
       .then((data) => {
-        console.log('data:', data);
         const channelBannedUsers = data.data.find((bannedUsersInfo: any) => {
           return bannedUsersInfo.name === roomName;
         });
@@ -365,12 +369,10 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                 setPopupVisible(true);
               }}
               disabled={(() => {
-                console.log(bannedUsers);
                 const isNoUserToManage =
                   channelData?.usersInfo.length === 1 &&
                   bannedUsers?.length === 0;
 
-                console.log(channelData?.usersInfo);
                 const IsOnlyUserToManageOwner =
                   channelData?.usersInfo.length === 2 &&
                   channelData?.usersInfo.some(
