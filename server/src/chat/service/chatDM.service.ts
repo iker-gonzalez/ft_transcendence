@@ -169,9 +169,9 @@ export class ChatDMService {
           'userSender or userReceiver does not exist in DB',
         );
 
-      if (content.length > 124 || content.length < 1)
+      if (content.length > 512 || content.length < 1)
         throw new BadRequestException(
-          'Message length must be between 1 and 124 characters',
+          'Message length must be between 1 and 512 characters',
         );
 
       const existingMessage = await this.prisma.directMessage.findUnique({
