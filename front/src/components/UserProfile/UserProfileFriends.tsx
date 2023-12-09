@@ -72,7 +72,7 @@ const WrapperDiv = styled.div`
         @media (width > ${sm}) {
           display: block;
           width: 75px;
-          height: auto;
+          height: 75px;
         }
       }
     }
