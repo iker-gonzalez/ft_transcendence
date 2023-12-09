@@ -78,7 +78,7 @@ const GameMatchQueueSession: React.FC<GameMatchQueueSessionProps> = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!userData) {
+    if (!userData || !sessionId) {
       navigate('/game', { replace: true });
     }
 
