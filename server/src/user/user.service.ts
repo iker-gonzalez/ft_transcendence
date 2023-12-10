@@ -31,6 +31,14 @@ export class UserService {
       throw new BadRequestException();
     }
 
+    const isTestUser =
+      userData.intraId === +this.configService.get('FAKE_USER_1_ID') ||
+      userData.intraId === +this.configService.get('FAKE_USER_2_ID') ||
+      userData.intraId === +this.configService.get('FAKE_USER_3_ID');
+    if (isTestUser) {
+      throw new BadRequestException('Cannot update username of test user 😉');
+    }
+
     if (userData.username === username) {
       throw new BadRequestException([
         'New username must be different than old one',
@@ -99,6 +107,14 @@ export class UserService {
     user: User,
     file: MulterFileDto,
   ): Promise<UpdateAvatarResponseDto> {
+    const isTestUser =
+      user.intraId === +this.configService.get('FAKE_USER_1_ID') ||
+      user.intraId === +this.configService.get('FAKE_USER_2_ID') ||
+      user.intraId === +this.configService.get('FAKE_USER_3_ID');
+    if (isTestUser) {
+      throw new BadRequestException('Cannot update avatar of test user 😉');
+    }
+
     if (!file) {
       throw new BadRequestException();
     }
