@@ -83,7 +83,7 @@ services:
 
 
   dev-db:
-    image: postgres:latest
+    image: postgres:16
     container_name: dev-db
     ports:
       - 5432:5432
@@ -95,7 +95,7 @@ services:
       - backend_network
 
   test-db:
-    image: postgres:latest
+    image: postgres:16
     container_name: test-db
     ports:
       - 5436:5436
