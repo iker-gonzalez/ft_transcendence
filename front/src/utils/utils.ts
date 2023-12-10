@@ -10,11 +10,8 @@ import Cookies from 'js-cookie';
  */
 export function getBaseUrl(): string {
   const apiPort: string = process.env.REACT_APP_API_PORT || '3000';
-  const clientPort: string = process.env.REACT_APP_CLIENT_PORT || '4200';
 
-  return window.location.hostname === 'localhost'
-    ? `http://localhost:${apiPort}`
-    : `https://${window.location.hostname.replace(clientPort, apiPort)}`;
+  return `http://207.154.240.1:${apiPort}`; // TODO: change back to localhost when hosting not required
 }
 
 /**
