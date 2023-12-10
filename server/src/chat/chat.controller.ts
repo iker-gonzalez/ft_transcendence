@@ -27,7 +27,7 @@ import { ChannelType } from '@prisma/client';
 import { AllChannelInfo } from './dto/all-channel-info.dto';
 import { RoomOwnerIntraDTO } from './dto/roomOwnerIntra.dto';
 import { RoomOwnerPasswordIntraDTO } from './dto/room-owener-password.dto';
-import { JwtGuard } from 'src/auth/guard/jwt.guard';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 import { UserRommDTO } from './dto/user-room.dto';
 
 @ApiTags('Chat')
