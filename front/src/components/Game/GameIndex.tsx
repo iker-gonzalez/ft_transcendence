@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled } from 'styled-components';
 import CenteredLayout from '../UI/CenteredLayout';
@@ -11,7 +11,8 @@ import {
   darkestBgColor,
   primaryLightColor,
 } from '../../constants/color-tokens';
-import { sm } from '../../constants/styles';
+import { lg } from '../../constants/styles';
+import { useUserData } from '../../context/UserDataContext';
 
 const WrapperDiv = styled.div`
   .game-page-section {
@@ -26,15 +27,35 @@ const WrapperDiv = styled.div`
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    gap: 35px;
+    column-gap: 35px;
+    gap: 24px;
 
-    @media (width > ${sm}) {
+    @media (width > ${lg}) {
       flex-direction: row;
+      gap: 40px;
+    }
+
+    > * {
+      width: 100%;
+      max-width: 450px;
+      aspect-ratio: 3/2;
+
+      @media (width > ${lg}) {
+        width: 450px;
+        aspect-ratio: 4/3;
+      }
     }
 
     .game-mode-gradient {
       background-color: ${darkestBgColor};
       transition: background-color 0.2s ease-in-out;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+
+      position: relative;
 
       &:hover {
         background-color: ${darkerBgColor};
@@ -42,16 +63,12 @@ const WrapperDiv = styled.div`
     }
 
     .game-mode {
-      position: relative;
-
-      max-width: 450px;
-      aspect-ratio: 3/2;
-      @media (width > ${sm}) {
+      @media (width > ${lg}) {
         aspect-ratio: 4/3;
       }
 
       padding-bottom: 30px;
-      @media (width> ${sm}) {
+      @media (width> ${lg}) {
         padding-bottom: 50px;
       }
 
@@ -62,11 +79,15 @@ const WrapperDiv = styled.div`
       overflow: hidden;
 
       .solo {
-        transform: scale(1.2);
+        height: 300px;
+        object-fit: contain;
+        transform: scale(1.4);
       }
 
       .vs {
         width: 80%;
+        height: 300px;
+        object-fit: contain;
       }
 
       .game-name {
@@ -75,36 +96,32 @@ const WrapperDiv = styled.div`
         font-family: 'Dogica';
         font-weight: bold;
 
-        font-size: 1rem;
-        @media (width > ${sm}) {
+        font-size: 1.2rem;
+        @media (width > ${lg}) {
           font-size: 1.5rem;
         }
 
         position: absolute;
-        bottom: 5px;
+        bottom: 15px;
+        @media (width > ${lg}) {
+          bottom: 5px;
+        }
         left: 50%;
         transform: translateX(-50%);
       }
     }
   }
-
-  .selector-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-
-    min-width: 500px;
-
-    .game-mode-selector {
-      width: 100%;
-      height: 60px;
-    }
-  }
 `;
 
 export default function GameIndex(): JSX.Element {
+  const { userData } = useUserData();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userData) {
+      navigate('/');
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <WrapperDiv>
