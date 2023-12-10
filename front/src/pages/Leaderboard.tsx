@@ -4,13 +4,14 @@ import { formatMsToFullTime, getBaseUrl } from '../utils/utils';
 import LoadingFullscreen from '../components/UI/LoadingFullscreen';
 import RoundImg from '../components/UI/RoundImage';
 import styled from 'styled-components';
-import { darkBgColor, primaryLightColor } from '../constants/color-tokens';
-import { sm } from '../constants/styles';
+import { primaryLightColor } from '../constants/color-tokens';
+import { lg } from '../constants/styles';
 
 const MainContent = styled.main`
   .avatar {
     width: 75px;
     height: 75px;
+    object-fit: cover;
   }
 
   .table-container {
@@ -24,25 +25,20 @@ const MainContent = styled.main`
       font-weight: bold;
       margin-bottom: 16px;
 
-      @media (width > ${sm}) {
+      @media (width > ${lg}) {
         font-size: unset;
       }
     }
 
     tr {
       display: grid;
-      grid-template-columns: 40px 2fr 1fr 1fr 1fr 1fr;
-      @media (width > ${sm}) {
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 40px 125px 1fr 1fr 1fr 1fr;
+      @media (width > ${lg}) {
+        grid-template-columns: 60px 1fr 200px 1fr 1fr 1fr 1fr;
       }
 
       &:not(:last-of-type) {
         border-bottom: 1px ${primaryLightColor} solid;
-      }
-
-      &:hover {
-        background-color: ${darkBgColor};
-        transition: background-color 0.3s ease-in-out;
       }
 
       &:first-of-type {
@@ -57,7 +53,7 @@ const MainContent = styled.main`
     td {
       padding: 5px;
       font-size: 0.6rem;
-      @media (width > ${sm}) {
+      @media (width > ${lg}) {
         padding: 15px;
         font-size: inherit;
       }
@@ -74,20 +70,27 @@ const MainContent = styled.main`
     font-weight: bold;
     font-size: 0.8rem;
 
-    @media (width > ${sm}) {
+    @media (width > ${lg}) {
       font-size: 1.3rem;
     }
   }
 
-  .username {
-    font-family: 'Dogica';
-    font-weight: bold;
-
+  .username-cell {
     justify-content: flex-start;
-    font-size: 0.5rem;
-    @media (width > ${sm}) {
-      justify-content: inherit;
-      font-size: 0.9rem;
+    .username {
+      font-family: 'Dogica';
+      font-weight: bold;
+
+      overflow: hidden;
+      white-space: nowrap;
+      display: block;
+      text-overflow: ellipsis;
+
+      font-size: 0.4rem;
+      @media (width > ${lg}) {
+        justify-content: inherit;
+        font-size: 0.8rem;
+      }
     }
   }
 `;
@@ -95,6 +98,11 @@ const MainContent = styled.main`
 const Leaderboard: React.FC = (): JSX.Element => {
   const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [innerWidth, setInnerWidth] = useState<number>(window.innerWidth);
+
+  const handleWindowSizeChange = () => {
+    setInnerWidth(window.innerWidth);
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -110,6 +118,11 @@ const Leaderboard: React.FC = (): JSX.Element => {
         }
         setIsLoading(false);
       });
+
+    window.addEventListener('resize', handleWindowSizeChange);
+    return () => {
+      window.removeEventListener('resize', handleWindowSizeChange);
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -118,37 +131,38 @@ const Leaderboard: React.FC = (): JSX.Element => {
       <CenteredLayout>
         <MainContent>
           <h1 className="title-1 mb-24">Leaderboard</h1>
-          <div className="table-container">
-            <table className="animate__animated animate__slideInDown">
-              <thead>
-                <tr>
-                  <th>
-                    <span className="sr-only">Rank</span>
-                  </th>
-                  {window.innerWidth > parseInt(sm) && (
+          {leaderboardData.length === 0 ? (
+            <p>For now, there is nothing to show here 😢</p>
+          ) : (
+            <div className="table-container">
+              <table className="animate__animated animate__slideInDown">
+                <thead>
+                  <tr>
                     <th>
-                      <span className="sr-only">Avatar</span>
+                      <span className="sr-only">Rank</span>
                     </th>
-                  )}
-                  <th>
-                    <span className="sr-only">Username</span>
-                  </th>
-                  <th>Level</th>
-                  <th>Wins</th>
-                  <th>Losses</th>
-                  {window.innerWidth > parseInt(sm) && <th>Win ratio</th>}
-                  <th>Game time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(() => {
-                  if (leaderboardData.length > 0) {
+                    {innerWidth > parseInt(lg) && (
+                      <th>
+                        <span className="sr-only">Avatar</span>
+                      </th>
+                    )}
+                    <th>
+                      <span className="sr-only">Username</span>
+                    </th>
+                    <th>Level</th>
+                    <th>Wins</th>
+                    <th>Losses</th>
+                    <th>Game time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
                     return leaderboardData.map(
                       (leaderboardData: any, index) => {
                         return (
                           <tr key={`${leaderboardData.user.intraId}`}>
                             <td className="rank">#{index + 1}</td>
-                            {window.innerWidth > parseInt(sm) && (
+                            {innerWidth > parseInt(lg) && (
                               <td>
                                 <RoundImg
                                   src={leaderboardData.user.avatar}
@@ -157,24 +171,16 @@ const Leaderboard: React.FC = (): JSX.Element => {
                                 />
                               </td>
                             )}
-                            <td className="title-3 username">
-                              {leaderboardData.user.username}
+                            <td className="title-3 username-cell">
+                              <span className="username">
+                                {leaderboardData.user.username}
+                              </span>
                             </td>
                             <td className="title-3">
                               {leaderboardData.stats.rank}
                             </td>
                             <td>{leaderboardData.stats.wins}</td>
                             <td>{leaderboardData.stats.losses}</td>
-                            {window.innerWidth > parseInt(sm) && (
-                              <td>
-                                {leaderboardData.stats.totalGames
-                                  ? `${(
-                                      (leaderboardData.stats.wins * 100) /
-                                      leaderboardData.stats.totalGames
-                                    ).toFixed()}%`
-                                  : '-'}
-                              </td>
-                            )}
                             <td>
                               {leaderboardData.stats.totalGameTime
                                 ? formatMsToFullTime(
@@ -186,11 +192,11 @@ const Leaderboard: React.FC = (): JSX.Element => {
                         );
                       },
                     );
-                  }
-                })()}
-              </tbody>
-            </table>
-          </div>
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          )}
         </MainContent>
       </CenteredLayout>
     </>
