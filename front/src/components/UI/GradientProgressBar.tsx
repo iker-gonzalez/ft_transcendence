@@ -13,8 +13,8 @@ const GradientProgressBar = styled.progress<{ $progressBarWidth: string }>`
   &::-webkit-progress-value {
     background: #00aeb5;
     background: linear-gradient(90deg, #00aeb5 0%, rgba(255, 211, 105, 1) 100%);
-    background-size: ${({ $progressBarWidth }) =>
-      `${$progressBarWidth} 100%, 100% 100%, 100% 100%`};
+    background-size: ${(props: any) =>
+      `${props.$progressBarWidth} 100%, 100% 100%, 100% 100%`};
   }
 `;
 
