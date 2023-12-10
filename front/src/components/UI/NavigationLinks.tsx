@@ -21,7 +21,7 @@ import LogOutIcon from '../../assets/svg/log-out.svg';
 type NavigationLinksProps = {
   className?: string;
   onClickLink?: () => void;
-  isAnimationPlaying?: boolean;
+  setIsSidebarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const StyledNav = styled.nav`
@@ -79,7 +79,7 @@ const StyledNav = styled.nav`
 const NavigationLinks: React.FC<NavigationLinksProps> = ({
   className,
   onClickLink,
-  isAnimationPlaying,
+  setIsSidebarOpen,
 }): JSX.Element => {
   const { userData, setUserData } = useUserData();
   const navigate = useNavigate();
@@ -113,6 +113,8 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({
     Cookies.remove('token');
     setUserData(null);
     sessionStorage.clear();
+
+    if (setIsSidebarOpen) setIsSidebarOpen(false);
     navigate('/');
     launchFlashMessage('Logged out successfully', FlashMessageLevel.SUCCESS);
   };
@@ -125,9 +127,7 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({
             key={link.id}
             to={link.to}
             className={`${
-              !link.isPermanent && (!isLogged || isAnimationPlaying)
-                ? 'disabled'
-                : ''
+              !link.isPermanent && !isLogged ? 'disabled' : ''
             } link`}
             onClick={(e) => {
               if (!link.isPermanent) {
