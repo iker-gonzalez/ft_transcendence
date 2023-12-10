@@ -37,8 +37,9 @@ const WrapperDiv = styled.div`
         font-weight: bold;
       }
 
-      img {
+      .avatar {
         width: 130px;
+        height: 130px;
       }
     }
 
@@ -149,7 +150,7 @@ const GameMatchQueueSession: React.FC<GameMatchQueueSessionProps> = ({
                     </Badge>
                   )}
                 </div>
-                <RoundImg alt="" src={player.avatar} />
+                <RoundImg alt="" className="avatar" src={player.avatar} />
               </div>
               <UserStatsInfo
                 showOnlyEssentialStats={true}
