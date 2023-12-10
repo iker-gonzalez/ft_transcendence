@@ -22,7 +22,7 @@ const WrapperDiv = styled.div<{ $background: string }>`
     box-shadow: rgba(0, 173, 181, 0.1) 0px 4px 16px,
       rgba(0, 173, 181, 0.1) 0px 8px 24px, rgba(0, 173, 181, 0.1) 0px 16px 56px;
 
-    background: ${({ $background }) => `url(${$background})`};
+    background: ${(props: any) => `url(${props.$background})`};
     background-size: cover;
 
     transition: all 0.3s ease-in-out;

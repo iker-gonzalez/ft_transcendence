@@ -2,7 +2,7 @@ import { styled } from 'styled-components';
 import { darkerBgColor } from '../../constants/color-tokens';
 
 const ContrastPanel = styled.div<{ $backgroundColor?: string }>`
-  background-color: ${(props) =>
+  background-color: ${(props: any) =>
     props.$backgroundColor ? props.$backgroundColor : darkerBgColor};
 
   width: fit-content;
