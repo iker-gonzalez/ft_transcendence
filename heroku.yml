@@ -1,6 +1,6 @@
 build:
   docker:
-    backend: backend
-    backend-e2e: backend-e2e
-    frontend: frontend
-    prisma-studio: prisma-studio
+    backend: backend/dockerfile
+    backend-e2e: backend-e2e/dockerfile
+    frontend: frontend/dockerfile
+    prisma-studio: prisma-studio/dockerile
