@@ -216,7 +216,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
               maxLength={10}
               type="text"
               value={roomName}
-              onChange={(e) => {
+              onChange={(e: any) => {
                 const channelName = e.target.value;
                 setRoomName(channelName);
 
@@ -234,7 +234,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
           </div>
           <MainSelect
             value={groupNature}
-            onChange={(e) => {
+            onChange={(e: any) => {
               setGroupNature(e.target.value);
               setPassword('');
             }}
@@ -338,7 +338,7 @@ const ChatSidebarNewChannelModal: React.FC<ChatSidebarNewChannelModalProps> = ({
                 </p>
                 <div className="form-container">
                   <MainSelect
-                    onChange={(e) => {
+                    onChange={(e: any) => {
                       const groupName = e.target.value;
                       const targetedGroup = filteredGroups.find(
                         (group) => group.name === groupName,

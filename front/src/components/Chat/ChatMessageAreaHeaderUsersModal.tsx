@@ -213,7 +213,7 @@ const ChatMessageAreaHeaderUsersModal: React.FC<
         Choose a member to manage their permissions in the channel.
       </p>
       <MainSelect
-        onChange={(e) => {
+        onChange={(e: any) => {
           setSelectedUser(parseInt(e.target.value));
         }}
       >
