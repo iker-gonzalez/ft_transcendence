@@ -80,7 +80,7 @@ const NavBarContainerMobile = styled.div`
   }
 `;
 
-const NavbarContainerDesktop = styled.nav`
+const NavbarContainerDesktop = styled.div`
   @media (width <= ${sm}) {
     display: none;
   }
