@@ -1,11 +1,7 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import HomeIcon from '../../assets/svg/home-icon.svg';
-import ProfileIcon from '../../assets/svg/profile-icon.svg';
-import PlayIcon from '../../assets/svg/play-icon.svg';
-import StatsIcon from '../../assets/svg/stats-icon.svg';
-import ChatIcon from '../../assets/svg/chat-icon.svg';
-import LeaderboardIcon from '../../assets/svg/leaderboard-icon.svg';
+
 import SVG from 'react-inlinesvg';
 import { useUserData } from '../../context/UserDataContext';
 import styled from 'styled-components';
@@ -13,11 +9,21 @@ import {
   primaryAccentColor,
   primaryLightColor,
 } from '../../constants/color-tokens';
+import MainButton from './MainButton';
+import Cookies from 'js-cookie';
+import { patchUserStatus } from '../../utils/utils';
+import UserStatus from '../../interfaces/user-status.interface';
+import { NAVIGATION_LINKS } from './navigation-links';
+import { useFlashMessages } from '../../context/FlashMessagesContext';
+import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
+import LogOutIcon from '../../assets/svg/log-out.svg';
+import Modal from './Modal';
+import SecondaryButton from './SecondaryButton';
 
 type NavigationLinksProps = {
   className?: string;
   onClickLink?: () => void;
-  isAnimationPlaying?: boolean;
+  setIsSidebarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const StyledNav = styled.nav`
@@ -58,77 +64,82 @@ const StyledNav = styled.nav`
       }
     }
   }
+
+  .logout-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    > img {
+      width: 20px;
+      object-fit: contain;
+    }
+  }
+`;
+
+const LogOutModal = styled(Modal)`
+  .actions-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
 `;
 
 const NavigationLinks: React.FC<NavigationLinksProps> = ({
   className,
   onClickLink,
-  isAnimationPlaying,
+  setIsSidebarOpen,
 }): JSX.Element => {
-  const { userData } = useUserData();
+  const { userData, setUserData } = useUserData();
+  const navigate = useNavigate();
+  const { launchFlashMessage } = useFlashMessages();
 
+  const [navigationLinks, setNavigationLinks] =
+    React.useState(NAVIGATION_LINKS);
   const [isLogged, setIsLogged] = React.useState<boolean>(!!userData);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     setIsLogged(!!userData);
+
+    if (!userData) {
+      const homeNavigationLink = {
+        to: '/',
+        isPermanent: true,
+        icon: HomeIcon,
+        text: 'Home',
+        id: 'home',
+      };
+      setNavigationLinks([homeNavigationLink, ...NAVIGATION_LINKS]);
+    } else {
+      setNavigationLinks(NAVIGATION_LINKS);
+    }
   }, [userData]);
 
-  const links: {
-    to: string;
-    isPermanent: boolean;
-    icon: string;
-    text: string;
-    id: string;
-  }[] = [
-    { to: '/', isPermanent: true, icon: HomeIcon, text: 'Home', id: 'home' },
-    {
-      to: '/profile',
-      isPermanent: false,
-      icon: ProfileIcon,
-      text: 'Profile',
-      id: 'profile',
-    },
-    {
-      to: '/game',
-      isPermanent: false,
-      icon: PlayIcon,
-      text: 'Play',
-      id: 'game',
-    },
-    {
-      to: '/chat',
-      isPermanent: false,
-      icon: ChatIcon,
-      text: 'Chat',
-      id: 'chat',
-    },
-    {
-      to: '/stats',
-      isPermanent: false,
-      icon: StatsIcon,
-      text: 'Stats',
-      id: 'stats',
-    },
-    {
-      to: '/leaderboard',
-      isPermanent: true,
-      icon: LeaderboardIcon,
-      text: 'Leaderboard',
-      id: 'leader',
-    },
-  ];
+  const logOutUser = (): void => {
+    patchUserStatus(UserStatus.OFFLINE);
+    Cookies.remove('token');
+    setUserData(null);
+    sessionStorage.clear();
+
+    if (setIsSidebarOpen) setIsSidebarOpen(false);
+    navigate('/');
+    launchFlashMessage('Logged out successfully', FlashMessageLevel.SUCCESS);
+  };
 
   return (
     <StyledNav className={`nav-list ${className}`}>
-      {links.map((link) => {
+      {navigationLinks.map((link) => {
         return (
           <Link
             key={link.id}
             to={link.to}
             className={`${
-              !link.isPermanent &&
-              (!isLogged || isAnimationPlaying) &&
-              'disabled'
+              !link.isPermanent && !isLogged ? 'disabled' : ''
             } link`}
             onClick={(e) => {
               if (!link.isPermanent) {
@@ -148,6 +159,49 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({
           </Link>
         );
       })}
+      {userData && (
+        <MainButton
+          onClick={() => {
+            setIsLogoutModalOpen(true);
+          }}
+          className="logout-button"
+          key="login"
+          arial-label="Log out"
+        >
+          Log out <img src={LogOutIcon} alt="" />
+        </MainButton>
+      )}
+      {isLogoutModalOpen && (
+        <LogOutModal
+          dismissModalAction={() => {
+            setIsLogoutModalOpen(false);
+          }}
+        >
+          <h1 className="title-1 mb-16">Confirm logout?</h1>
+          <p className="mb-24">
+            You will be logged out from the application, but you 42 Intra
+            session will remain active. If someone is using the same device
+            after you, remember to log out from the 42 Intra as well.
+          </p>
+          <div className="actions-container">
+            <SecondaryButton
+              onClick={() => {
+                setIsLogoutModalOpen(false);
+              }}
+            >
+              Cancel
+            </SecondaryButton>
+            <MainButton
+              onClick={() => {
+                logOutUser();
+                setIsLogoutModalOpen(false);
+              }}
+            >
+              Confirm
+            </MainButton>
+          </div>
+        </LogOutModal>
+      )}
     </StyledNav>
   );
 };

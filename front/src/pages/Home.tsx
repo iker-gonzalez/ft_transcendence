@@ -222,20 +222,7 @@ const SignIn: React.FC = (): JSX.Element => {
                   in Bilbao, Spain
                 </p>
               </div>
-              {userData ? (
-                <div>
-                  <MainButton
-                    onClick={() => {
-                      patchUserStatus(UserStatus.OFFLINE);
-                      Cookies.remove('token');
-                      setUserData(null);
-                      sessionStorage.clear();
-                    }}
-                  >
-                    Log out
-                  </MainButton>
-                </div>
-              ) : (
+              {!userData && (
                 <div className="signin-container">
                   <MainButton type="button" onClick={handleSignIn}>
                     Sign In with 42
