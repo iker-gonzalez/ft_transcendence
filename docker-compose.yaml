@@ -36,23 +36,23 @@ services:
     networks:
       - backend_network
 
-  # backend-e2e:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./docker/backend-e2e/dockerfile
-  #   container_name: backend-e2e
-  #   depends_on:
-  #     - test-db
-  #   restart: always
-  #   environment:
-  #     DATABASE_URL: "postgresql://${DATABASE_USER_TEST}:${DATABASE_PASSWORD_TEST}@test-db:5436/${DATABASE_NAME_TEST}?schema=public"
-  #     INTRA_STATE: $INTRA_STATE
-  #     FAKE_USER_1_CODE: $FAKE_USER_1_CODE
-  #     JWT_SECRET: $JWT_SECRET
-  #   volumes:
-  #     - ./server:/server
-  #   networks:
-  #     - backend_test_network
+  backend-e2e:
+    build:
+      context: ./
+      dockerfile: ./docker/backend-e2e/dockerfile
+    container_name: backend-e2e
+    depends_on:
+      - test-db
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://${DATABASE_USER_TEST}:${DATABASE_PASSWORD_TEST}@test-db:5436/${DATABASE_NAME_TEST}?schema=public"
+      INTRA_STATE: $INTRA_STATE
+      FAKE_USER_1_CODE: $FAKE_USER_1_CODE
+      JWT_SECRET: $JWT_SECRET
+    volumes:
+      - ./server:/server
+    networks:
+      - backend_test_network
 
   frontend:
     build:
@@ -94,18 +94,18 @@ services:
     networks:
       - backend_network
 
-  # test-db:
-  #   image: postgres:latest
-  #   container_name: test-db
-  #   ports:
-  #     - 5436:5436
-  #   environment:
-  #     POSTGRES_USER: $DATABASE_USER_TEST
-  #     POSTGRES_PASSWORD: $DATABASE_PASSWORD_TEST
-  #     POSTGRES_DB: $DATABASE_NAME_TEST
-  #     PGPORT: 5436
-  #   networks:
-  #     - backend_test_network
+  test-db:
+    image: postgres:latest
+    container_name: test-db
+    ports:
+      - 5436:5436
+    environment:
+      POSTGRES_USER: $DATABASE_USER_TEST
+      POSTGRES_PASSWORD: $DATABASE_PASSWORD_TEST
+      POSTGRES_DB: $DATABASE_NAME_TEST
+      PGPORT: 5436
+    networks:
+      - backend_test_network
 
   prisma-studio:
     build:
@@ -127,4 +127,4 @@ services:
 networks:
   frontend_network:
   backend_network:
-  # backend_test_network:
+  backend_test_network:
