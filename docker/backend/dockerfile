@@ -1,5 +1,6 @@
 FROM node:21
 
 COPY ./docker/backend/run.sh ./
+ADD run.sh /run.sh
 
 CMD ["sh", "run.sh"]
