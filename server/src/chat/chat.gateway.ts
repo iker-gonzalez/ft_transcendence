@@ -12,7 +12,7 @@ import { Socket } from 'socket.io';
 import { BadGatewayException } from '@nestjs/common';
 import { JoinRoomPayloadDto } from './dto/join-room-payload.dto';
 import { validateOrReject } from 'class-validator';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @WebSocketGateway({
   namespace: 'chat',
