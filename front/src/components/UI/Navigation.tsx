@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components';
 import { darkestBgColor, darkerBgColor } from '../../constants/color-tokens';
-import { sm } from '../../constants/styles';
+import { md, sm } from '../../constants/styles';
 import ButtonAnimationData from '../../assets/lotties/menu-button.json';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import NavigationLinks from './NavigationLinks';
@@ -10,7 +10,7 @@ const MENU_BUTTON_FRAMES = 140;
 const ANIMATION_DURATION = 0.5;
 
 const NavBarContainerMobile = styled.div`
-  @media (width > ${sm}) {
+  @media (width > ${md}) {
     display: none;
   }
 
@@ -81,7 +81,7 @@ const NavBarContainerMobile = styled.div`
 `;
 
 const NavbarContainerDesktop = styled.div`
-  @media (width <= ${sm}) {
+  @media (width <= ${md}) {
     display: none;
   }
 
@@ -119,7 +119,8 @@ const NavbarContainerDesktop = styled.div`
 
 const Navbar = (): JSX.Element => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState<boolean>(false);
-  const [isLottiePlaying, setIsLottiePlayinging] = React.useState<boolean>(false);
+  const [isLottiePlaying, setIsLottiePlayinging] =
+    React.useState<boolean>(false);
   const [isAnimationPlaying, setIsAnimationPlaying] =
     React.useState<boolean>(false);
   const menuButtonRef = useRef<LottieRefCurrentProps>(null);
