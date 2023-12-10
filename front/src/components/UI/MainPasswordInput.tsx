@@ -30,7 +30,7 @@ const MainPasswordInput: React.FC<any> = (props): JSX.Element => {
     <WrapperDiv>
       <MainButton
         className="icon-button"
-        onClick={(e) => {
+        onClick={(e: any) => {
           e.preventDefault();
           setIsPasswordVisible((prevState) => !prevState);
         }}
