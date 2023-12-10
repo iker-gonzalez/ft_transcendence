@@ -107,22 +107,22 @@ services:
     networks:
       - backend_test_network
 
-  prisma-studio:
-    build:
-      context: ./
-      dockerfile: ./docker/prisma-studio/dockerfile
-    container_name: prisma-studio
-    depends_on:
-      - backend
-    environment:
-      DATABASE_URL: "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@dev-db:${DATABASE_PORT}/${DATABASE_NAME}?schema=public"
-    volumes:
-      - ./server:/server
-    ports:
-      - 5555:5555
-    networks:
-      - backend_network
-    restart: always
+  # prisma-studio:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./docker/prisma-studio/dockerfile
+  #   container_name: prisma-studio
+  #   depends_on:
+  #     - backend
+  #   environment:
+  #     DATABASE_URL: "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@dev-db:${DATABASE_PORT}/${DATABASE_NAME}?schema=public"
+  #   volumes:
+  #     - ./server:/server
+  #   ports:
+  #     - 5555:5555
+  #   networks:
+  #     - backend_network
+  #   restart: always
 
 networks:
   frontend_network:
