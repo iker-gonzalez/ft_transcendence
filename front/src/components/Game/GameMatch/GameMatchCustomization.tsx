@@ -106,7 +106,7 @@ const ThemeSelector = styled.div<{ $backgroundImg: string }>`
     }
     font-weight: bold;
 
-    background-image: url(${(props) => props.$backgroundImg});
+    background-image: url(${(props: any) => props.$backgroundImg});
     background-size: cover;
     background-position: center;
   }

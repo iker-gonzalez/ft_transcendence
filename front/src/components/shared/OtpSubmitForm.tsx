@@ -26,7 +26,7 @@ const OtpSubmitForm: React.FC<OtpSubmitFormProps> = ({
 }): JSX.Element => {
   return (
     <StyledForm
-      onSubmit={(e) => {
+      onSubmit={(e: any) => {
         e.preventDefault();
 
         if (otpValue.length !== OTP_LENGTH) return;
@@ -39,7 +39,7 @@ const OtpSubmitForm: React.FC<OtpSubmitFormProps> = ({
         placeholder="Enter OTP"
         maxLength={OTP_LENGTH}
         value={otpValue}
-        onChange={(e) => {
+        onChange={(e: any) => {
           const value = e.target.value;
           if (value.match(/^[0-9]*$/)) {
             setOtpValue(e.target.value);

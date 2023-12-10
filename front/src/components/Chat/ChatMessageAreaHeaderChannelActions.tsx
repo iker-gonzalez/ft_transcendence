@@ -326,7 +326,7 @@ const ChatMessageAreaHeaderChannelActions: React.FC<
                     }
                   })()}
                   <MainSelect
-                    onChange={(e) => {
+                    onChange={(e: any) => {
                       setSelectedFriendToInvite(+e.target.value);
                     }}
                   >
