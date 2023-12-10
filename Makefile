@@ -20,5 +20,5 @@ stop:
 	docker stop backend-e2e || true
 
 up-build: stop
-	docker-compose up --build 
+	docker compose up --build 
 	docker compose logs --follow
