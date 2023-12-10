@@ -118,31 +118,33 @@ const Leaderboard: React.FC = (): JSX.Element => {
       <CenteredLayout>
         <MainContent>
           <h1 className="title-1 mb-24">Leaderboard</h1>
-          <div className="table-container">
-            <table className="animate__animated animate__slideInDown">
-              <thead>
-                <tr>
-                  <th>
-                    <span className="sr-only">Rank</span>
-                  </th>
-                  {window.innerWidth > parseInt(sm) && (
+          {leaderboardData.length === 0 ? (
+            <p>For now, there is nothing to show here 😢</p>
+          ) : (
+            <div className="table-container">
+              <table className="animate__animated animate__slideInDown">
+                <thead>
+                  <tr>
                     <th>
-                      <span className="sr-only">Avatar</span>
+                      <span className="sr-only">Rank</span>
                     </th>
-                  )}
-                  <th>
-                    <span className="sr-only">Username</span>
-                  </th>
-                  <th>Level</th>
-                  <th>Wins</th>
-                  <th>Losses</th>
-                  {window.innerWidth > parseInt(sm) && <th>Win ratio</th>}
-                  <th>Game time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(() => {
-                  if (leaderboardData.length > 0) {
+                    {window.innerWidth > parseInt(sm) && (
+                      <th>
+                        <span className="sr-only">Avatar</span>
+                      </th>
+                    )}
+                    <th>
+                      <span className="sr-only">Username</span>
+                    </th>
+                    <th>Level</th>
+                    <th>Wins</th>
+                    <th>Losses</th>
+                    {window.innerWidth > parseInt(sm) && <th>Win ratio</th>}
+                    <th>Game time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
                     return leaderboardData.map(
                       (leaderboardData: any, index) => {
                         return (
@@ -186,11 +188,11 @@ const Leaderboard: React.FC = (): JSX.Element => {
                         );
                       },
                     );
-                  }
-                })()}
-              </tbody>
-            </table>
-          </div>
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          )}
         </MainContent>
       </CenteredLayout>
     </>
