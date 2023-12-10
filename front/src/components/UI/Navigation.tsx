@@ -1,13 +1,10 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { darkestBgColor, darkerBgColor } from '../../constants/color-tokens';
-import { md, sm } from '../../constants/styles';
-import ButtonAnimationData from '../../assets/lotties/menu-button.json';
-import Lottie, { LottieRefCurrentProps } from 'lottie-react';
+import { md } from '../../constants/styles';
 import NavigationLinks from './NavigationLinks';
-
-const MENU_BUTTON_FRAMES = 140;
-const ANIMATION_DURATION = 0.5;
+import OpenMenuIcon from '../../assets/svg/menu-open.svg';
+import CloseMenuIcon from '../../assets/svg/menu-close.svg';
 
 const NavBarContainerMobile = styled.div`
   @media (width > ${md}) {
@@ -31,10 +28,12 @@ const NavBarContainerMobile = styled.div`
       rgba(0, 173, 181, 0.09) 0px 16px 8px,
       rgba(0, 173, 181, 0.09) 0px 32px 16px;
 
-    .menu-icon {
-      width: 30px;
-      object-fit: contain;
-      cursor: pointer;
+    .menu-button {
+      padding: 0;
+      .menu-icon {
+        width: 30px;
+        object-fit: contain;
+      }
     }
   }
 
@@ -53,11 +52,6 @@ const NavBarContainerMobile = styled.div`
     z-index: -1;
 
     backdrop-filter: blur(7px);
-  }
-
-  .sidebar-inner,
-  .sidebar-bg {
-    animation-duration: ${ANIMATION_DURATION}s;
   }
 
   .sidebar-inner {
@@ -119,66 +113,37 @@ const NavbarContainerDesktop = styled.div`
 
 const Navbar = (): JSX.Element => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState<boolean>(false);
-  const [isLottiePlaying, setIsLottiePlayinging] =
-    React.useState<boolean>(false);
-  const [isAnimationPlaying, setIsAnimationPlaying] =
-    React.useState<boolean>(false);
-  const menuButtonRef = useRef<LottieRefCurrentProps>(null);
-
-  const startClosingAnimation = () => {
-    setIsAnimationPlaying(true);
-    setTimeout(() => {
-      setIsAnimationPlaying(false);
-    }, ANIMATION_DURATION * 1000);
-  };
-
-  const onClosingSidebar = () => {
-    if (menuButtonRef.current && !isLottiePlaying) {
-      setIsSidebarOpen((prevState) => {
-        if (prevState === true) startClosingAnimation();
-
-        return !prevState;
-      });
-
-      const midFrame = MENU_BUTTON_FRAMES / 2;
-      if (!isSidebarOpen) {
-        menuButtonRef.current.playSegments([0, midFrame]);
-      } else {
-        menuButtonRef.current.playSegments([midFrame, MENU_BUTTON_FRAMES]);
-      }
-    }
-  };
 
   return (
     <>
       <NavBarContainerMobile>
         <div className="header">
-          <Lottie
-            animationData={ButtonAnimationData}
-            loop={false}
-            autoplay={false}
-            onSegmentStart={() => {
-              setIsLottiePlayinging(true);
+          <button
+            className="menu-button"
+            onClick={() => {
+              setIsSidebarOpen((prevState) => !prevState);
             }}
-            onComplete={() => {
-              setIsLottiePlayinging(false);
-            }}
-            onClick={onClosingSidebar}
-            lottieRef={menuButtonRef}
-            className="menu-icon"
-          />
+          >
+            <img
+              src={isSidebarOpen ? CloseMenuIcon : OpenMenuIcon}
+              alt=""
+              className="menu-icon"
+            />
+          </button>
         </div>
-        {(isSidebarOpen || (!isSidebarOpen && isAnimationPlaying)) && (
+        {isSidebarOpen && (
           <div className="sidebar">
             <div
               className={`sidebar-inner animate__animated ${
                 isSidebarOpen && 'animate__slideInLeft'
-              } ${isAnimationPlaying && 'animate__slideOutLeft'}`}
+              }`}
             >
               <NavigationLinks
                 className="nav-list"
-                onClickLink={onClosingSidebar}
-                isAnimationPlaying={isLottiePlaying}
+                onClickLink={() => {
+                  setIsSidebarOpen(false);
+                }}
+                setIsSidebarOpen={setIsSidebarOpen}
               />
             </div>
             <div className="sidebar-bg animate__animated animate__fadeIn"></div>
