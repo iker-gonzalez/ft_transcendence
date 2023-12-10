@@ -112,7 +112,7 @@ export class UserService {
       user.intraId === +this.configService.get('FAKE_USER_2_ID') ||
       user.intraId === +this.configService.get('FAKE_USER_3_ID');
     if (isTestUser) {
-      throw new BadRequestException(['Cannot update avatar of test user 😉']);
+      throw new BadRequestException('Cannot update avatar of test user 😉');
     }
 
     if (!file) {
