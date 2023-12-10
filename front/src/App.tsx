@@ -16,6 +16,7 @@ import UserStats from './pages/UserStats';
 import Chat from './pages/Chat';
 import GameSession from './components/Game/GameSession';
 import GameQueueInvitation from './components/Game/GameQueueInvitation';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
               <Route path="stats" element={<UserStats />} />
               <Route path="chat" element={<Chat />} />
               <Route path="leaderboard" element={<Leaderboard />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </Router>
