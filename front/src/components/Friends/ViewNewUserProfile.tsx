@@ -28,18 +28,22 @@ type DeleteFriendResponse = {
 
 const WrapperDiv = styled.div`
   .header-container {
-    max-width: 550px;
+    width: 100%;
     margin: 0 auto;
+    margin-bottom: 24px;
 
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 50px;
+    flex-wrap: wrap;
+    column-gap: 80px;
+    row-gap: 20px;
   }
 
   .user-info-container {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     align-items: center;
     gap: 20px;
 
@@ -50,14 +54,20 @@ const WrapperDiv = styled.div`
   }
 
   .actions-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
     white-space: nowrap;
   }
 
   .user-data-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: stretch;
-    gap: 50px;
+    column-gap: 50px;
+    row-gap: 24px;
   }
 `;
 
@@ -130,7 +140,7 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
 
   return (
     <WrapperDiv>
-      <div className="header-container">
+      <div className="header-container mb-24">
         <div className="user-info-container mb-24">
           <RoundImg src={foundUserData.avatar} alt="" className="avatar" />
           <div>
@@ -138,17 +148,21 @@ const ViewNewUserProfile: React.FC<ViewNewUserProfileProps> = ({
             <p className="small">{foundUserData.email}</p>
           </div>
         </div>
-        {!shouldHideFriendCta && (
-          <div className="actions-container">
-            {isAlreadyFriend ? (
-              <SecondaryButton onClick={removeUserFromFriends}>
-                Unfriend 💔
-              </SecondaryButton>
-            ) : (
-              <MainButton onClick={addUserToFriend}>Add to friends</MainButton>
-            )}
-          </div>
-        )}
+        <div className="actions-container">
+          {!shouldHideFriendCta && (
+            <div>
+              {isAlreadyFriend ? (
+                <SecondaryButton onClick={removeUserFromFriends}>
+                  Unfriend
+                </SecondaryButton>
+              ) : (
+                <MainButton onClick={addUserToFriend}>
+                  Add to friends
+                </MainButton>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="user-data-container">
