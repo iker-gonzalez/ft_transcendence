@@ -4,7 +4,7 @@ For the official subject of the project:
 > This project is about creating a website for the mighty Pong contest!
 >
 > Thanks to your website, users will play Pong with others. You will provide a nice user interface, a chat, and real-time multiplayer online games!
-<img src="https://github.com/iker-gonzalez/ft_transcendence/assets/73175085/99bc32d4-35d5-4854-a593-a66f06c682df" width="600" />
+<img src="https://github.com/iker-gonzalez/ft_transcendence/assets/73175085/99bc32d4-35d5-4854-a593-a66f06c682df" width="100%" />
 
 
 ## Features
