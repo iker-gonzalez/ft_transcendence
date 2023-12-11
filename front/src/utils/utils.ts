@@ -11,7 +11,7 @@ import Cookies from 'js-cookie';
 export function getBaseUrl(): string {
   const apiPort: string = process.env.REACT_APP_API_PORT || '3000';
 
-  return `http://www.ft-transcendence-urduliz.lol/:${apiPort}`; // TODO: change back to localhost when hosting not required
+  return `http://www.ft-transcendence-urduliz.lol:${apiPort}`; // TODO: change back to localhost when hosting not required
 }
 
 /**
