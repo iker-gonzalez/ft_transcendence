@@ -31,6 +31,7 @@ services:
       TWO_FACTOR_AUTHENTICATION_APP_NAME: $TWO_FACTOR_AUTHENTICATION_APP_NAME
     volumes:
       - ./server:/server
+      - ./front/build:/build
     ports:
       - 3000:3000
     networks:
