@@ -17,6 +17,8 @@ import { GameStatsModule } from './game-stats/game-stats.module';
 import { GameLeaderboardModule } from './game-leaderboard/game-leaderboard.module';
 import { StatusModule } from './status/status.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -38,6 +40,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     GameStatsModule,
     GameLeaderboardModule,
     StatusModule,
+    ServeStaticModule.forRoot({
+	rootPath: join(__dirname, '..', '..', '..', 'build'),
+    }),
   ],
   providers: [IntraService],
 })
