@@ -17,7 +17,7 @@ type FlashMessageProps = {
 };
 
 const WrapperDiv = styled.div`
-  position: absolute;
+  position: fixed;
   bottom: 50px;
   left: 50px;
   z-index: 9999;
