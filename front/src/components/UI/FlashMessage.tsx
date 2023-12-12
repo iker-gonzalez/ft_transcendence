@@ -9,6 +9,7 @@ import {
 } from '../../constants/color-tokens';
 import FlashMessageLevel from '../../interfaces/flash-message-color.interface';
 import { useFlashMessages } from '../../context/FlashMessagesContext';
+import { sm } from '../../constants/styles';
 
 type FlashMessageProps = {
   text: string;
@@ -17,14 +18,24 @@ type FlashMessageProps = {
 
 const WrapperDiv = styled.div`
   position: absolute;
-  bottom: 80px;
-  left: 60px;
+  bottom: 50px;
+  left: 50px;
   z-index: 9999;
 
   width: fit-content;
   min-width: 300px;
   max-width: 400px;
   min-height: 100px;
+
+  @media (max-width: ${sm}) {
+    top: 0;
+    left: 0;
+    width: 95vw;
+    max-width: 94vw;
+    height: auto;
+    height: fit-content;
+    margin: 6vw 3vw;
+  }
 
   background-color: ${primaryColor};
   &.error {
