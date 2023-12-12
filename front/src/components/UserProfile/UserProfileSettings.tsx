@@ -11,6 +11,8 @@ const WrapperDiv = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    row-gap: 24px;
 
     &:not(:last-of-type) {
       padding-bottom: 20px;
