@@ -153,7 +153,7 @@ export class UserService {
     ws.write(file.buffer);
 
     const avatarUrl: string = encodeURI(
-      `http://localhost:${this.configService.get('API_PORT')}/${path.join(
+      `http://${this.configService.get('BASE_URL')}:${this.configService.get('API_PORT')}/${path.join(
         avatarsFolderPath,
         newAvatarName,
       )}`,
