@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 import ReactDom from 'react-dom';
 import styled from 'styled-components';
 import {
@@ -6,6 +6,7 @@ import {
   darkerBgColor,
   primaryLightColor,
 } from '../../constants/color-tokens';
+import { sm } from '../../constants/styles';
 
 type ModalProps = PropsWithChildren<{
   dismissModalAction: () => void;
@@ -21,6 +22,7 @@ const WrapperDiv = styled.div`
   z-index: 999;
 
   width: 100vw;
+  max-width: 100vw;
   height: 100vh;
 
   overflow: hidden;
@@ -59,7 +61,22 @@ const WrapperDiv = styled.div`
     &.full-screen {
       top: 0;
 
-      max-width: none;
+      min-width: 100vw;
+      max-width: 100vw;
+      width: 100vw;
+      height: 100vh;
+      overflow-x: hidden;
+
+      border-radius: 0;
+
+      --animate-duration: 300ms;
+    }
+
+    @media (max-width: ${sm}) {
+      top: 0;
+
+      min-width: 100vw;
+      max-width: 100vw;
       width: 100vw;
       height: 100vh;
       overflow-x: hidden;
@@ -103,6 +120,10 @@ const Modal: React.FC<ModalProps> = ({
 
     dismissModalAction();
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return ReactDom.createPortal(
     <WrapperDiv onClick={onModalDismissal} className={className}>
