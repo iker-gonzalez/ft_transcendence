@@ -23,6 +23,7 @@ const InputContainer = styled.div`
     justify-content: center;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
 
     > input {
       flex: 1;
