@@ -52,6 +52,8 @@ const MessageAreaContainer = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
+    min-width: 50%; // Fix issue with responsive
   }
 `;
 
