@@ -35,7 +35,7 @@ This application relies on environment variables to customize its behavior. To s
 
 Create a .env file at the root of the project.
 Open the .env file in a text editor of your choice.
-You'll need to provide values for various environment variables based on your specific configuration. Refer to the Docker Compose file and service configurations for a list of required environment variables.
+You'll need to provide values for various environment variables based on your specific configuration. Refer to the .env_template file for a list of required environment variables.
 
 Note: Sensitive information such as database credentials should be handled securely. Ensure that you do not expose these values in public repositories or environments.
 
